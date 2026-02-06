@@ -167,6 +167,8 @@ application-a`,
           path: withWindowsPath("applications/applicationA"),
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
       ]),
     );

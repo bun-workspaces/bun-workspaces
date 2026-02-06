@@ -1,6 +1,6 @@
-import type { ResolvedWorkspaceConfig } from "../config";
-import type { ResolvedPackageJsonContent } from "./packageJson";
-import type { Workspace } from "./workspace";
+import type { ResolvedWorkspaceConfig } from "../../config";
+import type { ResolvedPackageJsonContent } from "../packageJson";
+import type { Workspace } from "../workspace";
 
 export type WorkspaceMap = {
   [workspaceName: string]: {

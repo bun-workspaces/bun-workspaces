@@ -12,7 +12,7 @@ import { BunWorkspacesError } from "../internal/core";
 import {
   resolveWorkspaceDependencies,
   type WorkspaceMap,
-} from "./dependencyGraph";
+} from "./dependencyGraph/resolveDependencies";
 import { WORKSPACE_ERRORS } from "./errors";
 import {
   resolvePackageJsonContent,

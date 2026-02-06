@@ -131,7 +131,7 @@ class _FileSystemProject extends ProjectBase implements Project {
 
     const rootConfig = loadRootConfig(this.rootDirectory);
 
-    const { workspaces, workspaceConfigMap, rootWorkspace } = findWorkspaces({
+    const { workspaces, workspaceMap, rootWorkspace } = findWorkspaces({
       rootDirectory: this.rootDirectory,
       workspaceAliases: options.workspaceAliases,
       includeRootWorkspace:
@@ -147,7 +147,7 @@ class _FileSystemProject extends ProjectBase implements Project {
     this.config = {
       root: rootConfig,
       workspaces: Object.fromEntries(
-        Object.entries(workspaceConfigMap)
+        Object.entries(workspaceMap)
           .map(([name, { config }]) => [name, config])
           .filter(([_, config]) => config !== undefined),
       ),

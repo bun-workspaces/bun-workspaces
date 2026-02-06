@@ -183,7 +183,7 @@ export const findWorkspaces = ({
 
   validateWorkspaceAliases(workspaces, workspaceAliases, rootWorkspace.name);
 
-  return { workspaces, workspaceConfigMap: workspaceMap, rootWorkspace };
+  return { workspaces, workspaceMap, rootWorkspace };
 };
 
 export const validateWorkspaceAliases = (

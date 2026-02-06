@@ -1,10 +1,16 @@
 import { expect, test, describe } from "bun:test";
-import { resolveWorkspaceConfig } from "../src/config";
+import { resolveWorkspaceConfig, type WorkspaceConfig } from "../src/config";
 import { BUN_LOCK_ERRORS } from "../src/internal/bun";
 import { WORKSPACE_ERRORS } from "../src/workspaces/errors";
 import { findWorkspaces } from "../src/workspaces/findWorkspaces";
 import { getProjectRoot } from "./testProjects";
 import { withWindowsPath } from "./util/windows";
+
+export const createWorkspaceMapEntry = (config: WorkspaceConfig) => ({
+  workspace: expect.any(Object),
+  config: resolveWorkspaceConfig(config),
+  packageJson: expect.any(Object),
+});
 
 describe("Test finding workspaces", () => {
   test("Find workspaces basic behavior", async () => {
@@ -20,6 +26,8 @@ describe("Test finding workspaces", () => {
         path: "",
         scripts: [],
         aliases: [],
+        dependsOn: [],
+        dependents: [],
       },
       workspaces: [
         {
@@ -29,6 +37,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("applications/applicationA"),
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "application-b",
@@ -37,6 +47,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("applications/applicationB"),
           scripts: ["all-workspaces", "application-b", "b-workspaces"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "library-a",
@@ -45,6 +57,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("libraries/libraryA"),
           scripts: ["a-workspaces", "all-workspaces", "library-a"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "library-b",
@@ -53,6 +67,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("libraries/libraryB"),
           scripts: ["all-workspaces", "b-workspaces", "library-b"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "library-c",
@@ -61,15 +77,17 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("libraries/nested/libraryC"),
           scripts: ["all-workspaces", "c-workspaces", "library-c"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
       ],
-      workspaceConfigMap: {
-        "test-root": resolveWorkspaceConfig({ alias: [] }),
-        "application-a": resolveWorkspaceConfig({}),
-        "application-b": resolveWorkspaceConfig({}),
-        "library-a": resolveWorkspaceConfig({}),
-        "library-b": resolveWorkspaceConfig({}),
-        "library-c": resolveWorkspaceConfig({}),
+      workspaceMap: {
+        "test-root": createWorkspaceMapEntry({ alias: [] }),
+        "application-a": createWorkspaceMapEntry({}),
+        "application-b": createWorkspaceMapEntry({}),
+        "library-a": createWorkspaceMapEntry({}),
+        "library-b": createWorkspaceMapEntry({}),
+        "library-c": createWorkspaceMapEntry({}),
       },
     });
 
@@ -93,6 +111,8 @@ describe("Test finding workspaces", () => {
         path: "",
         scripts: [],
         aliases: [],
+        dependsOn: [],
+        dependents: [],
       },
       workspaces: [
         {
@@ -102,6 +122,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("applications/applicationA"),
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "application-b",
@@ -110,6 +132,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("applications/applicationB"),
           scripts: ["all-workspaces", "application-b", "b-workspaces"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "library-a",
@@ -118,6 +142,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("libraries/libraryA"),
           scripts: ["a-workspaces", "all-workspaces", "library-a"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "library-b",
@@ -126,6 +152,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("libraries/libraryB"),
           scripts: ["all-workspaces", "b-workspaces", "library-b"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "library-c",
@@ -134,15 +162,17 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("libraries/nested/libraryC"),
           scripts: ["all-workspaces", "c-workspaces", "library-c"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
       ],
-      workspaceConfigMap: {
-        "test-root": resolveWorkspaceConfig({ alias: [] }),
-        "application-a": resolveWorkspaceConfig({}),
-        "application-b": resolveWorkspaceConfig({}),
-        "library-a": resolveWorkspaceConfig({}),
-        "library-b": resolveWorkspaceConfig({}),
-        "library-c": resolveWorkspaceConfig({}),
+      workspaceMap: {
+        "test-root": createWorkspaceMapEntry({ alias: [] }),
+        "application-a": createWorkspaceMapEntry({}),
+        "application-b": createWorkspaceMapEntry({}),
+        "library-a": createWorkspaceMapEntry({}),
+        "library-b": createWorkspaceMapEntry({}),
+        "library-c": createWorkspaceMapEntry({}),
       },
     });
 
@@ -159,6 +189,8 @@ describe("Test finding workspaces", () => {
         path: "",
         scripts: [],
         aliases: [],
+        dependsOn: [],
+        dependents: [],
       },
       workspaces: [
         {
@@ -168,6 +200,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("applications/applicationA"),
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "application-b",
@@ -176,6 +210,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("applications/applicationB"),
           scripts: ["all-workspaces", "application-b", "b-workspaces"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "library-a",
@@ -184,6 +220,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("libraries/libraryA"),
           scripts: ["a-workspaces", "all-workspaces", "library-a"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "library-b",
@@ -192,6 +230,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("libraries/libraryB"),
           scripts: ["all-workspaces", "b-workspaces", "library-b"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "library-c",
@@ -200,15 +240,17 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("libraries/nested/libraryC"),
           scripts: ["all-workspaces", "c-workspaces", "library-c"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
       ],
-      workspaceConfigMap: {
-        "test-root": resolveWorkspaceConfig({ alias: [] }),
-        "application-a": resolveWorkspaceConfig({}),
-        "application-b": resolveWorkspaceConfig({}),
-        "library-a": resolveWorkspaceConfig({}),
-        "library-b": resolveWorkspaceConfig({}),
-        "library-c": resolveWorkspaceConfig({}),
+      workspaceMap: {
+        "test-root": createWorkspaceMapEntry({ alias: [] }),
+        "application-a": createWorkspaceMapEntry({}),
+        "application-b": createWorkspaceMapEntry({}),
+        "library-a": createWorkspaceMapEntry({}),
+        "library-b": createWorkspaceMapEntry({}),
+        "library-c": createWorkspaceMapEntry({}),
       },
     });
   });
@@ -226,6 +268,8 @@ describe("Test finding workspaces", () => {
         path: "",
         scripts: [],
         aliases: [],
+        dependsOn: [],
+        dependents: [],
       },
       workspaces: [
         {
@@ -235,6 +279,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("applications/applicationA"),
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "application-b",
@@ -243,6 +289,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("applications/applicationB"),
           scripts: ["all-workspaces", "application-b", "b-workspaces"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "library-a",
@@ -251,6 +299,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("libraries/libraryA"),
           scripts: ["a-workspaces", "all-workspaces", "library-a"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "library-b",
@@ -259,6 +309,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("libraries/libraryB"),
           scripts: ["all-workspaces", "b-workspaces", "library-b"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "library-c",
@@ -267,15 +319,17 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("libraries/nested/libraryC"),
           scripts: ["all-workspaces", "c-workspaces", "library-c"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
       ],
-      workspaceConfigMap: {
-        "test-root": resolveWorkspaceConfig({ alias: [] }),
-        "application-a": resolveWorkspaceConfig({}),
-        "application-b": resolveWorkspaceConfig({}),
-        "library-a": resolveWorkspaceConfig({}),
-        "library-b": resolveWorkspaceConfig({}),
-        "library-c": resolveWorkspaceConfig({}),
+      workspaceMap: {
+        "test-root": createWorkspaceMapEntry({ alias: [] }),
+        "application-a": createWorkspaceMapEntry({}),
+        "application-b": createWorkspaceMapEntry({}),
+        "library-a": createWorkspaceMapEntry({}),
+        "library-b": createWorkspaceMapEntry({}),
+        "library-c": createWorkspaceMapEntry({}),
       },
     });
   });
@@ -374,6 +428,8 @@ describe("Test finding workspaces", () => {
         path: "",
         scripts: [],
         aliases: [],
+        dependsOn: [],
+        dependents: [],
       },
       workspaces: [
         {
@@ -383,6 +439,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("applications/applicationA"),
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "application-1b",
@@ -391,6 +449,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("applications/applicationB"),
           scripts: ["all-workspaces", "application-b", "b-workspaces"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "library-1a",
@@ -399,6 +459,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("libraries/libraryA"),
           scripts: ["a-workspaces", "all-workspaces", "library-a"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "library-1b",
@@ -407,14 +469,16 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("libraries/libraryB"),
           scripts: ["all-workspaces", "b-workspaces", "library-b"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
       ],
-      workspaceConfigMap: {
-        "test-root": resolveWorkspaceConfig({ alias: [] }),
-        "application-1a": resolveWorkspaceConfig({}),
-        "application-1b": resolveWorkspaceConfig({}),
-        "library-1a": resolveWorkspaceConfig({}),
-        "library-1b": resolveWorkspaceConfig({}),
+      workspaceMap: {
+        "test-root": createWorkspaceMapEntry({ alias: [] }),
+        "application-1a": createWorkspaceMapEntry({}),
+        "application-1b": createWorkspaceMapEntry({}),
+        "library-1a": createWorkspaceMapEntry({}),
+        "library-1b": createWorkspaceMapEntry({}),
       },
     });
   });
@@ -432,6 +496,8 @@ describe("Test finding workspaces", () => {
         path: "",
         scripts: ["all-workspaces", "root-workspace"],
         aliases: ["my-root-alias"],
+        dependsOn: [],
+        dependents: [],
       },
       workspaces: [
         {
@@ -441,6 +507,8 @@ describe("Test finding workspaces", () => {
           path: "",
           scripts: ["all-workspaces", "root-workspace"],
           aliases: ["my-root-alias"],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "application-1a",
@@ -449,6 +517,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("applications/applicationA"),
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "application-1b",
@@ -457,6 +527,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("applications/applicationB"),
           scripts: ["all-workspaces", "application-b", "b-workspaces"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "library-1a",
@@ -465,6 +537,8 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("libraries/libraryA"),
           scripts: ["a-workspaces", "all-workspaces", "library-a"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
         {
           name: "library-1b",
@@ -473,14 +547,16 @@ describe("Test finding workspaces", () => {
           path: withWindowsPath("libraries/libraryB"),
           scripts: ["all-workspaces", "b-workspaces", "library-b"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
       ],
-      workspaceConfigMap: {
-        "test-root": resolveWorkspaceConfig({ alias: ["my-root-alias"] }),
-        "application-1a": resolveWorkspaceConfig({}),
-        "application-1b": resolveWorkspaceConfig({}),
-        "library-1a": resolveWorkspaceConfig({}),
-        "library-1b": resolveWorkspaceConfig({}),
+      workspaceMap: {
+        "test-root": createWorkspaceMapEntry({ alias: ["my-root-alias"] }),
+        "application-1a": createWorkspaceMapEntry({}),
+        "application-1b": createWorkspaceMapEntry({}),
+        "library-1a": createWorkspaceMapEntry({}),
+        "library-1b": createWorkspaceMapEntry({}),
       },
     });
   });

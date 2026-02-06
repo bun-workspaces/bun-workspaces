@@ -25,6 +25,8 @@ describe("CLI Log Level", () => {
           path: withWindowsPath("applications/applicationA"),
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
           aliases: [],
+          dependsOn: [],
+          dependents: [],
         },
       ]),
     );
@@ -54,6 +56,8 @@ describe("CLI Log Level", () => {
         path: withWindowsPath("applications/applicationA"),
         scripts: ["a-workspaces", "all-workspaces", "application-a"],
         aliases: [],
+        dependsOn: [],
+        dependents: [],
       }),
     );
 
@@ -192,6 +196,8 @@ application-a`,
         path: withWindowsPath("applications/applicationA"),
         scripts: ["a-workspaces", "all-workspaces", "application-a"],
         aliases: [],
+        dependsOn: [],
+        dependents: [],
       }),
     );
 

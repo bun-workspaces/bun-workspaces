@@ -94,6 +94,8 @@ describe("Test workspace pattern", () => {
         path: "packages/a",
         scripts: [],
         aliases: ["wsa"],
+        dependsOn: [],
+        dependents: [],
       },
       b: {
         name: "workspace-b",
@@ -102,6 +104,8 @@ describe("Test workspace pattern", () => {
         path: "packages/b",
         scripts: [],
         aliases: ["wsb"],
+        dependsOn: [],
+        dependents: [],
       },
       c: {
         name: "workspace-c",
@@ -110,6 +114,8 @@ describe("Test workspace pattern", () => {
         path: "packages/nested/c",
         scripts: [],
         aliases: ["wsc"],
+        dependsOn: [],
+        dependents: [],
       },
       d: {
         name: "workspace-d",
@@ -118,6 +124,8 @@ describe("Test workspace pattern", () => {
         path: "packages/nested/d",
         scripts: [],
         aliases: ["wsd"],
+        dependsOn: [],
+        dependents: [],
       },
     };
 

@@ -15,7 +15,7 @@ export const resolveWorkspaceDependencies = (
   includeRootWorkspace: boolean,
 ): Workspace[] => {
   const workspacePackages = Object.values(workspaceMap).filter(
-    ({ workspace }) => !includeRootWorkspace && !workspace.isRoot,
+    ({ workspace }) => includeRootWorkspace || !workspace.isRoot,
   );
 
   const workspacesWithDependencies = workspacePackages.map(

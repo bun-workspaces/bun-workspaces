@@ -29,7 +29,9 @@ const testProject = createMemoryProject({
       path: "my/test/workspace/path",
       matchPattern: "my/test/workspace/pattern/*",
       scripts: ["my-test-script"],
-      aliases: ["test-alias"]
+      aliases: ["test-alias"],
+      dependencies: [],
+      dependents: []
     }
   ]
 });

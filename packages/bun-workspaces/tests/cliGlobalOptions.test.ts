@@ -260,7 +260,7 @@ describe("Test CLI Global Options", () => {
         path: withWindowsPath("applications/applicationA"),
         scripts: ["a-workspaces", "all-workspaces", "application-a"],
         aliases: [],
-        dependsOn: [],
+        dependencies: [],
         dependents: [],
       },
       {
@@ -270,7 +270,7 @@ describe("Test CLI Global Options", () => {
         path: withWindowsPath("applications/applicationB"),
         scripts: ["all-workspaces", "application-b", "b-workspaces"],
         aliases: [],
-        dependsOn: [],
+        dependencies: [],
         dependents: [],
       },
       {
@@ -280,7 +280,7 @@ describe("Test CLI Global Options", () => {
         path: withWindowsPath("libraries/libraryA"),
         scripts: ["a-workspaces", "all-workspaces", "library-a"],
         aliases: [],
-        dependsOn: [],
+        dependencies: [],
         dependents: [],
       },
       {
@@ -290,7 +290,7 @@ describe("Test CLI Global Options", () => {
         path: withWindowsPath("libraries/libraryB"),
         scripts: ["all-workspaces", "b-workspaces", "library-b"],
         aliases: [],
-        dependsOn: [],
+        dependencies: [],
         dependents: [],
       },
     ];
@@ -303,7 +303,7 @@ describe("Test CLI Global Options", () => {
         path: "",
         scripts: ["all-workspaces", "root-workspace"],
         aliases: ["my-root-alias"],
-        dependsOn: [],
+        dependencies: [],
         dependents: [],
       },
       ...expectedWorkspaces,
@@ -342,7 +342,7 @@ describe("Test CLI Global Options", () => {
         path: withWindowsPath("applications/applicationA"),
         scripts: ["a-workspaces", "all-workspaces", "application-a"],
         aliases: ["appA"],
-        dependsOn: [],
+        dependencies: [],
         dependents: [],
       },
       {
@@ -352,7 +352,7 @@ describe("Test CLI Global Options", () => {
         path: withWindowsPath("applications/applicationB"),
         scripts: ["all-workspaces", "application-b", "b-workspaces"],
         aliases: ["appB"],
-        dependsOn: [],
+        dependencies: [],
         dependents: [],
       },
       {
@@ -362,7 +362,7 @@ describe("Test CLI Global Options", () => {
         path: withWindowsPath("libraries/libraryA"),
         scripts: ["a-workspaces", "all-workspaces", "library-a"],
         aliases: ["libA"],
-        dependsOn: [],
+        dependencies: [],
         dependents: [],
       },
       {
@@ -372,7 +372,7 @@ describe("Test CLI Global Options", () => {
         path: withWindowsPath("libraries/libraryB"),
         scripts: ["all-workspaces", "b-workspaces", "library-b"],
         aliases: ["libB"],
-        dependsOn: [],
+        dependencies: [],
         dependents: [],
       },
     ];
@@ -385,7 +385,7 @@ describe("Test CLI Global Options", () => {
         path: "",
         scripts: ["all-workspaces", "root-workspace"],
         aliases: ["my-root-alias"],
-        dependsOn: [],
+        dependencies: [],
         dependents: [],
       },
       ...expectedWithConfigFiles,

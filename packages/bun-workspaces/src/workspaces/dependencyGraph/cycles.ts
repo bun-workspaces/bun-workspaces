@@ -30,7 +30,7 @@ export const preventDependencyCycles = (
     inStack.add(name);
 
     const node = byName.get(name);
-    const deps = node?.dependsOn ?? [];
+    const deps = node?.dependencies ?? [];
 
     const result: string[][] = [];
 
@@ -84,9 +84,8 @@ export const preventDependencyCycles = (
     const dependencyWorkspace = workspaces.find((w) => w.name === dependency);
     const dependentWorkspace = workspaces.find((w) => w.name === dependent);
     if (dependencyWorkspace) {
-      dependencyWorkspace.dependsOn = dependencyWorkspace.dependsOn.filter(
-        (d) => d !== dependent,
-      );
+      dependencyWorkspace.dependencies =
+        dependencyWorkspace.dependencies.filter((d) => d !== dependent);
     }
     if (dependentWorkspace) {
       dependentWorkspace.dependents = dependentWorkspace.dependents.filter(

@@ -108,7 +108,13 @@ export const WORKSPACE_EXAMPLE = `
   scripts: ["my-script"],
 
   // Aliases defined in workspace configuration (see the Configuration section)
-  aliases: ["my-alias"]
+  aliases: ["my-alias"],
+
+  // Names of other workspaces that this workspace depends on
+  dependencies: ["my-dependency"],
+
+  // Names of other workspaces that depend on this workspace
+  dependents: ["my-dependent"],
 }
 `.trim();
 

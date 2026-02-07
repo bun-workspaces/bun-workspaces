@@ -13,7 +13,7 @@ export type Workspace = {
   /** Aliases assigned to the workspace via the `"workspaceAliases"` field in the config */
   aliases: string[];
   /** Names of workspaces that this workspace depends on */
-  dependsOn: string[];
+  dependencies: string[];
   /** Names of workspaces that depend on this workspace */
   dependents: string[];
 };

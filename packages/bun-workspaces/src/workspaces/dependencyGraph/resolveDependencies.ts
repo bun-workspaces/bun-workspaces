@@ -33,7 +33,7 @@ export const resolveWorkspaceDependencies = (
             dependencyVersion.startsWith("workspace:") &&
             workspaceMap[dependencyName]
           ) {
-            workspace.dependsOn.push(dependencyName);
+            workspace.dependencies.push(dependencyName);
             workspaceMap[dependencyName].workspace.dependents.push(
               workspace.name,
             );
@@ -45,7 +45,7 @@ export const resolveWorkspaceDependencies = (
   );
 
   return workspacesWithDependencies.map((workspace) => {
-    workspace.dependsOn = [...new Set(workspace.dependsOn)].sort();
+    workspace.dependencies = [...new Set(workspace.dependencies)].sort();
     workspace.dependents = [...new Set(workspace.dependents)].sort();
     return workspace;
   });

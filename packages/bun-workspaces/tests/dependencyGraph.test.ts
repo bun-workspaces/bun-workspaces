@@ -4,7 +4,7 @@ import { getProjectRoot } from "./testProjects";
 import { withWindowsPath } from "./util/windows";
 
 describe("Test dependency graph", () => {
-  test("findWorkspaces has expected dependsOn and dependents", () => {
+  test("findWorkspaces has expected dependencies and dependents", () => {
     const { workspaces } = findWorkspaces({
       rootDirectory: getProjectRoot("withDependenciesSimple"),
     });
@@ -17,7 +17,7 @@ describe("Test dependency graph", () => {
         matchPattern: "packages/*",
         scripts: [],
         aliases: [],
-        dependsOn: ["e"],
+        dependencies: ["e"],
         dependents: [],
       },
       {
@@ -27,7 +27,7 @@ describe("Test dependency graph", () => {
         matchPattern: "packages/*",
         scripts: [],
         aliases: [],
-        dependsOn: ["c-depends-e", "d-depends-e"],
+        dependencies: ["c-depends-e", "d-depends-e"],
         dependents: [],
       },
       {
@@ -37,7 +37,7 @@ describe("Test dependency graph", () => {
         matchPattern: "packages/*",
         scripts: [],
         aliases: [],
-        dependsOn: ["e"],
+        dependencies: ["e"],
         dependents: ["b-depends-cd"],
       },
       {
@@ -47,7 +47,7 @@ describe("Test dependency graph", () => {
         matchPattern: "packages/*",
         scripts: [],
         aliases: [],
-        dependsOn: ["e"],
+        dependencies: ["e"],
         dependents: ["b-depends-cd"],
       },
       {
@@ -57,7 +57,7 @@ describe("Test dependency graph", () => {
         matchPattern: "packages/*",
         scripts: [],
         aliases: [],
-        dependsOn: [],
+        dependencies: [],
         dependents: ["a-depends-e", "c-depends-e", "d-depends-e"],
       },
     ]);

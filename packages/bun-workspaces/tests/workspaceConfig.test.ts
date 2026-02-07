@@ -270,7 +270,7 @@ describe("Test workspace config", () => {
           name: "application-1a",
           path: withWindowsPath("applications/application-a"),
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
-          dependsOn: [],
+          dependencies: [],
           dependents: [],
         },
         {
@@ -280,7 +280,7 @@ describe("Test workspace config", () => {
           name: "application-1b",
           path: withWindowsPath("applications/application-b"),
           scripts: ["all-workspaces", "application-b", "b-workspaces"],
-          dependsOn: [],
+          dependencies: [],
           dependents: [],
         },
         {
@@ -290,7 +290,7 @@ describe("Test workspace config", () => {
           name: "library-1a",
           path: withWindowsPath("libraries/library-a"),
           scripts: ["a-workspaces", "all-workspaces", "library-a"],
-          dependsOn: [],
+          dependencies: [],
           dependents: [],
         },
         {
@@ -300,7 +300,7 @@ describe("Test workspace config", () => {
           name: "library-1b",
           path: withWindowsPath("libraries/library-b"),
           scripts: ["all-workspaces", "b-workspaces", "library-b"],
-          dependsOn: [],
+          dependencies: [],
           dependents: [],
         },
       ],
@@ -334,7 +334,7 @@ describe("Test workspace config", () => {
           name: "application-1a",
           path: withWindowsPath("applications/application-a"),
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
-          dependsOn: [],
+          dependencies: [],
           dependents: [],
         },
         {
@@ -344,7 +344,7 @@ describe("Test workspace config", () => {
           name: "application-1b",
           path: withWindowsPath("applications/application-b"),
           scripts: ["all-workspaces", "application-b", "b-workspaces"],
-          dependsOn: [],
+          dependencies: [],
           dependents: [],
         },
         {
@@ -354,7 +354,7 @@ describe("Test workspace config", () => {
           name: "library-1a",
           path: withWindowsPath("libraries/library-a"),
           scripts: ["a-workspaces", "all-workspaces", "library-a"],
-          dependsOn: [],
+          dependencies: [],
           dependents: [],
         },
         {
@@ -364,7 +364,7 @@ describe("Test workspace config", () => {
           name: "library-1b",
           path: withWindowsPath("libraries/library-b"),
           scripts: ["all-workspaces", "b-workspaces", "library-b"],
-          dependsOn: [],
+          dependencies: [],
           dependents: [],
         },
       ],
@@ -390,7 +390,7 @@ describe("Test workspace config", () => {
           name: "application-1a",
           path: withWindowsPath("applications/application-a"),
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
-          dependsOn: [],
+          dependencies: [],
           dependents: [],
         },
         {
@@ -400,7 +400,7 @@ describe("Test workspace config", () => {
           name: "application-1b",
           path: withWindowsPath("applications/application-b"),
           scripts: ["all-workspaces", "application-b", "b-workspaces"],
-          dependsOn: [],
+          dependencies: [],
           dependents: [],
         },
         {
@@ -410,7 +410,7 @@ describe("Test workspace config", () => {
           name: "application-1c",
           path: withWindowsPath("applications/application-c"),
           scripts: ["all-workspaces", "application-c", "c-workspaces"],
-          dependsOn: [],
+          dependencies: [],
           dependents: [],
         },
         {
@@ -420,7 +420,7 @@ describe("Test workspace config", () => {
           name: "library-1a",
           path: withWindowsPath("libraries/library-a"),
           scripts: ["a-workspaces", "all-workspaces", "library-a"],
-          dependsOn: [],
+          dependencies: [],
           dependents: [],
         },
         {
@@ -430,7 +430,7 @@ describe("Test workspace config", () => {
           name: "library-1b",
           path: withWindowsPath("libraries/library-b"),
           scripts: ["all-workspaces", "b-workspaces", "library-b"],
-          dependsOn: [],
+          dependencies: [],
           dependents: [],
         },
         {
@@ -440,7 +440,7 @@ describe("Test workspace config", () => {
           name: "library-1c",
           path: withWindowsPath("libraries/library-c"),
           scripts: ["all-workspaces", "c-workspaces", "library-c"],
-          dependsOn: [],
+          dependencies: [],
           dependents: [],
         },
       ],
@@ -516,7 +516,7 @@ describe("Test workspace config", () => {
         name: "application-1a",
         path: withWindowsPath("applications/application-a"),
         scripts: ["a-workspaces", "all-workspaces", "application-a"],
-        dependsOn: [],
+        dependencies: [],
         dependents: [],
       },
       {
@@ -526,7 +526,7 @@ describe("Test workspace config", () => {
         name: "application-1b",
         path: withWindowsPath("applications/application-b"),
         scripts: ["all-workspaces", "application-b", "b-workspaces"],
-        dependsOn: [],
+        dependencies: [],
         dependents: [],
       },
       {
@@ -536,7 +536,7 @@ describe("Test workspace config", () => {
         name: "application-1c",
         path: withWindowsPath("applications/application-c"),
         scripts: ["all-workspaces", "application-c", "c-workspaces"],
-        dependsOn: [],
+        dependencies: [],
         dependents: [],
       },
       {
@@ -546,7 +546,7 @@ describe("Test workspace config", () => {
         name: "library-1a",
         path: withWindowsPath("libraries/library-a"),
         scripts: ["a-workspaces", "all-workspaces", "library-a"],
-        dependsOn: [],
+        dependencies: [],
         dependents: [],
       },
       {
@@ -556,7 +556,7 @@ describe("Test workspace config", () => {
         name: "library-1b",
         path: withWindowsPath("libraries/library-b"),
         scripts: ["all-workspaces", "b-workspaces", "library-b"],
-        dependsOn: [],
+        dependencies: [],
         dependents: [],
       },
       {
@@ -566,7 +566,7 @@ describe("Test workspace config", () => {
         name: "library-1c",
         path: withWindowsPath("libraries/library-c"),
         scripts: ["all-workspaces", "c-workspaces", "library-c"],
-        dependsOn: [],
+        dependencies: [],
         dependents: [],
       },
     ]);

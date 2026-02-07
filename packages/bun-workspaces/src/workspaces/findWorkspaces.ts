@@ -152,7 +152,7 @@ export const findWorkspaces = ({
               .concat(workspaceConfig?.aliases ?? []),
           ),
         ],
-        dependsOn: [],
+        dependencies: [],
         dependents: [],
       };
 

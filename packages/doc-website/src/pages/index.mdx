@@ -63,6 +63,7 @@ See the [CLI Quick Start](/cli) and [API Quick Start](/api) for starting example
 
 <RequiredBunVersion className="home-bun-version bun-version" />
 
+
 You can install the package in your project or simply use `bunx bun-workspaces` to immediately use the latest version of the [CLI](/cli). Installation is required to use the [API](/api).
 
 <SyntaxHighlighter language="bash">
@@ -83,6 +84,8 @@ alias bw="bunx bun-workspaces"`}
 </SyntaxHighlighter>
 
 Examples in these docs will use the alias `bw` for `bunx bun-workspaces` for brevity.
+
+Note that you need to run `bun install` in your project for `bun-workspaces` to find your project's workspaces. This is because it reads `bun.lock`. This also means that if you update your workspaces, such as changing their name, you must run `bun install` for the change to reflect.
 
 <br/>
 _`bun-workspaces` is independent from the [Bun](https://bun.sh) project and is not affiliated with or endorsed by Anthropic. This project aims to enhance enhance the experience of Bun for its users._

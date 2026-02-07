@@ -1,6 +1,10 @@
 import { ENV_VARS_METADATA } from "../config/envVars";
 
 export const CLI_QUICKSTART = `
+# You can add this to .bashrc, .zshrc, or similar.
+# You can also invoke "bw" in your root package.json scripts.
+alias bw="bunx bun-workspaces"
+
 # List all workspaces in your project
 bw list-workspaces
 
@@ -29,9 +33,9 @@ bw run lint "alias:my-alias-pattern-*" "path:my-glob/**/*" # Use matching specif
 bw run lint --args="--my-appended-args" # Add args to each script call
 bw run lint --args="--my-arg=<workspaceName>" # Use the workspace name in args
 
-bw run "bun build" --inline --inline-name=build # Run an inline command
+bw run "bun build" --inline # Run an inline command via the Bun shell
 
-bw run lint --parallel # Run in parallel (default is "auto", the number of available CPUs)
+bw run lint --parallel # Run in parallel (default: "auto", the available CPU count)
 bw run lint --parallel=2 # Run in parallel with a max of 2 concurrent scripts
 
 # Show usage (you can pass --help to any command)

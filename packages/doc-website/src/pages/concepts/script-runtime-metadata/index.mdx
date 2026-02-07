@@ -14,12 +14,26 @@ import { ConceptsHeader } from "../../../lib/concepts/ConceptsHeader";
 
 <ConceptsHeader activeHref="scriptRuntimeMetadata" />
 
-When running scripts via the API or CLI, runtime metadata is available to be used in the script, which can be interpolated in an [inline script](/concepts/inline-scripts) or appended args, or it can be read from environment variables.
+When running scripts via the API or CLI, runtime metadata is available via either environment variables or interpolation
+in an [inline script](/concepts/inline-scripts) or appended args.
 
-## Examples
+The environment variables allow scripts to introspect metadata about the project, workspace, and script info.
 
-This example shows various uses of the runtime metadata for running the same file from all workspaces via an inline script, using the metadata in the script itself via environment variables,
-the inline command, and the `--args` (`-a`) passed.
+This same metadata can be referenced within in inline script commands and/or appended script args.
+
+## Example
+
+#### CLI:
+In this command, all workspaces will run the same script found at the project root, and the workspace name and path will be passed to the script as arguments.
+
+<SyntaxHighlighter language="bash">
+{`bw run "bun <projectPath>/my-script.ts" --inline \\
+\ \ --inline-name="my-script-name" \\
+\ \ --args="<workspaceName> <workspacePath>"`}
+</SyntaxHighlighter>
+
+The script itself could use metadata from the environment variables to dynamically change
+its behavior based on the workspace context passed to it:
 
 <SyntaxHighlighter language="typescript">
 {`// Contents of my-script.ts (in project root)
@@ -33,12 +47,8 @@ console.log(process.env.${getScriptRuntimeMetadataConfig("workspaceRelativePath"
 console.log(process.env.${getScriptRuntimeMetadataConfig("scriptName").envVarName});`}
 </SyntaxHighlighter>
 
-#### CLI:
-<SyntaxHighlighter language="bash">
-{`bw run "bun <projectPath>/my-script.ts" -i -I "my-script-name" -a "<scriptName>"`}
-</SyntaxHighlighter>
-
 #### API:
+The same as the above CLI example using the TypeScript API:
 <SyntaxHighlighter language="typescript">
 {`
 import { createFileSystemProject } from 'bun-workspaces';
@@ -50,7 +60,7 @@ ${"  "}rootDirectory: ".",
 project.runScriptAcrossWorkspaces({
 ${"  "}workspacePatterns: ["*"],
 ${"  "}script: "bun <projectPath>/my-script.ts",
-${"  "}args: "<scriptName>",
+${"  "}args: "<workspaceName> <workspacePath>",
 ${"  "}inline: { scriptName: "my-script-name" },
 });`}
 </SyntaxHighlighter>

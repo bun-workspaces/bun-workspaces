@@ -167,7 +167,7 @@ library-1b`,
       expect(emptyWorkspacesResult.exitCode).toBe(1);
       assertOutputMatches(
         emptyWorkspacesResult.stderr.sanitizedCompactLines,
-        `No bun.lock found at ${withWindowsPath(getProjectRoot("emptyWorkspaces"))}. Check that this is the directory of your project and that you've ran 'bun install'.` +
+        `No bun.lock found at ${withWindowsPath(getProjectRoot("emptyWorkspaces"))}. Check that this is the directory of your project and that you've ran 'bun install'. ` +
           "If you have ran 'bun install', you may simply have no workspaces or dependencies in your project.",
       );
 
@@ -389,7 +389,7 @@ Script: library-b
       expect(emptyWorkspacesResult.exitCode).toBe(1);
       assertOutputMatches(
         emptyWorkspacesResult.stderr.sanitizedCompactLines,
-        `No bun.lock found at ${withWindowsPath(getProjectRoot("emptyWorkspaces"))}. Check that this is the directory of your project and that you've ran 'bun install'.` +
+        `No bun.lock found at ${withWindowsPath(getProjectRoot("emptyWorkspaces"))}. Check that this is the directory of your project and that you've ran 'bun install'. ` +
           "If you have ran 'bun install', you may simply have no workspaces or dependencies in your project.",
       );
 
@@ -729,7 +729,8 @@ Script: library-b
     expect(result.exitCode).toBe(1);
     assertOutputMatches(
       result.stderr.sanitizedCompactLines,
-      `No bun.lock found at ${withWindowsPath(getProjectRoot("invalidBadJson"))}. Check that this is the directory of your project and that you've ran 'bun install'.If you have ran 'bun install', you may simply have no workspaces or dependencies in your project.`,
+      `No bun.lock found at ${withWindowsPath(getProjectRoot("invalidBadJson"))}. Check that this is the directory of your project and that you've ran 'bun install'. ` +
+        "If you have ran 'bun install', you may simply have no workspaces or dependencies in your project.",
     );
   });
 });

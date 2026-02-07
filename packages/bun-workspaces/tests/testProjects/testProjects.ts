@@ -58,6 +58,7 @@ const TEST_PROJECTS = {
   withDependenciesSimple: "withDependencies/simple",
   withDependenciesDirectCycle: "withDependencies/withDirectCycle",
   withDependenciesIndirectCycle: "withDependencies/withIndirectCycle",
+  recursiveScript: "recursiveScript",
 };
 
 export type TestProjectName = keyof typeof TEST_PROJECTS;

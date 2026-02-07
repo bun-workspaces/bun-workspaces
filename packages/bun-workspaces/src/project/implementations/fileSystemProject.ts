@@ -15,6 +15,7 @@ import {
   type RunScriptsParallelOptions,
   type ScriptRuntimeMetadata,
 } from "../../runScript";
+import { checkIsRecursiveScript } from "../../runScript/recursion";
 import {
   resolveScriptShell,
   type ScriptShellOption,
@@ -215,6 +216,12 @@ class _FileSystemProject extends ProjectBase implements Project {
         ) + (args ? " " + args : "")
       : options.script;
 
+    if (!options.inline && checkIsRecursiveScript(workspace.name, script)) {
+      throw new PROJECT_ERRORS.RecursiveWorkspaceScript(
+        `Script "${script}" recursively calls itself in workspace "${workspace.name}"`,
+      );
+    }
+
     const scriptCommand = options.inline
       ? {
           command: script,
@@ -281,6 +288,15 @@ class _FileSystemProject extends ProjectBase implements Project {
         isSingleMatchNotFound
           ? `Workspace name or alias not found: ${JSON.stringify(options?.workspacePatterns?.[0])}`
           : `No matching workspaces found with script ${JSON.stringify(options.script)}`,
+      );
+    }
+
+    const recursiveWorkspace = workspaces.find((workspace) =>
+      checkIsRecursiveScript(workspace.name, options.script),
+    );
+    if (recursiveWorkspace && !options.inline) {
+      throw new PROJECT_ERRORS.RecursiveWorkspaceScript(
+        `Script "${options.script}" recursively calls itself in workspace "${recursiveWorkspace.name}"`,
       );
     }
 

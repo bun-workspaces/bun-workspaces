@@ -1,0 +1,6 @@
+{
+  "name": "package-a",
+  "scripts": {
+    "test-script": "bw --cwd=../../ run test-script package-a"
+  }
+}

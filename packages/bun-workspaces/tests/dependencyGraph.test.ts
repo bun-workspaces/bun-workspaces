@@ -1,6 +1,7 @@
 import { describe, test, expect } from "bun:test";
 import { findWorkspaces } from "../src/workspaces";
 import { getProjectRoot } from "./testProjects";
+import { withWindowsPath } from "./util/windows";
 
 describe("Test dependency graph", () => {
   test("findWorkspaces has expected dependsOn and dependents", () => {
@@ -12,7 +13,7 @@ describe("Test dependency graph", () => {
       {
         name: "a-depends-e",
         isRoot: false,
-        path: "packages/a-depends-e",
+        path: withWindowsPath("packages/a-depends-e"),
         matchPattern: "packages/*",
         scripts: [],
         aliases: [],
@@ -22,7 +23,7 @@ describe("Test dependency graph", () => {
       {
         name: "b-depends-cd",
         isRoot: false,
-        path: "packages/b-depends-cd",
+        path: withWindowsPath("packages/b-depends-cd"),
         matchPattern: "packages/*",
         scripts: [],
         aliases: [],
@@ -32,7 +33,7 @@ describe("Test dependency graph", () => {
       {
         name: "c-depends-e",
         isRoot: false,
-        path: "packages/c-depends-e",
+        path: withWindowsPath("packages/c-depends-e"),
         matchPattern: "packages/*",
         scripts: [],
         aliases: [],
@@ -42,7 +43,7 @@ describe("Test dependency graph", () => {
       {
         name: "d-depends-e",
         isRoot: false,
-        path: "packages/d-depends-e",
+        path: withWindowsPath("packages/d-depends-e"),
         matchPattern: "packages/*",
         scripts: [],
         aliases: [],
@@ -52,7 +53,7 @@ describe("Test dependency graph", () => {
       {
         name: "e",
         isRoot: false,
-        path: "packages/e",
+        path: withWindowsPath("packages/e"),
         matchPattern: "packages/*",
         scripts: [],
         aliases: [],

@@ -53,9 +53,7 @@ The same as the above CLI example using the TypeScript API:
 {`
 import { createFileSystemProject } from 'bun-workspaces';
 
-const project = createFileSystemProject({
-${"  "}rootDirectory: ".",
-});
+const project = createFileSystemProject();
 
 project.runScriptAcrossWorkspaces({
 ${"  "}workspacePatterns: ["*"],

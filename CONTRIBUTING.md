@@ -24,6 +24,8 @@ PRs that have issues with the GitHub action checks will not be merged, so please
 
 More substantial proposals may be better suited for discussion via issues before any implementation.
 
+Even though it's more tailored for AI, reading the [CLAUDE.md](./CLAUDE.md) file may be good for getting a more detailed overview of the project's development practices and features not covered in the README.
+
 ## Going Forward
 
 This constrained contribution phase is temporary. Early in a project’s life, maintaining a single-developer flow helps establish cohesion, consistency, and uniform style while giving the freedom to experiment with the internals until the code finds the right shape.

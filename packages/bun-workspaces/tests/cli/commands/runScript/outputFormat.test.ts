@@ -1,16 +1,6 @@
 import { test, expect, describe } from "bun:test";
 import { assertOutputMatches, setupCliTest } from "../../../util/cliTestUtils";
 
-const NO_PREFIX_ALL_WORKSPACES_OUTPUT = `script for all workspaces
-script for all workspaces
-script for all workspaces
-script for all workspaces
-✅ application-1a: all-workspaces
-✅ application-1b: all-workspaces
-✅ library-1a: all-workspaces
-✅ library-1b: all-workspaces
-4 scripts ran successfully`;
-
 describe("CLI Run Script (output format)", () => {
   test("--no-prefix strips prefix from script output", async () => {
     const result = await setupCliTest({
@@ -19,7 +9,15 @@ describe("CLI Run Script (output format)", () => {
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,
-      NO_PREFIX_ALL_WORKSPACES_OUTPUT,
+      `script for all workspaces
+script for all workspaces
+script for all workspaces
+script for all workspaces
+✅ application-1a: all-workspaces
+✅ application-1b: all-workspaces
+✅ library-1a: all-workspaces
+✅ library-1b: all-workspaces
+4 scripts ran successfully`,
     );
   });
 
@@ -30,7 +28,15 @@ describe("CLI Run Script (output format)", () => {
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,
-      NO_PREFIX_ALL_WORKSPACES_OUTPUT,
+      `script for all workspaces
+script for all workspaces
+script for all workspaces
+script for all workspaces
+✅ application-1a: all-workspaces
+✅ application-1b: all-workspaces
+✅ library-1a: all-workspaces
+✅ library-1b: all-workspaces
+4 scripts ran successfully`,
     );
   });
 

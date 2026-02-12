@@ -1,18 +1,6 @@
 import { test, expect, describe } from "bun:test";
 import { setupCliTest, assertOutputMatches } from "../../../util/cliTestUtils";
 
-const INLINE_FOUR_SUCCESS = `✅ application-1a: (inline)
-✅ application-1b: (inline)
-✅ library-1a: (inline)
-✅ library-1b: (inline)
-4 scripts ran successfully`;
-
-const INLINE_ECHO_WORKSPACE_PREFIX = `[application-1a:(inline)] this is my inline script for application-1a
-[application-1b:(inline)] this is my inline script for application-1b
-[library-1a:(inline)] this is my inline script for library-1a
-[library-1b:(inline)] this is my inline script for library-1b
-`;
-
 describe("CLI Run Script (inline scripts)", () => {
   test("--inline runs inline script with <workspaceName> interpolation", async () => {
     const { run } = setupCliTest({
@@ -26,7 +14,15 @@ describe("CLI Run Script (inline scripts)", () => {
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,
-      `${INLINE_ECHO_WORKSPACE_PREFIX}${INLINE_FOUR_SUCCESS}`,
+      `[application-1a:(inline)] this is my inline script for application-1a
+[application-1b:(inline)] this is my inline script for application-1b
+[library-1a:(inline)] this is my inline script for library-1a
+[library-1b:(inline)] this is my inline script for library-1b
+✅ application-1a: (inline)
+✅ application-1b: (inline)
+✅ library-1a: (inline)
+✅ library-1b: (inline)
+4 scripts ran successfully`,
     );
   });
 
@@ -42,7 +38,15 @@ describe("CLI Run Script (inline scripts)", () => {
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,
-      `${INLINE_ECHO_WORKSPACE_PREFIX}${INLINE_FOUR_SUCCESS}`,
+      `[application-1a:(inline)] this is my inline script for application-1a
+[application-1b:(inline)] this is my inline script for application-1b
+[library-1a:(inline)] this is my inline script for library-1a
+[library-1b:(inline)] this is my inline script for library-1b
+✅ application-1a: (inline)
+✅ application-1b: (inline)
+✅ library-1a: (inline)
+✅ library-1b: (inline)
+4 scripts ran successfully`,
     );
   });
 
@@ -63,7 +67,11 @@ describe("CLI Run Script (inline scripts)", () => {
 [application-1b:(inline)] this is my inline script for application-1b test-args-application-1b
 [library-1a:(inline)] this is my inline script for library-1a test-args-library-1a
 [library-1b:(inline)] this is my inline script for library-1b test-args-library-1b
-${INLINE_FOUR_SUCCESS}`,
+✅ application-1a: (inline)
+✅ application-1b: (inline)
+✅ library-1a: (inline)
+✅ library-1b: (inline)
+4 scripts ran successfully`,
     );
   });
 
@@ -85,18 +93,16 @@ ${INLINE_FOUR_SUCCESS}`,
 this is my inline script for application-1b test-args-application-1b
 this is my inline script for library-1a test-args-library-1a
 this is my inline script for library-1b test-args-library-1b
-${INLINE_FOUR_SUCCESS}`,
+✅ application-1a: (inline)
+✅ application-1b: (inline)
+✅ library-1a: (inline)
+✅ library-1b: (inline)
+4 scripts ran successfully`,
     );
   });
 });
 
 describe("CLI Run Script (named inline scripts)", () => {
-  const namedInlineSuccess = `✅ application-1a: test-echo-inline
-✅ application-1b: test-echo-inline
-✅ library-1a: test-echo-inline
-✅ library-1b: test-echo-inline
-4 scripts ran successfully`;
-
   test("--inline-name sets script name in output", async () => {
     const { run } = setupCliTest({
       testProject: "runScriptWithEchoArgs",
@@ -114,7 +120,11 @@ describe("CLI Run Script (named inline scripts)", () => {
 [application-1b:test-echo-inline] this is my inline script for application-1b
 [library-1a:test-echo-inline] this is my inline script for library-1a
 [library-1b:test-echo-inline] this is my inline script for library-1b
-${namedInlineSuccess}`,
+✅ application-1a: test-echo-inline
+✅ application-1b: test-echo-inline
+✅ library-1a: test-echo-inline
+✅ library-1b: test-echo-inline
+4 scripts ran successfully`,
     );
   });
 
@@ -135,7 +145,11 @@ ${namedInlineSuccess}`,
 [application-1b:test-echo-inline] this is my inline script for application-1b
 [library-1a:test-echo-inline] this is my inline script for library-1a
 [library-1b:test-echo-inline] this is my inline script for library-1b
-${namedInlineSuccess}`,
+✅ application-1a: test-echo-inline
+✅ application-1b: test-echo-inline
+✅ library-1a: test-echo-inline
+✅ library-1b: test-echo-inline
+4 scripts ran successfully`,
     );
   });
 });

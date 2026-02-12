@@ -3,13 +3,6 @@ import { test, expect, describe } from "bun:test";
 import { getUserEnvVar } from "../../../../src/config/userEnvVars";
 import { setupCliTest, assertOutputMatches } from "../../../util/cliTestUtils";
 
-const DELAY_SUCCESS_FOOTER = `✅ fifth: test-delay
-✅ first: test-delay
-✅ fourth: test-delay
-✅ second: test-delay
-✅ third: test-delay
-5 scripts ran successfully`;
-
 describe("CLI Run Script (parallel)", () => {
   describe("series vs parallel", () => {
     test("default runs scripts in series", async () => {
@@ -25,7 +18,12 @@ describe("CLI Run Script (parallel)", () => {
 [fourth:test-delay] fourth
 [second:test-delay] second
 [third:test-delay] third
-${DELAY_SUCCESS_FOOTER}`,
+✅ fifth: test-delay
+✅ first: test-delay
+✅ fourth: test-delay
+✅ second: test-delay
+✅ third: test-delay
+5 scripts ran successfully`,
       );
     });
 
@@ -42,7 +40,12 @@ ${DELAY_SUCCESS_FOOTER}`,
 [third:test-delay] third
 [fourth:test-delay] fourth
 [fifth:test-delay] fifth
-${DELAY_SUCCESS_FOOTER}`,
+✅ fifth: test-delay
+✅ first: test-delay
+✅ fourth: test-delay
+✅ second: test-delay
+✅ third: test-delay
+5 scripts ran successfully`,
       );
     });
 
@@ -59,7 +62,12 @@ ${DELAY_SUCCESS_FOOTER}`,
 [third:test-delay] third
 [fourth:test-delay] fourth
 [fifth:test-delay] fifth
-${DELAY_SUCCESS_FOOTER}`,
+✅ fifth: test-delay
+✅ first: test-delay
+✅ fourth: test-delay
+✅ second: test-delay
+✅ third: test-delay
+5 scripts ran successfully`,
       );
     });
   });

@@ -1,24 +1,6 @@
 import { test, expect, describe } from "bun:test";
 import { setupCliTest, assertOutputMatches } from "../../../util/cliTestUtils";
 
-const ALL_FOUR_SUCCESS = `✅ application-1a: test-echo
-✅ application-1b: test-echo
-✅ library-1a: test-echo
-✅ library-1b: test-echo
-4 scripts ran successfully`;
-
-const ECHO_LITERAL_PREFIX = `[application-1a:test-echo] passed args: test-args
-[application-1b:test-echo] passed args: test-args
-[library-1a:test-echo] passed args: test-args
-[library-1b:test-echo] passed args: test-args
-`;
-
-const ECHO_LITERAL_NO_PREFIX = `passed args: test-args
-passed args: test-args
-passed args: test-args
-passed args: test-args
-`;
-
 describe("CLI Run Script (args)", () => {
   describe("--args / -a", () => {
     test("--args passes literal to script", async () => {
@@ -29,7 +11,15 @@ describe("CLI Run Script (args)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
-        `${ECHO_LITERAL_PREFIX}${ALL_FOUR_SUCCESS}`,
+        `[application-1a:test-echo] passed args: test-args
+[application-1b:test-echo] passed args: test-args
+[library-1a:test-echo] passed args: test-args
+[library-1b:test-echo] passed args: test-args
+✅ application-1a: test-echo
+✅ application-1b: test-echo
+✅ library-1a: test-echo
+✅ library-1b: test-echo
+4 scripts ran successfully`,
       );
     });
 
@@ -41,7 +31,15 @@ describe("CLI Run Script (args)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
-        `${ECHO_LITERAL_PREFIX}${ALL_FOUR_SUCCESS}`,
+        `[application-1a:test-echo] passed args: test-args
+[application-1b:test-echo] passed args: test-args
+[library-1a:test-echo] passed args: test-args
+[library-1b:test-echo] passed args: test-args
+✅ application-1a: test-echo
+✅ application-1b: test-echo
+✅ library-1a: test-echo
+✅ library-1b: test-echo
+4 scripts ran successfully`,
       );
     });
 
@@ -61,7 +59,11 @@ describe("CLI Run Script (args)", () => {
 [application-1b:test-echo] passed args: hello there application-1b
 [library-1a:test-echo] passed args: hello there library-1a
 [library-1b:test-echo] passed args: hello there library-1b
-${ALL_FOUR_SUCCESS}`,
+✅ application-1a: test-echo
+✅ application-1b: test-echo
+✅ library-1a: test-echo
+✅ library-1b: test-echo
+4 scripts ran successfully`,
       );
     });
 
@@ -81,7 +83,11 @@ ${ALL_FOUR_SUCCESS}`,
 [application-1b:test-echo] passed args: application-1b and application-1b and application-1b
 [library-1a:test-echo] passed args: library-1a and library-1a and library-1a
 [library-1b:test-echo] passed args: library-1b and library-1b and library-1b
-${ALL_FOUR_SUCCESS}`,
+✅ application-1a: test-echo
+✅ application-1b: test-echo
+✅ library-1a: test-echo
+✅ library-1b: test-echo
+4 scripts ran successfully`,
       );
     });
 
@@ -122,7 +128,15 @@ ${ALL_FOUR_SUCCESS}`,
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
-        `${ECHO_LITERAL_NO_PREFIX}${ALL_FOUR_SUCCESS}`,
+        `passed args: test-args
+passed args: test-args
+passed args: test-args
+passed args: test-args
+✅ application-1a: test-echo
+✅ application-1b: test-echo
+✅ library-1a: test-echo
+✅ library-1b: test-echo
+4 scripts ran successfully`,
       );
     });
 
@@ -143,7 +157,11 @@ ${ALL_FOUR_SUCCESS}`,
 passed args: application-1b
 passed args: library-1a
 passed args: library-1b
-${ALL_FOUR_SUCCESS}`,
+✅ application-1a: test-echo
+✅ application-1b: test-echo
+✅ library-1a: test-echo
+✅ library-1b: test-echo
+4 scripts ran successfully`,
       );
     });
   });
@@ -167,7 +185,11 @@ ${ALL_FOUR_SUCCESS}`,
 [application-1b:test-echo] passed args: test-args --another-arg
 [library-1a:test-echo] passed args: test-args --another-arg
 [library-1b:test-echo] passed args: test-args --another-arg
-${ALL_FOUR_SUCCESS}`,
+✅ application-1a: test-echo
+✅ application-1b: test-echo
+✅ library-1a: test-echo
+✅ library-1b: test-echo
+4 scripts ran successfully`,
       );
     });
 

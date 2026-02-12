@@ -1,12 +1,6 @@
 import { test, expect, describe } from "bun:test";
 import { setupCliTest, assertOutputMatches } from "../../../util/cliTestUtils";
 
-const A_WORKSPACES_OUTPUT = `[application-1a:a-workspaces] script for a workspaces
-[library-1a:a-workspaces] script for a workspaces
-✅ application-1a: a-workspaces
-✅ library-1a: a-workspaces
-2 scripts ran successfully`;
-
 describe("CLI Run Script (positional vs flag args)", () => {
   describe("script name: option vs positional", () => {
     test("--script runs script by name", async () => {
@@ -15,7 +9,11 @@ describe("CLI Run Script (positional vs flag args)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
-        A_WORKSPACES_OUTPUT,
+        `[application-1a:a-workspaces] script for a workspaces
+[library-1a:a-workspaces] script for a workspaces
+✅ application-1a: a-workspaces
+✅ library-1a: a-workspaces
+2 scripts ran successfully`,
       );
     });
 
@@ -25,7 +23,11 @@ describe("CLI Run Script (positional vs flag args)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
-        A_WORKSPACES_OUTPUT,
+        `[application-1a:a-workspaces] script for a workspaces
+[library-1a:a-workspaces] script for a workspaces
+✅ application-1a: a-workspaces
+✅ library-1a: a-workspaces
+2 scripts ran successfully`,
       );
     });
 
@@ -35,7 +37,11 @@ describe("CLI Run Script (positional vs flag args)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
-        A_WORKSPACES_OUTPUT,
+        `[application-1a:a-workspaces] script for a workspaces
+[library-1a:a-workspaces] script for a workspaces
+✅ application-1a: a-workspaces
+✅ library-1a: a-workspaces
+2 scripts ran successfully`,
       );
     });
   });

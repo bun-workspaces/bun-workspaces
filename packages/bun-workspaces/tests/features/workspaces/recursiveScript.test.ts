@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
-import { createFileSystemProject } from "../../src";
-import { getProjectRoot } from "../fixtures/testProjects";
+import { createFileSystemProject } from "../../../src";
+import { getProjectRoot } from "../../fixtures/testProjects";
 
 describe("Recursive Script", () => {
   test("Recursive scripts are detected and prevented", async () => {

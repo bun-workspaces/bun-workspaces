@@ -5,11 +5,11 @@ import {
   parseBunLock,
   readBunLockfile,
   type RelevantBunLock,
-} from "../../src/internal/bun/bunLock";
+} from "../../../src/internal/bun/bunLock";
 
 const rootDirectory = path.join(
   __dirname,
-  "../../../.." + (process.env.IS_BUILD === "true" ? "/.." : ""),
+  "../../../../.." + (process.env.IS_BUILD === "true" ? "/.." : ""),
 );
 
 describe("bun.lock utilities", () => {

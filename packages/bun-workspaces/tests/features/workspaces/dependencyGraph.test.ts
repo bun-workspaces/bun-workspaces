@@ -1,7 +1,7 @@
 import { describe, test, expect } from "bun:test";
-import { findWorkspaces } from "../../src/workspaces";
-import { getProjectRoot } from "../fixtures/testProjects";
-import { makeTestWorkspace } from "../util/testData";
+import { findWorkspaces } from "../../../src/workspaces";
+import { getProjectRoot } from "../../fixtures/testProjects";
+import { makeTestWorkspace } from "../../util/testData";
 
 describe("Test dependency graph", () => {
   test("findWorkspaces has expected dependencies and dependents", () => {

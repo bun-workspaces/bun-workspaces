@@ -1,9 +1,9 @@
 import { expect, test, describe } from "bun:test";
-import { BUN_LOCK_ERRORS } from "../../src/internal/bun";
-import { WORKSPACE_ERRORS } from "../../src/workspaces/errors";
-import { findWorkspaces } from "../../src/workspaces/findWorkspaces";
-import { getProjectRoot } from "../fixtures/testProjects";
-import { makeTestWorkspace, makeWorkspaceMapEntry } from "../util/testData";
+import { BUN_LOCK_ERRORS } from "../../../src/internal/bun";
+import { WORKSPACE_ERRORS } from "../../../src/workspaces/errors";
+import { findWorkspaces } from "../../../src/workspaces/findWorkspaces";
+import { getProjectRoot } from "../../fixtures/testProjects";
+import { makeTestWorkspace, makeWorkspaceMapEntry } from "../../util/testData";
 
 const defaultRootWorkspace = makeTestWorkspace({
   name: "test-root",

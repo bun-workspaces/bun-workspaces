@@ -2,8 +2,8 @@ import { expect, test, describe } from "bun:test";
 import {
   matchWorkspacesByPatterns,
   parseWorkspacePattern,
-} from "../../src/workspaces/workspacePattern";
-import { makeTestWorkspace } from "../util/testData";
+} from "../../../src/workspaces/workspacePattern";
+import { makeTestWorkspace } from "../../util/testData";
 
 describe("Test workspace pattern", () => {
   test("parseWorkspacePattern", () => {

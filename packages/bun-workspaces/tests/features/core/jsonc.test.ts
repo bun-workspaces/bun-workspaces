@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { describe, test, expect } from "bun:test";
-import { isJSONObject, parseJSONC } from "../../src/internal/core";
+import { isJSONObject, parseJSONC } from "../../../src/internal/core";
 
 // Note that the parser is based on the package strip-json-comments. Tests are here for sanity.
 
@@ -98,7 +98,7 @@ describe("JSONC parser works", () => {
           fs.readFileSync(
             path.join(
               __dirname,
-              "../../../../",
+              "../../../../../",
               process.env.IS_BUILD === "true" ? "../" : "",
               "bun.lock",
             ),

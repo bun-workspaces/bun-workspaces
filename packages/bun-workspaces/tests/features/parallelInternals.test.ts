@@ -1,6 +1,6 @@
 import { availableParallelism } from "os";
 import { expect, test, describe } from "bun:test";
-import { determineParallelMax } from "../src/runScript/parallel";
+import { determineParallelMax } from "../../src/runScript/parallel";
 
 describe("Parallelism core logic", () => {
   test("determineParallelMax", () => {

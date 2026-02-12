@@ -1,18 +1,18 @@
 import path from "path";
 import { expect, test, describe, spyOn } from "bun:test";
-import { loadConfigFile } from "../src/config";
-import { InvalidJSONError } from "../src/config/util/loadConfig";
+import { loadConfigFile } from "../../src/config";
+import { InvalidJSONError } from "../../src/config/util/loadConfig";
 import {
   loadWorkspaceConfig,
   validateWorkspaceConfig,
   WORKSPACE_CONFIG_ERRORS,
-} from "../src/config/workspaceConfig";
-import { logger } from "../src/internal/logger";
-import { _internalCreateFileSystemProject } from "../src/project";
-import { findWorkspaces } from "../src/workspaces";
-import { createWorkspaceMapEntry } from "./findWorkspaces.test";
-import { getProjectRoot } from "./fixtures/testProjects";
-import { withWindowsPath } from "./util/windows";
+} from "../../src/config/workspaceConfig";
+import { logger } from "../../src/internal/logger";
+import { _internalCreateFileSystemProject } from "../../src/project";
+import { findWorkspaces } from "../../src/workspaces";
+import { createWorkspaceMapEntry } from "../features/findWorkspaces.test";
+import { getProjectRoot } from "../fixtures/testProjects";
+import { withWindowsPath } from "../util/windows";
 
 /**
  * ########

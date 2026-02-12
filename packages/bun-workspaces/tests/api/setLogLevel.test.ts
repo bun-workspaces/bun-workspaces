@@ -1,6 +1,6 @@
 import { stripANSI } from "bun";
 import { test, describe, expect, spyOn, beforeAll, afterAll } from "bun:test";
-import { logger, setLogLevel } from "../src/internal/logger";
+import { logger, setLogLevel } from "../../src/internal/logger";
 
 describe("setLogLevel", () => {
   /* eslint-disable */

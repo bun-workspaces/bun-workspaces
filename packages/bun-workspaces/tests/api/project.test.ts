@@ -1,11 +1,14 @@
 import path from "path";
 import { expect, test, describe } from "bun:test";
-import type { Workspace, WorkspaceScriptMetadata } from "../src";
-import { createFileSystemProject, createMemoryProject } from "../src/project";
-import { PROJECT_ERRORS } from "../src/project/errors";
-import { WORKSPACE_ERRORS } from "../src/workspaces";
-import { getProjectRoot } from "./fixtures/testProjects";
-import { withWindowsPath } from "./util/windows";
+import type { Workspace, WorkspaceScriptMetadata } from "../../src";
+import {
+  createFileSystemProject,
+  createMemoryProject,
+} from "../../src/project";
+import { PROJECT_ERRORS } from "../../src/project/errors";
+import { WORKSPACE_ERRORS } from "../../src/workspaces";
+import { getProjectRoot } from "../fixtures/testProjects";
+import { withWindowsPath } from "../util/windows";
 
 const createDefaultProject = () =>
   createFileSystemProject({

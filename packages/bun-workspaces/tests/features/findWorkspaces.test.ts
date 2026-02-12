@@ -1,10 +1,10 @@
 import { expect, test, describe } from "bun:test";
-import { resolveWorkspaceConfig, type WorkspaceConfig } from "../src/config";
-import { BUN_LOCK_ERRORS } from "../src/internal/bun";
-import { WORKSPACE_ERRORS } from "../src/workspaces/errors";
-import { findWorkspaces } from "../src/workspaces/findWorkspaces";
-import { getProjectRoot } from "./fixtures/testProjects";
-import { withWindowsPath } from "./util/windows";
+import { resolveWorkspaceConfig, type WorkspaceConfig } from "../../src/config";
+import { BUN_LOCK_ERRORS } from "../../src/internal/bun";
+import { WORKSPACE_ERRORS } from "../../src/workspaces/errors";
+import { findWorkspaces } from "../../src/workspaces/findWorkspaces";
+import { getProjectRoot } from "../fixtures/testProjects";
+import { withWindowsPath } from "../util/windows";
 
 export const createWorkspaceMapEntry = (config: WorkspaceConfig) => ({
   workspace: expect.any(Object),

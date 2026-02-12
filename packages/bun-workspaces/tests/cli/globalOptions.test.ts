@@ -1,13 +1,13 @@
 import path from "path";
 import { test, expect, describe } from "bun:test";
-import { getUserEnvVarName } from "../src/config/userEnvVars";
-import { getProjectRoot } from "./fixtures/testProjects";
+import { getUserEnvVarName } from "../../src/config/userEnvVars";
+import { getProjectRoot } from "../fixtures/testProjects";
 import {
   setupCliTest,
   assertOutputMatches,
   USAGE_OUTPUT_PATTERN,
-} from "./util/cliTestUtils";
-import { withWindowsPath } from "./util/windows";
+} from "../util/cliTestUtils";
+import { withWindowsPath } from "../util/windows";
 
 describe("CLI Global Options", () => {
   describe("usage/help", () => {
@@ -151,7 +151,7 @@ describe("CLI Global Options", () => {
       const { run } = setupCliTest();
       const notADirectoryPath = path.resolve(
         __dirname,
-        "fixtures/not-a-directory",
+        "../fixtures/not-a-directory",
       );
       const result = await run(`--cwd=${notADirectoryPath}`, "ls");
       expect(result.stdout.raw).toBeEmpty();

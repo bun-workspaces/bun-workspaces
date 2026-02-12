@@ -1,7 +1,7 @@
 import fs from "fs";
 import { expect, test, describe } from "bun:test";
-import { DEFAULT_TEMP_DIR } from "../src/internal/core";
-import { runScript } from "../src/runScript";
+import { DEFAULT_TEMP_DIR } from "../../src/internal/core";
+import { runScript } from "../../src/runScript";
 
 describe("Temp file utils", () => {
   test("createFile", () => {
@@ -42,7 +42,7 @@ describe("Temp file utils", () => {
   test("runScript: temp files are cleaned up on exit", async () => {
     const { exit, output } = runScript({
       scriptCommand: {
-        command: "bun run fixtures/testScripts/createTempFile.ts",
+        command: "bun run ../fixtures/testScripts/createTempFile.ts",
         workingDirectory: __dirname,
       },
       metadata: {},
@@ -63,7 +63,7 @@ describe("Temp file utils", () => {
   test("runScript: temp files cleans up on interrupt", async () => {
     const { exit, output, kill } = runScript({
       scriptCommand: {
-        command: "bun run fixtures/testScripts/createTempFile.ts",
+        command: "bun run ../fixtures/testScripts/createTempFile.ts",
         workingDirectory: __dirname,
       },
       metadata: {},
@@ -85,7 +85,7 @@ describe("Temp file utils", () => {
   test("temp files cleans up on crash", async () => {
     const { exit, output } = runScript({
       scriptCommand: {
-        command: "bun run fixtures/testScripts/createTempFile.ts",
+        command: "bun run ../fixtures/testScripts/createTempFile.ts",
         workingDirectory: __dirname,
       },
       metadata: {},

@@ -3,9 +3,9 @@ import fs from "fs";
 import { availableParallelism } from "os";
 import path from "path";
 import { test, expect, describe, afterAll } from "bun:test";
-import { getUserEnvVarName } from "../src/config/userEnvVars";
-import { IS_WINDOWS } from "../src/internal/core";
-import { runScript, runScripts } from "../src/runScript";
+import { getUserEnvVarName } from "../../src/config/userEnvVars";
+import { IS_WINDOWS } from "../../src/internal/core";
+import { runScript, runScripts } from "../../src/runScript";
 
 // Sanity tests for lower level runScript and runScripts functions
 

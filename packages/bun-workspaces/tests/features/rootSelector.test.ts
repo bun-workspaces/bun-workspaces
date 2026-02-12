@@ -1,8 +1,8 @@
 import path from "node:path";
 import { describe, expect, test } from "bun:test";
-import { createFileSystemProject } from "../src";
-import { getProjectRoot } from "./fixtures/testProjects";
-import { setupCliTest } from "./util/cliTestUtils";
+import { createFileSystemProject } from "../../src";
+import { getProjectRoot } from "../fixtures/testProjects";
+import { setupCliTest } from "../util/cliTestUtils";
 
 describe("Test root selector", () => {
   describe("API", () => {

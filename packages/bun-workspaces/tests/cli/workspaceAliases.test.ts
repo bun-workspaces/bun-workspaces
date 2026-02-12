@@ -1,6 +1,6 @@
 import { test, expect, describe } from "bun:test";
-import { setupCliTest, assertOutputMatches } from "./util/cliTestUtils";
-import { withWindowsPath } from "./util/windows";
+import { setupCliTest, assertOutputMatches } from "../util/cliTestUtils";
+import { withWindowsPath } from "../util/windows";
 
 describe("CLI Workspace Aliases", () => {
   describe("workspace-info", () => {

@@ -1,8 +1,11 @@
 import { test, expect, describe } from "bun:test";
-import { getCliCommandConfig, type CliCommandName } from "../src/cli/commands";
-import { getProjectRoot } from "./fixtures/testProjects";
-import { setupCliTest, assertOutputMatches } from "./util/cliTestUtils";
-import { withWindowsPath } from "./util/windows";
+import {
+  getCliCommandConfig,
+  type CliCommandName,
+} from "../../src/cli/commands";
+import { getProjectRoot } from "../fixtures/testProjects";
+import { setupCliTest, assertOutputMatches } from "../util/cliTestUtils";
+import { withWindowsPath } from "../util/windows";
 
 const listCommandAndAliases = (commandName: CliCommandName) => {
   const config = getCliCommandConfig(commandName);

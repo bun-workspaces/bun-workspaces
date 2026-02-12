@@ -1,11 +1,11 @@
 import { availableParallelism } from "os";
 import path from "path";
 import { expect, test, describe } from "bun:test";
-import { getUserEnvVar, getUserEnvVarName } from "../src/config/userEnvVars";
-import { BUN_LOCK_ERRORS } from "../src/internal/bun";
-import { createFileSystemProject, PROJECT_ERRORS } from "../src/project";
-import { getProjectRoot } from "./fixtures/testProjects";
-import { withWindowsPath } from "./util/windows";
+import { getUserEnvVar, getUserEnvVarName } from "../../src/config/userEnvVars";
+import { BUN_LOCK_ERRORS } from "../../src/internal/bun";
+import { createFileSystemProject, PROJECT_ERRORS } from "../../src/project";
+import { getProjectRoot } from "../fixtures/testProjects";
+import { withWindowsPath } from "../util/windows";
 
 describe("Test FileSystemProject", () => {
   test("createFileSystemProject: root directory defaults to process.cwd()", async () => {

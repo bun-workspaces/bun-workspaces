@@ -1,8 +1,8 @@
 import { expect, test, describe } from "bun:test";
-import packageJson from "../package.json";
-import { getDoctorInfo } from "../src/doctor";
-import { createRawPattern } from "../src/internal/core";
-import { setupCliTest, assertOutputMatches } from "./util/cliTestUtils";
+import packageJson from "../../package.json";
+import { getDoctorInfo } from "../../src/doctor";
+import { createRawPattern } from "../../src/internal/core";
+import { setupCliTest, assertOutputMatches } from "../util/cliTestUtils";
 
 describe("CLI - doctor command", () => {
   test("shows human-readable output", async () => {

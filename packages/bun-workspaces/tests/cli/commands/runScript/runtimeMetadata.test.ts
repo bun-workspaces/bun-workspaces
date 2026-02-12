@@ -4,46 +4,56 @@ import { setupCliTest, assertOutputMatches } from "../../../util/cliTestUtils";
 import { withWindowsPath } from "../../../util/windows";
 
 describe("CLI Run Script (runtime metadata)", () => {
-  test("Runtime metadata", async () => {
-    const projectRoot = getProjectRoot("runScriptWithRuntimeMetadataDebug");
+  const projectRoot = getProjectRoot("runScriptWithRuntimeMetadataDebug");
 
+  test("script receives metadata via env", async () => {
     const { run } = setupCliTest({
       testProject: "runScriptWithRuntimeMetadataDebug",
     });
-
-    const plainResult = await run("run-script", "test-echo");
-    expect(plainResult.exitCode).toBe(0);
+    const result = await run("run-script", "test-echo");
+    expect(result.exitCode).toBe(0);
     assertOutputMatches(
-      plainResult.stdoutAndErr.sanitizedCompactLines,
+      result.stdoutAndErr.sanitizedCompactLines,
       `[application-a:test-echo] ${projectRoot} test-root application-a ${withWindowsPath(projectRoot + "/applications/application-a")} ${withWindowsPath("applications/application-a")} test-echo
 [application-b:test-echo] ${projectRoot} test-root application-b ${withWindowsPath(projectRoot + "/applications/application-b")} ${withWindowsPath("applications/application-b")} test-echo
 ✅ application-a: test-echo
 ✅ application-b: test-echo
 2 scripts ran successfully`,
     );
+  });
 
-    const argsResult = await run(
+  test("--args interpolates metadata placeholders", async () => {
+    const { run } = setupCliTest({
+      testProject: "runScriptWithRuntimeMetadataDebug",
+    });
+    const result = await run(
       "run-script",
       "test-echo",
       "--args=--arg1=<projectPath> --arg2=<projectName> --arg3=<workspaceName> --arg4=<workspacePath> --arg5=<workspaceRelativePath> --arg6=<scriptName>",
     );
+    expect(result.exitCode).toBe(0);
     assertOutputMatches(
-      argsResult.stdoutAndErr.sanitizedCompactLines,
+      result.stdoutAndErr.sanitizedCompactLines,
       `[application-a:test-echo] ${projectRoot} test-root application-a ${withWindowsPath(projectRoot + "/applications/application-a")} ${withWindowsPath("applications/application-a")} test-echo --arg1=${projectRoot} --arg2=test-root --arg3=application-a --arg4=${withWindowsPath(projectRoot + "/applications/application-a")} --arg5=${withWindowsPath("applications/application-a")} --arg6=test-echo
 [application-b:test-echo] ${projectRoot} test-root application-b ${withWindowsPath(projectRoot + "/applications/application-b")} ${withWindowsPath("applications/application-b")} test-echo --arg1=${projectRoot} --arg2=test-root --arg3=application-b --arg4=${withWindowsPath(projectRoot + "/applications/application-b")} --arg5=${withWindowsPath("applications/application-b")} --arg6=test-echo
 ✅ application-a: test-echo
 ✅ application-b: test-echo
 2 scripts ran successfully`,
     );
+  });
 
-    const inlineResult = await run(
+  test("inline script interpolates metadata placeholders", async () => {
+    const { run } = setupCliTest({
+      testProject: "runScriptWithRuntimeMetadataDebug",
+    });
+    const result = await run(
       "run-script",
       "echo <projectPath> <projectName> <workspaceName> <workspacePath> <workspaceRelativePath> <scriptName>",
       "--inline",
     );
-    expect(inlineResult.exitCode).toBe(0);
+    expect(result.exitCode).toBe(0);
     assertOutputMatches(
-      inlineResult.stdoutAndErr.sanitizedCompactLines,
+      result.stdoutAndErr.sanitizedCompactLines,
       `[application-a:(inline)] ${projectRoot} test-root application-a ${withWindowsPath(projectRoot + "/applications/application-a")} ${withWindowsPath("applications/application-a")}
 [application-b:(inline)] ${projectRoot} test-root application-b ${withWindowsPath(projectRoot + "/applications/application-b")} ${withWindowsPath("applications/application-b")}
 ✅ application-a: (inline)

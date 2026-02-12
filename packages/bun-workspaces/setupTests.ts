@@ -7,7 +7,12 @@ import { runScript } from "./src/runScript";
 
 setLogLevel("silent");
 
-const testProjectsDir = path.join(__dirname, "tests", "testProjects");
+const testProjectsDir = path.join(
+  __dirname,
+  "tests",
+  "fixtures",
+  "testProjects",
+);
 
 const promises: Promise<unknown>[] = [];
 

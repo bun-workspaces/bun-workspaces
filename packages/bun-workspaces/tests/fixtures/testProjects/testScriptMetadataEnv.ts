@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 console.log(process.env.BW_PROJECT_PATH);
 console.log(process.env.BW_PROJECT_NAME);
 console.log(process.env.BW_WORKSPACE_NAME);

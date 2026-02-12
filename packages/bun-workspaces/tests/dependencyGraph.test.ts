@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
 import { findWorkspaces } from "../src/workspaces";
-import { getProjectRoot } from "./testProjects";
+import { getProjectRoot } from "./fixtures/testProjects";
 import { withWindowsPath } from "./util/windows";
 
 describe("Test dependency graph", () => {

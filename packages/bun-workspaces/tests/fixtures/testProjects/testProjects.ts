@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { IS_WINDOWS } from "../../src/internal/core";
-import { withWindowsPath } from "../util/windows";
+import { IS_WINDOWS } from "../../../src/internal/core";
+import { withWindowsPath } from "../../util/windows";
 
 const TEST_PROJECTS = {
   default: "fullProject",

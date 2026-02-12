@@ -4,7 +4,7 @@ import path from "path";
 import { test, expect, describe, beforeAll } from "bun:test";
 import { getUserEnvVar } from "../src/config/userEnvVars";
 import { createRawPattern } from "../src/internal/core";
-import { getProjectRoot, type TestProjectName } from "./testProjects";
+import { getProjectRoot, type TestProjectName } from "./fixtures/testProjects";
 import { setupCliTest, assertOutputMatches } from "./util/cliTestUtils";
 import { withWindowsPath } from "./util/windows";
 

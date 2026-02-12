@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { createFileSystemProject } from "../src";
 import { loadRootConfig } from "../src/config/rootConfig";
 import { determineParallelMax, resolveScriptShell } from "../src/runScript";
-import { getProjectRoot } from "./testProjects";
+import { getProjectRoot } from "./fixtures/testProjects";
 
 describe("Test project root config", () => {
   describe("loadRootConfig", () => {

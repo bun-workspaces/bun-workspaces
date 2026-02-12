@@ -3,7 +3,7 @@ import { createFileSystemProject } from "../src";
 import { getUserEnvVarName } from "../src/config/userEnvVars";
 import { IS_WINDOWS } from "../src/internal/core";
 import { runScript } from "../src/runScript";
-import { getProjectRoot } from "./testProjects/testProjects";
+import { getProjectRoot } from "./fixtures/testProjects";
 import { setupCliTest } from "./util/cliTestUtils";
 
 const originalScriptShellDefault =
@@ -383,14 +383,13 @@ describe("Test run script shell option", () => {
     test("explicit default follows env var", async () => {
       process.env[getUserEnvVarName("scriptShellDefault")] = "system";
 
-      const explicitDefaultResult =
-        await project().runScriptAcrossWorkspaces({
-          workspacePatterns: ["application-a"],
-          script: IS_WINDOWS
-            ? `echo %_BW_SCRIPT_SHELL_OPTION%`
-            : "echo $_BW_SCRIPT_SHELL_OPTION",
-          inline: { shell: "default" },
-        });
+      const explicitDefaultResult = await project().runScriptAcrossWorkspaces({
+        workspacePatterns: ["application-a"],
+        script: IS_WINDOWS
+          ? `echo %_BW_SCRIPT_SHELL_OPTION%`
+          : "echo $_BW_SCRIPT_SHELL_OPTION",
+        inline: { shell: "default" },
+      });
 
       for await (const { outputChunk } of explicitDefaultResult.output) {
         expect(outputChunk.decode().trim()).toBe("system");
@@ -425,9 +424,9 @@ describe("Test run script shell option", () => {
       for await (const { outputChunk } of explicitBunResult.output) {
         expect(outputChunk.decode().trim()).toBe("bun");
       }
-      expect(
-        (await explicitBunResult.summary).scriptResults[0].exitCode,
-      ).toBe(0);
+      expect((await explicitBunResult.summary).scriptResults[0].exitCode).toBe(
+        0,
+      );
     });
 
     test("bun shell fails with OS-only command", async () => {
@@ -437,9 +436,9 @@ describe("Test run script shell option", () => {
         inline: { shell: "bun" },
       });
 
-      expect(
-        (await failingBunResult.summary).scriptResults[0].exitCode,
-      ).toBe(1);
+      expect((await failingBunResult.summary).scriptResults[0].exitCode).toBe(
+        1,
+      );
     });
 
     test("explicit system shell", async () => {
@@ -454,18 +453,17 @@ describe("Test run script shell option", () => {
       for await (const { outputChunk } of explicitOsResult.output) {
         expect(outputChunk.decode().trim()).toBe("system");
       }
-      expect(
-        (await explicitOsResult.summary).scriptResults[0].exitCode,
-      ).toBe(0);
+      expect((await explicitOsResult.summary).scriptResults[0].exitCode).toBe(
+        0,
+      );
     });
 
     test("system shell succeeds with OS-only command", async () => {
-      const successfulOsOnlyResult =
-        await project().runScriptAcrossWorkspaces({
-          workspacePatterns: ["application-a"],
-          script: OS_ONLY_COMMAND,
-          inline: { shell: "system" },
-        });
+      const successfulOsOnlyResult = await project().runScriptAcrossWorkspaces({
+        workspacePatterns: ["application-a"],
+        script: OS_ONLY_COMMAND,
+        inline: { shell: "system" },
+      });
 
       expect(
         (await successfulOsOnlyResult.summary).scriptResults[0].exitCode,

@@ -59,7 +59,7 @@ describe("Test bun-workspaces config", () => {
 
   test("Load config file", () => {
     const getPath = (filePath: string) =>
-      path.resolve(__dirname, "testConfigs", filePath);
+      path.resolve(__dirname, "fixtures", "testConfigs", filePath);
     expect(() => loadConfigFile(getPath("invalid1.json"))).toThrow();
     expect(() => loadConfigFile(getPath("does-not-exist.json"))).toThrow();
     expect(() => loadConfigFile(getPath("valid.json"))).not.toThrow();

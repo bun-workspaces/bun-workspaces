@@ -2,7 +2,7 @@ import path from "path";
 import { expect } from "bun:test";
 import packageJson from "../../package.json";
 import { createRawPattern } from "../../src/internal/core";
-import { getProjectRoot, type TestProjectName } from "../testProjects";
+import { getProjectRoot, type TestProjectName } from "../fixtures/testProjects";
 
 export const USAGE_OUTPUT_PATTERN = new RegExp(
   createRawPattern(`Usage: bun-workspaces [options] [command]

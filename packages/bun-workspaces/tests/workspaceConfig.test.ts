@@ -11,7 +11,7 @@ import { logger } from "../src/internal/logger";
 import { _internalCreateFileSystemProject } from "../src/project";
 import { findWorkspaces } from "../src/workspaces";
 import { createWorkspaceMapEntry } from "./findWorkspaces.test";
-import { getProjectRoot } from "./testProjects";
+import { getProjectRoot } from "./fixtures/testProjects";
 import { withWindowsPath } from "./util/windows";
 
 /**
@@ -534,89 +534,89 @@ describe("workspace config", () => {
 
   describe("deprecated and new config mix", () => {
     test("warns on multiple configs and merges workspace config", () => {
-    const warnSpy = spyOn(logger, "warn");
+      const warnSpy = spyOn(logger, "warn");
 
-    const project = _internalCreateFileSystemProject({
-      rootDirectory: getProjectRoot("workspaceConfigDeprecatedConfigMix"),
-      workspaceAliases:
-        loadConfigFile(
-          path.join(
-            getProjectRoot("workspaceConfigDeprecatedConfigMix"),
-            "bw.json",
-          ),
-        )?.project?.workspaceAliases ?? undefined,
-    });
+      const project = _internalCreateFileSystemProject({
+        rootDirectory: getProjectRoot("workspaceConfigDeprecatedConfigMix"),
+        workspaceAliases:
+          loadConfigFile(
+            path.join(
+              getProjectRoot("workspaceConfigDeprecatedConfigMix"),
+              "bw.json",
+            ),
+          )?.project?.workspaceAliases ?? undefined,
+      });
 
-    expect(warnSpy).toHaveBeenCalledWith(
-      `Found multiple workspace configs:
+      expect(warnSpy).toHaveBeenCalledWith(
+        `Found multiple workspace configs:
   ${withWindowsPath(path.relative(process.cwd(), path.join(getProjectRoot("workspaceConfigDeprecatedConfigMix"), "libraries/library-a") + "/bw.workspace.jsonc"))}
   ${withWindowsPath(path.relative(process.cwd(), path.join(getProjectRoot("workspaceConfigDeprecatedConfigMix"), "libraries/library-a") + "/bw.workspace.json"))}
   ${withWindowsPath(path.relative(process.cwd(), path.join(getProjectRoot("workspaceConfigDeprecatedConfigMix"), "libraries/library-a", "package.json") + '["bw"]'))}
   Using config at ${withWindowsPath(path.relative(process.cwd(), path.join(getProjectRoot("workspaceConfigDeprecatedConfigMix"), "libraries/library-a", "bw.workspace.jsonc")))}`,
-    );
+      );
 
-    expect(project.workspaces).toEqual([
-      {
-        aliases: ["deprecated_appA", "appA"],
-        isRoot: false,
-        matchPattern: "applications/*",
-        name: "application-1a",
-        path: withWindowsPath("applications/application-a"),
-        scripts: ["a-workspaces", "all-workspaces", "application-a"],
-        dependencies: [],
-        dependents: [],
-      },
-      {
-        aliases: ["deprecated_appB", "appB_file"],
-        isRoot: false,
-        matchPattern: "applications/*",
-        name: "application-1b",
-        path: withWindowsPath("applications/application-b"),
-        scripts: ["all-workspaces", "application-b", "b-workspaces"],
-        dependencies: [],
-        dependents: [],
-      },
-      {
-        aliases: [],
-        isRoot: false,
-        matchPattern: "applications/*",
-        name: "application-1c",
-        path: withWindowsPath("applications/application-c"),
-        scripts: ["all-workspaces", "application-c", "c-workspaces"],
-        dependencies: [],
-        dependents: [],
-      },
-      {
-        aliases: ["deprecated_libA", "libA_file"],
-        isRoot: false,
-        matchPattern: "libraries/*",
-        name: "library-1a",
-        path: withWindowsPath("libraries/library-a"),
-        scripts: ["a-workspaces", "all-workspaces", "library-a"],
-        dependencies: [],
-        dependents: [],
-      },
-      {
-        aliases: ["deprecated_libB", "libB", "libB2"],
-        isRoot: false,
-        matchPattern: "libraries/*",
-        name: "library-1b",
-        path: withWindowsPath("libraries/library-b"),
-        scripts: ["all-workspaces", "b-workspaces", "library-b"],
-        dependencies: [],
-        dependents: [],
-      },
-      {
-        aliases: [],
-        isRoot: false,
-        matchPattern: "libraries/*",
-        name: "library-1c",
-        path: withWindowsPath("libraries/library-c"),
-        scripts: ["all-workspaces", "c-workspaces", "library-c"],
-        dependencies: [],
-        dependents: [],
-      },
-    ]);
+      expect(project.workspaces).toEqual([
+        {
+          aliases: ["deprecated_appA", "appA"],
+          isRoot: false,
+          matchPattern: "applications/*",
+          name: "application-1a",
+          path: withWindowsPath("applications/application-a"),
+          scripts: ["a-workspaces", "all-workspaces", "application-a"],
+          dependencies: [],
+          dependents: [],
+        },
+        {
+          aliases: ["deprecated_appB", "appB_file"],
+          isRoot: false,
+          matchPattern: "applications/*",
+          name: "application-1b",
+          path: withWindowsPath("applications/application-b"),
+          scripts: ["all-workspaces", "application-b", "b-workspaces"],
+          dependencies: [],
+          dependents: [],
+        },
+        {
+          aliases: [],
+          isRoot: false,
+          matchPattern: "applications/*",
+          name: "application-1c",
+          path: withWindowsPath("applications/application-c"),
+          scripts: ["all-workspaces", "application-c", "c-workspaces"],
+          dependencies: [],
+          dependents: [],
+        },
+        {
+          aliases: ["deprecated_libA", "libA_file"],
+          isRoot: false,
+          matchPattern: "libraries/*",
+          name: "library-1a",
+          path: withWindowsPath("libraries/library-a"),
+          scripts: ["a-workspaces", "all-workspaces", "library-a"],
+          dependencies: [],
+          dependents: [],
+        },
+        {
+          aliases: ["deprecated_libB", "libB", "libB2"],
+          isRoot: false,
+          matchPattern: "libraries/*",
+          name: "library-1b",
+          path: withWindowsPath("libraries/library-b"),
+          scripts: ["all-workspaces", "b-workspaces", "library-b"],
+          dependencies: [],
+          dependents: [],
+        },
+        {
+          aliases: [],
+          isRoot: false,
+          matchPattern: "libraries/*",
+          name: "library-1c",
+          path: withWindowsPath("libraries/library-c"),
+          scripts: ["all-workspaces", "c-workspaces", "library-c"],
+          dependencies: [],
+          dependents: [],
+        },
+      ]);
     });
   });
 });

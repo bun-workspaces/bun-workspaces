@@ -1,7 +1,7 @@
 import path from "path";
 import { test, expect, describe } from "bun:test";
 import { getUserEnvVarName } from "../src/config/userEnvVars";
-import { getProjectRoot } from "./testProjects";
+import { getProjectRoot } from "./fixtures/testProjects";
 import {
   setupCliTest,
   assertOutputMatches,
@@ -149,7 +149,10 @@ describe("CLI Global Options", () => {
 
     test("errors for non-directory path", async () => {
       const { run } = setupCliTest();
-      const notADirectoryPath = path.resolve(__dirname, "util/not-a-directory");
+      const notADirectoryPath = path.resolve(
+        __dirname,
+        "fixtures/not-a-directory",
+      );
       const result = await run(`--cwd=${notADirectoryPath}`, "ls");
       expect(result.stdout.raw).toBeEmpty();
       expect(result.exitCode).toBe(1);

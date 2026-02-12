@@ -3,7 +3,7 @@ import { resolveWorkspaceConfig, type WorkspaceConfig } from "../src/config";
 import { BUN_LOCK_ERRORS } from "../src/internal/bun";
 import { WORKSPACE_ERRORS } from "../src/workspaces/errors";
 import { findWorkspaces } from "../src/workspaces/findWorkspaces";
-import { getProjectRoot } from "./testProjects";
+import { getProjectRoot } from "./fixtures/testProjects";
 import { withWindowsPath } from "./util/windows";
 
 export const createWorkspaceMapEntry = (config: WorkspaceConfig) => ({

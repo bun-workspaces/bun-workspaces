@@ -4,7 +4,7 @@ import type { Workspace, WorkspaceScriptMetadata } from "../src";
 import { createFileSystemProject, createMemoryProject } from "../src/project";
 import { PROJECT_ERRORS } from "../src/project/errors";
 import { WORKSPACE_ERRORS } from "../src/workspaces";
-import { getProjectRoot } from "./testProjects";
+import { getProjectRoot } from "./fixtures/testProjects";
 import { withWindowsPath } from "./util/windows";
 
 const createDefaultProject = () =>
@@ -857,9 +857,7 @@ describe("Test Project utilities", () => {
       const projectWithData = createTestProject();
       expect(projectWithData.findWorkspaceByName("test-1")).toEqual(testWs1);
       expect(projectWithData.findWorkspaceByName("test-2")).toEqual(testWs2);
-      expect(
-        projectWithData.findWorkspaceByName("not-a-workspace"),
-      ).toBeNull();
+      expect(projectWithData.findWorkspaceByName("not-a-workspace")).toBeNull();
     });
 
     test("findWorkspaceByAlias finds or returns null", () => {
@@ -901,12 +899,10 @@ describe("Test Project utilities", () => {
         testWs2,
       ]);
 
-      expect(projectWithData.findWorkspacesByPattern("*-2")).toEqual([
-        testWs2,
-      ]);
-      expect(
-        projectWithData.findWorkspacesByPattern("not-a-pattern"),
-      ).toEqual([]);
+      expect(projectWithData.findWorkspacesByPattern("*-2")).toEqual([testWs2]);
+      expect(projectWithData.findWorkspacesByPattern("not-a-pattern")).toEqual(
+        [],
+      );
     });
 
     test("throws for duplicate workspace name", () => {

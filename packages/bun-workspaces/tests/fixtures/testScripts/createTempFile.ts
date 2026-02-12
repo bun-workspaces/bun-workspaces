@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { DEFAULT_TEMP_DIR } from "../../src/internal/core";
+import { DEFAULT_TEMP_DIR } from "../../../src/internal/core";
 
 if (import.meta.main) {
   const fileName = `test-${crypto.randomUUID()}.txt`;

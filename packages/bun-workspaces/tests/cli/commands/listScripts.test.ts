@@ -7,18 +7,25 @@ import {
 } from "../../util/cliTestUtils";
 import { withWindowsPath } from "../../util/windows";
 
-describe("List Scripts", () => {
-  test.each(listCommandAndAliases("listScripts"))(
-    "List Scripts: %s",
-    async (command) => {
-      const { run } = setupCliTest({
-        testProject: "simple1",
-      });
+const EXPECTED_SCRIPTS_JSON_SIMPLE1 = [
+  { name: "a-workspaces", workspaces: ["application-1a", "library-1a"] },
+  {
+    name: "all-workspaces",
+    workspaces: [
+      "application-1a",
+      "application-1b",
+      "library-1a",
+      "library-1b",
+    ],
+  },
+  { name: "application-a", workspaces: ["application-1a"] },
+  { name: "application-b", workspaces: ["application-1b"] },
+  { name: "b-workspaces", workspaces: ["application-1b", "library-1b"] },
+  { name: "library-a", workspaces: ["library-1a"] },
+  { name: "library-b", workspaces: ["library-1b"] },
+];
 
-      const plainResult = await run(command);
-      assertOutputMatches(
-        plainResult.stdout.raw,
-        `Script: a-workspaces
+const PLAIN_OUTPUT_SIMPLE1 = `Script: a-workspaces
  - application-1a
  - library-1a
 Script: all-workspaces
@@ -36,152 +43,150 @@ Script: b-workspaces
 Script: library-a
  - library-1a
 Script: library-b
- - library-1b`,
-      );
-      expect(plainResult.stderr.raw).toBeEmpty();
+ - library-1b`;
 
-      const expectedJson = [
-        {
-          name: "a-workspaces",
-          workspaces: ["application-1a", "library-1a"],
-        },
-        {
-          name: "all-workspaces",
-          workspaces: [
-            "application-1a",
-            "application-1b",
-            "library-1a",
-            "library-1b",
-          ],
-        },
-        {
-          name: "application-a",
-          workspaces: ["application-1a"],
-        },
-        {
-          name: "application-b",
-          workspaces: ["application-1b"],
-        },
-        {
-          name: "b-workspaces",
-          workspaces: ["application-1b", "library-1b"],
-        },
-        {
-          name: "library-a",
-          workspaces: ["library-1a"],
-        },
-        {
-          name: "library-b",
-          workspaces: ["library-1b"],
-        },
-      ];
+describe("List Scripts", () => {
+  describe("output format", () => {
+    test.each(listCommandAndAliases("listScripts"))(
+      "plain output lists scripts with workspaces: %s",
+      async (command) => {
+        const { run } = setupCliTest({ testProject: "simple1" });
+        const result = await run(command);
+        assertOutputMatches(result.stdout.raw, PLAIN_OUTPUT_SIMPLE1);
+        expect(result.stderr.raw).toBeEmpty();
+      },
+    );
 
-      const jsonResult = await run(command, "--json");
-      expect(jsonResult.stderr.raw).toBeEmpty();
-      expect(jsonResult.exitCode).toBe(0);
-      assertOutputMatches(jsonResult.stdout.raw, JSON.stringify(expectedJson));
-
-      const jsonShortResult = await run(command, "-j");
-      expect(jsonShortResult.stderr.raw).toBeEmpty();
-      expect(jsonShortResult.exitCode).toBe(0);
+    test("--json outputs script list as JSON", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("ls-scripts", "--json");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
       assertOutputMatches(
-        jsonShortResult.stdout.raw,
-        JSON.stringify(expectedJson),
+        result.stdout.raw,
+        JSON.stringify(EXPECTED_SCRIPTS_JSON_SIMPLE1),
       );
+    });
 
-      const jsonPrettyResult = await run(command, "--json", "--pretty");
-      expect(jsonPrettyResult.stderr.raw).toBeEmpty();
-      expect(jsonPrettyResult.exitCode).toBe(0);
+    test("-j outputs script list as JSON", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("ls-scripts", "-j");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
       assertOutputMatches(
-        jsonPrettyResult.stdout.raw,
-        JSON.stringify(expectedJson, null, 2),
+        result.stdout.raw,
+        JSON.stringify(EXPECTED_SCRIPTS_JSON_SIMPLE1),
       );
+    });
 
-      const jsonPrettyShortResult = await run(command, "-j", "-p");
-      expect(jsonPrettyShortResult.stderr.raw).toBeEmpty();
-      expect(jsonPrettyShortResult.exitCode).toBe(0);
+    test("--json --pretty outputs pretty-printed JSON", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("ls-scripts", "--json", "--pretty");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
       assertOutputMatches(
-        jsonPrettyShortResult.stdout.raw,
-        JSON.stringify(expectedJson, null, 2),
+        result.stdout.raw,
+        JSON.stringify(EXPECTED_SCRIPTS_JSON_SIMPLE1, null, 2),
       );
+    });
 
-      const jsonNameOnlyResult = await run(command, "--name-only", "--json");
-      expect(jsonNameOnlyResult.stderr.raw).toBeEmpty();
-      expect(jsonNameOnlyResult.exitCode).toBe(0);
+    test("-j -p outputs pretty-printed JSON", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("ls-scripts", "-j", "-p");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
       assertOutputMatches(
-        jsonNameOnlyResult.stdout.raw,
-        JSON.stringify(expectedJson.map(({ name }) => name)),
+        result.stdout.raw,
+        JSON.stringify(EXPECTED_SCRIPTS_JSON_SIMPLE1, null, 2),
       );
+    });
 
-      const jsonNameOnlyShortResult = await run(command, "-n", "-j");
-      expect(jsonNameOnlyShortResult.stderr.raw).toBeEmpty();
-      expect(jsonNameOnlyShortResult.exitCode).toBe(0);
+    test("--name-only --json outputs script names only", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("ls-scripts", "--name-only", "--json");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
       assertOutputMatches(
-        jsonNameOnlyShortResult.stdout.raw,
-        JSON.stringify(expectedJson.map(({ name }) => name)),
+        result.stdout.raw,
+        JSON.stringify(EXPECTED_SCRIPTS_JSON_SIMPLE1.map(({ name }) => name)),
       );
+    });
 
-      const jsonNameOnlyPrettyResult = await run(
-        command,
+    test("-n -j outputs script names only", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("ls-scripts", "-n", "-j");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
+      assertOutputMatches(
+        result.stdout.raw,
+        JSON.stringify(EXPECTED_SCRIPTS_JSON_SIMPLE1.map(({ name }) => name)),
+      );
+    });
+
+    test("--name-only --json --pretty outputs pretty script names", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run(
+        "ls-scripts",
         "--name-only",
         "--json",
         "--pretty",
       );
-      expect(jsonNameOnlyPrettyResult.stderr.raw).toBeEmpty();
-      expect(jsonNameOnlyPrettyResult.exitCode).toBe(0);
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
       assertOutputMatches(
-        jsonNameOnlyPrettyResult.stdout.raw,
+        result.stdout.raw,
         JSON.stringify(
-          expectedJson.map(({ name }) => name),
+          EXPECTED_SCRIPTS_JSON_SIMPLE1.map(({ name }) => name),
           null,
           2,
         ),
       );
+    });
 
-      const jsonNameOnlyPrettyShortResult = await run(
-        command,
-        "-n",
-        "-j",
-        "-p",
-      );
-      expect(jsonNameOnlyPrettyShortResult.stderr.raw).toBeEmpty();
-      expect(jsonNameOnlyPrettyShortResult.exitCode).toBe(0);
+    test("-n -j -p outputs pretty script names", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("ls-scripts", "-n", "-j", "-p");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
       assertOutputMatches(
-        jsonNameOnlyPrettyShortResult.stdout.raw,
+        result.stdout.raw,
         JSON.stringify(
-          expectedJson.map(({ name }) => name),
+          EXPECTED_SCRIPTS_JSON_SIMPLE1.map(({ name }) => name),
           null,
           2,
         ),
       );
+    });
+  });
 
-      const emptyWorkspacesResult = await setupCliTest({
-        testProject: "emptyWorkspaces",
-      }).run(command);
-
-      expect(emptyWorkspacesResult.stdout.raw).toBeEmpty();
-      expect(emptyWorkspacesResult.exitCode).toBe(1);
+  describe("project states", () => {
+    test("exits with error when project has no bun.lock", async () => {
+      const { run } = setupCliTest({ testProject: "emptyWorkspaces" });
+      const result = await run("ls-scripts");
+      expect(result.stdout.raw).toBeEmpty();
+      expect(result.exitCode).toBe(1);
       assertOutputMatches(
-        emptyWorkspacesResult.stderr.sanitizedCompactLines,
+        result.stderr.sanitizedCompactLines,
         `No bun.lock found at ${withWindowsPath(getProjectRoot("emptyWorkspaces"))}. Check that this is the directory of your project and that you've ran 'bun install'. ` +
           "If you have ran 'bun install', you may simply have no workspaces or dependencies in your project.",
       );
+    });
 
-      const emptyScriptsResult = await setupCliTest({
-        testProject: "emptyScripts",
-      }).run(command);
-      expect(emptyScriptsResult.stderr.raw).toBeEmpty();
-      expect(emptyScriptsResult.exitCode).toBe(0);
-      assertOutputMatches(emptyScriptsResult.stdout.raw, "No scripts found");
-    },
-  );
+    test("outputs 'No scripts found' when project has no scripts", async () => {
+      const { run } = setupCliTest({ testProject: "emptyScripts" });
+      const result = await run("ls-scripts");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
+      assertOutputMatches(result.stdout.raw, "No scripts found");
+    });
+  });
 
-  test("Project command exits with error if invalid project is provided", async () => {
+  test("exits with error for invalid project", async () => {
     const { run } = setupCliTest({
       testProject: "invalidBadJson",
     });
 
-    const result = await run("ls");
+    const result = await run("ls-scripts");
     expect(result.exitCode).toBe(1);
     assertOutputMatches(
       result.stderr.sanitizedCompactLines,

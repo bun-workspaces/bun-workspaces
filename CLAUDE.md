@@ -23,7 +23,7 @@ Patterns can include a wildcard to match only by workspace name: `my-workspace-*
 - Alias pattern specifier: `alias:my-alias-*`.
 - Path pattern specifier (supports glob): `path:packages/**/*`.
 - Name pattern specifier: `name:my-workspace-*`.
-- szSpecial root workspace selector: `@root`.
+- Special root workspace selector: `@root`.
 
 ### Script runtime metadata
 

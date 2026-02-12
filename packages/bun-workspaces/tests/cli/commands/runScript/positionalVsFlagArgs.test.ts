@@ -1,100 +1,112 @@
 import { test, expect, describe } from "bun:test";
 import { setupCliTest, assertOutputMatches } from "../../../util/cliTestUtils";
 
-describe("CLI ", () => {
-  test("Script option vs. inline script name", async () => {
-    const { run } = setupCliTest({
-      testProject: "simple1",
+const A_WORKSPACES_OUTPUT = `[application-1a:a-workspaces] script for a workspaces
+[library-1a:a-workspaces] script for a workspaces
+✅ application-1a: a-workspaces
+✅ library-1a: a-workspaces
+2 scripts ran successfully`;
+
+describe("CLI Run Script (positional vs flag args)", () => {
+  describe("script name: option vs positional", () => {
+    test("--script runs script by name", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("run-script", "--script=a-workspaces");
+      expect(result.exitCode).toBe(0);
+      assertOutputMatches(
+        result.stdoutAndErr.sanitizedCompactLines,
+        A_WORKSPACES_OUTPUT,
+      );
     });
 
-    const optionResult = await run("run-script", "--script=a-workspaces");
-    expect(optionResult.exitCode).toBe(0);
-    assertOutputMatches(
-      optionResult.stdoutAndErr.sanitizedCompactLines,
-      `[application-1a:a-workspaces] script for a workspaces
-[library-1a:a-workspaces] script for a workspaces
-✅ application-1a: a-workspaces
-✅ library-1a: a-workspaces
-2 scripts ran successfully`,
-    );
+    test("-S runs script by name", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("run-script", "-S", "a-workspaces");
+      expect(result.exitCode).toBe(0);
+      assertOutputMatches(
+        result.stdoutAndErr.sanitizedCompactLines,
+        A_WORKSPACES_OUTPUT,
+      );
+    });
 
-    const shortOptionResult = await run("run-script", "-S", "a-workspaces");
-    expect(shortOptionResult.exitCode).toBe(0);
-    assertOutputMatches(
-      shortOptionResult.stdoutAndErr.sanitizedCompactLines,
-      `[application-1a:a-workspaces] script for a workspaces
-[library-1a:a-workspaces] script for a workspaces
-✅ application-1a: a-workspaces
-✅ library-1a: a-workspaces
-2 scripts ran successfully`,
-    );
+    test("positional script name runs script", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("run-script", "a-workspaces");
+      expect(result.exitCode).toBe(0);
+      assertOutputMatches(
+        result.stdoutAndErr.sanitizedCompactLines,
+        A_WORKSPACES_OUTPUT,
+      );
+    });
+  });
 
-    const inlineResult = await run("run-script", "a-workspaces");
-    expect(inlineResult.exitCode).toBe(0);
-    assertOutputMatches(
-      inlineResult.stdoutAndErr.sanitizedCompactLines,
-      `[application-1a:a-workspaces] script for a workspaces
-[library-1a:a-workspaces] script for a workspaces
-✅ application-1a: a-workspaces
-✅ library-1a: a-workspaces
-2 scripts ran successfully`,
-    );
-
-    const inlinePatternsResult = await run(
-      "run-script",
-      "--script=a-workspaces",
-      "application-*",
-    );
-    expect(inlinePatternsResult.exitCode).toBe(0);
-    assertOutputMatches(
-      inlinePatternsResult.stdout.sanitizedCompactLines,
-      `[application-1a:a-workspaces] script for a workspaces
+  describe("script with workspace patterns", () => {
+    test("--script with inline workspace patterns", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run(
+        "run-script",
+        "--script=a-workspaces",
+        "application-*",
+      );
+      expect(result.exitCode).toBe(0);
+      assertOutputMatches(
+        result.stdout.sanitizedCompactLines,
+        `[application-1a:a-workspaces] script for a workspaces
 ✅ application-1a: a-workspaces
 1 script ran successfully`,
-    );
+      );
+    });
 
-    const inlinePatternsResult2 = await run(
-      "run-script",
-      "--script=all-workspaces",
-      "library-1a",
-      "library-*",
-    );
-    expect(inlinePatternsResult2.exitCode).toBe(0);
-    assertOutputMatches(
-      inlinePatternsResult2.stdout.sanitizedCompactLines,
-      `[library-1a:all-workspaces] script for all workspaces
+    test("--script with multiple inline workspace patterns", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run(
+        "run-script",
+        "--script=all-workspaces",
+        "library-1a",
+        "library-*",
+      );
+      expect(result.exitCode).toBe(0);
+      assertOutputMatches(
+        result.stdout.sanitizedCompactLines,
+        `[library-1a:all-workspaces] script for all workspaces
 [library-1b:all-workspaces] script for all workspaces
 ✅ library-1a: all-workspaces
 ✅ library-1b: all-workspaces
 2 scripts ran successfully`,
-    );
+      );
+    });
 
-    const scriptAndWorkspaceOptionResult = await run(
-      "run-script",
-      "--workspace-patterns=library-1a library-*",
-      "--script=all-workspaces",
-    );
-    expect(scriptAndWorkspaceOptionResult.exitCode).toBe(0);
-    assertOutputMatches(
-      scriptAndWorkspaceOptionResult.stdout.sanitizedCompactLines,
-      `[library-1a:all-workspaces] script for all workspaces
+    test("--workspace-patterns with --script", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run(
+        "run-script",
+        "--workspace-patterns=library-1a library-*",
+        "--script=all-workspaces",
+      );
+      expect(result.exitCode).toBe(0);
+      assertOutputMatches(
+        result.stdout.sanitizedCompactLines,
+        `[library-1a:all-workspaces] script for all workspaces
 [library-1b:all-workspaces] script for all workspaces
 ✅ library-1a: all-workspaces
 ✅ library-1b: all-workspaces
 2 scripts ran successfully`,
-    );
+      );
+    });
+  });
 
-    const scriptAndWorkspaceOptionAndScriptOptionResult = await run(
+  test("errors when both inline workspace patterns and --workspace-patterns used", async () => {
+    const { run } = setupCliTest({ testProject: "simple1" });
+    const result = await run(
       "run-script",
       "all-workspaces",
       "--workspace-patterns=library-1a library-*",
       "--script=all-workspaces",
     );
-    expect(scriptAndWorkspaceOptionAndScriptOptionResult.exitCode).toBe(1);
+    expect(result.exitCode).toBe(1);
     assertOutputMatches(
-      scriptAndWorkspaceOptionAndScriptOptionResult.stderr
-        .sanitizedCompactLines,
-      `CLI syntax error: Cannot use both inline workspace patterns and --workspace-patterns|-W option`,
+      result.stderr.sanitizedCompactLines,
+      "CLI syntax error: Cannot use both inline workspace patterns and --workspace-patterns|-W option",
     );
   });
 });

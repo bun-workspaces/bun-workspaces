@@ -1,8 +1,32 @@
 import { expect, test, describe } from "bun:test";
-import { createFileSystemProject, PROJECT_ERRORS } from "../../../src/project";
+import {
+  createFileSystemProject,
+  PROJECT_ERRORS,
+  type RunWorkspaceScriptExit,
+} from "../../../src/project";
 import { getProjectRoot } from "../../fixtures/testProjects";
 import { makeTestWorkspace } from "../../util/testData";
 import { withWindowsPath } from "../../util/windows";
+
+const makeExitResult = (
+  overrides: Partial<RunWorkspaceScriptExit>,
+): RunWorkspaceScriptExit => ({
+  exitCode: 0,
+  success: true,
+  startTimeISO: expect.any(String),
+  endTimeISO: expect.any(String),
+  durationMs: expect.any(Number),
+  signal: null,
+  metadata: {
+    workspace: makeTestWorkspace({
+      name: "test",
+      path: "test",
+      matchPattern: "test",
+      scripts: ["test"],
+    }),
+  },
+  ...overrides,
+});
 
 describe("FileSystemProject runWorkspaceScript", () => {
   test("simple success", async () => {
@@ -25,22 +49,18 @@ describe("FileSystemProject runWorkspaceScript", () => {
 
     const exitResult = await exit;
 
-    expect(exitResult).toEqual({
-      exitCode: 0,
-      success: true,
-      startTimeISO: expect.any(String),
-      endTimeISO: expect.any(String),
-      durationMs: expect.any(Number),
-      signal: null,
-      metadata: {
-        workspace: makeTestWorkspace({
-          name: "application-a",
-          path: "applications/applicationA",
-          matchPattern: "applications/*",
-          scripts: ["a-workspaces", "all-workspaces", "application-a"],
-        }),
-      },
-    });
+    expect(exitResult).toEqual(
+      makeExitResult({
+        metadata: {
+          workspace: makeTestWorkspace({
+            name: "application-a",
+            path: "applications/applicationA",
+            matchPattern: "applications/*",
+            scripts: ["a-workspaces", "all-workspaces", "application-a"],
+          }),
+        },
+      }),
+    );
   });
 
   test("using workspace alias", async () => {
@@ -63,23 +83,19 @@ describe("FileSystemProject runWorkspaceScript", () => {
 
     const exitResult = await exit;
 
-    expect(exitResult).toEqual({
-      exitCode: 0,
-      success: true,
-      startTimeISO: expect.any(String),
-      endTimeISO: expect.any(String),
-      durationMs: expect.any(Number),
-      signal: null,
-      metadata: {
-        workspace: makeTestWorkspace({
-          name: "application-1a",
-          path: "applications/application-a",
-          matchPattern: "applications/*",
-          scripts: ["a-workspaces", "all-workspaces", "application-a"],
-          aliases: ["appA"],
-        }),
-      },
-    });
+    expect(exitResult).toEqual(
+      makeExitResult({
+        metadata: {
+          workspace: makeTestWorkspace({
+            name: "application-1a",
+            path: "applications/application-a",
+            matchPattern: "applications/*",
+            scripts: ["a-workspaces", "all-workspaces", "application-a"],
+            aliases: ["appA"],
+          }),
+        },
+      }),
+    );
   });
 
   test("invalid workspace", async () => {
@@ -137,22 +153,20 @@ describe("FileSystemProject runWorkspaceScript", () => {
     }
 
     const exitResult = await exit;
-    expect(exitResult).toEqual({
-      exitCode: 1,
-      success: false,
-      startTimeISO: expect.any(String),
-      endTimeISO: expect.any(String),
-      durationMs: expect.any(Number),
-      signal: null,
-      metadata: {
-        workspace: makeTestWorkspace({
-          name: "fail1",
-          path: "packages/fail1",
-          matchPattern: "packages/**/*",
-          scripts: ["test-exit"],
-        }),
-      },
-    });
+    expect(exitResult).toEqual(
+      makeExitResult({
+        exitCode: 1,
+        success: false,
+        metadata: {
+          workspace: makeTestWorkspace({
+            name: "fail1",
+            path: "packages/fail1",
+            matchPattern: "packages/**/*",
+            scripts: ["test-exit"],
+          }),
+        },
+      }),
+    );
   });
 
   test("runtime metadata", async () => {

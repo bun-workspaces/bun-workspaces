@@ -1,10 +1,49 @@
 import { availableParallelism } from "os";
 import { expect, test, describe } from "bun:test";
 import { getUserEnvVar } from "../../../src/config/userEnvVars";
-import { createFileSystemProject } from "../../../src/project";
+import {
+  createFileSystemProject,
+  type RunScriptAcrossWorkspacesSummary,
+  type RunWorkspaceScriptMetadata,
+} from "../../../src/project";
+import type { RunScriptExit } from "../../../src/runScript";
 import { getProjectRoot } from "../../fixtures/testProjects";
 import { makeTestWorkspace } from "../../util/testData";
 import { withWindowsPath } from "../../util/windows";
+
+const makeSummaryResult = (
+  overrides: Partial<RunScriptAcrossWorkspacesSummary>,
+): RunScriptAcrossWorkspacesSummary => ({
+  totalCount: 1,
+  successCount: 1,
+  failureCount: 0,
+  allSuccess: true,
+  startTimeISO: expect.any(String),
+  endTimeISO: expect.any(String),
+  durationMs: expect.any(Number),
+  scriptResults: [],
+  ...overrides,
+});
+
+const makeScriptResult = (
+  overrides: Partial<RunScriptExit<RunWorkspaceScriptMetadata>>,
+): RunScriptExit<RunWorkspaceScriptMetadata> => ({
+  exitCode: 0,
+  success: true,
+  startTimeISO: expect.any(String),
+  endTimeISO: expect.any(String),
+  durationMs: expect.any(Number),
+  signal: null,
+  metadata: {
+    workspace: makeTestWorkspace({
+      name: "test",
+      path: "test",
+      matchPattern: "test",
+      scripts: ["test"],
+    }),
+  },
+  ...overrides,
+});
 
 describe("FileSystemProject runScriptAcrossWorkspaces", () => {
   test("simple success", async () => {
@@ -34,33 +73,22 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
     }
 
     const summaryResult = await summary;
-    expect(summaryResult).toEqual({
-      totalCount: 1,
-      successCount: 1,
-      failureCount: 0,
-      allSuccess: true,
-      startTimeISO: expect.any(String),
-      endTimeISO: expect.any(String),
-      durationMs: expect.any(Number),
-      scriptResults: [
-        {
-          exitCode: 0,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          signal: null,
-          metadata: {
-            workspace: makeTestWorkspace({
-              name: "library-b",
-              path: "libraries/libraryB",
-              matchPattern: "libraries/**/*",
-              scripts: ["all-workspaces", "b-workspaces", "library-b"],
-            }),
-          },
-        },
-      ],
-    });
+    expect(summaryResult).toEqual(
+      makeSummaryResult({
+        scriptResults: [
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "library-b",
+                path: "libraries/libraryB",
+                matchPattern: "libraries/**/*",
+                scripts: ["all-workspaces", "b-workspaces", "library-b"],
+              }),
+            },
+          }),
+        ],
+      }),
+    );
   });
 
   test("all workspaces", async () => {
@@ -97,81 +125,54 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
     }
 
     const summaryResult = await summary;
-    expect(summaryResult).toEqual({
-      totalCount: 4,
-      successCount: 4,
-      failureCount: 0,
-      allSuccess: true,
-      startTimeISO: expect.any(String),
-      endTimeISO: expect.any(String),
-      durationMs: expect.any(Number),
-      scriptResults: [
-        {
-          exitCode: 0,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          signal: null,
-          metadata: {
-            workspace: makeTestWorkspace({
-              name: "application-1a",
-              matchPattern: "applications/*",
-              path: "applications/applicationA",
-              scripts: ["a-workspaces", "all-workspaces", "application-a"],
-            }),
-          },
-        },
-        {
-          exitCode: 0,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          signal: null,
-          metadata: {
-            workspace: makeTestWorkspace({
-              name: "application-1b",
-              matchPattern: "applications/*",
-              path: "applications/applicationB",
-              scripts: ["all-workspaces", "application-b", "b-workspaces"],
-            }),
-          },
-        },
-        {
-          exitCode: 0,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          signal: null,
-          metadata: {
-            workspace: makeTestWorkspace({
-              name: "library-1a",
-              matchPattern: "libraries/*",
-              path: "libraries/libraryA",
-              scripts: ["a-workspaces", "all-workspaces", "library-a"],
-            }),
-          },
-        },
-        {
-          exitCode: 0,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          signal: null,
-          metadata: {
-            workspace: makeTestWorkspace({
-              name: "library-1b",
-              matchPattern: "libraries/*",
-              path: "libraries/libraryB",
-              scripts: ["all-workspaces", "b-workspaces", "library-b"],
-            }),
-          },
-        },
-      ],
-    });
+    expect(summaryResult).toEqual(
+      makeSummaryResult({
+        totalCount: 4,
+        successCount: 4,
+        scriptResults: [
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "application-1a",
+                matchPattern: "applications/*",
+                path: "applications/applicationA",
+                scripts: ["a-workspaces", "all-workspaces", "application-a"],
+              }),
+            },
+          }),
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "application-1b",
+                matchPattern: "applications/*",
+                path: "applications/applicationB",
+                scripts: ["all-workspaces", "application-b", "b-workspaces"],
+              }),
+            },
+          }),
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "library-1a",
+                matchPattern: "libraries/*",
+                path: "libraries/libraryA",
+                scripts: ["a-workspaces", "all-workspaces", "library-a"],
+              }),
+            },
+          }),
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "library-1b",
+                matchPattern: "libraries/*",
+                path: "libraries/libraryB",
+                scripts: ["all-workspaces", "b-workspaces", "library-b"],
+              }),
+            },
+          }),
+        ],
+      }),
+    );
   });
 
   test("some workspaces", async () => {
@@ -232,49 +233,34 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
     }
 
     const summaryResult = await summary;
-    expect(summaryResult).toEqual({
-      totalCount: 2,
-      successCount: 2,
-      failureCount: 0,
-      allSuccess: true,
-      startTimeISO: expect.any(String),
-      endTimeISO: expect.any(String),
-      durationMs: expect.any(Number),
-      scriptResults: [
-        {
-          exitCode: 0,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          signal: null,
-          metadata: {
-            workspace: makeTestWorkspace({
-              name: "application-1b",
-              matchPattern: "applications/*",
-              path: "applications/applicationB",
-              scripts: ["all-workspaces", "application-b", "b-workspaces"],
-            }),
-          },
-        },
-        {
-          exitCode: 0,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          signal: null,
-          metadata: {
-            workspace: makeTestWorkspace({
-              name: "library-1b",
-              matchPattern: "libraries/*",
-              path: "libraries/libraryB",
-              scripts: ["all-workspaces", "b-workspaces", "library-b"],
-            }),
-          },
-        },
-      ],
-    });
+    expect(summaryResult).toEqual(
+      makeSummaryResult({
+        totalCount: 2,
+        successCount: 2,
+        scriptResults: [
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "application-1b",
+                matchPattern: "applications/*",
+                path: "applications/applicationB",
+                scripts: ["all-workspaces", "application-b", "b-workspaces"],
+              }),
+            },
+          }),
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "library-1b",
+                matchPattern: "libraries/*",
+                path: "libraries/libraryB",
+                scripts: ["all-workspaces", "b-workspaces", "library-b"],
+              }),
+            },
+          }),
+        ],
+      }),
+    );
   });
 
   test("no workspaces", async () => {
@@ -379,81 +365,54 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
 
     const summaryResult = await summary;
 
-    expect(summaryResult).toEqual({
-      totalCount: 4,
-      successCount: 4,
-      failureCount: 0,
-      allSuccess: true,
-      startTimeISO: expect.any(String),
-      endTimeISO: expect.any(String),
-      durationMs: expect.any(Number),
-      scriptResults: [
-        {
-          exitCode: 0,
-          signal: null,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          metadata: {
-            workspace: makeTestWorkspace({
-              name: "application-1a",
-              matchPattern: "applications/*",
-              path: "applications/applicationA",
-              scripts: ["a-workspaces", "all-workspaces", "application-a"],
-            }),
-          },
-        },
-        {
-          exitCode: 0,
-          signal: null,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          metadata: {
-            workspace: makeTestWorkspace({
-              name: "application-1b",
-              matchPattern: "applications/*",
-              path: "applications/applicationB",
-              scripts: ["all-workspaces", "application-b", "b-workspaces"],
-            }),
-          },
-        },
-        {
-          exitCode: 0,
-          signal: null,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          metadata: {
-            workspace: makeTestWorkspace({
-              name: "library-1a",
-              matchPattern: "libraries/*",
-              path: "libraries/libraryA",
-              scripts: ["a-workspaces", "all-workspaces", "library-a"],
-            }),
-          },
-        },
-        {
-          exitCode: 0,
-          signal: null,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          metadata: {
-            workspace: makeTestWorkspace({
-              name: "library-1b",
-              matchPattern: "libraries/*",
-              path: "libraries/libraryB",
-              scripts: ["all-workspaces", "b-workspaces", "library-b"],
-            }),
-          },
-        },
-      ],
-    });
+    expect(summaryResult).toEqual(
+      makeSummaryResult({
+        totalCount: 4,
+        successCount: 4,
+        scriptResults: [
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "application-1a",
+                matchPattern: "applications/*",
+                path: "applications/applicationA",
+                scripts: ["a-workspaces", "all-workspaces", "application-a"],
+              }),
+            },
+          }),
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "application-1b",
+                matchPattern: "applications/*",
+                path: "applications/applicationB",
+                scripts: ["all-workspaces", "application-b", "b-workspaces"],
+              }),
+            },
+          }),
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "library-1a",
+                matchPattern: "libraries/*",
+                path: "libraries/libraryA",
+                scripts: ["a-workspaces", "all-workspaces", "library-a"],
+              }),
+            },
+          }),
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "library-1b",
+                matchPattern: "libraries/*",
+                path: "libraries/libraryB",
+                scripts: ["all-workspaces", "b-workspaces", "library-b"],
+              }),
+            },
+          }),
+        ],
+      }),
+    );
   });
 
   test("with args", async () => {
@@ -694,81 +653,60 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
 
     const summaryResult = await summary;
 
-    expect(summaryResult).toEqual({
-      totalCount: 4,
-      successCount: 2,
-      failureCount: 2,
-      allSuccess: false,
-      startTimeISO: expect.any(String),
-      endTimeISO: expect.any(String),
-      durationMs: expect.any(Number),
-      scriptResults: [
-        {
-          exitCode: 1,
-          signal: null,
-          success: false,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          metadata: {
-            workspace: makeTestWorkspace({
-              name: "fail1",
-              matchPattern: "packages/**/*",
-              path: "packages/fail1",
-              scripts: ["test-exit"],
-            }),
-          },
-        },
-        {
-          exitCode: 2,
-          signal: null,
-          success: false,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          metadata: {
-            workspace: makeTestWorkspace({
-              name: "fail2",
-              matchPattern: "packages/**/*",
-              path: "packages/fail2",
-              scripts: ["test-exit"],
-            }),
-          },
-        },
-        {
-          exitCode: 0,
-          signal: null,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          metadata: {
-            workspace: makeTestWorkspace({
-              name: "success1",
-              matchPattern: "packages/**/*",
-              path: "packages/success1",
-              scripts: ["test-exit"],
-            }),
-          },
-        },
-        {
-          exitCode: 0,
-          signal: null,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          metadata: {
-            workspace: makeTestWorkspace({
-              name: "success2",
-              matchPattern: "packages/**/*",
-              path: "packages/success2",
-              scripts: ["test-exit"],
-            }),
-          },
-        },
-      ],
-    });
+    expect(summaryResult).toEqual(
+      makeSummaryResult({
+        totalCount: 4,
+        successCount: 2,
+        failureCount: 2,
+        allSuccess: false,
+        scriptResults: [
+          makeScriptResult({
+            exitCode: 1,
+            success: false,
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "fail1",
+                matchPattern: "packages/**/*",
+                path: "packages/fail1",
+                scripts: ["test-exit"],
+              }),
+            },
+          }),
+          makeScriptResult({
+            exitCode: 2,
+            success: false,
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "fail2",
+                matchPattern: "packages/**/*",
+                path: "packages/fail2",
+                scripts: ["test-exit"],
+              }),
+            },
+          }),
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "success1",
+                matchPattern: "packages/**/*",
+                path: "packages/success1",
+                scripts: ["test-exit"],
+              }),
+            },
+          }),
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "success2",
+                matchPattern: "packages/**/*",
+                path: "packages/success2",
+                scripts: ["test-exit"],
+              }),
+            },
+          }),
+        ],
+      }),
+    );
   });
 
   test("parallel", async () => {
@@ -879,97 +817,64 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
     expect(summaryResult.durationMs).toBeGreaterThan(1000);
     expect(summaryResult.durationMs).toBeLessThan(2000);
 
-    expect(summaryResult).toEqual({
-      totalCount: 5,
-      successCount: 5,
-      failureCount: 0,
-      allSuccess: true,
-      startTimeISO: expect.any(String),
-      endTimeISO: expect.any(String),
-      durationMs: expect.any(Number),
-      scriptResults: [
-        {
-          exitCode: 0,
-          signal: null,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          metadata: {
-            workspace: makeTestWorkspace({
-              name: "fifth",
-              matchPattern: "packages/**/*",
-              path: "packages/fifth",
-              scripts: ["test-delay"],
-            }),
-          },
-        },
-        {
-          exitCode: 0,
-          signal: null,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          metadata: {
-            workspace: makeTestWorkspace({
-              name: "first",
-              matchPattern: "packages/**/*",
-              path: "packages/first",
-              scripts: ["test-delay"],
-            }),
-          },
-        },
-        {
-          exitCode: 0,
-          signal: null,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          metadata: {
-            workspace: makeTestWorkspace({
-              name: "fourth",
-              matchPattern: "packages/**/*",
-              path: "packages/fourth",
-              scripts: ["test-delay"],
-            }),
-          },
-        },
-        {
-          exitCode: 0,
-          signal: null,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          metadata: {
-            workspace: makeTestWorkspace({
-              name: "second",
-              matchPattern: "packages/**/*",
-              path: "packages/second",
-              scripts: ["test-delay"],
-            }),
-          },
-        },
-        {
-          exitCode: 0,
-          signal: null,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          metadata: {
-            workspace: makeTestWorkspace({
-              name: "third",
-              matchPattern: "packages/**/*",
-              path: "packages/third",
-              scripts: ["test-delay"],
-            }),
-          },
-        },
-      ],
-    });
+    expect(summaryResult).toEqual(
+      makeSummaryResult({
+        totalCount: 5,
+        successCount: 5,
+        scriptResults: [
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "fifth",
+                matchPattern: "packages/**/*",
+                path: "packages/fifth",
+                scripts: ["test-delay"],
+              }),
+            },
+          }),
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "first",
+                matchPattern: "packages/**/*",
+                path: "packages/first",
+                scripts: ["test-delay"],
+              }),
+            },
+          }),
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "fourth",
+                matchPattern: "packages/**/*",
+                path: "packages/fourth",
+                scripts: ["test-delay"],
+              }),
+            },
+          }),
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "second",
+                matchPattern: "packages/**/*",
+                path: "packages/second",
+                scripts: ["test-delay"],
+              }),
+            },
+          }),
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "third",
+                matchPattern: "packages/**/*",
+                path: "packages/third",
+                scripts: ["test-delay"],
+              }),
+            },
+          }),
+        ],
+      }),
+    );
   });
 
   test.each([1, 2, 3, "default", "auto", "unbounded", "100%", "50%"])(

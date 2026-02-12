@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
 import { test, expect, describe, beforeAll } from "bun:test";
-import { getUserEnvVar } from "../../../../src/config/userEnvVars";
 import { createRawPattern } from "../../../../src/internal/core";
 import {
   getProjectRoot,

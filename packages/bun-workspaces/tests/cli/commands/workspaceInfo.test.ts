@@ -6,86 +6,89 @@ import {
 } from "../../util/cliTestUtils";
 import { withWindowsPath } from "../../util/windows";
 
-describe("Workspace Info", () => {
-  test.each(listCommandAndAliases("workspaceInfo"))(
-    "Workspace Info: %s",
-    async (command) => {
-      const { run } = setupCliTest({
-        testProject: "simple1",
-      });
-
-      const plainResult = await run(command, "application-1a");
-      expect(plainResult.stderr.raw).toBeEmpty();
-      expect(plainResult.exitCode).toBe(0);
-      assertOutputMatches(
-        plainResult.stdout.raw,
-        `Workspace: application-1a
+const APPLICATION_1A_PLAIN_OUTPUT = `Workspace: application-1a
  - Aliases: deprecated_appA
  - Path: ${withWindowsPath("applications/applicationA")}
  - Glob Match: applications/*
- - Scripts: a-workspaces, all-workspaces, application-a`,
-      );
+ - Scripts: a-workspaces, all-workspaces, application-a`;
 
-      const expectedWorkspaceJson = {
-        name: "application-1a",
-        isRoot: false,
-        matchPattern: "applications/*",
-        path: withWindowsPath("applications/applicationA"),
-        scripts: ["a-workspaces", "all-workspaces", "application-a"],
-        aliases: ["deprecated_appA"],
-        dependencies: [],
-        dependents: [],
-      };
+const EXPECTED_APPLICATION_1A_JSON = {
+  name: "application-1a",
+  isRoot: false,
+  matchPattern: "applications/*",
+  path: withWindowsPath("applications/applicationA"),
+  scripts: ["a-workspaces", "all-workspaces", "application-a"],
+  aliases: ["deprecated_appA"],
+  dependencies: [],
+  dependents: [],
+};
 
-      const jsonResult = await run(command, "application-1a", "--json");
-      expect(jsonResult.stderr.raw).toBeEmpty();
-      expect(jsonResult.exitCode).toBe(0);
+describe("Workspace Info", () => {
+  describe("output format", () => {
+    test.each(listCommandAndAliases("workspaceInfo"))(
+      "plain output for workspace: %s",
+      async (command) => {
+        const { run } = setupCliTest({ testProject: "simple1" });
+        const result = await run(command, "application-1a");
+        expect(result.stderr.raw).toBeEmpty();
+        expect(result.exitCode).toBe(0);
+        assertOutputMatches(result.stdout.raw, APPLICATION_1A_PLAIN_OUTPUT);
+      },
+    );
+
+    test("--json outputs workspace info as JSON", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("info", "application-1a", "--json");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
       assertOutputMatches(
-        jsonResult.stdout.raw,
-        JSON.stringify(expectedWorkspaceJson),
+        result.stdout.raw,
+        JSON.stringify(EXPECTED_APPLICATION_1A_JSON),
       );
+    });
 
-      const jsonShortResult = await run(command, "application-1a", "-j");
-      expect(jsonShortResult.stderr.raw).toBeEmpty();
-      expect(jsonShortResult.exitCode).toBe(0);
+    test("-j outputs workspace info as JSON", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("info", "application-1a", "-j");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
       assertOutputMatches(
-        jsonShortResult.stdout.raw,
-        JSON.stringify(expectedWorkspaceJson),
+        result.stdout.raw,
+        JSON.stringify(EXPECTED_APPLICATION_1A_JSON),
       );
+    });
 
-      const jsonPrettyResult = await run(
-        command,
-        "application-1a",
-        "--json",
-        "--pretty",
-      );
-      expect(jsonPrettyResult.stderr.raw).toBeEmpty();
-      expect(jsonPrettyResult.exitCode).toBe(0);
+    test("--json --pretty outputs pretty-printed JSON", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("info", "application-1a", "--json", "--pretty");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
       assertOutputMatches(
-        jsonPrettyResult.stdout.raw,
-        JSON.stringify(expectedWorkspaceJson, null, 2),
+        result.stdout.raw,
+        JSON.stringify(EXPECTED_APPLICATION_1A_JSON, null, 2),
       );
+    });
 
-      const jsonPrettyShortResult = await run(
-        command,
-        "application-1a",
-        "-j",
-        "-p",
-      );
-      expect(jsonPrettyShortResult.stderr.raw).toBeEmpty();
-      expect(jsonPrettyShortResult.exitCode).toBe(0);
+    test("-j -p outputs pretty-printed JSON", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("info", "application-1a", "-j", "-p");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
       assertOutputMatches(
-        jsonPrettyShortResult.stdout.raw,
-        JSON.stringify(expectedWorkspaceJson, null, 2),
+        result.stdout.raw,
+        JSON.stringify(EXPECTED_APPLICATION_1A_JSON, null, 2),
       );
+    });
+  });
 
-      const doesNotExistResult = await run(command, "does-not-exist");
-      expect(doesNotExistResult.stdout.raw).toBeEmpty();
-      expect(doesNotExistResult.exitCode).toBe(1);
-      assertOutputMatches(
-        doesNotExistResult.stderr.sanitized,
-        'Workspace "does-not-exist" not found',
-      );
-    },
-  );
+  test("exits with error when workspace does not exist", async () => {
+    const { run } = setupCliTest({ testProject: "simple1" });
+    const result = await run("info", "does-not-exist");
+    expect(result.stdout.raw).toBeEmpty();
+    expect(result.exitCode).toBe(1);
+    assertOutputMatches(
+      result.stderr.sanitized,
+      'Workspace "does-not-exist" not found',
+    );
+  });
 });

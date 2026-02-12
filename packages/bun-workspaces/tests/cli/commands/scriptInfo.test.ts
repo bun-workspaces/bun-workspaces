@@ -5,94 +5,104 @@ import {
   listCommandAndAliases,
 } from "../../util/cliTestUtils";
 
-describe("Script Info", () => {
-  test.each(listCommandAndAliases("scriptInfo"))(
-    "Script Info: %s",
-    async (command) => {
-      const { run } = setupCliTest({
-        testProject: "simple1",
-      });
-
-      const multipleWorkspacesResult = await run(command, "all-workspaces");
-      expect(multipleWorkspacesResult.stderr.raw).toBeEmpty();
-      expect(multipleWorkspacesResult.exitCode).toBe(0);
-      assertOutputMatches(
-        multipleWorkspacesResult.stdout.raw,
-        `Script: all-workspaces
+const ALL_WORKSPACES_PLAIN_OUTPUT = `Script: all-workspaces
  - application-1a
  - application-1b
  - library-1a
- - library-1b`,
-      );
+ - library-1b`;
 
-      const singleWorkspaceResult = await run(command, "application-a");
-      expect(singleWorkspaceResult.stderr.raw).toBeEmpty();
-      expect(singleWorkspaceResult.exitCode).toBe(0);
+const APPLICATION_A_PLAIN_OUTPUT = `Script: application-a
+ - application-1a`;
+
+const EXPECTED_ALL_WORKSPACES_JSON = {
+  name: "all-workspaces",
+  workspaces: [
+    "application-1a",
+    "application-1b",
+    "library-1a",
+    "library-1b",
+  ],
+};
+
+describe("Script Info", () => {
+  describe("output format", () => {
+    test.each(listCommandAndAliases("scriptInfo"))(
+      "plain output for script with multiple workspaces: %s",
+      async (command) => {
+        const { run } = setupCliTest({ testProject: "simple1" });
+        const result = await run(command, "all-workspaces");
+        expect(result.stderr.raw).toBeEmpty();
+        expect(result.exitCode).toBe(0);
+        assertOutputMatches(result.stdout.raw, ALL_WORKSPACES_PLAIN_OUTPUT);
+      },
+    );
+
+    test("plain output for script with single workspace", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("script-info", "application-a");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
+      assertOutputMatches(result.stdout.raw, APPLICATION_A_PLAIN_OUTPUT);
+    });
+
+    test("--json outputs script info as JSON", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("script-info", "all-workspaces", "--json");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
       assertOutputMatches(
-        singleWorkspaceResult.stdout.raw,
-        `Script: application-a
- - application-1a`,
+        result.stdout.raw,
+        JSON.stringify(EXPECTED_ALL_WORKSPACES_JSON),
       );
+    });
 
-      const expectedAllWorkspacesJson = {
-        name: "all-workspaces",
-        workspaces: [
-          "application-1a",
-          "application-1b",
-          "library-1a",
-          "library-1b",
-        ],
-      };
-
-      const jsonResult = await run(command, "all-workspaces", "--json");
-      expect(jsonResult.stderr.raw).toBeEmpty();
-      expect(jsonResult.exitCode).toBe(0);
+    test("-j outputs script info as JSON", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("script-info", "all-workspaces", "-j");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
       assertOutputMatches(
-        jsonResult.stdout.raw,
-        JSON.stringify(expectedAllWorkspacesJson),
+        result.stdout.raw,
+        JSON.stringify(EXPECTED_ALL_WORKSPACES_JSON),
       );
+    });
 
-      const jsonShortResult = await run(command, "all-workspaces", "-j");
-      expect(jsonShortResult.stderr.raw).toBeEmpty();
-      expect(jsonShortResult.exitCode).toBe(0);
-      assertOutputMatches(
-        jsonShortResult.stdout.raw,
-        JSON.stringify(expectedAllWorkspacesJson),
-      );
-
-      const jsonPrettyResult = await run(
-        command,
+    test("--json --pretty outputs pretty-printed JSON", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run(
+        "script-info",
         "all-workspaces",
         "--json",
         "--pretty",
       );
-      expect(jsonPrettyResult.stderr.raw).toBeEmpty();
-      expect(jsonPrettyResult.exitCode).toBe(0);
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
       assertOutputMatches(
-        jsonPrettyResult.stdout.raw,
-        JSON.stringify(expectedAllWorkspacesJson, null, 2),
+        result.stdout.raw,
+        JSON.stringify(EXPECTED_ALL_WORKSPACES_JSON, null, 2),
       );
+    });
 
-      const jsonPrettyShortResult = await run(
-        command,
-        "all-workspaces",
-        "-j",
-        "-p",
-      );
-      expect(jsonPrettyShortResult.stderr.raw).toBeEmpty();
-      expect(jsonPrettyShortResult.exitCode).toBe(0);
+    test("-j -p outputs pretty-printed JSON", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("script-info", "all-workspaces", "-j", "-p");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
       assertOutputMatches(
-        jsonPrettyShortResult.stdout.raw,
-        JSON.stringify(expectedAllWorkspacesJson, null, 2),
+        result.stdout.raw,
+        JSON.stringify(EXPECTED_ALL_WORKSPACES_JSON, null, 2),
       );
+    });
+  });
 
-      const doesNotExistResult = await run(command, "does-not-exist");
-      expect(doesNotExistResult.stdout.raw).toBeEmpty();
-      expect(doesNotExistResult.exitCode).toBe(1);
-      assertOutputMatches(
-        doesNotExistResult.stderr.sanitized,
-        'Script not found: "does-not-exist"',
-      );
-    },
-  );
+  test("exits with error when script does not exist", async () => {
+    const { run } = setupCliTest({ testProject: "simple1" });
+    const result = await run("script-info", "does-not-exist");
+    expect(result.stdout.raw).toBeEmpty();
+    expect(result.exitCode).toBe(1);
+    assertOutputMatches(
+      result.stderr.sanitized,
+      'Script not found: "does-not-exist"',
+    );
+  });
 });

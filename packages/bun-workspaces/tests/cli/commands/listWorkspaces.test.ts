@@ -7,20 +7,7 @@ import {
 } from "../../util/cliTestUtils";
 import { withWindowsPath } from "../../util/windows";
 
-describe("List Workspaces", () => {
-  test.each(listCommandAndAliases("listWorkspaces"))(
-    "List Workspaces: %s",
-    async (command) => {
-      const { run } = setupCliTest({
-        testProject: "simple1",
-      });
-
-      const plainResult = await run(command);
-      expect(plainResult.stderr.raw).toBeEmpty();
-      expect(plainResult.exitCode).toBe(0);
-      assertOutputMatches(
-        plainResult.stdout.raw,
-        `Workspace: application-1a
+const PLAIN_OUTPUT_SIMPLE1 = `Workspace: application-1a
  - Aliases: deprecated_appA
  - Path: ${withWindowsPath("applications/applicationA")}
  - Glob Match: applications/*
@@ -39,137 +26,57 @@ Workspace: library-1b
  - Aliases: deprecated_libB
  - Path: ${withWindowsPath("libraries/libraryB")}
  - Glob Match: libraries/*
- - Scripts: all-workspaces, b-workspaces, library-b`,
-      );
+ - Scripts: all-workspaces, b-workspaces, library-b`;
 
-      const nameOnlyResult = await run(command, "--name-only");
-      expect(nameOnlyResult.stderr.raw).toBeEmpty();
-      expect(nameOnlyResult.exitCode).toBe(0);
-      assertOutputMatches(
-        nameOnlyResult.stdout.raw,
-        `application-1a
+const NAME_ONLY_OUTPUT_SIMPLE1 = `application-1a
 application-1b
 library-1a
-library-1b`,
-      );
+library-1b`;
 
-      const expectedJson = [
-        {
-          name: "application-1a",
-          isRoot: false,
-          matchPattern: "applications/*",
-          path: withWindowsPath("applications/applicationA"),
-          scripts: ["a-workspaces", "all-workspaces", "application-a"],
-          aliases: ["deprecated_appA"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          name: "application-1b",
-          isRoot: false,
-          matchPattern: "applications/*",
-          path: withWindowsPath("applications/applicationB"),
-          scripts: ["all-workspaces", "application-b", "b-workspaces"],
-          aliases: ["deprecated_appB"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          name: "library-1a",
-          isRoot: false,
-          matchPattern: "libraries/*",
-          path: withWindowsPath("libraries/libraryA"),
-          scripts: ["a-workspaces", "all-workspaces", "library-a"],
-          aliases: ["deprecated_libA"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          name: "library-1b",
-          isRoot: false,
-          matchPattern: "libraries/*",
-          path: withWindowsPath("libraries/libraryB"),
-          scripts: ["all-workspaces", "b-workspaces", "library-b"],
-          aliases: ["deprecated_libB"],
-          dependencies: [],
-          dependents: [],
-        },
-      ];
+const EXPECTED_WORKSPACES_JSON_SIMPLE1 = [
+  {
+    name: "application-1a",
+    isRoot: false,
+    matchPattern: "applications/*",
+    path: withWindowsPath("applications/applicationA"),
+    scripts: ["a-workspaces", "all-workspaces", "application-a"],
+    aliases: ["deprecated_appA"],
+    dependencies: [],
+    dependents: [],
+  },
+  {
+    name: "application-1b",
+    isRoot: false,
+    matchPattern: "applications/*",
+    path: withWindowsPath("applications/applicationB"),
+    scripts: ["all-workspaces", "application-b", "b-workspaces"],
+    aliases: ["deprecated_appB"],
+    dependencies: [],
+    dependents: [],
+  },
+  {
+    name: "library-1a",
+    isRoot: false,
+    matchPattern: "libraries/*",
+    path: withWindowsPath("libraries/libraryA"),
+    scripts: ["a-workspaces", "all-workspaces", "library-a"],
+    aliases: ["deprecated_libA"],
+    dependencies: [],
+    dependents: [],
+  },
+  {
+    name: "library-1b",
+    isRoot: false,
+    matchPattern: "libraries/*",
+    path: withWindowsPath("libraries/libraryB"),
+    scripts: ["all-workspaces", "b-workspaces", "library-b"],
+    aliases: ["deprecated_libB"],
+    dependencies: [],
+    dependents: [],
+  },
+];
 
-      const jsonResult = await run(command, "--json");
-      expect(jsonResult.stderr.raw).toBeEmpty();
-      expect(jsonResult.exitCode).toBe(0);
-      assertOutputMatches(jsonResult.stdout.raw, JSON.stringify(expectedJson));
-
-      const jsonShortResult = await run(command, "-j");
-      expect(jsonShortResult.stderr.raw).toBeEmpty();
-      expect(jsonShortResult.exitCode).toBe(0);
-      assertOutputMatches(
-        jsonShortResult.stdout.raw,
-        JSON.stringify(expectedJson),
-      );
-
-      const jsonPrettyResult = await run(command, "--json", "--pretty");
-      expect(jsonPrettyResult.stderr.raw).toBeEmpty();
-      expect(jsonPrettyResult.exitCode).toBe(0);
-      assertOutputMatches(
-        jsonPrettyResult.stdout.raw,
-        JSON.stringify(expectedJson, null, 2),
-      );
-
-      const jsonPrettyShortResult = await run(command, "-j", "--pretty");
-      expect(jsonPrettyShortResult.stderr.raw).toBeEmpty();
-      expect(jsonPrettyShortResult.exitCode).toBe(0);
-      assertOutputMatches(
-        jsonPrettyShortResult.stdout.raw,
-        JSON.stringify(expectedJson, null, 2),
-      );
-
-      const jsonNameOnlyResult = await run(command, "--name-only", "--json");
-      expect(jsonNameOnlyResult.stderr.raw).toBeEmpty();
-      expect(jsonNameOnlyResult.exitCode).toBe(0);
-      assertOutputMatches(
-        jsonNameOnlyResult.stdout.raw,
-        JSON.stringify(expectedJson.map(({ name }) => name)),
-      );
-
-      const jsonNameOnlyShortResult = await run(command, "-n", "--json");
-      expect(jsonNameOnlyShortResult.stderr.raw).toBeEmpty();
-      expect(jsonNameOnlyShortResult.exitCode).toBe(0);
-      assertOutputMatches(
-        jsonNameOnlyShortResult.stdout.raw,
-        JSON.stringify(expectedJson.map(({ name }) => name)),
-      );
-
-      const jsonNameOnlyPrettyResult = await run(
-        command,
-        "--name-only",
-        "--json",
-        "--pretty",
-      );
-      expect(jsonNameOnlyPrettyResult.stderr.raw).toBeEmpty();
-      expect(jsonNameOnlyPrettyResult.exitCode).toBe(0);
-      assertOutputMatches(
-        jsonNameOnlyPrettyResult.stdout.raw,
-        JSON.stringify(
-          expectedJson.map(({ name }) => name),
-          null,
-          2,
-        ),
-      );
-
-      const emptyWorkspacesResult = await setupCliTest({
-        testProject: "emptyWorkspaces",
-      }).run(command);
-      expect(emptyWorkspacesResult.stdout.raw).toBeEmpty();
-      expect(emptyWorkspacesResult.exitCode).toBe(1);
-      assertOutputMatches(
-        emptyWorkspacesResult.stderr.sanitizedCompactLines,
-        `No bun.lock found at ${withWindowsPath(getProjectRoot("emptyWorkspaces"))}. Check that this is the directory of your project and that you've ran 'bun install'. ` +
-          "If you have ran 'bun install', you may simply have no workspaces or dependencies in your project.",
-      );
-
-      const patternOutput = `Workspace: application-1a
+const PATTERN_OUTPUT_APPLICATION_AND_LIBRARY_1B = `Workspace: application-1a
  - Aliases: deprecated_appA
  - Path: ${withWindowsPath("applications/applicationA")}
  - Glob Match: applications/*
@@ -185,50 +92,174 @@ Workspace: library-1b
  - Glob Match: libraries/*
  - Scripts: all-workspaces, b-workspaces, library-b`;
 
-      const workspacePatternsResult = await run(
-        command,
-        "name:application-*",
-        "library-1b",
-      );
-      expect(workspacePatternsResult.stderr.raw).toBeEmpty();
-      expect(workspacePatternsResult.exitCode).toBe(0);
-      assertOutputMatches(workspacePatternsResult.stdout.raw, patternOutput);
+describe("List Workspaces", () => {
+  describe("output format", () => {
+    test.each(listCommandAndAliases("listWorkspaces"))(
+      "plain output lists workspaces with details: %s",
+      async (command) => {
+        const { run } = setupCliTest({ testProject: "simple1" });
+        const result = await run(command);
+        expect(result.stderr.raw).toBeEmpty();
+        expect(result.exitCode).toBe(0);
+        assertOutputMatches(result.stdout.raw, PLAIN_OUTPUT_SIMPLE1);
+      },
+    );
 
-      const workspacePatternsOptionResult = await run(
-        command,
+    test("--name-only outputs workspace names only", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("ls", "--name-only");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
+      assertOutputMatches(result.stdout.raw, NAME_ONLY_OUTPUT_SIMPLE1);
+    });
+
+    test("--json outputs workspace list as JSON", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("ls", "--json");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
+      assertOutputMatches(
+        result.stdout.raw,
+        JSON.stringify(EXPECTED_WORKSPACES_JSON_SIMPLE1),
+      );
+    });
+
+    test("-j outputs workspace list as JSON", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("ls", "-j");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
+      assertOutputMatches(
+        result.stdout.raw,
+        JSON.stringify(EXPECTED_WORKSPACES_JSON_SIMPLE1),
+      );
+    });
+
+    test("--json --pretty outputs pretty-printed JSON", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("ls", "--json", "--pretty");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
+      assertOutputMatches(
+        result.stdout.raw,
+        JSON.stringify(EXPECTED_WORKSPACES_JSON_SIMPLE1, null, 2),
+      );
+    });
+
+    test("-j --pretty outputs pretty-printed JSON", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("ls", "-j", "--pretty");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
+      assertOutputMatches(
+        result.stdout.raw,
+        JSON.stringify(EXPECTED_WORKSPACES_JSON_SIMPLE1, null, 2),
+      );
+    });
+
+    test("--name-only --json outputs workspace names only", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("ls", "--name-only", "--json");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
+      assertOutputMatches(
+        result.stdout.raw,
+        JSON.stringify(EXPECTED_WORKSPACES_JSON_SIMPLE1.map(({ name }) => name)),
+      );
+    });
+
+    test("-n --json outputs workspace names only", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("ls", "-n", "--json");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
+      assertOutputMatches(
+        result.stdout.raw,
+        JSON.stringify(EXPECTED_WORKSPACES_JSON_SIMPLE1.map(({ name }) => name)),
+      );
+    });
+
+    test("--name-only --json --pretty outputs pretty workspace names", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("ls", "--name-only", "--json", "--pretty");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
+      assertOutputMatches(
+        result.stdout.raw,
+        JSON.stringify(
+          EXPECTED_WORKSPACES_JSON_SIMPLE1.map(({ name }) => name),
+          null,
+          2,
+        ),
+      );
+    });
+  });
+
+  describe("workspace patterns", () => {
+    test("accepts inline workspace patterns", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("ls", "name:application-*", "library-1b");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
+      assertOutputMatches(
+        result.stdout.raw,
+        PATTERN_OUTPUT_APPLICATION_AND_LIBRARY_1B,
+      );
+    });
+
+    test("--workspace-patterns accepts patterns", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run(
+        "ls",
         "--workspace-patterns=application-* path:libraries/**/*B",
       );
-      expect(workspacePatternsOptionResult.stderr.raw).toBeEmpty();
-      expect(workspacePatternsOptionResult.exitCode).toBe(0);
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
       assertOutputMatches(
-        workspacePatternsOptionResult.stdout.raw,
-        patternOutput,
+        result.stdout.raw,
+        PATTERN_OUTPUT_APPLICATION_AND_LIBRARY_1B,
       );
+    });
 
-      const workspacePatternsOptionShortResult = await run(
-        command,
-        "-W",
-        "application-* library-1b",
-      );
-      expect(workspacePatternsOptionShortResult.stderr.raw).toBeEmpty();
-      expect(workspacePatternsOptionShortResult.exitCode).toBe(0);
+    test("-W accepts patterns", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run("ls", "-W", "application-* library-1b");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
       assertOutputMatches(
-        workspacePatternsOptionShortResult.stdout.raw,
-        patternOutput,
+        result.stdout.raw,
+        PATTERN_OUTPUT_APPLICATION_AND_LIBRARY_1B,
       );
+    });
 
-      const workspacePatternsOptionAndPatternResult = await run(
-        command,
+    test("errors when both inline patterns and --workspace-patterns used", async () => {
+      const { run } = setupCliTest({ testProject: "simple1" });
+      const result = await run(
+        "ls",
         "--workspace-patterns=application-* library-1b",
         "application-*",
         "library-1b",
       );
-      expect(workspacePatternsOptionAndPatternResult.stdout.raw).toBeEmpty();
-      expect(workspacePatternsOptionAndPatternResult.exitCode).toBe(1);
+      expect(result.stdout.raw).toBeEmpty();
+      expect(result.exitCode).toBe(1);
       assertOutputMatches(
-        workspacePatternsOptionAndPatternResult.stderr.sanitized,
+        result.stderr.sanitized,
         "CLI syntax error: Cannot use both inline workspace patterns and --workspace-patterns|-W option",
       );
-    },
-  );
+    });
+  });
+
+  describe("project states", () => {
+    test("exits with error when project has no bun.lock", async () => {
+      const { run } = setupCliTest({ testProject: "emptyWorkspaces" });
+      const result = await run("ls");
+      expect(result.stdout.raw).toBeEmpty();
+      expect(result.exitCode).toBe(1);
+      assertOutputMatches(
+        result.stderr.sanitizedCompactLines,
+        `No bun.lock found at ${withWindowsPath(getProjectRoot("emptyWorkspaces"))}. Check that this is the directory of your project and that you've ran 'bun install'. ` +
+          "If you have ran 'bun install', you may simply have no workspaces or dependencies in your project.",
+      );
+    });
+  });
 });

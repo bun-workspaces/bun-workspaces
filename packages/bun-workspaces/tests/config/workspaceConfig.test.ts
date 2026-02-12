@@ -10,8 +10,8 @@ import {
 import { logger } from "../../src/internal/logger";
 import { _internalCreateFileSystemProject } from "../../src/project";
 import { findWorkspaces } from "../../src/workspaces";
-import { createWorkspaceMapEntry } from "../features/findWorkspaces.test";
 import { getProjectRoot } from "../fixtures/testProjects";
+import { createTestWorkspace, createWorkspaceMapEntry } from "../util/testData";
 import { withWindowsPath } from "../util/windows";
 
 /**
@@ -302,46 +302,34 @@ describe("workspace config", () => {
       ).toEqual({
         rootWorkspace: expect.any(Object),
         workspaces: [
-          {
-            aliases: ["appA"],
-            isRoot: false,
-            matchPattern: "applications/*",
+          createTestWorkspace({
             name: "application-1a",
-            path: withWindowsPath("applications/application-a"),
-            scripts: ["a-workspaces", "all-workspaces", "application-a"],
-            dependencies: [],
-            dependents: [],
-          },
-          {
-            aliases: ["appB"],
-            isRoot: false,
+            path: "applications/application-a",
             matchPattern: "applications/*",
+            scripts: ["a-workspaces", "all-workspaces", "application-a"],
+            aliases: ["appA"],
+          }),
+          createTestWorkspace({
             name: "application-1b",
-            path: withWindowsPath("applications/application-b"),
+            path: "applications/application-b",
+            matchPattern: "applications/*",
             scripts: ["all-workspaces", "application-b", "b-workspaces"],
-            dependencies: [],
-            dependents: [],
-          },
-          {
-            aliases: ["libA", "libA2"],
-            isRoot: false,
-            matchPattern: "libraries/*",
+            aliases: ["appB"],
+          }),
+          createTestWorkspace({
             name: "library-1a",
-            path: withWindowsPath("libraries/library-a"),
-            scripts: ["a-workspaces", "all-workspaces", "library-a"],
-            dependencies: [],
-            dependents: [],
-          },
-          {
-            aliases: ["libB"],
-            isRoot: false,
+            path: "libraries/library-a",
             matchPattern: "libraries/*",
+            scripts: ["a-workspaces", "all-workspaces", "library-a"],
+            aliases: ["libA", "libA2"],
+          }),
+          createTestWorkspace({
             name: "library-1b",
-            path: withWindowsPath("libraries/library-b"),
+            path: "libraries/library-b",
+            matchPattern: "libraries/*",
             scripts: ["all-workspaces", "b-workspaces", "library-b"],
-            dependencies: [],
-            dependents: [],
-          },
+            aliases: ["libB"],
+          }),
         ],
         workspaceMap: {
           "test-root": createWorkspaceMapEntry({ alias: [] }),
@@ -368,46 +356,34 @@ describe("workspace config", () => {
       ).toEqual({
         rootWorkspace: expect.any(Object),
         workspaces: [
-          {
-            aliases: ["appA"],
-            isRoot: false,
-            matchPattern: "applications/*",
+          createTestWorkspace({
             name: "application-1a",
-            path: withWindowsPath("applications/application-a"),
-            scripts: ["a-workspaces", "all-workspaces", "application-a"],
-            dependencies: [],
-            dependents: [],
-          },
-          {
-            aliases: ["appB", "appB2"],
-            isRoot: false,
+            path: "applications/application-a",
             matchPattern: "applications/*",
+            scripts: ["a-workspaces", "all-workspaces", "application-a"],
+            aliases: ["appA"],
+          }),
+          createTestWorkspace({
             name: "application-1b",
-            path: withWindowsPath("applications/application-b"),
+            path: "applications/application-b",
+            matchPattern: "applications/*",
             scripts: ["all-workspaces", "application-b", "b-workspaces"],
-            dependencies: [],
-            dependents: [],
-          },
-          {
-            aliases: ["libA", "libA2"],
-            isRoot: false,
-            matchPattern: "libraries/*",
+            aliases: ["appB", "appB2"],
+          }),
+          createTestWorkspace({
             name: "library-1a",
-            path: withWindowsPath("libraries/library-a"),
-            scripts: ["a-workspaces", "all-workspaces", "library-a"],
-            dependencies: [],
-            dependents: [],
-          },
-          {
-            aliases: ["libB"],
-            isRoot: false,
+            path: "libraries/library-a",
             matchPattern: "libraries/*",
+            scripts: ["a-workspaces", "all-workspaces", "library-a"],
+            aliases: ["libA", "libA2"],
+          }),
+          createTestWorkspace({
             name: "library-1b",
-            path: withWindowsPath("libraries/library-b"),
+            path: "libraries/library-b",
+            matchPattern: "libraries/*",
             scripts: ["all-workspaces", "b-workspaces", "library-b"],
-            dependencies: [],
-            dependents: [],
-          },
+            aliases: ["libB"],
+          }),
         ],
         workspaceMap: {
           "test-root": createWorkspaceMapEntry({ alias: [] }),
@@ -428,66 +404,46 @@ describe("workspace config", () => {
         }),
       ).toEqual({
         workspaces: [
-          {
-            aliases: ["appA"],
-            isRoot: false,
-            matchPattern: "applications/*",
+          createTestWorkspace({
             name: "application-1a",
-            path: withWindowsPath("applications/application-a"),
+            path: "applications/application-a",
+            matchPattern: "applications/*",
             scripts: ["a-workspaces", "all-workspaces", "application-a"],
-            dependencies: [],
-            dependents: [],
-          },
-          {
-            aliases: ["appB_file"],
-            isRoot: false,
-            matchPattern: "applications/*",
+            aliases: ["appA"],
+          }),
+          createTestWorkspace({
             name: "application-1b",
-            path: withWindowsPath("applications/application-b"),
-            scripts: ["all-workspaces", "application-b", "b-workspaces"],
-            dependencies: [],
-            dependents: [],
-          },
-          {
-            aliases: [],
-            isRoot: false,
+            path: "applications/application-b",
             matchPattern: "applications/*",
+            scripts: ["all-workspaces", "application-b", "b-workspaces"],
+            aliases: ["appB_file"],
+          }),
+          createTestWorkspace({
             name: "application-1c",
-            path: withWindowsPath("applications/application-c"),
+            path: "applications/application-c",
+            matchPattern: "applications/*",
             scripts: ["all-workspaces", "application-c", "c-workspaces"],
-            dependencies: [],
-            dependents: [],
-          },
-          {
-            aliases: ["libA_file"],
-            isRoot: false,
-            matchPattern: "libraries/*",
+          }),
+          createTestWorkspace({
             name: "library-1a",
-            path: withWindowsPath("libraries/library-a"),
+            path: "libraries/library-a",
+            matchPattern: "libraries/*",
             scripts: ["a-workspaces", "all-workspaces", "library-a"],
-            dependencies: [],
-            dependents: [],
-          },
-          {
-            aliases: ["libB", "libB2"],
-            isRoot: false,
-            matchPattern: "libraries/*",
+            aliases: ["libA_file"],
+          }),
+          createTestWorkspace({
             name: "library-1b",
-            path: withWindowsPath("libraries/library-b"),
-            scripts: ["all-workspaces", "b-workspaces", "library-b"],
-            dependencies: [],
-            dependents: [],
-          },
-          {
-            aliases: [],
-            isRoot: false,
+            path: "libraries/library-b",
             matchPattern: "libraries/*",
+            scripts: ["all-workspaces", "b-workspaces", "library-b"],
+            aliases: ["libB", "libB2"],
+          }),
+          createTestWorkspace({
             name: "library-1c",
-            path: withWindowsPath("libraries/library-c"),
+            path: "libraries/library-c",
+            matchPattern: "libraries/*",
             scripts: ["all-workspaces", "c-workspaces", "library-c"],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         ],
         rootWorkspace: expect.any(Object),
         workspaceMap: {
@@ -556,66 +512,46 @@ describe("workspace config", () => {
       );
 
       expect(project.workspaces).toEqual([
-        {
-          aliases: ["deprecated_appA", "appA"],
-          isRoot: false,
-          matchPattern: "applications/*",
+        createTestWorkspace({
           name: "application-1a",
-          path: withWindowsPath("applications/application-a"),
+          path: "applications/application-a",
+          matchPattern: "applications/*",
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          aliases: ["deprecated_appB", "appB_file"],
-          isRoot: false,
-          matchPattern: "applications/*",
+          aliases: ["deprecated_appA", "appA"],
+        }),
+        createTestWorkspace({
           name: "application-1b",
-          path: withWindowsPath("applications/application-b"),
-          scripts: ["all-workspaces", "application-b", "b-workspaces"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          aliases: [],
-          isRoot: false,
+          path: "applications/application-b",
           matchPattern: "applications/*",
+          scripts: ["all-workspaces", "application-b", "b-workspaces"],
+          aliases: ["deprecated_appB", "appB_file"],
+        }),
+        createTestWorkspace({
           name: "application-1c",
-          path: withWindowsPath("applications/application-c"),
+          path: "applications/application-c",
+          matchPattern: "applications/*",
           scripts: ["all-workspaces", "application-c", "c-workspaces"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          aliases: ["deprecated_libA", "libA_file"],
-          isRoot: false,
-          matchPattern: "libraries/*",
+        }),
+        createTestWorkspace({
           name: "library-1a",
-          path: withWindowsPath("libraries/library-a"),
+          path: "libraries/library-a",
+          matchPattern: "libraries/*",
           scripts: ["a-workspaces", "all-workspaces", "library-a"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          aliases: ["deprecated_libB", "libB", "libB2"],
-          isRoot: false,
-          matchPattern: "libraries/*",
+          aliases: ["deprecated_libA", "libA_file"],
+        }),
+        createTestWorkspace({
           name: "library-1b",
-          path: withWindowsPath("libraries/library-b"),
-          scripts: ["all-workspaces", "b-workspaces", "library-b"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          aliases: [],
-          isRoot: false,
+          path: "libraries/library-b",
           matchPattern: "libraries/*",
+          scripts: ["all-workspaces", "b-workspaces", "library-b"],
+          aliases: ["deprecated_libB", "libB", "libB2"],
+        }),
+        createTestWorkspace({
           name: "library-1c",
-          path: withWindowsPath("libraries/library-c"),
+          path: "libraries/library-c",
+          matchPattern: "libraries/*",
           scripts: ["all-workspaces", "c-workspaces", "library-c"],
-          dependencies: [],
-          dependents: [],
-        },
+        }),
       ]);
     });
   });

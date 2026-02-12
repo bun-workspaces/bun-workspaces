@@ -3,6 +3,7 @@ import {
   matchWorkspacesByPatterns,
   parseWorkspacePattern,
 } from "../../src/workspaces/workspacePattern";
+import { createTestWorkspace } from "../util/testData";
 
 describe("Test workspace pattern", () => {
   test("parseWorkspacePattern", () => {
@@ -87,46 +88,26 @@ describe("Test workspace pattern", () => {
 
   test("matchWorkspacesByPatterns", () => {
     const workspaces = {
-      a: {
+      a: createTestWorkspace({
         name: "workspace-a",
-        isRoot: false,
-        matchPattern: "",
         path: "packages/a",
-        scripts: [],
         aliases: ["wsa"],
-        dependencies: [],
-        dependents: [],
-      },
-      b: {
+      }),
+      b: createTestWorkspace({
         name: "workspace-b",
-        isRoot: false,
-        matchPattern: "",
         path: "packages/b",
-        scripts: [],
         aliases: ["wsb"],
-        dependencies: [],
-        dependents: [],
-      },
-      c: {
+      }),
+      c: createTestWorkspace({
         name: "workspace-c",
-        isRoot: false,
-        matchPattern: "",
         path: "packages/nested/c",
-        scripts: [],
         aliases: ["wsc"],
-        dependencies: [],
-        dependents: [],
-      },
-      d: {
+      }),
+      d: createTestWorkspace({
         name: "workspace-d",
-        isRoot: false,
-        matchPattern: "",
         path: "packages/nested/d",
-        scripts: [],
         aliases: ["wsd"],
-        dependencies: [],
-        dependents: [],
-      },
+      }),
     };
 
     const workspacesArray = Object.values(workspaces);

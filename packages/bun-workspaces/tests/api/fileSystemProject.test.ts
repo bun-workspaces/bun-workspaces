@@ -5,6 +5,7 @@ import { getUserEnvVar, getUserEnvVarName } from "../../src/config/userEnvVars";
 import { BUN_LOCK_ERRORS } from "../../src/internal/bun";
 import { createFileSystemProject, PROJECT_ERRORS } from "../../src/project";
 import { getProjectRoot } from "../fixtures/testProjects";
+import { createTestWorkspace } from "../util/testData";
 import { withWindowsPath } from "../util/windows";
 
 describe("Test FileSystemProject", () => {
@@ -69,16 +70,12 @@ describe("Test FileSystemProject", () => {
       durationMs: expect.any(Number),
       signal: null,
       metadata: {
-        workspace: {
+        workspace: createTestWorkspace({
           name: "application-a",
-          isRoot: false,
-          path: withWindowsPath("applications/applicationA"),
+          path: "applications/applicationA",
           matchPattern: "applications/*",
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
-          aliases: [],
-          dependencies: [],
-          dependents: [],
-        },
+        }),
       },
     });
   });
@@ -111,16 +108,13 @@ describe("Test FileSystemProject", () => {
       durationMs: expect.any(Number),
       signal: null,
       metadata: {
-        workspace: {
+        workspace: createTestWorkspace({
           name: "application-1a",
-          isRoot: false,
-          path: withWindowsPath("applications/application-a"),
+          path: "applications/application-a",
           matchPattern: "applications/*",
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
           aliases: ["appA"],
-          dependencies: [],
-          dependents: [],
-        },
+        }),
       },
     });
   });
@@ -188,16 +182,12 @@ describe("Test FileSystemProject", () => {
       durationMs: expect.any(Number),
       signal: null,
       metadata: {
-        workspace: {
+        workspace: createTestWorkspace({
           name: "fail1",
-          isRoot: false,
-          path: withWindowsPath("packages/fail1"),
+          path: "packages/fail1",
           matchPattern: "packages/**/*",
           scripts: ["test-exit"],
-          aliases: [],
-          dependencies: [],
-          dependents: [],
-        },
+        }),
       },
     });
   });
@@ -295,16 +285,14 @@ describe("Test FileSystemProject", () => {
         "script for b workspaces",
       );
       expect(outputChunk.streamName).toBe("stdout");
-      expect(scriptMetadata.workspace).toEqual({
-        name: "library-b",
-        isRoot: false,
-        path: withWindowsPath("libraries/libraryB"),
-        matchPattern: "libraries/**/*",
-        scripts: ["all-workspaces", "b-workspaces", "library-b"],
-        aliases: [],
-        dependencies: [],
-        dependents: [],
-      });
+      expect(scriptMetadata.workspace).toEqual(
+        createTestWorkspace({
+          name: "library-b",
+          path: "libraries/libraryB",
+          matchPattern: "libraries/**/*",
+          scripts: ["all-workspaces", "b-workspaces", "library-b"],
+        }),
+      );
     }
 
     const summaryResult = await summary;
@@ -325,16 +313,12 @@ describe("Test FileSystemProject", () => {
           durationMs: expect.any(Number),
           signal: null,
           metadata: {
-            workspace: {
+            workspace: createTestWorkspace({
               name: "library-b",
-              isRoot: false,
-              path: withWindowsPath("libraries/libraryB"),
+              path: "libraries/libraryB",
               matchPattern: "libraries/**/*",
               scripts: ["all-workspaces", "b-workspaces", "library-b"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-            },
+            }),
           },
         },
       ],
@@ -392,16 +376,12 @@ describe("Test FileSystemProject", () => {
           durationMs: expect.any(Number),
           signal: null,
           metadata: {
-            workspace: {
+            workspace: createTestWorkspace({
               name: "application-1a",
-              isRoot: false,
               matchPattern: "applications/*",
-              path: withWindowsPath("applications/applicationA"),
+              path: "applications/applicationA",
               scripts: ["a-workspaces", "all-workspaces", "application-a"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-            },
+            }),
           },
         },
         {
@@ -412,16 +392,12 @@ describe("Test FileSystemProject", () => {
           durationMs: expect.any(Number),
           signal: null,
           metadata: {
-            workspace: {
+            workspace: createTestWorkspace({
               name: "application-1b",
-              isRoot: false,
               matchPattern: "applications/*",
-              path: withWindowsPath("applications/applicationB"),
+              path: "applications/applicationB",
               scripts: ["all-workspaces", "application-b", "b-workspaces"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-            },
+            }),
           },
         },
         {
@@ -432,16 +408,12 @@ describe("Test FileSystemProject", () => {
           durationMs: expect.any(Number),
           signal: null,
           metadata: {
-            workspace: {
+            workspace: createTestWorkspace({
               name: "library-1a",
-              isRoot: false,
               matchPattern: "libraries/*",
-              path: withWindowsPath("libraries/libraryA"),
+              path: "libraries/libraryA",
               scripts: ["a-workspaces", "all-workspaces", "library-a"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-            },
+            }),
           },
         },
         {
@@ -452,16 +424,12 @@ describe("Test FileSystemProject", () => {
           durationMs: expect.any(Number),
           signal: null,
           metadata: {
-            workspace: {
+            workspace: createTestWorkspace({
               name: "library-1b",
-              isRoot: false,
               matchPattern: "libraries/*",
-              path: withWindowsPath("libraries/libraryB"),
+              path: "libraries/libraryB",
               scripts: ["all-workspaces", "b-workspaces", "library-b"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-            },
+            }),
           },
         },
       ],
@@ -486,16 +454,12 @@ describe("Test FileSystemProject", () => {
           textNoAnsi: "script for b workspaces",
         },
         scriptMetadata: {
-          workspace: {
+          workspace: createTestWorkspace({
             name: "application-1b",
-            isRoot: false,
             matchPattern: "applications/*",
-            path: withWindowsPath("applications/applicationB"),
+            path: "applications/applicationB",
             scripts: ["all-workspaces", "application-b", "b-workspaces"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         },
       },
       {
@@ -505,16 +469,12 @@ describe("Test FileSystemProject", () => {
           textNoAnsi: "script for b workspaces",
         },
         scriptMetadata: {
-          workspace: {
+          workspace: createTestWorkspace({
             name: "library-1b",
-            isRoot: false,
             matchPattern: "libraries/*",
-            path: withWindowsPath("libraries/libraryB"),
+            path: "libraries/libraryB",
             scripts: ["all-workspaces", "b-workspaces", "library-b"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         },
       },
     ];
@@ -551,16 +511,12 @@ describe("Test FileSystemProject", () => {
           durationMs: expect.any(Number),
           signal: null,
           metadata: {
-            workspace: {
+            workspace: createTestWorkspace({
               name: "application-1b",
-              isRoot: false,
               matchPattern: "applications/*",
-              path: withWindowsPath("applications/applicationB"),
+              path: "applications/applicationB",
               scripts: ["all-workspaces", "application-b", "b-workspaces"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-            },
+            }),
           },
         },
         {
@@ -571,16 +527,12 @@ describe("Test FileSystemProject", () => {
           durationMs: expect.any(Number),
           signal: null,
           metadata: {
-            workspace: {
+            workspace: createTestWorkspace({
               name: "library-1b",
-              isRoot: false,
               matchPattern: "libraries/*",
-              path: withWindowsPath("libraries/libraryB"),
+              path: "libraries/libraryB",
               scripts: ["all-workspaces", "b-workspaces", "library-b"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-            },
+            }),
           },
         },
       ],
@@ -618,16 +570,12 @@ describe("Test FileSystemProject", () => {
           textNoAnsi: "script for all workspaces",
         },
         scriptMetadata: {
-          workspace: {
+          workspace: createTestWorkspace({
             name: "application-1a",
-            isRoot: false,
             matchPattern: "applications/*",
-            path: withWindowsPath("applications/applicationA"),
+            path: "applications/applicationA",
             scripts: ["a-workspaces", "all-workspaces", "application-a"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         },
       },
       {
@@ -637,16 +585,12 @@ describe("Test FileSystemProject", () => {
           textNoAnsi: "script for all workspaces",
         },
         scriptMetadata: {
-          workspace: {
+          workspace: createTestWorkspace({
             name: "application-1b",
-            isRoot: false,
             matchPattern: "applications/*",
-            path: withWindowsPath("applications/applicationB"),
+            path: "applications/applicationB",
             scripts: ["all-workspaces", "application-b", "b-workspaces"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         },
       },
       {
@@ -656,16 +600,12 @@ describe("Test FileSystemProject", () => {
           textNoAnsi: "script for all workspaces",
         },
         scriptMetadata: {
-          workspace: {
+          workspace: createTestWorkspace({
             name: "library-1a",
-            isRoot: false,
             matchPattern: "libraries/*",
-            path: withWindowsPath("libraries/libraryA"),
+            path: "libraries/libraryA",
             scripts: ["a-workspaces", "all-workspaces", "library-a"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         },
       },
       {
@@ -675,16 +615,12 @@ describe("Test FileSystemProject", () => {
           textNoAnsi: "script for all workspaces",
         },
         scriptMetadata: {
-          workspace: {
+          workspace: createTestWorkspace({
             name: "library-1b",
-            isRoot: false,
             matchPattern: "libraries/*",
-            path: withWindowsPath("libraries/libraryB"),
+            path: "libraries/libraryB",
             scripts: ["all-workspaces", "b-workspaces", "library-b"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         },
       },
     ];
@@ -722,16 +658,12 @@ describe("Test FileSystemProject", () => {
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: {
+            workspace: createTestWorkspace({
               name: "application-1a",
-              isRoot: false,
               matchPattern: "applications/*",
-              path: withWindowsPath("applications/applicationA"),
+              path: "applications/applicationA",
               scripts: ["a-workspaces", "all-workspaces", "application-a"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-            },
+            }),
           },
         },
         {
@@ -742,16 +674,12 @@ describe("Test FileSystemProject", () => {
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: {
+            workspace: createTestWorkspace({
               name: "application-1b",
-              isRoot: false,
               matchPattern: "applications/*",
-              path: withWindowsPath("applications/applicationB"),
+              path: "applications/applicationB",
               scripts: ["all-workspaces", "application-b", "b-workspaces"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-            },
+            }),
           },
         },
         {
@@ -762,16 +690,12 @@ describe("Test FileSystemProject", () => {
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: {
+            workspace: createTestWorkspace({
               name: "library-1a",
-              isRoot: false,
               matchPattern: "libraries/*",
-              path: withWindowsPath("libraries/libraryA"),
+              path: "libraries/libraryA",
               scripts: ["a-workspaces", "all-workspaces", "library-a"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-            },
+            }),
           },
         },
         {
@@ -782,16 +706,12 @@ describe("Test FileSystemProject", () => {
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: {
+            workspace: createTestWorkspace({
               name: "library-1b",
-              isRoot: false,
               matchPattern: "libraries/*",
-              path: withWindowsPath("libraries/libraryB"),
+              path: "libraries/libraryB",
               scripts: ["all-workspaces", "b-workspaces", "library-b"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-            },
+            }),
           },
         },
       ],
@@ -817,16 +737,12 @@ describe("Test FileSystemProject", () => {
           textNoAnsi: "passed args: --arg1=value1 --arg2=value2",
         },
         scriptMetadata: {
-          workspace: {
+          workspace: createTestWorkspace({
             name: "application-1a",
-            isRoot: false,
             matchPattern: "applications/*",
-            path: withWindowsPath("applications/applicationA"),
+            path: "applications/applicationA",
             scripts: ["test-echo"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         },
       },
       {
@@ -836,16 +752,12 @@ describe("Test FileSystemProject", () => {
           textNoAnsi: "passed args: --arg1=value1 --arg2=value2",
         },
         scriptMetadata: {
-          workspace: {
+          workspace: createTestWorkspace({
             name: "application-1b",
-            isRoot: false,
             matchPattern: "applications/*",
-            path: withWindowsPath("applications/applicationB"),
+            path: "applications/applicationB",
             scripts: ["test-echo"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         },
       },
     ];
@@ -1016,16 +928,12 @@ test-script-metadata-env-b
           textNoAnsi: "fail1",
         },
         scriptMetadata: {
-          workspace: {
+          workspace: createTestWorkspace({
             name: "fail1",
-            isRoot: false,
             matchPattern: "packages/**/*",
-            path: withWindowsPath("packages/fail1"),
+            path: "packages/fail1",
             scripts: ["test-exit"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         },
       },
       {
@@ -1035,16 +943,12 @@ test-script-metadata-env-b
           textNoAnsi: "fail2",
         },
         scriptMetadata: {
-          workspace: {
+          workspace: createTestWorkspace({
             name: "fail2",
-            isRoot: false,
             matchPattern: "packages/**/*",
-            path: withWindowsPath("packages/fail2"),
+            path: "packages/fail2",
             scripts: ["test-exit"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         },
       },
       {
@@ -1054,15 +958,12 @@ test-script-metadata-env-b
           textNoAnsi: "success1",
         },
         scriptMetadata: {
-          workspace: {
+          workspace: createTestWorkspace({
             name: "success1",
             matchPattern: "packages/**/*",
-            path: withWindowsPath("packages/success1"),
+            path: "packages/success1",
             scripts: ["test-exit"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         },
       },
       {
@@ -1072,15 +973,12 @@ test-script-metadata-env-b
           textNoAnsi: "success2",
         },
         scriptMetadata: {
-          workspace: {
+          workspace: createTestWorkspace({
             name: "success2",
             matchPattern: "packages/**/*",
-            path: withWindowsPath("packages/success2"),
+            path: "packages/success2",
             scripts: ["test-exit"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         },
       },
     ];
@@ -1118,16 +1016,12 @@ test-script-metadata-env-b
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: {
+            workspace: createTestWorkspace({
               name: "fail1",
-              isRoot: false,
               matchPattern: "packages/**/*",
-              path: withWindowsPath("packages/fail1"),
+              path: "packages/fail1",
               scripts: ["test-exit"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-            },
+            }),
           },
         },
         {
@@ -1138,16 +1032,12 @@ test-script-metadata-env-b
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: {
+            workspace: createTestWorkspace({
               name: "fail2",
-              isRoot: false,
               matchPattern: "packages/**/*",
-              path: withWindowsPath("packages/fail2"),
+              path: "packages/fail2",
               scripts: ["test-exit"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-            },
+            }),
           },
         },
         {
@@ -1158,16 +1048,12 @@ test-script-metadata-env-b
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: {
+            workspace: createTestWorkspace({
               name: "success1",
-              isRoot: false,
               matchPattern: "packages/**/*",
-              path: withWindowsPath("packages/success1"),
+              path: "packages/success1",
               scripts: ["test-exit"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-            },
+            }),
           },
         },
         {
@@ -1178,16 +1064,12 @@ test-script-metadata-env-b
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: {
+            workspace: createTestWorkspace({
               name: "success2",
-              isRoot: false,
               matchPattern: "packages/**/*",
-              path: withWindowsPath("packages/success2"),
+              path: "packages/success2",
               scripts: ["test-exit"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-            },
+            }),
           },
         },
       ],
@@ -1213,15 +1095,12 @@ test-script-metadata-env-b
           textNoAnsi: "first",
         },
         scriptMetadata: {
-          workspace: {
+          workspace: createTestWorkspace({
             name: "first",
             matchPattern: "packages/**/*",
-            path: withWindowsPath("packages/first"),
+            path: "packages/first",
             scripts: ["test-delay"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         },
       },
       {
@@ -1231,15 +1110,12 @@ test-script-metadata-env-b
           textNoAnsi: "second",
         },
         scriptMetadata: {
-          workspace: {
+          workspace: createTestWorkspace({
             name: "second",
             matchPattern: "packages/**/*",
-            path: withWindowsPath("packages/second"),
+            path: "packages/second",
             scripts: ["test-delay"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         },
       },
       {
@@ -1249,15 +1125,12 @@ test-script-metadata-env-b
           textNoAnsi: "third",
         },
         scriptMetadata: {
-          workspace: {
+          workspace: createTestWorkspace({
             name: "third",
             matchPattern: "packages/**/*",
-            path: withWindowsPath("packages/third"),
+            path: "packages/third",
             scripts: ["test-delay"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         },
       },
       {
@@ -1267,15 +1140,12 @@ test-script-metadata-env-b
           textNoAnsi: "fourth",
         },
         scriptMetadata: {
-          workspace: {
+          workspace: createTestWorkspace({
             name: "fourth",
             matchPattern: "packages/**/*",
-            path: withWindowsPath("packages/fourth"),
+            path: "packages/fourth",
             scripts: ["test-delay"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         },
       },
       {
@@ -1285,15 +1155,12 @@ test-script-metadata-env-b
           textNoAnsi: "fifth",
         },
         scriptMetadata: {
-          workspace: {
+          workspace: createTestWorkspace({
             name: "fifth",
             matchPattern: "packages/**/*",
-            path: withWindowsPath("packages/fifth"),
+            path: "packages/fifth",
             scripts: ["test-delay"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         },
       },
     ];
@@ -1334,16 +1201,12 @@ test-script-metadata-env-b
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: {
+            workspace: createTestWorkspace({
               name: "fifth",
-              isRoot: false,
               matchPattern: "packages/**/*",
-              path: withWindowsPath("packages/fifth"),
+              path: "packages/fifth",
               scripts: ["test-delay"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-            },
+            }),
           },
         },
         {
@@ -1354,16 +1217,12 @@ test-script-metadata-env-b
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: {
+            workspace: createTestWorkspace({
               name: "first",
-              isRoot: false,
               matchPattern: "packages/**/*",
-              path: withWindowsPath("packages/first"),
+              path: "packages/first",
               scripts: ["test-delay"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-            },
+            }),
           },
         },
         {
@@ -1374,16 +1233,12 @@ test-script-metadata-env-b
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: {
+            workspace: createTestWorkspace({
               name: "fourth",
-              isRoot: false,
               matchPattern: "packages/**/*",
-              path: withWindowsPath("packages/fourth"),
+              path: "packages/fourth",
               scripts: ["test-delay"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-            },
+            }),
           },
         },
         {
@@ -1394,16 +1249,12 @@ test-script-metadata-env-b
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: {
+            workspace: createTestWorkspace({
               name: "second",
-              isRoot: false,
               matchPattern: "packages/**/*",
-              path: withWindowsPath("packages/second"),
+              path: "packages/second",
               scripts: ["test-delay"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-            },
+            }),
           },
         },
         {
@@ -1414,16 +1265,12 @@ test-script-metadata-env-b
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: {
+            workspace: createTestWorkspace({
               name: "third",
-              isRoot: false,
               matchPattern: "packages/**/*",
-              path: withWindowsPath("packages/third"),
+              path: "packages/third",
               scripts: ["test-delay"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-            },
+            }),
           },
         },
       ],

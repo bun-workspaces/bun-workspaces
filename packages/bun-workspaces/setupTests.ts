@@ -39,4 +39,6 @@ for (const file of new Glob("**/*/package.json").scanSync({
   );
 }
 
-await Promise.all(promises);
+if (promises.length) {
+  await Promise.all(promises);
+}

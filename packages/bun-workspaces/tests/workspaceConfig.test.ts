@@ -25,468 +25,515 @@ import { withWindowsPath } from "./util/windows";
  * for config loading.
  */
 
-describe("Test workspace config", () => {
-  test("loadWorkspaceConfig", () => {
-    const config = loadWorkspaceConfig(
-      path.join(
-        getProjectRoot("workspaceConfigPackageFileMix"),
-        withWindowsPath("applications/application-a"),
-      ),
-    );
-
-    expect(config).toEqual({
-      aliases: ["appA"],
-      scripts: {
-        "all-workspaces": {
-          order: 1,
-        },
-      },
-    });
-
-    const config2 = loadWorkspaceConfig(
-      path.join(
-        getProjectRoot("workspaceConfigPackageFileMix"),
-        withWindowsPath("applications/application-b"),
-      ),
-    );
-
-    expect(config2).toEqual({
-      aliases: ["appB_file"],
-      scripts: {
-        "all-workspaces": {
-          order: 0,
-        },
-        "b-workspaces": {
-          order: 2,
-        },
-      },
-    });
-
-    const config3 = loadWorkspaceConfig(
-      path.join(
-        getProjectRoot("workspaceConfigPackageFileMix"),
-        withWindowsPath("libraries/library-a"),
-      ),
-    );
-
-    expect(config3).toEqual({
-      aliases: ["libA_file"],
-      scripts: {},
-    });
-
-    const config4 = loadWorkspaceConfig(
-      path.join(
-        getProjectRoot("workspaceConfigPackageFileMix"),
-        withWindowsPath("libraries/library-b"),
-      ),
-    );
-
-    expect(config4).toEqual({
-      aliases: ["libB", "libB2"],
-      scripts: {
-        "all-workspaces": {
-          order: 100,
-        },
-        "b-workspaces": {
-          order: 2,
-        },
-      },
-    });
-
-    const config5 = loadWorkspaceConfig(
-      path.join(
-        getProjectRoot("workspaceConfigPackageFileMix"),
-        withWindowsPath("libraries/library-c"),
-      ),
-    );
-    expect(config5).toEqual({
-      aliases: [],
-      scripts: {},
-    });
-
-    const config6 = loadWorkspaceConfig(
-      path.join(
-        getProjectRoot("workspaceConfigPackageFileMix"),
-        withWindowsPath("applications/application-c"),
-      ),
-    );
-    expect(config6).toEqual({
-      aliases: [],
-      scripts: {},
-    });
-
-    const config7 = loadWorkspaceConfig(
-      path.join(
-        getProjectRoot("workspaceConfigFileOnly"),
-        withWindowsPath("applications/application-a"),
-      ),
-    );
-    expect(config7).toEqual({
-      aliases: ["appA"],
-      scripts: {
-        "all-workspaces": {
-          order: 1,
-        },
-      },
-    });
-  });
-
-  test("loadWorkspaceConfig with invalid JSON", () => {
-    expect(() =>
-      loadWorkspaceConfig(
+describe("workspace config", () => {
+  describe("loadWorkspaceConfig", () => {
+    test("returns config for application-a in packageFileMix project", () => {
+      const config = loadWorkspaceConfig(
         path.join(
-          getProjectRoot("workspaceConfigInvalidJson"),
+          getProjectRoot("workspaceConfigPackageFileMix"),
           withWindowsPath("applications/application-a"),
         ),
-      ),
-    ).toThrow(InvalidJSONError);
+      );
+      expect(config).toEqual({
+        aliases: ["appA"],
+        scripts: {
+          "all-workspaces": {
+            order: 1,
+          },
+        },
+      });
+    });
 
-    expect(() =>
-      loadWorkspaceConfig(
+    test("returns config for application-b in packageFileMix project", () => {
+      const config = loadWorkspaceConfig(
         path.join(
-          getProjectRoot("workspaceConfigInvalidJson"),
+          getProjectRoot("workspaceConfigPackageFileMix"),
           withWindowsPath("applications/application-b"),
         ),
-      ),
-    ).toThrow(InvalidJSONError);
-  });
+      );
+      expect(config).toEqual({
+        aliases: ["appB_file"],
+        scripts: {
+          "all-workspaces": {
+            order: 0,
+          },
+          "b-workspaces": {
+            order: 2,
+          },
+        },
+      });
+    });
 
-  test("validateWorkspaceConfig", () => {
-    expect(() =>
-      validateWorkspaceConfig({
-        // @ts-expect-error - Invalid config
-        alias: [["invalid"]],
-      }),
-    ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
-
-    expect(() =>
-      validateWorkspaceConfig({
-        // @ts-expect-error - Invalid config
-        alias: {},
-      }),
-    ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
-
-    expect(() =>
-      validateWorkspaceConfig({
-        // @ts-expect-error - Invalid config
-        alias: 123,
-      }),
-    ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
-
-    expect(() =>
-      validateWorkspaceConfig({
-        // @ts-expect-error - Invalid config
-        alias: [123, null],
-      }),
-    ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
-  });
-
-  test("loadWorkspaceConfig with invalid config", () => {
-    expect(() =>
-      loadWorkspaceConfig(
+    test("returns config for library-a in packageFileMix project", () => {
+      const config = loadWorkspaceConfig(
         path.join(
-          getProjectRoot("workspaceConfigInvalidConfig"),
-          withWindowsPath("applications/application-a"),
+          getProjectRoot("workspaceConfigPackageFileMix"),
+          withWindowsPath("libraries/library-a"),
         ),
-      ),
-    ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
+      );
+      expect(config).toEqual({
+        aliases: ["libA_file"],
+        scripts: {},
+      });
+    });
 
-    expect(() =>
-      loadWorkspaceConfig(
+    test("returns config for library-b in packageFileMix project", () => {
+      const config = loadWorkspaceConfig(
         path.join(
-          getProjectRoot("workspaceConfigInvalidConfig"),
-          withWindowsPath("applications/application-b"),
+          getProjectRoot("workspaceConfigPackageFileMix"),
+          withWindowsPath("libraries/library-b"),
         ),
-      ),
-    ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
+      );
+      expect(config).toEqual({
+        aliases: ["libB", "libB2"],
+        scripts: {
+          "all-workspaces": {
+            order: 100,
+          },
+          "b-workspaces": {
+            order: 2,
+          },
+        },
+      });
+    });
 
-    expect(() =>
-      loadWorkspaceConfig(
+    test("returns empty config for library-c in packageFileMix project", () => {
+      const config = loadWorkspaceConfig(
         path.join(
-          getProjectRoot("workspaceConfigInvalidConfig"),
+          getProjectRoot("workspaceConfigPackageFileMix"),
+          withWindowsPath("libraries/library-c"),
+        ),
+      );
+      expect(config).toEqual({
+        aliases: [],
+        scripts: {},
+      });
+    });
+
+    test("returns empty config for application-c in packageFileMix project", () => {
+      const config = loadWorkspaceConfig(
+        path.join(
+          getProjectRoot("workspaceConfigPackageFileMix"),
           withWindowsPath("applications/application-c"),
         ),
-      ),
-    ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
-
-    expect(() =>
-      loadWorkspaceConfig(
-        path.join(
-          getProjectRoot("workspaceConfigInvalidConfig"),
-          withWindowsPath("applications/application-d"),
-        ),
-      ),
-    ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
-
-    expect(() =>
-      loadWorkspaceConfig(
-        path.join(
-          getProjectRoot("workspaceConfigInvalidConfig"),
-          withWindowsPath("applications/application-e"),
-        ),
-      ),
-    ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
-
-    expect(() =>
-      loadWorkspaceConfig(
-        path.join(
-          getProjectRoot("workspaceConfigInvalidConfig"),
-          withWindowsPath("applications/application-f"),
-        ),
-      ),
-    ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
-
-    expect(() =>
-      loadWorkspaceConfig(
-        path.join(
-          getProjectRoot("workspaceConfigInvalidConfig"),
-          withWindowsPath("applications/application-g"),
-        ),
-      ),
-    ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
-
-    expect(() =>
-      loadWorkspaceConfig(
-        path.join(
-          getProjectRoot("workspaceConfigInvalidConfig"),
-          withWindowsPath("applications/application-h"),
-        ),
-      ),
-    ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
-  });
-
-  test("findWorkspaces results with workspace configs", () => {
-    expect(
-      findWorkspaces({
-        rootDirectory: getProjectRoot("workspaceConfigFileOnly"),
-      }),
-    ).toEqual({
-      rootWorkspace: expect.any(Object),
-      workspaces: [
-        {
-          aliases: ["appA"],
-          isRoot: false,
-          matchPattern: "applications/*",
-          name: "application-1a",
-          path: withWindowsPath("applications/application-a"),
-          scripts: ["a-workspaces", "all-workspaces", "application-a"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          aliases: ["appB"],
-          isRoot: false,
-          matchPattern: "applications/*",
-          name: "application-1b",
-          path: withWindowsPath("applications/application-b"),
-          scripts: ["all-workspaces", "application-b", "b-workspaces"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          aliases: ["libA", "libA2"],
-          isRoot: false,
-          matchPattern: "libraries/*",
-          name: "library-1a",
-          path: withWindowsPath("libraries/library-a"),
-          scripts: ["a-workspaces", "all-workspaces", "library-a"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          aliases: ["libB"],
-          isRoot: false,
-          matchPattern: "libraries/*",
-          name: "library-1b",
-          path: withWindowsPath("libraries/library-b"),
-          scripts: ["all-workspaces", "b-workspaces", "library-b"],
-          dependencies: [],
-          dependents: [],
-        },
-      ],
-      workspaceMap: {
-        "test-root": createWorkspaceMapEntry({ alias: [] }),
-        "application-1a": createWorkspaceMapEntry({
-          alias: ["appA"],
-          scripts: {
-            "all-workspaces": {
-              order: 1,
-            },
-          },
-        }),
-        "application-1b": createWorkspaceMapEntry({ alias: ["appB"] }),
-        "library-1a": createWorkspaceMapEntry({ alias: ["libA", "libA2"] }),
-        "library-1b": createWorkspaceMapEntry({ alias: ["libB"] }),
-      },
+      );
+      expect(config).toEqual({
+        aliases: [],
+        scripts: {},
+      });
     });
 
-    expect(
-      findWorkspaces({
-        rootDirectory: getProjectRoot("workspaceConfigPackageOnly"),
-      }),
-    ).toEqual({
-      rootWorkspace: expect.any(Object),
-      workspaces: [
-        {
-          aliases: ["appA"],
-          isRoot: false,
-          matchPattern: "applications/*",
-          name: "application-1a",
-          path: withWindowsPath("applications/application-a"),
-          scripts: ["a-workspaces", "all-workspaces", "application-a"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          aliases: ["appB", "appB2"],
-          isRoot: false,
-          matchPattern: "applications/*",
-          name: "application-1b",
-          path: withWindowsPath("applications/application-b"),
-          scripts: ["all-workspaces", "application-b", "b-workspaces"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          aliases: ["libA", "libA2"],
-          isRoot: false,
-          matchPattern: "libraries/*",
-          name: "library-1a",
-          path: withWindowsPath("libraries/library-a"),
-          scripts: ["a-workspaces", "all-workspaces", "library-a"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          aliases: ["libB"],
-          isRoot: false,
-          matchPattern: "libraries/*",
-          name: "library-1b",
-          path: withWindowsPath("libraries/library-b"),
-          scripts: ["all-workspaces", "b-workspaces", "library-b"],
-          dependencies: [],
-          dependents: [],
-        },
-      ],
-      workspaceMap: {
-        "test-root": createWorkspaceMapEntry({ alias: [] }),
-        "application-1a": createWorkspaceMapEntry({ alias: ["appA"] }),
-        "application-1b": createWorkspaceMapEntry({ alias: ["appB", "appB2"] }),
-        "library-1a": createWorkspaceMapEntry({ alias: ["libA", "libA2"] }),
-        "library-1b": createWorkspaceMapEntry({ alias: ["libB"] }),
-      },
-    });
-
-    expect(
-      findWorkspaces({
-        rootDirectory: getProjectRoot("workspaceConfigPackageFileMix"),
-      }),
-    ).toEqual({
-      workspaces: [
-        {
-          aliases: ["appA"],
-          isRoot: false,
-          matchPattern: "applications/*",
-          name: "application-1a",
-          path: withWindowsPath("applications/application-a"),
-          scripts: ["a-workspaces", "all-workspaces", "application-a"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          aliases: ["appB_file"],
-          isRoot: false,
-          matchPattern: "applications/*",
-          name: "application-1b",
-          path: withWindowsPath("applications/application-b"),
-          scripts: ["all-workspaces", "application-b", "b-workspaces"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          aliases: [],
-          isRoot: false,
-          matchPattern: "applications/*",
-          name: "application-1c",
-          path: withWindowsPath("applications/application-c"),
-          scripts: ["all-workspaces", "application-c", "c-workspaces"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          aliases: ["libA_file"],
-          isRoot: false,
-          matchPattern: "libraries/*",
-          name: "library-1a",
-          path: withWindowsPath("libraries/library-a"),
-          scripts: ["a-workspaces", "all-workspaces", "library-a"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          aliases: ["libB", "libB2"],
-          isRoot: false,
-          matchPattern: "libraries/*",
-          name: "library-1b",
-          path: withWindowsPath("libraries/library-b"),
-          scripts: ["all-workspaces", "b-workspaces", "library-b"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          aliases: [],
-          isRoot: false,
-          matchPattern: "libraries/*",
-          name: "library-1c",
-          path: withWindowsPath("libraries/library-c"),
-          scripts: ["all-workspaces", "c-workspaces", "library-c"],
-          dependencies: [],
-          dependents: [],
-        },
-      ],
-      rootWorkspace: expect.any(Object),
-      workspaceMap: {
-        "test-root": createWorkspaceMapEntry({ alias: [] }),
-        "application-1a": createWorkspaceMapEntry({
-          alias: ["appA"],
-          scripts: {
-            "all-workspaces": {
-              order: 1,
-            },
+    test("returns config for application-a in fileOnly project", () => {
+      const config = loadWorkspaceConfig(
+        path.join(
+          getProjectRoot("workspaceConfigFileOnly"),
+          withWindowsPath("applications/application-a"),
+        ),
+      );
+      expect(config).toEqual({
+        aliases: ["appA"],
+        scripts: {
+          "all-workspaces": {
+            order: 1,
           },
-        }),
-        "application-1b": createWorkspaceMapEntry({
-          alias: ["appB_file"],
-          scripts: {
-            "all-workspaces": {
-              order: 0,
-            },
-            "b-workspaces": {
-              order: 2,
-            },
-          },
-        }),
-        "application-1c": createWorkspaceMapEntry({ alias: [] }),
-        "library-1a": createWorkspaceMapEntry({
-          alias: ["libA_file"],
-        }),
-        "library-1b": createWorkspaceMapEntry({
-          alias: ["libB", "libB2"],
-          scripts: {
-            "all-workspaces": {
-              order: 100,
-            },
-            "b-workspaces": {
-              order: 2,
-            },
-          },
-        }),
-        "library-1c": createWorkspaceMapEntry({ alias: [] }),
-      },
+        },
+      });
     });
   });
 
-  test("Project with mix of deprecated and new config", () => {
+  describe("loadWorkspaceConfig with invalid JSON", () => {
+    test("throws for application-a", () => {
+      expect(() =>
+        loadWorkspaceConfig(
+          path.join(
+            getProjectRoot("workspaceConfigInvalidJson"),
+            withWindowsPath("applications/application-a"),
+          ),
+        ),
+      ).toThrow(InvalidJSONError);
+    });
+
+    test("throws for application-b", () => {
+      expect(() =>
+        loadWorkspaceConfig(
+          path.join(
+            getProjectRoot("workspaceConfigInvalidJson"),
+            withWindowsPath("applications/application-b"),
+          ),
+        ),
+      ).toThrow(InvalidJSONError);
+    });
+  });
+
+  describe("validateWorkspaceConfig", () => {
+    test("throws when alias is nested array", () => {
+      expect(() =>
+        validateWorkspaceConfig({
+          // @ts-expect-error - Invalid config
+          alias: [["invalid"]],
+        }),
+      ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
+    });
+
+    test("throws when alias is object", () => {
+      expect(() =>
+        validateWorkspaceConfig({
+          // @ts-expect-error - Invalid config
+          alias: {},
+        }),
+      ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
+    });
+
+    test("throws when alias is number", () => {
+      expect(() =>
+        validateWorkspaceConfig({
+          // @ts-expect-error - Invalid config
+          alias: 123,
+        }),
+      ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
+    });
+
+    test("throws when alias array contains non-strings", () => {
+      expect(() =>
+        validateWorkspaceConfig({
+          // @ts-expect-error - Invalid config
+          alias: [123, null],
+        }),
+      ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
+    });
+  });
+
+  describe("loadWorkspaceConfig with invalid config", () => {
+    test("throws for application-a", () => {
+      expect(() =>
+        loadWorkspaceConfig(
+          path.join(
+            getProjectRoot("workspaceConfigInvalidConfig"),
+            withWindowsPath("applications/application-a"),
+          ),
+        ),
+      ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
+    });
+
+    test("throws for application-b", () => {
+      expect(() =>
+        loadWorkspaceConfig(
+          path.join(
+            getProjectRoot("workspaceConfigInvalidConfig"),
+            withWindowsPath("applications/application-b"),
+          ),
+        ),
+      ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
+    });
+
+    test("throws for application-c", () => {
+      expect(() =>
+        loadWorkspaceConfig(
+          path.join(
+            getProjectRoot("workspaceConfigInvalidConfig"),
+            withWindowsPath("applications/application-c"),
+          ),
+        ),
+      ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
+    });
+
+    test("throws for application-d", () => {
+      expect(() =>
+        loadWorkspaceConfig(
+          path.join(
+            getProjectRoot("workspaceConfigInvalidConfig"),
+            withWindowsPath("applications/application-d"),
+          ),
+        ),
+      ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
+    });
+
+    test("throws for application-e", () => {
+      expect(() =>
+        loadWorkspaceConfig(
+          path.join(
+            getProjectRoot("workspaceConfigInvalidConfig"),
+            withWindowsPath("applications/application-e"),
+          ),
+        ),
+      ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
+    });
+
+    test("throws for application-f", () => {
+      expect(() =>
+        loadWorkspaceConfig(
+          path.join(
+            getProjectRoot("workspaceConfigInvalidConfig"),
+            withWindowsPath("applications/application-f"),
+          ),
+        ),
+      ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
+    });
+
+    test("throws for application-g", () => {
+      expect(() =>
+        loadWorkspaceConfig(
+          path.join(
+            getProjectRoot("workspaceConfigInvalidConfig"),
+            withWindowsPath("applications/application-g"),
+          ),
+        ),
+      ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
+    });
+
+    test("throws for application-h", () => {
+      expect(() =>
+        loadWorkspaceConfig(
+          path.join(
+            getProjectRoot("workspaceConfigInvalidConfig"),
+            withWindowsPath("applications/application-h"),
+          ),
+        ),
+      ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
+    });
+  });
+
+  describe("findWorkspaces with workspace configs", () => {
+    test("returns expected result for workspaceConfigFileOnly project", () => {
+      expect(
+        findWorkspaces({
+          rootDirectory: getProjectRoot("workspaceConfigFileOnly"),
+        }),
+      ).toEqual({
+        rootWorkspace: expect.any(Object),
+        workspaces: [
+          {
+            aliases: ["appA"],
+            isRoot: false,
+            matchPattern: "applications/*",
+            name: "application-1a",
+            path: withWindowsPath("applications/application-a"),
+            scripts: ["a-workspaces", "all-workspaces", "application-a"],
+            dependencies: [],
+            dependents: [],
+          },
+          {
+            aliases: ["appB"],
+            isRoot: false,
+            matchPattern: "applications/*",
+            name: "application-1b",
+            path: withWindowsPath("applications/application-b"),
+            scripts: ["all-workspaces", "application-b", "b-workspaces"],
+            dependencies: [],
+            dependents: [],
+          },
+          {
+            aliases: ["libA", "libA2"],
+            isRoot: false,
+            matchPattern: "libraries/*",
+            name: "library-1a",
+            path: withWindowsPath("libraries/library-a"),
+            scripts: ["a-workspaces", "all-workspaces", "library-a"],
+            dependencies: [],
+            dependents: [],
+          },
+          {
+            aliases: ["libB"],
+            isRoot: false,
+            matchPattern: "libraries/*",
+            name: "library-1b",
+            path: withWindowsPath("libraries/library-b"),
+            scripts: ["all-workspaces", "b-workspaces", "library-b"],
+            dependencies: [],
+            dependents: [],
+          },
+        ],
+        workspaceMap: {
+          "test-root": createWorkspaceMapEntry({ alias: [] }),
+          "application-1a": createWorkspaceMapEntry({
+            alias: ["appA"],
+            scripts: {
+              "all-workspaces": {
+                order: 1,
+              },
+            },
+          }),
+          "application-1b": createWorkspaceMapEntry({ alias: ["appB"] }),
+          "library-1a": createWorkspaceMapEntry({ alias: ["libA", "libA2"] }),
+          "library-1b": createWorkspaceMapEntry({ alias: ["libB"] }),
+        },
+      });
+    });
+
+    test("returns expected result for workspaceConfigPackageOnly project", () => {
+      expect(
+        findWorkspaces({
+          rootDirectory: getProjectRoot("workspaceConfigPackageOnly"),
+        }),
+      ).toEqual({
+        rootWorkspace: expect.any(Object),
+        workspaces: [
+          {
+            aliases: ["appA"],
+            isRoot: false,
+            matchPattern: "applications/*",
+            name: "application-1a",
+            path: withWindowsPath("applications/application-a"),
+            scripts: ["a-workspaces", "all-workspaces", "application-a"],
+            dependencies: [],
+            dependents: [],
+          },
+          {
+            aliases: ["appB", "appB2"],
+            isRoot: false,
+            matchPattern: "applications/*",
+            name: "application-1b",
+            path: withWindowsPath("applications/application-b"),
+            scripts: ["all-workspaces", "application-b", "b-workspaces"],
+            dependencies: [],
+            dependents: [],
+          },
+          {
+            aliases: ["libA", "libA2"],
+            isRoot: false,
+            matchPattern: "libraries/*",
+            name: "library-1a",
+            path: withWindowsPath("libraries/library-a"),
+            scripts: ["a-workspaces", "all-workspaces", "library-a"],
+            dependencies: [],
+            dependents: [],
+          },
+          {
+            aliases: ["libB"],
+            isRoot: false,
+            matchPattern: "libraries/*",
+            name: "library-1b",
+            path: withWindowsPath("libraries/library-b"),
+            scripts: ["all-workspaces", "b-workspaces", "library-b"],
+            dependencies: [],
+            dependents: [],
+          },
+        ],
+        workspaceMap: {
+          "test-root": createWorkspaceMapEntry({ alias: [] }),
+          "application-1a": createWorkspaceMapEntry({ alias: ["appA"] }),
+          "application-1b": createWorkspaceMapEntry({
+            alias: ["appB", "appB2"],
+          }),
+          "library-1a": createWorkspaceMapEntry({ alias: ["libA", "libA2"] }),
+          "library-1b": createWorkspaceMapEntry({ alias: ["libB"] }),
+        },
+      });
+    });
+
+    test("returns expected result for workspaceConfigPackageFileMix project", () => {
+      expect(
+        findWorkspaces({
+          rootDirectory: getProjectRoot("workspaceConfigPackageFileMix"),
+        }),
+      ).toEqual({
+        workspaces: [
+          {
+            aliases: ["appA"],
+            isRoot: false,
+            matchPattern: "applications/*",
+            name: "application-1a",
+            path: withWindowsPath("applications/application-a"),
+            scripts: ["a-workspaces", "all-workspaces", "application-a"],
+            dependencies: [],
+            dependents: [],
+          },
+          {
+            aliases: ["appB_file"],
+            isRoot: false,
+            matchPattern: "applications/*",
+            name: "application-1b",
+            path: withWindowsPath("applications/application-b"),
+            scripts: ["all-workspaces", "application-b", "b-workspaces"],
+            dependencies: [],
+            dependents: [],
+          },
+          {
+            aliases: [],
+            isRoot: false,
+            matchPattern: "applications/*",
+            name: "application-1c",
+            path: withWindowsPath("applications/application-c"),
+            scripts: ["all-workspaces", "application-c", "c-workspaces"],
+            dependencies: [],
+            dependents: [],
+          },
+          {
+            aliases: ["libA_file"],
+            isRoot: false,
+            matchPattern: "libraries/*",
+            name: "library-1a",
+            path: withWindowsPath("libraries/library-a"),
+            scripts: ["a-workspaces", "all-workspaces", "library-a"],
+            dependencies: [],
+            dependents: [],
+          },
+          {
+            aliases: ["libB", "libB2"],
+            isRoot: false,
+            matchPattern: "libraries/*",
+            name: "library-1b",
+            path: withWindowsPath("libraries/library-b"),
+            scripts: ["all-workspaces", "b-workspaces", "library-b"],
+            dependencies: [],
+            dependents: [],
+          },
+          {
+            aliases: [],
+            isRoot: false,
+            matchPattern: "libraries/*",
+            name: "library-1c",
+            path: withWindowsPath("libraries/library-c"),
+            scripts: ["all-workspaces", "c-workspaces", "library-c"],
+            dependencies: [],
+            dependents: [],
+          },
+        ],
+        rootWorkspace: expect.any(Object),
+        workspaceMap: {
+          "test-root": createWorkspaceMapEntry({ alias: [] }),
+          "application-1a": createWorkspaceMapEntry({
+            alias: ["appA"],
+            scripts: {
+              "all-workspaces": {
+                order: 1,
+              },
+            },
+          }),
+          "application-1b": createWorkspaceMapEntry({
+            alias: ["appB_file"],
+            scripts: {
+              "all-workspaces": {
+                order: 0,
+              },
+              "b-workspaces": {
+                order: 2,
+              },
+            },
+          }),
+          "application-1c": createWorkspaceMapEntry({ alias: [] }),
+          "library-1a": createWorkspaceMapEntry({
+            alias: ["libA_file"],
+          }),
+          "library-1b": createWorkspaceMapEntry({
+            alias: ["libB", "libB2"],
+            scripts: {
+              "all-workspaces": {
+                order: 100,
+              },
+              "b-workspaces": {
+                order: 2,
+              },
+            },
+          }),
+          "library-1c": createWorkspaceMapEntry({ alias: [] }),
+        },
+      });
+    });
+  });
+
+  describe("deprecated and new config mix", () => {
+    test("warns on multiple configs and merges workspace config", () => {
     const warnSpy = spyOn(logger, "warn");
 
     const project = _internalCreateFileSystemProject({
@@ -570,5 +617,6 @@ describe("Test workspace config", () => {
         dependents: [],
       },
     ]);
+    });
   });
 });

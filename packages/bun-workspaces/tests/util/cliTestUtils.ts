@@ -1,8 +1,14 @@
 import path from "path";
 import { expect } from "bun:test";
 import packageJson from "../../package.json";
+import { getCliCommandConfig, type CliCommandName } from "../../src/cli";
 import { createRawPattern } from "../../src/internal/core";
 import { getProjectRoot, type TestProjectName } from "../fixtures/testProjects";
+
+export const listCommandAndAliases = (commandName: CliCommandName) => {
+  const config = getCliCommandConfig(commandName);
+  return [config.command.split(/\s+/)[0], ...config.aliases];
+};
 
 export const USAGE_OUTPUT_PATTERN = new RegExp(
   createRawPattern(`Usage: bun-workspaces [options] [command]

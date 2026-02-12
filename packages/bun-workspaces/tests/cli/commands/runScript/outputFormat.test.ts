@@ -1,49 +1,46 @@
 import { test, expect, describe } from "bun:test";
 import { assertOutputMatches, setupCliTest } from "../../../util/cliTestUtils";
 
+const NO_PREFIX_ALL_WORKSPACES_OUTPUT = `script for all workspaces
+script for all workspaces
+script for all workspaces
+script for all workspaces
+✅ application-1a: all-workspaces
+✅ application-1b: all-workspaces
+✅ library-1a: all-workspaces
+✅ library-1b: all-workspaces
+4 scripts ran successfully`;
+
 describe("CLI Run Script (output format)", () => {
-  test("Using --no-prefix", async () => {
+  test("--no-prefix strips prefix from script output", async () => {
     const result = await setupCliTest({
       testProject: "simple1",
     }).run("run-script", "all-workspaces", "--no-prefix");
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,
-      `script for all workspaces
-script for all workspaces
-script for all workspaces
-script for all workspaces
-✅ application-1a: all-workspaces
-✅ application-1b: all-workspaces
-✅ library-1a: all-workspaces
-✅ library-1b: all-workspaces
-4 scripts ran successfully`,
+      NO_PREFIX_ALL_WORKSPACES_OUTPUT,
     );
+  });
 
-    const resultShort = await setupCliTest({
+  test("-N strips prefix from script output", async () => {
+    const result = await setupCliTest({
       testProject: "simple1",
     }).run("run-script", "all-workspaces", "-N");
-    expect(resultShort.exitCode).toBe(0);
+    expect(result.exitCode).toBe(0);
     assertOutputMatches(
-      resultShort.stdoutAndErr.sanitizedCompactLines,
-      `script for all workspaces
-script for all workspaces
-script for all workspaces
-script for all workspaces
-✅ application-1a: all-workspaces
-✅ application-1b: all-workspaces
-✅ library-1a: all-workspaces
-✅ library-1b: all-workspaces
-4 scripts ran successfully`,
+      result.stdoutAndErr.sanitizedCompactLines,
+      NO_PREFIX_ALL_WORKSPACES_OUTPUT,
     );
+  });
 
-    const resultFailures = await setupCliTest({
+  test("--no-prefix with failures shows failure output", async () => {
+    const result = await setupCliTest({
       testProject: "runScriptWithFailures",
     }).run("run-script", "test-exit", "--no-prefix");
-
-    expect(resultFailures.exitCode).toBe(1);
+    expect(result.exitCode).toBe(1);
     assertOutputMatches(
-      resultFailures.stdoutAndErr.sanitizedCompactLines,
+      result.stdoutAndErr.sanitizedCompactLines,
       `fail1
 fail2
 success1

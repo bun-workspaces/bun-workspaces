@@ -1,95 +1,103 @@
 import { test, expect, describe } from "bun:test";
 import { setupCliTest, assertOutputMatches } from "../../../util/cliTestUtils";
 
+const INLINE_FOUR_SUCCESS = `✅ application-1a: (inline)
+✅ application-1b: (inline)
+✅ library-1a: (inline)
+✅ library-1b: (inline)
+4 scripts ran successfully`;
+
+const INLINE_ECHO_WORKSPACE_PREFIX = `[application-1a:(inline)] this is my inline script for application-1a
+[application-1b:(inline)] this is my inline script for application-1b
+[library-1a:(inline)] this is my inline script for library-1a
+[library-1b:(inline)] this is my inline script for library-1b
+`;
+
 describe("CLI Run Script (inline scripts)", () => {
-  test("Using --inline", async () => {
+  test("--inline runs inline script with <workspaceName> interpolation", async () => {
     const { run } = setupCliTest({
       testProject: "runScriptWithEchoArgs",
     });
-
-    const resultSimple = await run(
+    const result = await run(
       "run-script",
       "echo this is my inline script for <workspaceName>",
       "--inline",
     );
-    expect(resultSimple.exitCode).toBe(0);
+    expect(result.exitCode).toBe(0);
     assertOutputMatches(
-      resultSimple.stdoutAndErr.sanitizedCompactLines,
-      `[application-1a:(inline)] this is my inline script for application-1a
-[application-1b:(inline)] this is my inline script for application-1b
-[library-1a:(inline)] this is my inline script for library-1a
-[library-1b:(inline)] this is my inline script for library-1b
-✅ application-1a: (inline)
-✅ application-1b: (inline)
-✅ library-1a: (inline)
-✅ library-1b: (inline)
-4 scripts ran successfully`,
+      result.stdoutAndErr.sanitizedCompactLines,
+      `${INLINE_ECHO_WORKSPACE_PREFIX}${INLINE_FOUR_SUCCESS}`,
     );
+  });
 
-    const resultSimpleShort = await run(
+  test("-i runs inline script with <workspaceName> interpolation", async () => {
+    const { run } = setupCliTest({
+      testProject: "runScriptWithEchoArgs",
+    });
+    const result = await run(
       "run-script",
       "echo this is my inline script for <workspaceName>",
       "-i",
     );
-    expect(resultSimpleShort.exitCode).toBe(0);
+    expect(result.exitCode).toBe(0);
     assertOutputMatches(
-      resultSimpleShort.stdoutAndErr.sanitizedCompactLines,
-      `[application-1a:(inline)] this is my inline script for application-1a
-[application-1b:(inline)] this is my inline script for application-1b
-[library-1a:(inline)] this is my inline script for library-1a
-[library-1b:(inline)] this is my inline script for library-1b
-✅ application-1a: (inline)
-✅ application-1b: (inline)
-✅ library-1a: (inline)
-✅ library-1b: (inline)
-4 scripts ran successfully`,
+      result.stdoutAndErr.sanitizedCompactLines,
+      `${INLINE_ECHO_WORKSPACE_PREFIX}${INLINE_FOUR_SUCCESS}`,
     );
+  });
 
-    const resultWithArgs = await run(
+  test("--inline with --args interpolates per workspace", async () => {
+    const { run } = setupCliTest({
+      testProject: "runScriptWithEchoArgs",
+    });
+    const result = await run(
       "run-script",
       "echo this is my inline script for <workspaceName>",
       "--inline",
       "--args=test-args-<workspaceName>",
     );
-    expect(resultWithArgs.exitCode).toBe(0);
+    expect(result.exitCode).toBe(0);
     assertOutputMatches(
-      resultWithArgs.stdoutAndErr.sanitizedCompactLines,
+      result.stdoutAndErr.sanitizedCompactLines,
       `[application-1a:(inline)] this is my inline script for application-1a test-args-application-1a
 [application-1b:(inline)] this is my inline script for application-1b test-args-application-1b
 [library-1a:(inline)] this is my inline script for library-1a test-args-library-1a
 [library-1b:(inline)] this is my inline script for library-1b test-args-library-1b
-✅ application-1a: (inline)
-✅ application-1b: (inline)
-✅ library-1a: (inline)
-✅ library-1b: (inline)
-4 scripts ran successfully`,
+${INLINE_FOUR_SUCCESS}`,
     );
+  });
 
-    const resultWithArgsNoPrefix = await run(
+  test("--inline with --args and --no-prefix", async () => {
+    const { run } = setupCliTest({
+      testProject: "runScriptWithEchoArgs",
+    });
+    const result = await run(
       "run-script",
       "echo this is my inline script for <workspaceName>",
       "--inline",
       "--args=test-args-<workspaceName>",
       "--no-prefix",
     );
-    expect(resultWithArgsNoPrefix.exitCode).toBe(0);
+    expect(result.exitCode).toBe(0);
     assertOutputMatches(
-      resultWithArgsNoPrefix.stdoutAndErr.sanitizedCompactLines,
+      result.stdoutAndErr.sanitizedCompactLines,
       `this is my inline script for application-1a test-args-application-1a
 this is my inline script for application-1b test-args-application-1b
 this is my inline script for library-1a test-args-library-1a
 this is my inline script for library-1b test-args-library-1b
-✅ application-1a: (inline)
-✅ application-1b: (inline)
-✅ library-1a: (inline)
-✅ library-1b: (inline)
-4 scripts ran successfully`,
+${INLINE_FOUR_SUCCESS}`,
     );
   });
 });
 
 describe("CLI Run Script (named inline scripts)", () => {
-  test("Named inline script", async () => {
+  const namedInlineSuccess = `✅ application-1a: test-echo-inline
+✅ application-1b: test-echo-inline
+✅ library-1a: test-echo-inline
+✅ library-1b: test-echo-inline
+4 scripts ran successfully`;
+
+  test("--inline-name sets script name in output", async () => {
     const { run } = setupCliTest({
       testProject: "runScriptWithEchoArgs",
     });
@@ -106,31 +114,28 @@ describe("CLI Run Script (named inline scripts)", () => {
 [application-1b:test-echo-inline] this is my inline script for application-1b
 [library-1a:test-echo-inline] this is my inline script for library-1a
 [library-1b:test-echo-inline] this is my inline script for library-1b
-✅ application-1a: test-echo-inline
-✅ application-1b: test-echo-inline
-✅ library-1a: test-echo-inline
-✅ library-1b: test-echo-inline
-4 scripts ran successfully`,
+${namedInlineSuccess}`,
     );
+  });
 
-    const resultShort = await run(
+  test("-I sets script name in output", async () => {
+    const { run } = setupCliTest({
+      testProject: "runScriptWithEchoArgs",
+    });
+    const result = await run(
       "run-script",
       "echo this is my inline script for <workspaceName>",
       "-i",
       "-I test-echo-inline",
     );
-    expect(resultShort.exitCode).toBe(0);
+    expect(result.exitCode).toBe(0);
     assertOutputMatches(
-      resultShort.stdoutAndErr.sanitizedCompactLines,
+      result.stdoutAndErr.sanitizedCompactLines,
       `[application-1a:test-echo-inline] this is my inline script for application-1a
 [application-1b:test-echo-inline] this is my inline script for application-1b
 [library-1a:test-echo-inline] this is my inline script for library-1a
 [library-1b:test-echo-inline] this is my inline script for library-1b
-✅ application-1a: test-echo-inline
-✅ application-1b: test-echo-inline
-✅ library-1a: test-echo-inline
-✅ library-1b: test-echo-inline
-4 scripts ran successfully`,
+${namedInlineSuccess}`,
     );
   });
 });

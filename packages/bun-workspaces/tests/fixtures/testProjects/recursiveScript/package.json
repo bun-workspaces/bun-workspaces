@@ -4,6 +4,6 @@
     "packages/*"
   ],
   "dependencies": {
-    "bun-workspaces": "file:../../.."
+    "bun-workspaces": "file:../../../../"
   }
 }

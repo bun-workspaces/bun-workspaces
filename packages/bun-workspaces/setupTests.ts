@@ -20,11 +20,27 @@ for (const file of new Glob("**/*/package.json").scanSync({
   cwd: testProjectsDir,
   absolute: true,
 })) {
-  if (fs.existsSync(path.join(path.dirname(file), "bun.lock"))) continue;
+  if (
+    fs.existsSync(path.join(path.dirname(file), "bun.lock")) ||
+    fs.existsSync(path.join(path.dirname(file), ".expect-bun-install-fail"))
+  )
+    continue;
+
+  let packageJson: object;
+  try {
+    packageJson = JSON.parse(fs.readFileSync(file, "utf8"));
+  } catch (_error) {
+    continue;
+  }
+
+  if (!(packageJson as { workspaces?: string[] })["workspaces"]) {
+    continue;
+  }
+
   promises.push(
     (async () => {
       try {
-        await runScript({
+        const exit = await runScript({
           env: {},
           metadata: {},
           scriptCommand: {
@@ -32,8 +48,14 @@ for (const file of new Glob("**/*/package.json").scanSync({
             workingDirectory: path.dirname(file),
           },
         }).exit;
+        if (!exit.success) {
+          console.error(`setupTests: Failed to run bun-install for ${file}`);
+        }
       } catch (error) {
-        console.error(`Error installing dependencies for ${file}:`, error);
+        console.error(
+          `setupTests: Error installing dependencies for ${file}:`,
+          error,
+        );
       }
     })(),
   );

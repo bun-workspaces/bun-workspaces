@@ -175,4 +175,18 @@ Script: library-b
       assertOutputMatches(emptyScriptsResult.stdout.raw, "No scripts found");
     },
   );
+
+  test("Project command exits with error if invalid project is provided", async () => {
+    const { run } = setupCliTest({
+      testProject: "invalidBadJson",
+    });
+
+    const result = await run("ls");
+    expect(result.exitCode).toBe(1);
+    assertOutputMatches(
+      result.stderr.sanitizedCompactLines,
+      `No bun.lock found at ${withWindowsPath(getProjectRoot("invalidBadJson"))}. Check that this is the directory of your project and that you've ran 'bun install'. ` +
+        "If you have ran 'bun install', you may simply have no workspaces or dependencies in your project.",
+    );
+  });
 });

@@ -12,7 +12,7 @@ const listCommandAndAliases = (commandName: CliCommandName) => {
   return [config.command.split(/\s+/)[0], ...config.aliases];
 };
 
-describe("Test CLI commands", () => {
+describe("CLI Run Script (basic)", () => {
   test.each(listCommandAndAliases("runScript"))(
     "Run Script (basic): %s",
     async (command) => {
@@ -95,18 +95,4 @@ describe("Test CLI commands", () => {
       );
     },
   );
-
-  test("Project command exits with error if invalid project is provided", async () => {
-    const { run } = setupCliTest({
-      testProject: "invalidBadJson",
-    });
-
-    const result = await run("ls");
-    expect(result.exitCode).toBe(1);
-    assertOutputMatches(
-      result.stderr.sanitizedCompactLines,
-      `No bun.lock found at ${withWindowsPath(getProjectRoot("invalidBadJson"))}. Check that this is the directory of your project and that you've ran 'bun install'. ` +
-        "If you have ran 'bun install', you may simply have no workspaces or dependencies in your project.",
-    );
-  });
 });

@@ -1,6 +1,23 @@
 import { test, expect, describe } from "bun:test";
 import { IS_WINDOWS } from "../../../src/internal/core";
-import { runScript, runScripts } from "../../../src/runScript";
+import {
+  runScript,
+  runScripts,
+  type RunScriptExit,
+} from "../../../src/runScript";
+
+const makeExitResult = (
+  overrides: Partial<RunScriptExit> = {},
+): RunScriptExit => ({
+  exitCode: 0,
+  success: true,
+  startTimeISO: expect.any(String),
+  endTimeISO: expect.any(String),
+  durationMs: expect.any(Number),
+  signal: null,
+  metadata: {},
+  ...overrides,
+});
 
 describe("Run Single Script", () => {
   test("Simple success", async () => {
@@ -26,15 +43,7 @@ describe("Run Single Script", () => {
       outputCount++;
     }
     const exit = await result.exit;
-    expect(exit).toEqual({
-      exitCode: 0,
-      success: true,
-      startTimeISO: expect.any(String),
-      endTimeISO: expect.any(String),
-      durationMs: expect.any(Number),
-      signal: null,
-      metadata: {},
-    });
+    expect(exit).toEqual(makeExitResult({}));
     expect(new Date(exit.startTimeISO).getTime()).toBeLessThanOrEqual(
       new Date(exit.endTimeISO).getTime(),
     );
@@ -68,15 +77,7 @@ describe("Run Single Script", () => {
       outputCount++;
     }
     const exit = await result.exit;
-    expect(exit).toEqual({
-      exitCode: 2,
-      success: false,
-      startTimeISO: expect.any(String),
-      endTimeISO: expect.any(String),
-      durationMs: expect.any(Number),
-      signal: null,
-      metadata: {},
-    });
+    expect(exit).toEqual(makeExitResult({ exitCode: 2, success: false }));
     expect(new Date(exit.startTimeISO).getTime()).toBeLessThanOrEqual(
       new Date(exit.endTimeISO).getTime(),
     );
@@ -101,15 +102,13 @@ describe("Run Single Script", () => {
       result.kill("SIGABRT");
 
       const exit = await result.exit;
-      expect(exit).toEqual({
-        exitCode: 134,
-        success: false,
-        startTimeISO: expect.any(String),
-        endTimeISO: expect.any(String),
-        durationMs: expect.any(Number),
-        signal: "SIGABRT",
-        metadata: {},
-      });
+      expect(exit).toEqual(
+        makeExitResult({
+          exitCode: 134,
+          success: false,
+          signal: "SIGABRT",
+        }),
+      );
     });
   }
 
@@ -143,15 +142,7 @@ describe("Run Single Script", () => {
     }
 
     const exit = await result.exit;
-    expect(exit).toEqual({
-      exitCode: 0,
-      success: true,
-      startTimeISO: expect.any(String),
-      endTimeISO: expect.any(String),
-      durationMs: expect.any(Number),
-      signal: null,
-      metadata: {},
-    });
+    expect(exit).toEqual(makeExitResult({}));
   });
 
   test("Env vars are passed", async () => {

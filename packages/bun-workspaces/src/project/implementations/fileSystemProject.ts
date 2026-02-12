@@ -10,8 +10,6 @@ import {
   runScripts,
   createScriptRuntimeEnvVars,
   interpolateScriptRuntimeMetadata,
-  type RunScriptResult,
-  type RunScriptsResult,
   type RunScriptsParallelOptions,
   type ScriptRuntimeMetadata,
   type RunScriptsSummary,

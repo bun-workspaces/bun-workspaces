@@ -5,7 +5,38 @@ import path from "path";
 import { test, expect, describe, afterAll } from "bun:test";
 import { getUserEnvVarName } from "../../../src/config/userEnvVars";
 import { IS_WINDOWS } from "../../../src/internal/core";
-import { runScripts } from "../../../src/runScript";
+import {
+  runScripts,
+  type RunScriptExit,
+  type RunScriptsSummary,
+} from "../../../src/runScript";
+
+const makeScriptExit = <Metadata extends object = object>(
+  overrides: Partial<RunScriptExit<Metadata>> = {},
+): RunScriptExit<Metadata> => ({
+  exitCode: 0,
+  success: true,
+  startTimeISO: expect.any(String),
+  endTimeISO: expect.any(String),
+  durationMs: expect.any(Number),
+  signal: null,
+  metadata: {} as Metadata,
+  ...overrides,
+});
+
+const makeExitSummary = <Metadata extends object = object>(
+  overrides: Partial<RunScriptsSummary<Metadata>> = {},
+): RunScriptsSummary<Metadata> => ({
+  totalCount: 1,
+  successCount: 1,
+  failureCount: 0,
+  allSuccess: true,
+  startTimeISO: expect.any(String),
+  endTimeISO: expect.any(String),
+  durationMs: expect.any(Number),
+  scriptResults: [],
+  ...overrides,
+});
 
 const originalParallelMaxDefault =
   process.env[getUserEnvVarName("parallelMaxDefault")];
@@ -57,39 +88,16 @@ describe("Run Multiple Scripts", () => {
     }
 
     const summary = await result.summary;
-    expect(summary).toEqual({
-      totalCount: 2,
-      allSuccess: true,
-      failureCount: 0,
-      successCount: 2,
-      startTimeISO: expect.any(String),
-      endTimeISO: expect.any(String),
-      durationMs: expect.any(Number),
-      scriptResults: [
-        {
-          exitCode: 0,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          signal: null,
-          metadata: {
-            name: "test-script name 1",
-          },
-        },
-        {
-          exitCode: 0,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          signal: null,
-          metadata: {
-            name: "test-script name 2",
-          },
-        },
-      ],
-    });
+    expect(summary).toEqual(
+      makeExitSummary({
+        totalCount: 2,
+        successCount: 2,
+        scriptResults: [
+          makeScriptExit({ metadata: { name: "test-script name 1" } }),
+          makeScriptExit({ metadata: { name: "test-script name 2" } }),
+        ],
+      }),
+    );
   });
 
   test("Run Scripts - simple series with failure", async () => {
@@ -135,39 +143,22 @@ describe("Run Multiple Scripts", () => {
     }
 
     const summary = await result.summary;
-    expect(summary).toEqual({
-      totalCount: 2,
-      allSuccess: false,
-      failureCount: 1,
-      successCount: 1,
-      startTimeISO: expect.any(String),
-      endTimeISO: expect.any(String),
-      durationMs: expect.any(Number),
-      scriptResults: [
-        {
-          exitCode: 1,
-          success: false,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          signal: null,
-          metadata: {
-            name: "test-script name 1",
-          },
-        },
-        {
-          exitCode: 0,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          signal: null,
-          metadata: {
-            name: "test-script name 2",
-          },
-        },
-      ],
-    });
+    expect(summary).toEqual(
+      makeExitSummary({
+        totalCount: 2,
+        successCount: 1,
+        failureCount: 1,
+        allSuccess: false,
+        scriptResults: [
+          makeScriptExit({
+            exitCode: 1,
+            success: false,
+            metadata: { name: "test-script name 1" },
+          }),
+          makeScriptExit({ metadata: { name: "test-script name 2" } }),
+        ],
+      }),
+    );
   });
 
   test("Run Scripts - simple parallel", async () => {
@@ -228,50 +219,23 @@ describe("Run Multiple Scripts", () => {
     }
 
     const summary = await result.summary;
-    expect(summary).toEqual({
-      totalCount: 3,
-      allSuccess: false,
-      failureCount: 1,
-      successCount: 2,
-      startTimeISO: expect.any(String),
-      endTimeISO: expect.any(String),
-      durationMs: expect.any(Number),
-      scriptResults: [
-        {
-          exitCode: 0,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          signal: null,
-          metadata: {
-            name: "test-script name 1",
-          },
-        },
-        {
-          exitCode: 2,
-          success: false,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          signal: null,
-          metadata: {
-            name: "test-script name 2",
-          },
-        },
-        {
-          exitCode: 0,
-          success: true,
-          startTimeISO: expect.any(String),
-          endTimeISO: expect.any(String),
-          durationMs: expect.any(Number),
-          signal: null,
-          metadata: {
-            name: "test-script name 3",
-          },
-        },
-      ],
-    });
+    expect(summary).toEqual(
+      makeExitSummary({
+        totalCount: 3,
+        successCount: 2,
+        failureCount: 1,
+        allSuccess: false,
+        scriptResults: [
+          makeScriptExit({ metadata: { name: "test-script name 1" } }),
+          makeScriptExit({
+            exitCode: 2,
+            success: false,
+            metadata: { name: "test-script name 2" },
+          }),
+          makeScriptExit({ metadata: { name: "test-script name 3" } }),
+        ],
+      }),
+    );
   });
 
   test.each([1, 2, 3, 4, 5])(
@@ -338,62 +302,19 @@ describe("Run Multiple Scripts", () => {
       expect(didMaxRun).toBe(true);
 
       const summary = await result.summary;
-      expect(summary).toEqual({
-        totalCount: 5,
-        allSuccess: true,
-        failureCount: 0,
-        successCount: 5,
-        startTimeISO: expect.any(String),
-        endTimeISO: expect.any(String),
-        durationMs: expect.any(Number),
-        scriptResults: [
-          {
-            exitCode: 0,
-            success: true,
-            startTimeISO: expect.any(String),
-            endTimeISO: expect.any(String),
-            durationMs: expect.any(Number),
-            signal: null,
-            metadata: { name: "test-script-1" },
-          },
-          {
-            exitCode: 0,
-            success: true,
-            startTimeISO: expect.any(String),
-            endTimeISO: expect.any(String),
-            durationMs: expect.any(Number),
-            signal: null,
-            metadata: { name: "test-script-2" },
-          },
-          {
-            exitCode: 0,
-            success: true,
-            startTimeISO: expect.any(String),
-            endTimeISO: expect.any(String),
-            durationMs: expect.any(Number),
-            signal: null,
-            metadata: { name: "test-script-3" },
-          },
-          {
-            exitCode: 0,
-            success: true,
-            startTimeISO: expect.any(String),
-            endTimeISO: expect.any(String),
-            durationMs: expect.any(Number),
-            signal: null,
-            metadata: { name: "test-script-4" },
-          },
-          {
-            exitCode: 0,
-            success: true,
-            startTimeISO: expect.any(String),
-            endTimeISO: expect.any(String),
-            durationMs: expect.any(Number),
-            signal: null,
-            metadata: { name: "test-script-5" },
-          },
-        ],
-      });
+      expect(summary).toEqual(
+        makeExitSummary({
+          totalCount: 5,
+          successCount: 5,
+          scriptResults: [
+            makeScriptExit({ metadata: { name: "test-script-1" } }),
+            makeScriptExit({ metadata: { name: "test-script-2" } }),
+            makeScriptExit({ metadata: { name: "test-script-3" } }),
+            makeScriptExit({ metadata: { name: "test-script-4" } }),
+            makeScriptExit({ metadata: { name: "test-script-5" } }),
+          ],
+        }),
+      );
     },
   );
 

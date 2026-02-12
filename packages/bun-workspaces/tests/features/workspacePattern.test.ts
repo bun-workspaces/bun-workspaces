@@ -3,7 +3,7 @@ import {
   matchWorkspacesByPatterns,
   parseWorkspacePattern,
 } from "../../src/workspaces/workspacePattern";
-import { createTestWorkspace } from "../util/testData";
+import { makeTestWorkspace } from "../util/testData";
 
 describe("Test workspace pattern", () => {
   test("parseWorkspacePattern", () => {
@@ -88,22 +88,22 @@ describe("Test workspace pattern", () => {
 
   test("matchWorkspacesByPatterns", () => {
     const workspaces = {
-      a: createTestWorkspace({
+      a: makeTestWorkspace({
         name: "workspace-a",
         path: "packages/a",
         aliases: ["wsa"],
       }),
-      b: createTestWorkspace({
+      b: makeTestWorkspace({
         name: "workspace-b",
         path: "packages/b",
         aliases: ["wsb"],
       }),
-      c: createTestWorkspace({
+      c: makeTestWorkspace({
         name: "workspace-c",
         path: "packages/nested/c",
         aliases: ["wsc"],
       }),
-      d: createTestWorkspace({
+      d: makeTestWorkspace({
         name: "workspace-d",
         path: "packages/nested/d",
         aliases: ["wsd"],

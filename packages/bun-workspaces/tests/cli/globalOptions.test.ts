@@ -7,7 +7,7 @@ import {
   assertOutputMatches,
   USAGE_OUTPUT_PATTERN,
 } from "../util/cliTestUtils";
-import { createTestWorkspace } from "../util/testData";
+import { makeTestWorkspace } from "../util/testData";
 
 describe("CLI Global Options", () => {
   describe("usage/help", () => {
@@ -273,25 +273,25 @@ describe("CLI Global Options", () => {
 
   describe("--include-root", () => {
     const expectedWorkspaces = [
-      createTestWorkspace({
+      makeTestWorkspace({
         name: "application-1a",
         path: "applications/applicationA",
         matchPattern: "applications/*",
         scripts: ["a-workspaces", "all-workspaces", "application-a"],
       }),
-      createTestWorkspace({
+      makeTestWorkspace({
         name: "application-1b",
         path: "applications/applicationB",
         matchPattern: "applications/*",
         scripts: ["all-workspaces", "application-b", "b-workspaces"],
       }),
-      createTestWorkspace({
+      makeTestWorkspace({
         name: "library-1a",
         path: "libraries/libraryA",
         matchPattern: "libraries/*",
         scripts: ["a-workspaces", "all-workspaces", "library-a"],
       }),
-      createTestWorkspace({
+      makeTestWorkspace({
         name: "library-1b",
         path: "libraries/libraryB",
         matchPattern: "libraries/*",
@@ -299,7 +299,7 @@ describe("CLI Global Options", () => {
       }),
     ];
 
-    const rootWorkspace = createTestWorkspace({
+    const rootWorkspace = makeTestWorkspace({
       name: "test-root",
       isRoot: true,
       path: "",
@@ -309,28 +309,28 @@ describe("CLI Global Options", () => {
     });
 
     const expectedWithConfigFiles = [
-      createTestWorkspace({
+      makeTestWorkspace({
         name: "application-1a",
         path: "applications/applicationA",
         matchPattern: "applications/*",
         scripts: ["a-workspaces", "all-workspaces", "application-a"],
         aliases: ["appA"],
       }),
-      createTestWorkspace({
+      makeTestWorkspace({
         name: "application-1b",
         path: "applications/applicationB",
         matchPattern: "applications/*",
         scripts: ["all-workspaces", "application-b", "b-workspaces"],
         aliases: ["appB"],
       }),
-      createTestWorkspace({
+      makeTestWorkspace({
         name: "library-1a",
         path: "libraries/libraryA",
         matchPattern: "libraries/*",
         scripts: ["a-workspaces", "all-workspaces", "library-a"],
         aliases: ["libA"],
       }),
-      createTestWorkspace({
+      makeTestWorkspace({
         name: "library-1b",
         path: "libraries/libraryB",
         matchPattern: "libraries/*",

@@ -1,9 +1,9 @@
 import { test, describe } from "bun:test";
 import { setupCliTest, assertOutputMatches } from "../util/cliTestUtils";
-import { createTestWorkspace } from "../util/testData";
+import { makeTestWorkspace } from "../util/testData";
 import { withWindowsPath } from "../util/windows";
 
-const expectedOneWorkspace = createTestWorkspace({
+const expectedOneWorkspace = makeTestWorkspace({
   name: "application-a",
   path: "applications/applicationA",
   matchPattern: "applications/*",

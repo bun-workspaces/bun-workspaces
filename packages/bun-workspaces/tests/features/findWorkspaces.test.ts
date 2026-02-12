@@ -3,9 +3,9 @@ import { BUN_LOCK_ERRORS } from "../../src/internal/bun";
 import { WORKSPACE_ERRORS } from "../../src/workspaces/errors";
 import { findWorkspaces } from "../../src/workspaces/findWorkspaces";
 import { getProjectRoot } from "../fixtures/testProjects";
-import { createTestWorkspace, createWorkspaceMapEntry } from "../util/testData";
+import { makeTestWorkspace, makeWorkspaceMapEntry } from "../util/testData";
 
-const defaultRootWorkspace = createTestWorkspace({
+const defaultRootWorkspace = makeTestWorkspace({
   name: "test-root",
   isRoot: true,
   path: "",
@@ -22,31 +22,31 @@ describe("Test finding workspaces", () => {
       expect(defaultProject).toEqual({
         rootWorkspace: defaultRootWorkspace,
         workspaces: [
-          createTestWorkspace({
+          makeTestWorkspace({
             name: "application-a",
             path: "applications/applicationA",
             matchPattern: "applications/*",
             scripts: ["a-workspaces", "all-workspaces", "application-a"],
           }),
-          createTestWorkspace({
+          makeTestWorkspace({
             name: "application-b",
             path: "applications/applicationB",
             matchPattern: "applications/*",
             scripts: ["all-workspaces", "application-b", "b-workspaces"],
           }),
-          createTestWorkspace({
+          makeTestWorkspace({
             name: "library-a",
             path: "libraries/libraryA",
             matchPattern: "libraries/**/*",
             scripts: ["a-workspaces", "all-workspaces", "library-a"],
           }),
-          createTestWorkspace({
+          makeTestWorkspace({
             name: "library-b",
             path: "libraries/libraryB",
             matchPattern: "libraries/**/*",
             scripts: ["all-workspaces", "b-workspaces", "library-b"],
           }),
-          createTestWorkspace({
+          makeTestWorkspace({
             name: "library-c",
             path: "libraries/nested/libraryC",
             matchPattern: "libraries/**/*",
@@ -54,12 +54,12 @@ describe("Test finding workspaces", () => {
           }),
         ],
         workspaceMap: {
-          "test-root": createWorkspaceMapEntry({ alias: [] }),
-          "application-a": createWorkspaceMapEntry({}),
-          "application-b": createWorkspaceMapEntry({}),
-          "library-a": createWorkspaceMapEntry({}),
-          "library-b": createWorkspaceMapEntry({}),
-          "library-c": createWorkspaceMapEntry({}),
+          "test-root": makeWorkspaceMapEntry({ alias: [] }),
+          "application-a": makeWorkspaceMapEntry({}),
+          "application-b": makeWorkspaceMapEntry({}),
+          "library-a": makeWorkspaceMapEntry({}),
+          "library-b": makeWorkspaceMapEntry({}),
+          "library-c": makeWorkspaceMapEntry({}),
         },
       });
     });
@@ -86,31 +86,31 @@ describe("Test finding workspaces", () => {
       ).toEqual({
         rootWorkspace: defaultRootWorkspace,
         workspaces: [
-          createTestWorkspace({
+          makeTestWorkspace({
             name: "application-a",
             path: "applications/applicationA",
             matchPattern: "applications/*",
             scripts: ["a-workspaces", "all-workspaces", "application-a"],
           }),
-          createTestWorkspace({
+          makeTestWorkspace({
             name: "application-b",
             path: "applications/applicationB",
             matchPattern: "applications/*",
             scripts: ["all-workspaces", "application-b", "b-workspaces"],
           }),
-          createTestWorkspace({
+          makeTestWorkspace({
             name: "library-a",
             path: "libraries/libraryA",
             matchPattern: "libraries/*",
             scripts: ["a-workspaces", "all-workspaces", "library-a"],
           }),
-          createTestWorkspace({
+          makeTestWorkspace({
             name: "library-b",
             path: "libraries/libraryB",
             matchPattern: "libraries/*",
             scripts: ["all-workspaces", "b-workspaces", "library-b"],
           }),
-          createTestWorkspace({
+          makeTestWorkspace({
             name: "library-c",
             path: "libraries/nested/libraryC",
             matchPattern: "",
@@ -118,12 +118,12 @@ describe("Test finding workspaces", () => {
           }),
         ],
         workspaceMap: {
-          "test-root": createWorkspaceMapEntry({ alias: [] }),
-          "application-a": createWorkspaceMapEntry({}),
-          "application-b": createWorkspaceMapEntry({}),
-          "library-a": createWorkspaceMapEntry({}),
-          "library-b": createWorkspaceMapEntry({}),
-          "library-c": createWorkspaceMapEntry({}),
+          "test-root": makeWorkspaceMapEntry({ alias: [] }),
+          "application-a": makeWorkspaceMapEntry({}),
+          "application-b": makeWorkspaceMapEntry({}),
+          "library-a": makeWorkspaceMapEntry({}),
+          "library-b": makeWorkspaceMapEntry({}),
+          "library-c": makeWorkspaceMapEntry({}),
         },
       });
     });
@@ -137,31 +137,31 @@ describe("Test finding workspaces", () => {
       ).toEqual({
         rootWorkspace: defaultRootWorkspace,
         workspaces: [
-          createTestWorkspace({
+          makeTestWorkspace({
             name: "application-a",
             path: "applications/applicationA",
             matchPattern: "applications/*",
             scripts: ["a-workspaces", "all-workspaces", "application-a"],
           }),
-          createTestWorkspace({
+          makeTestWorkspace({
             name: "application-b",
             path: "applications/applicationB",
             matchPattern: "applications/*",
             scripts: ["all-workspaces", "application-b", "b-workspaces"],
           }),
-          createTestWorkspace({
+          makeTestWorkspace({
             name: "library-a",
             path: "libraries/libraryA",
             matchPattern: "",
             scripts: ["a-workspaces", "all-workspaces", "library-a"],
           }),
-          createTestWorkspace({
+          makeTestWorkspace({
             name: "library-b",
             path: "libraries/libraryB",
             matchPattern: "",
             scripts: ["all-workspaces", "b-workspaces", "library-b"],
           }),
-          createTestWorkspace({
+          makeTestWorkspace({
             name: "library-c",
             path: "libraries/nested/libraryC",
             matchPattern: "",
@@ -169,12 +169,12 @@ describe("Test finding workspaces", () => {
           }),
         ],
         workspaceMap: {
-          "test-root": createWorkspaceMapEntry({ alias: [] }),
-          "application-a": createWorkspaceMapEntry({}),
-          "application-b": createWorkspaceMapEntry({}),
-          "library-a": createWorkspaceMapEntry({}),
-          "library-b": createWorkspaceMapEntry({}),
-          "library-c": createWorkspaceMapEntry({}),
+          "test-root": makeWorkspaceMapEntry({ alias: [] }),
+          "application-a": makeWorkspaceMapEntry({}),
+          "application-b": makeWorkspaceMapEntry({}),
+          "library-a": makeWorkspaceMapEntry({}),
+          "library-b": makeWorkspaceMapEntry({}),
+          "library-c": makeWorkspaceMapEntry({}),
         },
       });
     });
@@ -188,31 +188,31 @@ describe("Test finding workspaces", () => {
     expect(defaultProject).toEqual({
       rootWorkspace: defaultRootWorkspace,
       workspaces: [
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "application-a",
           path: "applications/applicationA",
           matchPattern: "applications/*",
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
         }),
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "application-b",
           path: "applications/applicationB",
           matchPattern: "applications/*",
           scripts: ["all-workspaces", "application-b", "b-workspaces"],
         }),
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "library-a",
           path: "libraries/libraryA",
           matchPattern: "libraries/**/*",
           scripts: ["a-workspaces", "all-workspaces", "library-a"],
         }),
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "library-b",
           path: "libraries/libraryB",
           matchPattern: "libraries/**/*",
           scripts: ["all-workspaces", "b-workspaces", "library-b"],
         }),
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "library-c",
           path: "libraries/nested/libraryC",
           matchPattern: "libraries/**/*",
@@ -220,12 +220,12 @@ describe("Test finding workspaces", () => {
         }),
       ],
       workspaceMap: {
-        "test-root": createWorkspaceMapEntry({ alias: [] }),
-        "application-a": createWorkspaceMapEntry({}),
-        "application-b": createWorkspaceMapEntry({}),
-        "library-a": createWorkspaceMapEntry({}),
-        "library-b": createWorkspaceMapEntry({}),
-        "library-c": createWorkspaceMapEntry({}),
+        "test-root": makeWorkspaceMapEntry({ alias: [] }),
+        "application-a": makeWorkspaceMapEntry({}),
+        "application-b": makeWorkspaceMapEntry({}),
+        "library-a": makeWorkspaceMapEntry({}),
+        "library-b": makeWorkspaceMapEntry({}),
+        "library-c": makeWorkspaceMapEntry({}),
       },
     });
   });
@@ -343,25 +343,25 @@ describe("Test finding workspaces", () => {
     expect(defaultProject).toEqual({
       rootWorkspace: defaultRootWorkspace,
       workspaces: [
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "application-1a",
           path: "applications/applicationA",
           matchPattern: "applications/*",
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
         }),
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "application-1b",
           path: "applications/applicationB",
           matchPattern: "applications/*",
           scripts: ["all-workspaces", "application-b", "b-workspaces"],
         }),
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "library-1a",
           path: "libraries/libraryA",
           matchPattern: "libraries/*",
           scripts: ["a-workspaces", "all-workspaces", "library-a"],
         }),
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "library-1b",
           path: "libraries/libraryB",
           matchPattern: "libraries/*",
@@ -369,11 +369,11 @@ describe("Test finding workspaces", () => {
         }),
       ],
       workspaceMap: {
-        "test-root": createWorkspaceMapEntry({ alias: [] }),
-        "application-1a": createWorkspaceMapEntry({}),
-        "application-1b": createWorkspaceMapEntry({}),
-        "library-1a": createWorkspaceMapEntry({}),
-        "library-1b": createWorkspaceMapEntry({}),
+        "test-root": makeWorkspaceMapEntry({ alias: [] }),
+        "application-1a": makeWorkspaceMapEntry({}),
+        "application-1b": makeWorkspaceMapEntry({}),
+        "library-1a": makeWorkspaceMapEntry({}),
+        "library-1b": makeWorkspaceMapEntry({}),
       },
     });
   });
@@ -383,7 +383,7 @@ describe("Test finding workspaces", () => {
       rootDirectory: getProjectRoot("withRootWorkspace"),
       includeRootWorkspace: true,
     });
-    const rootWorkspaceWithConfig = createTestWorkspace({
+    const rootWorkspaceWithConfig = makeTestWorkspace({
       name: "test-root",
       isRoot: true,
       path: "",
@@ -395,25 +395,25 @@ describe("Test finding workspaces", () => {
       rootWorkspace: rootWorkspaceWithConfig,
       workspaces: [
         rootWorkspaceWithConfig,
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "application-1a",
           path: "applications/applicationA",
           matchPattern: "applications/*",
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
         }),
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "application-1b",
           path: "applications/applicationB",
           matchPattern: "applications/*",
           scripts: ["all-workspaces", "application-b", "b-workspaces"],
         }),
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "library-1a",
           path: "libraries/libraryA",
           matchPattern: "libraries/*",
           scripts: ["a-workspaces", "all-workspaces", "library-a"],
         }),
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "library-1b",
           path: "libraries/libraryB",
           matchPattern: "libraries/*",
@@ -421,11 +421,11 @@ describe("Test finding workspaces", () => {
         }),
       ],
       workspaceMap: {
-        "test-root": createWorkspaceMapEntry({ alias: ["my-root-alias"] }),
-        "application-1a": createWorkspaceMapEntry({}),
-        "application-1b": createWorkspaceMapEntry({}),
-        "library-1a": createWorkspaceMapEntry({}),
-        "library-1b": createWorkspaceMapEntry({}),
+        "test-root": makeWorkspaceMapEntry({ alias: ["my-root-alias"] }),
+        "application-1a": makeWorkspaceMapEntry({}),
+        "application-1b": makeWorkspaceMapEntry({}),
+        "library-1a": makeWorkspaceMapEntry({}),
+        "library-1b": makeWorkspaceMapEntry({}),
       },
     });
   });

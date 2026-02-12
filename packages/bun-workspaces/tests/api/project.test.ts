@@ -8,7 +8,7 @@ import {
 import { PROJECT_ERRORS } from "../../src/project/errors";
 import { WORKSPACE_ERRORS } from "../../src/workspaces";
 import { getProjectRoot } from "../fixtures/testProjects";
-import { createTestWorkspace } from "../util/testData";
+import { makeTestWorkspace } from "../util/testData";
 import { withWindowsPath } from "../util/windows";
 
 const createDefaultProject = () =>
@@ -47,31 +47,31 @@ describe("Test Project utilities", () => {
     test("exposes workspaces", () => {
       const project = createDefaultProject();
       expect(project.workspaces).toEqual([
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "application-a",
           path: "applications/applicationA",
           matchPattern: "applications/*",
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
         }),
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "application-b",
           path: "applications/applicationB",
           matchPattern: "applications/*",
           scripts: ["all-workspaces", "application-b", "b-workspaces"],
         }),
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "library-a",
           path: "libraries/libraryA",
           matchPattern: "libraries/**/*",
           scripts: ["a-workspaces", "all-workspaces", "library-a"],
         }),
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "library-b",
           path: "libraries/libraryB",
           matchPattern: "libraries/**/*",
           scripts: ["all-workspaces", "b-workspaces", "library-b"],
         }),
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "library-c",
           path: "libraries/nested/libraryC",
           matchPattern: "libraries/**/*",
@@ -233,31 +233,31 @@ describe("Test Project utilities", () => {
     test("lists all workspaces for shared script", () => {
       const project = createDefaultProject();
       expect(project.listWorkspacesWithScript("all-workspaces")).toEqual([
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "application-a",
           path: "applications/applicationA",
           matchPattern: "applications/*",
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
         }),
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "application-b",
           path: "applications/applicationB",
           matchPattern: "applications/*",
           scripts: ["all-workspaces", "application-b", "b-workspaces"],
         }),
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "library-a",
           path: "libraries/libraryA",
           matchPattern: "libraries/**/*",
           scripts: ["a-workspaces", "all-workspaces", "library-a"],
         }),
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "library-b",
           path: "libraries/libraryB",
           matchPattern: "libraries/**/*",
           scripts: ["all-workspaces", "b-workspaces", "library-b"],
         }),
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "library-c",
           path: "libraries/nested/libraryC",
           matchPattern: "libraries/**/*",
@@ -381,7 +381,7 @@ describe("Test Project utilities", () => {
           command: `bun --silent run all-workspaces`,
         },
         scriptName: "all-workspaces",
-        workspace: createTestWorkspace({
+        workspace: makeTestWorkspace({
           name: "application-a",
           path: "applications/applicationA",
           matchPattern: "applications/*",
@@ -408,7 +408,7 @@ describe("Test Project utilities", () => {
           command: `bun --silent run all-workspaces --watch`,
         },
         scriptName: "all-workspaces",
-        workspace: createTestWorkspace({
+        workspace: makeTestWorkspace({
           name: "application-a",
           path: "applications/applicationA",
           matchPattern: "applications/*",
@@ -432,7 +432,7 @@ describe("Test Project utilities", () => {
           command: `bun --silent run --filter="application-a" all-workspaces --watch`,
         },
         scriptName: "all-workspaces",
-        workspace: createTestWorkspace({
+        workspace: makeTestWorkspace({
           name: "application-a",
           path: "applications/applicationA",
           matchPattern: "applications/*",
@@ -456,7 +456,7 @@ describe("Test Project utilities", () => {
           command: `bun --silent run --filter="application-a" all-workspaces --stuff --hello=there123`,
         },
         scriptName: "all-workspaces",
-        workspace: createTestWorkspace({
+        workspace: makeTestWorkspace({
           name: "application-a",
           path: "applications/applicationA",
           matchPattern: "applications/*",
@@ -483,7 +483,7 @@ describe("Test Project utilities", () => {
           command: `bun --silent run b-workspaces`,
         },
         scriptName: "b-workspaces",
-        workspace: createTestWorkspace({
+        workspace: makeTestWorkspace({
           name: "library-b",
           path: "libraries/libraryB",
           matchPattern: "libraries/**/*",
@@ -507,7 +507,7 @@ describe("Test Project utilities", () => {
           command: `bun --silent run --filter="library-b" b-workspaces`,
         },
         scriptName: "b-workspaces",
-        workspace: createTestWorkspace({
+        workspace: makeTestWorkspace({
           name: "library-b",
           path: "libraries/libraryB",
           matchPattern: "libraries/**/*",
@@ -567,7 +567,7 @@ describe("Test Project utilities", () => {
         durationMs: expect.any(Number),
         signal: null,
         metadata: {
-          workspace: createTestWorkspace({
+          workspace: makeTestWorkspace({
             name: "application-a",
             path: "applications/applicationA",
             matchPattern: "applications/*",
@@ -603,7 +603,7 @@ describe("Test Project utilities", () => {
         durationMs: expect.any(Number),
         signal: null,
         metadata: {
-          workspace: createTestWorkspace({
+          workspace: makeTestWorkspace({
             name: "application-a",
             path: "applications/applicationA",
             matchPattern: "applications/*",
@@ -643,7 +643,7 @@ describe("Test Project utilities", () => {
         durationMs: expect.any(Number),
         signal: null,
         metadata: {
-          workspace: createTestWorkspace({
+          workspace: makeTestWorkspace({
             name: "application-1a",
             path: "applications/applicationA",
             matchPattern: "applications/*",
@@ -684,7 +684,7 @@ describe("Test Project utilities", () => {
         durationMs: expect.any(Number),
         signal: null,
         metadata: {
-          workspace: createTestWorkspace({
+          workspace: makeTestWorkspace({
             name: "application-1a",
             path: "applications/applicationA",
             matchPattern: "applications/*",
@@ -707,13 +707,13 @@ describe("Test Project utilities", () => {
       expect(plainProject.name).toEqual("");
     });
 
-    const testWs1 = createTestWorkspace({
+    const testWs1 = makeTestWorkspace({
       name: "test-1",
       path: "test/test-1",
       matchPattern: "test/*",
       scripts: ["test-script"],
     });
-    const testWs2 = createTestWorkspace({
+    const testWs2 = makeTestWorkspace({
       name: "test-2",
       path: "test/test-2",
       matchPattern: "test/*",
@@ -826,13 +826,13 @@ describe("Test Project utilities", () => {
       expect(() =>
         createMemoryProject({
           workspaces: [
-            createTestWorkspace({
+            makeTestWorkspace({
               name: "test-1",
               path: "test/test-1",
               matchPattern: "test/*",
               scripts: ["test-script"],
             }),
-            createTestWorkspace({
+            makeTestWorkspace({
               name: "test-1",
               path: "test/test-1",
               matchPattern: "test/*",
@@ -847,14 +847,14 @@ describe("Test Project utilities", () => {
       expect(() =>
         createMemoryProject({
           workspaces: [
-            createTestWorkspace({
+            makeTestWorkspace({
               name: "test-1",
               path: "test/test-1",
               matchPattern: "test/*",
               scripts: ["test-script"],
               aliases: ["test-1-alias"],
             }),
-            createTestWorkspace({
+            makeTestWorkspace({
               name: "test-2",
               path: "test/test-2",
               matchPattern: "test/*",

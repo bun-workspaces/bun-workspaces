@@ -5,7 +5,7 @@ import { getUserEnvVar, getUserEnvVarName } from "../../src/config/userEnvVars";
 import { BUN_LOCK_ERRORS } from "../../src/internal/bun";
 import { createFileSystemProject, PROJECT_ERRORS } from "../../src/project";
 import { getProjectRoot } from "../fixtures/testProjects";
-import { createTestWorkspace } from "../util/testData";
+import { makeTestWorkspace } from "../util/testData";
 import { withWindowsPath } from "../util/windows";
 
 describe("Test FileSystemProject", () => {
@@ -70,7 +70,7 @@ describe("Test FileSystemProject", () => {
       durationMs: expect.any(Number),
       signal: null,
       metadata: {
-        workspace: createTestWorkspace({
+        workspace: makeTestWorkspace({
           name: "application-a",
           path: "applications/applicationA",
           matchPattern: "applications/*",
@@ -108,7 +108,7 @@ describe("Test FileSystemProject", () => {
       durationMs: expect.any(Number),
       signal: null,
       metadata: {
-        workspace: createTestWorkspace({
+        workspace: makeTestWorkspace({
           name: "application-1a",
           path: "applications/application-a",
           matchPattern: "applications/*",
@@ -182,7 +182,7 @@ describe("Test FileSystemProject", () => {
       durationMs: expect.any(Number),
       signal: null,
       metadata: {
-        workspace: createTestWorkspace({
+        workspace: makeTestWorkspace({
           name: "fail1",
           path: "packages/fail1",
           matchPattern: "packages/**/*",
@@ -286,7 +286,7 @@ describe("Test FileSystemProject", () => {
       );
       expect(outputChunk.streamName).toBe("stdout");
       expect(scriptMetadata.workspace).toEqual(
-        createTestWorkspace({
+        makeTestWorkspace({
           name: "library-b",
           path: "libraries/libraryB",
           matchPattern: "libraries/**/*",
@@ -313,7 +313,7 @@ describe("Test FileSystemProject", () => {
           durationMs: expect.any(Number),
           signal: null,
           metadata: {
-            workspace: createTestWorkspace({
+            workspace: makeTestWorkspace({
               name: "library-b",
               path: "libraries/libraryB",
               matchPattern: "libraries/**/*",
@@ -376,7 +376,7 @@ describe("Test FileSystemProject", () => {
           durationMs: expect.any(Number),
           signal: null,
           metadata: {
-            workspace: createTestWorkspace({
+            workspace: makeTestWorkspace({
               name: "application-1a",
               matchPattern: "applications/*",
               path: "applications/applicationA",
@@ -392,7 +392,7 @@ describe("Test FileSystemProject", () => {
           durationMs: expect.any(Number),
           signal: null,
           metadata: {
-            workspace: createTestWorkspace({
+            workspace: makeTestWorkspace({
               name: "application-1b",
               matchPattern: "applications/*",
               path: "applications/applicationB",
@@ -408,7 +408,7 @@ describe("Test FileSystemProject", () => {
           durationMs: expect.any(Number),
           signal: null,
           metadata: {
-            workspace: createTestWorkspace({
+            workspace: makeTestWorkspace({
               name: "library-1a",
               matchPattern: "libraries/*",
               path: "libraries/libraryA",
@@ -424,7 +424,7 @@ describe("Test FileSystemProject", () => {
           durationMs: expect.any(Number),
           signal: null,
           metadata: {
-            workspace: createTestWorkspace({
+            workspace: makeTestWorkspace({
               name: "library-1b",
               matchPattern: "libraries/*",
               path: "libraries/libraryB",
@@ -454,7 +454,7 @@ describe("Test FileSystemProject", () => {
           textNoAnsi: "script for b workspaces",
         },
         scriptMetadata: {
-          workspace: createTestWorkspace({
+          workspace: makeTestWorkspace({
             name: "application-1b",
             matchPattern: "applications/*",
             path: "applications/applicationB",
@@ -469,7 +469,7 @@ describe("Test FileSystemProject", () => {
           textNoAnsi: "script for b workspaces",
         },
         scriptMetadata: {
-          workspace: createTestWorkspace({
+          workspace: makeTestWorkspace({
             name: "library-1b",
             matchPattern: "libraries/*",
             path: "libraries/libraryB",
@@ -511,7 +511,7 @@ describe("Test FileSystemProject", () => {
           durationMs: expect.any(Number),
           signal: null,
           metadata: {
-            workspace: createTestWorkspace({
+            workspace: makeTestWorkspace({
               name: "application-1b",
               matchPattern: "applications/*",
               path: "applications/applicationB",
@@ -527,7 +527,7 @@ describe("Test FileSystemProject", () => {
           durationMs: expect.any(Number),
           signal: null,
           metadata: {
-            workspace: createTestWorkspace({
+            workspace: makeTestWorkspace({
               name: "library-1b",
               matchPattern: "libraries/*",
               path: "libraries/libraryB",
@@ -570,7 +570,7 @@ describe("Test FileSystemProject", () => {
           textNoAnsi: "script for all workspaces",
         },
         scriptMetadata: {
-          workspace: createTestWorkspace({
+          workspace: makeTestWorkspace({
             name: "application-1a",
             matchPattern: "applications/*",
             path: "applications/applicationA",
@@ -585,7 +585,7 @@ describe("Test FileSystemProject", () => {
           textNoAnsi: "script for all workspaces",
         },
         scriptMetadata: {
-          workspace: createTestWorkspace({
+          workspace: makeTestWorkspace({
             name: "application-1b",
             matchPattern: "applications/*",
             path: "applications/applicationB",
@@ -600,7 +600,7 @@ describe("Test FileSystemProject", () => {
           textNoAnsi: "script for all workspaces",
         },
         scriptMetadata: {
-          workspace: createTestWorkspace({
+          workspace: makeTestWorkspace({
             name: "library-1a",
             matchPattern: "libraries/*",
             path: "libraries/libraryA",
@@ -615,7 +615,7 @@ describe("Test FileSystemProject", () => {
           textNoAnsi: "script for all workspaces",
         },
         scriptMetadata: {
-          workspace: createTestWorkspace({
+          workspace: makeTestWorkspace({
             name: "library-1b",
             matchPattern: "libraries/*",
             path: "libraries/libraryB",
@@ -658,7 +658,7 @@ describe("Test FileSystemProject", () => {
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: createTestWorkspace({
+            workspace: makeTestWorkspace({
               name: "application-1a",
               matchPattern: "applications/*",
               path: "applications/applicationA",
@@ -674,7 +674,7 @@ describe("Test FileSystemProject", () => {
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: createTestWorkspace({
+            workspace: makeTestWorkspace({
               name: "application-1b",
               matchPattern: "applications/*",
               path: "applications/applicationB",
@@ -690,7 +690,7 @@ describe("Test FileSystemProject", () => {
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: createTestWorkspace({
+            workspace: makeTestWorkspace({
               name: "library-1a",
               matchPattern: "libraries/*",
               path: "libraries/libraryA",
@@ -706,7 +706,7 @@ describe("Test FileSystemProject", () => {
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: createTestWorkspace({
+            workspace: makeTestWorkspace({
               name: "library-1b",
               matchPattern: "libraries/*",
               path: "libraries/libraryB",
@@ -737,7 +737,7 @@ describe("Test FileSystemProject", () => {
           textNoAnsi: "passed args: --arg1=value1 --arg2=value2",
         },
         scriptMetadata: {
-          workspace: createTestWorkspace({
+          workspace: makeTestWorkspace({
             name: "application-1a",
             matchPattern: "applications/*",
             path: "applications/applicationA",
@@ -752,7 +752,7 @@ describe("Test FileSystemProject", () => {
           textNoAnsi: "passed args: --arg1=value1 --arg2=value2",
         },
         scriptMetadata: {
-          workspace: createTestWorkspace({
+          workspace: makeTestWorkspace({
             name: "application-1b",
             matchPattern: "applications/*",
             path: "applications/applicationB",
@@ -928,7 +928,7 @@ test-script-metadata-env-b
           textNoAnsi: "fail1",
         },
         scriptMetadata: {
-          workspace: createTestWorkspace({
+          workspace: makeTestWorkspace({
             name: "fail1",
             matchPattern: "packages/**/*",
             path: "packages/fail1",
@@ -943,7 +943,7 @@ test-script-metadata-env-b
           textNoAnsi: "fail2",
         },
         scriptMetadata: {
-          workspace: createTestWorkspace({
+          workspace: makeTestWorkspace({
             name: "fail2",
             matchPattern: "packages/**/*",
             path: "packages/fail2",
@@ -958,7 +958,7 @@ test-script-metadata-env-b
           textNoAnsi: "success1",
         },
         scriptMetadata: {
-          workspace: createTestWorkspace({
+          workspace: makeTestWorkspace({
             name: "success1",
             matchPattern: "packages/**/*",
             path: "packages/success1",
@@ -973,7 +973,7 @@ test-script-metadata-env-b
           textNoAnsi: "success2",
         },
         scriptMetadata: {
-          workspace: createTestWorkspace({
+          workspace: makeTestWorkspace({
             name: "success2",
             matchPattern: "packages/**/*",
             path: "packages/success2",
@@ -1016,7 +1016,7 @@ test-script-metadata-env-b
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: createTestWorkspace({
+            workspace: makeTestWorkspace({
               name: "fail1",
               matchPattern: "packages/**/*",
               path: "packages/fail1",
@@ -1032,7 +1032,7 @@ test-script-metadata-env-b
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: createTestWorkspace({
+            workspace: makeTestWorkspace({
               name: "fail2",
               matchPattern: "packages/**/*",
               path: "packages/fail2",
@@ -1048,7 +1048,7 @@ test-script-metadata-env-b
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: createTestWorkspace({
+            workspace: makeTestWorkspace({
               name: "success1",
               matchPattern: "packages/**/*",
               path: "packages/success1",
@@ -1064,7 +1064,7 @@ test-script-metadata-env-b
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: createTestWorkspace({
+            workspace: makeTestWorkspace({
               name: "success2",
               matchPattern: "packages/**/*",
               path: "packages/success2",
@@ -1095,7 +1095,7 @@ test-script-metadata-env-b
           textNoAnsi: "first",
         },
         scriptMetadata: {
-          workspace: createTestWorkspace({
+          workspace: makeTestWorkspace({
             name: "first",
             matchPattern: "packages/**/*",
             path: "packages/first",
@@ -1110,7 +1110,7 @@ test-script-metadata-env-b
           textNoAnsi: "second",
         },
         scriptMetadata: {
-          workspace: createTestWorkspace({
+          workspace: makeTestWorkspace({
             name: "second",
             matchPattern: "packages/**/*",
             path: "packages/second",
@@ -1125,7 +1125,7 @@ test-script-metadata-env-b
           textNoAnsi: "third",
         },
         scriptMetadata: {
-          workspace: createTestWorkspace({
+          workspace: makeTestWorkspace({
             name: "third",
             matchPattern: "packages/**/*",
             path: "packages/third",
@@ -1140,7 +1140,7 @@ test-script-metadata-env-b
           textNoAnsi: "fourth",
         },
         scriptMetadata: {
-          workspace: createTestWorkspace({
+          workspace: makeTestWorkspace({
             name: "fourth",
             matchPattern: "packages/**/*",
             path: "packages/fourth",
@@ -1155,7 +1155,7 @@ test-script-metadata-env-b
           textNoAnsi: "fifth",
         },
         scriptMetadata: {
-          workspace: createTestWorkspace({
+          workspace: makeTestWorkspace({
             name: "fifth",
             matchPattern: "packages/**/*",
             path: "packages/fifth",
@@ -1201,7 +1201,7 @@ test-script-metadata-env-b
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: createTestWorkspace({
+            workspace: makeTestWorkspace({
               name: "fifth",
               matchPattern: "packages/**/*",
               path: "packages/fifth",
@@ -1217,7 +1217,7 @@ test-script-metadata-env-b
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: createTestWorkspace({
+            workspace: makeTestWorkspace({
               name: "first",
               matchPattern: "packages/**/*",
               path: "packages/first",
@@ -1233,7 +1233,7 @@ test-script-metadata-env-b
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: createTestWorkspace({
+            workspace: makeTestWorkspace({
               name: "fourth",
               matchPattern: "packages/**/*",
               path: "packages/fourth",
@@ -1249,7 +1249,7 @@ test-script-metadata-env-b
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: createTestWorkspace({
+            workspace: makeTestWorkspace({
               name: "second",
               matchPattern: "packages/**/*",
               path: "packages/second",
@@ -1265,7 +1265,7 @@ test-script-metadata-env-b
           endTimeISO: expect.any(String),
           durationMs: expect.any(Number),
           metadata: {
-            workspace: createTestWorkspace({
+            workspace: makeTestWorkspace({
               name: "third",
               matchPattern: "packages/**/*",
               path: "packages/third",

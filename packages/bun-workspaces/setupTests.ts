@@ -40,16 +40,24 @@ for (const file of new Glob("**/*/package.json").scanSync({
   promises.push(
     (async () => {
       try {
-        const exit = await runScript({
+        const { exit, output } = runScript({
           env: {},
           metadata: {},
           scriptCommand: {
             command: "bun install",
             workingDirectory: path.dirname(file),
           },
-        }).exit;
-        if (!exit.success) {
-          console.error(`setupTests: Failed to run bun-install for ${file}`);
+        });
+        let stderr = "";
+        for await (const outputChunk of output) {
+          if (outputChunk.streamName === "stderr") {
+            stderr += outputChunk.decode();
+          }
+        }
+        if (!(await exit).success) {
+          console.error(
+            `setupTests: Failed to run bun-install for ${file}: ${stderr}`,
+          );
         }
       } catch (error) {
         console.error(

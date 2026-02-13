@@ -164,7 +164,9 @@ describe("List Workspaces", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.raw,
-        JSON.stringify(EXPECTED_WORKSPACES_JSON_SIMPLE1.map(({ name }) => name)),
+        JSON.stringify(
+          EXPECTED_WORKSPACES_JSON_SIMPLE1.map(({ name }) => name),
+        ),
       );
     });
 
@@ -175,7 +177,9 @@ describe("List Workspaces", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.raw,
-        JSON.stringify(EXPECTED_WORKSPACES_JSON_SIMPLE1.map(({ name }) => name)),
+        JSON.stringify(
+          EXPECTED_WORKSPACES_JSON_SIMPLE1.map(({ name }) => name),
+        ),
       );
     });
 

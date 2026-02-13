@@ -16,12 +16,7 @@ const APPLICATION_A_PLAIN_OUTPUT = `Script: application-a
 
 const EXPECTED_ALL_WORKSPACES_JSON = {
   name: "all-workspaces",
-  workspaces: [
-    "application-1a",
-    "application-1b",
-    "library-1a",
-    "library-1b",
-  ],
+  workspaces: ["application-1a", "application-1b", "library-1a", "library-1b"],
 };
 
 describe("Script Info", () => {

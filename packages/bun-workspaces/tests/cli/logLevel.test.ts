@@ -1,6 +1,26 @@
 import { test, describe } from "bun:test";
 import { setupCliTest, assertOutputMatches } from "../util/cliTestUtils";
+import { makeTestWorkspace } from "../util/testData";
 import { withWindowsPath } from "../util/windows";
+
+const expectedOneWorkspace = makeTestWorkspace({
+  name: "application-a",
+  path: "applications/applicationA",
+  matchPattern: "applications/*",
+  scripts: ["a-workspaces", "all-workspaces", "application-a"],
+});
+
+/** Serialize workspace in CLI key order for JSON output assertions */
+const expectedOneWorkspaceJson = () => ({
+  name: expectedOneWorkspace.name,
+  isRoot: expectedOneWorkspace.isRoot,
+  matchPattern: expectedOneWorkspace.matchPattern,
+  path: expectedOneWorkspace.path,
+  scripts: expectedOneWorkspace.scripts,
+  aliases: expectedOneWorkspace.aliases,
+  dependencies: expectedOneWorkspace.dependencies,
+  dependents: expectedOneWorkspace.dependents,
+});
 
 describe("CLI Log Level", () => {
   describe("silent", () => {
@@ -20,18 +40,7 @@ describe("CLI Log Level", () => {
       const { run } = setupCliTest({ testProject: "oneWorkspace" });
       assertOutputMatches(
         (await run("--log-level=silent", "ls", "--json")).stdoutAndErr.raw,
-        JSON.stringify([
-          {
-            name: "application-a",
-            isRoot: false,
-            matchPattern: "applications/*",
-            path: withWindowsPath("applications/applicationA"),
-            scripts: ["a-workspaces", "all-workspaces", "application-a"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
-        ]),
+        JSON.stringify([expectedOneWorkspaceJson()]),
       );
     });
 
@@ -61,16 +70,7 @@ describe("CLI Log Level", () => {
       assertOutputMatches(
         (await run("--log-level=silent", "info", "application-a", "--json"))
           .stdoutAndErr.raw,
-        JSON.stringify({
-          name: "application-a",
-          isRoot: false,
-          matchPattern: "applications/*",
-          path: withWindowsPath("applications/applicationA"),
-          scripts: ["a-workspaces", "all-workspaces", "application-a"],
-          aliases: [],
-          dependencies: [],
-          dependents: [],
-        }),
+        JSON.stringify(expectedOneWorkspaceJson()),
       );
     });
 
@@ -202,18 +202,7 @@ application-a`,
       const { run } = setupCliTest({ testProject: "oneWorkspace" });
       assertOutputMatches(
         (await run("--log-level=error", "ls", "--json")).stdoutAndErr.raw,
-        JSON.stringify([
-          {
-            name: "application-a",
-            isRoot: false,
-            matchPattern: "applications/*",
-            path: withWindowsPath("applications/applicationA"),
-            scripts: ["a-workspaces", "all-workspaces", "application-a"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
-        ]),
+        JSON.stringify([expectedOneWorkspaceJson()]),
       );
     });
 
@@ -243,16 +232,7 @@ application-a`,
       assertOutputMatches(
         (await run("--log-level=error", "info", "application-a", "--json"))
           .stdoutAndErr.raw,
-        JSON.stringify({
-          name: "application-a",
-          isRoot: false,
-          matchPattern: "applications/*",
-          path: withWindowsPath("applications/applicationA"),
-          scripts: ["a-workspaces", "all-workspaces", "application-a"],
-          aliases: [],
-          dependencies: [],
-          dependents: [],
-        }),
+        JSON.stringify(expectedOneWorkspaceJson()),
       );
     });
 

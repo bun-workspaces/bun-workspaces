@@ -7,7 +7,7 @@ import {
   assertOutputMatches,
   USAGE_OUTPUT_PATTERN,
 } from "../util/cliTestUtils";
-import { withWindowsPath } from "../util/windows";
+import { makeTestWorkspace } from "../util/testData";
 
 describe("CLI Global Options", () => {
   describe("usage/help", () => {
@@ -273,58 +273,71 @@ describe("CLI Global Options", () => {
 
   describe("--include-root", () => {
     const expectedWorkspaces = [
-      {
+      makeTestWorkspace({
         name: "application-1a",
-        isRoot: false,
+        path: "applications/applicationA",
         matchPattern: "applications/*",
-        path: withWindowsPath("applications/applicationA"),
         scripts: ["a-workspaces", "all-workspaces", "application-a"],
-        aliases: [],
-        dependencies: [],
-        dependents: [],
-      },
-      {
+      }),
+      makeTestWorkspace({
         name: "application-1b",
-        isRoot: false,
+        path: "applications/applicationB",
         matchPattern: "applications/*",
-        path: withWindowsPath("applications/applicationB"),
         scripts: ["all-workspaces", "application-b", "b-workspaces"],
-        aliases: [],
-        dependencies: [],
-        dependents: [],
-      },
-      {
+      }),
+      makeTestWorkspace({
         name: "library-1a",
-        isRoot: false,
+        path: "libraries/libraryA",
         matchPattern: "libraries/*",
-        path: withWindowsPath("libraries/libraryA"),
         scripts: ["a-workspaces", "all-workspaces", "library-a"],
-        aliases: [],
-        dependencies: [],
-        dependents: [],
-      },
-      {
+      }),
+      makeTestWorkspace({
         name: "library-1b",
-        isRoot: false,
+        path: "libraries/libraryB",
         matchPattern: "libraries/*",
-        path: withWindowsPath("libraries/libraryB"),
         scripts: ["all-workspaces", "b-workspaces", "library-b"],
-        aliases: [],
-        dependencies: [],
-        dependents: [],
-      },
+      }),
     ];
 
-    const rootWorkspace = {
+    const rootWorkspace = makeTestWorkspace({
       name: "test-root",
       isRoot: true,
-      matchPattern: "",
       path: "",
+      matchPattern: "",
       scripts: ["all-workspaces", "root-workspace"],
       aliases: ["my-root-alias"],
-      dependencies: [],
-      dependents: [],
-    };
+    });
+
+    const expectedWithConfigFiles = [
+      makeTestWorkspace({
+        name: "application-1a",
+        path: "applications/applicationA",
+        matchPattern: "applications/*",
+        scripts: ["a-workspaces", "all-workspaces", "application-a"],
+        aliases: ["appA"],
+      }),
+      makeTestWorkspace({
+        name: "application-1b",
+        path: "applications/applicationB",
+        matchPattern: "applications/*",
+        scripts: ["all-workspaces", "application-b", "b-workspaces"],
+        aliases: ["appB"],
+      }),
+      makeTestWorkspace({
+        name: "library-1a",
+        path: "libraries/libraryA",
+        matchPattern: "libraries/*",
+        scripts: ["a-workspaces", "all-workspaces", "library-a"],
+        aliases: ["libA"],
+      }),
+      makeTestWorkspace({
+        name: "library-1b",
+        path: "libraries/libraryB",
+        matchPattern: "libraries/*",
+        scripts: ["all-workspaces", "b-workspaces", "library-b"],
+        aliases: ["libB"],
+      }),
+    ];
 
     const expectedWithRoot = [rootWorkspace, ...expectedWorkspaces];
 
@@ -390,49 +403,6 @@ describe("CLI Global Options", () => {
         testProject: "withRootWorkspaceWithConfigFiles",
       });
 
-      const expectedWithConfigFiles = [
-        {
-          name: "application-1a",
-          isRoot: false,
-          matchPattern: "applications/*",
-          path: withWindowsPath("applications/applicationA"),
-          scripts: ["a-workspaces", "all-workspaces", "application-a"],
-          aliases: ["appA"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          name: "application-1b",
-          isRoot: false,
-          matchPattern: "applications/*",
-          path: withWindowsPath("applications/applicationB"),
-          scripts: ["all-workspaces", "application-b", "b-workspaces"],
-          aliases: ["appB"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          name: "library-1a",
-          isRoot: false,
-          matchPattern: "libraries/*",
-          path: withWindowsPath("libraries/libraryA"),
-          scripts: ["a-workspaces", "all-workspaces", "library-a"],
-          aliases: ["libA"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          name: "library-1b",
-          isRoot: false,
-          matchPattern: "libraries/*",
-          path: withWindowsPath("libraries/libraryB"),
-          scripts: ["all-workspaces", "b-workspaces", "library-b"],
-          aliases: ["libB"],
-          dependencies: [],
-          dependents: [],
-        },
-      ];
-
       const result = await run("ls", "--json");
       expect(result.stderr.raw).toBeEmpty();
       expect(result.exitCode).toBe(0);
@@ -446,49 +416,6 @@ describe("CLI Global Options", () => {
       const { run } = setupCliTest({
         testProject: "withRootWorkspaceWithConfigFiles",
       });
-
-      const expectedWithConfigFiles = [
-        {
-          name: "application-1a",
-          isRoot: false,
-          matchPattern: "applications/*",
-          path: withWindowsPath("applications/applicationA"),
-          scripts: ["a-workspaces", "all-workspaces", "application-a"],
-          aliases: ["appA"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          name: "application-1b",
-          isRoot: false,
-          matchPattern: "applications/*",
-          path: withWindowsPath("applications/applicationB"),
-          scripts: ["all-workspaces", "application-b", "b-workspaces"],
-          aliases: ["appB"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          name: "library-1a",
-          isRoot: false,
-          matchPattern: "libraries/*",
-          path: withWindowsPath("libraries/libraryA"),
-          scripts: ["a-workspaces", "all-workspaces", "library-a"],
-          aliases: ["libA"],
-          dependencies: [],
-          dependents: [],
-        },
-        {
-          name: "library-1b",
-          isRoot: false,
-          matchPattern: "libraries/*",
-          path: withWindowsPath("libraries/libraryB"),
-          scripts: ["all-workspaces", "b-workspaces", "library-b"],
-          aliases: ["libB"],
-          dependencies: [],
-          dependents: [],
-        },
-      ];
 
       const result = await run("--no-include-root", "ls", "--json");
       expect(result.stderr.raw).toBeEmpty();

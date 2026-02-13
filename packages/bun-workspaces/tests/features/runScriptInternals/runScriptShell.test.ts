@@ -1,10 +1,10 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { createFileSystemProject } from "../../src";
-import { getUserEnvVarName } from "../../src/config/userEnvVars";
-import { IS_WINDOWS } from "../../src/internal/core";
-import { runScript } from "../../src/runScript";
-import { getProjectRoot } from "../fixtures/testProjects";
-import { setupCliTest } from "../util/cliTestUtils";
+import { createFileSystemProject } from "../../../src";
+import { getUserEnvVarName } from "../../../src/config/userEnvVars";
+import { IS_WINDOWS } from "../../../src/internal/core";
+import { runScript } from "../../../src/runScript";
+import { getProjectRoot } from "../../fixtures/testProjects";
+import { setupCliTest } from "../../util/cliTestUtils";
 
 const originalScriptShellDefault =
   process.env[getUserEnvVarName("scriptShellDefault")];

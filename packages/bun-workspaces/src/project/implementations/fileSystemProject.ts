@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { loadRootConfig } from "../../config";
 import { getUserEnvVar } from "../../config/userEnvVars";
-import type { Simplify } from "../../internal/core";
+import type { SimpleAsyncIterable, Simplify } from "../../internal/core";
 import { DEFAULT_TEMP_DIR } from "../../internal/core";
 import { logger } from "../../internal/logger";
 import {
@@ -10,10 +10,12 @@ import {
   runScripts,
   createScriptRuntimeEnvVars,
   interpolateScriptRuntimeMetadata,
-  type RunScriptResult,
-  type RunScriptsResult,
   type RunScriptsParallelOptions,
   type ScriptRuntimeMetadata,
+  type RunScriptsSummary,
+  type RunScriptsOutput,
+  type RunScriptExit,
+  type OutputChunk,
 } from "../../runScript";
 import { checkIsRecursiveScript } from "../../runScript/recursion";
 import {
@@ -74,10 +76,15 @@ export type RunWorkspaceScriptMetadata = {
   workspace: Workspace;
 };
 
-/** Result of `FileSystemProject.runWorkspaceScript` */
-export type RunWorkspaceScriptResult = Simplify<
-  RunScriptResult<RunWorkspaceScriptMetadata>
+export type RunWorkspaceScriptExit = Simplify<
+  RunScriptExit<RunWorkspaceScriptMetadata>
 >;
+
+/** Result of `FileSystemProject.runWorkspaceScript` */
+export type RunWorkspaceScriptResult = {
+  output: SimpleAsyncIterable<OutputChunk>;
+  exit: Promise<RunWorkspaceScriptExit>;
+};
 
 export type ParallelOption = boolean | RunScriptsParallelOptions;
 
@@ -99,10 +106,19 @@ export type RunScriptAcrossWorkspacesOptions = {
   parallel?: ParallelOption;
 };
 
-/** Result of `FileSystemProject.runScriptAcrossWorkspaces` */
-export type RunScriptAcrossWorkspacesResult = Simplify<
-  RunScriptsResult<RunWorkspaceScriptMetadata>
+export type RunScriptAcrossWorkspacesOutput = Simplify<
+  RunScriptsOutput<RunWorkspaceScriptMetadata>
 >;
+
+export type RunScriptAcrossWorkspacesSummary = Simplify<
+  RunScriptsSummary<RunWorkspaceScriptMetadata>
+>;
+
+/** Result of `FileSystemProject.runScriptAcrossWorkspaces` */
+export type RunScriptAcrossWorkspacesResult = {
+  output: SimpleAsyncIterable<RunScriptAcrossWorkspacesOutput>;
+  summary: Promise<RunScriptAcrossWorkspacesSummary>;
+};
 
 class _FileSystemProject extends ProjectBase implements Project {
   public readonly rootDirectory: string;

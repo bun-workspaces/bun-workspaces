@@ -1,7 +1,7 @@
 import { describe, test, expect } from "bun:test";
-import { findWorkspaces } from "../../src/workspaces";
-import { getProjectRoot } from "../fixtures/testProjects";
-import { withWindowsPath } from "../util/windows";
+import { findWorkspaces } from "../../../src/workspaces";
+import { getProjectRoot } from "../../fixtures/testProjects";
+import { makeTestWorkspace } from "../../util/testData";
 
 describe("Test dependency graph", () => {
   test("findWorkspaces has expected dependencies and dependents", () => {
@@ -10,56 +10,38 @@ describe("Test dependency graph", () => {
     });
 
     expect(workspaces).toEqual([
-      {
+      makeTestWorkspace({
         name: "a-depends-e",
-        isRoot: false,
-        path: withWindowsPath("packages/a-depends-e"),
+        path: "packages/a-depends-e",
         matchPattern: "packages/*",
-        scripts: [],
-        aliases: [],
         dependencies: ["e"],
-        dependents: [],
-      },
-      {
+      }),
+      makeTestWorkspace({
         name: "b-depends-cd",
-        isRoot: false,
-        path: withWindowsPath("packages/b-depends-cd"),
+        path: "packages/b-depends-cd",
         matchPattern: "packages/*",
-        scripts: [],
-        aliases: [],
         dependencies: ["c-depends-e", "d-depends-e"],
-        dependents: [],
-      },
-      {
+      }),
+      makeTestWorkspace({
         name: "c-depends-e",
-        isRoot: false,
-        path: withWindowsPath("packages/c-depends-e"),
+        path: "packages/c-depends-e",
         matchPattern: "packages/*",
-        scripts: [],
-        aliases: [],
         dependencies: ["e"],
         dependents: ["b-depends-cd"],
-      },
-      {
+      }),
+      makeTestWorkspace({
         name: "d-depends-e",
-        isRoot: false,
-        path: withWindowsPath("packages/d-depends-e"),
+        path: "packages/d-depends-e",
         matchPattern: "packages/*",
-        scripts: [],
-        aliases: [],
         dependencies: ["e"],
         dependents: ["b-depends-cd"],
-      },
-      {
+      }),
+      makeTestWorkspace({
         name: "e",
-        isRoot: false,
-        path: withWindowsPath("packages/e"),
+        path: "packages/e",
         matchPattern: "packages/*",
-        scripts: [],
-        aliases: [],
-        dependencies: [],
         dependents: ["a-depends-e", "c-depends-e", "d-depends-e"],
-      },
+      }),
     ]);
   });
 });

@@ -71,7 +71,7 @@ export default defineConfig({
               to: "../",
             },
             {
-              from: path.resolve(__dirname, "setupTests.buildTest.ts"),
+              from: path.resolve(__dirname, "setupTests.ts"),
               to: "../setupTests.ts",
             },
           ]

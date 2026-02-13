@@ -1,8 +1,17 @@
 import { describe, test, expect } from "bun:test";
-import { createFileSystemProject } from "../../src";
-import { getProjectRoot } from "../fixtures/testProjects";
+import { createFileSystemProject } from "../../../src";
+import { IS_WINDOWS } from "../../../src/internal/core";
+import { getProjectRoot } from "../../fixtures/testProjects";
 
 describe("Recursive Script", () => {
+  if (IS_WINDOWS && Bun.semver.satisfies(Bun.version, "1.2.x")) {
+    // eslint-disable-next-line no-console
+    console.log(
+      "Skipping recursive script test on Windows with Bun 1.2.x (test project cannot be installed)",
+    );
+    return;
+  }
+
   test("Recursive scripts are detected and prevented", async () => {
     const project = createFileSystemProject({
       rootDirectory: getProjectRoot("recursiveScript"),

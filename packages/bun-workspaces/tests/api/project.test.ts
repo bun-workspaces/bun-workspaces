@@ -8,6 +8,7 @@ import {
 import { PROJECT_ERRORS } from "../../src/project/errors";
 import { WORKSPACE_ERRORS } from "../../src/workspaces";
 import { getProjectRoot } from "../fixtures/testProjects";
+import { makeTestWorkspace } from "../util/testData";
 import { withWindowsPath } from "../util/windows";
 
 const createDefaultProject = () =>
@@ -46,56 +47,36 @@ describe("Test Project utilities", () => {
     test("exposes workspaces", () => {
       const project = createDefaultProject();
       expect(project.workspaces).toEqual([
-        {
+        makeTestWorkspace({
           name: "application-a",
-          isRoot: false,
+          path: "applications/applicationA",
           matchPattern: "applications/*",
-          path: withWindowsPath("applications/applicationA"),
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
-          aliases: [],
-          dependencies: [],
-          dependents: [],
-        },
-        {
+        }),
+        makeTestWorkspace({
           name: "application-b",
-          isRoot: false,
+          path: "applications/applicationB",
           matchPattern: "applications/*",
-          path: withWindowsPath("applications/applicationB"),
           scripts: ["all-workspaces", "application-b", "b-workspaces"],
-          aliases: [],
-          dependencies: [],
-          dependents: [],
-        },
-        {
+        }),
+        makeTestWorkspace({
           name: "library-a",
-          isRoot: false,
+          path: "libraries/libraryA",
           matchPattern: "libraries/**/*",
-          path: withWindowsPath("libraries/libraryA"),
           scripts: ["a-workspaces", "all-workspaces", "library-a"],
-          aliases: [],
-          dependencies: [],
-          dependents: [],
-        },
-        {
+        }),
+        makeTestWorkspace({
           name: "library-b",
-          isRoot: false,
+          path: "libraries/libraryB",
           matchPattern: "libraries/**/*",
-          path: withWindowsPath("libraries/libraryB"),
           scripts: ["all-workspaces", "b-workspaces", "library-b"],
-          aliases: [],
-          dependencies: [],
-          dependents: [],
-        },
-        {
+        }),
+        makeTestWorkspace({
           name: "library-c",
-          isRoot: false,
+          path: "libraries/nested/libraryC",
           matchPattern: "libraries/**/*",
-          path: withWindowsPath("libraries/nested/libraryC"),
           scripts: ["all-workspaces", "c-workspaces", "library-c"],
-          aliases: [],
-          dependencies: [],
-          dependents: [],
-        },
+        }),
       ]);
     });
   });
@@ -252,56 +233,36 @@ describe("Test Project utilities", () => {
     test("lists all workspaces for shared script", () => {
       const project = createDefaultProject();
       expect(project.listWorkspacesWithScript("all-workspaces")).toEqual([
-        {
+        makeTestWorkspace({
           name: "application-a",
-          isRoot: false,
+          path: "applications/applicationA",
           matchPattern: "applications/*",
-          path: withWindowsPath("applications/applicationA"),
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
-          aliases: [],
-          dependencies: [],
-          dependents: [],
-        },
-        {
+        }),
+        makeTestWorkspace({
           name: "application-b",
-          isRoot: false,
+          path: "applications/applicationB",
           matchPattern: "applications/*",
-          path: withWindowsPath("applications/applicationB"),
           scripts: ["all-workspaces", "application-b", "b-workspaces"],
-          aliases: [],
-          dependencies: [],
-          dependents: [],
-        },
-        {
+        }),
+        makeTestWorkspace({
           name: "library-a",
-          isRoot: false,
+          path: "libraries/libraryA",
           matchPattern: "libraries/**/*",
-          path: withWindowsPath("libraries/libraryA"),
           scripts: ["a-workspaces", "all-workspaces", "library-a"],
-          aliases: [],
-          dependencies: [],
-          dependents: [],
-        },
-        {
+        }),
+        makeTestWorkspace({
           name: "library-b",
-          isRoot: false,
+          path: "libraries/libraryB",
           matchPattern: "libraries/**/*",
-          path: withWindowsPath("libraries/libraryB"),
           scripts: ["all-workspaces", "b-workspaces", "library-b"],
-          aliases: [],
-          dependencies: [],
-          dependents: [],
-        },
-        {
+        }),
+        makeTestWorkspace({
           name: "library-c",
-          isRoot: false,
+          path: "libraries/nested/libraryC",
           matchPattern: "libraries/**/*",
-          path: withWindowsPath("libraries/nested/libraryC"),
           scripts: ["all-workspaces", "c-workspaces", "library-c"],
-          aliases: [],
-          dependencies: [],
-          dependents: [],
-        },
+        }),
       ]);
     });
 
@@ -420,16 +381,12 @@ describe("Test Project utilities", () => {
           command: `bun --silent run all-workspaces`,
         },
         scriptName: "all-workspaces",
-        workspace: {
+        workspace: makeTestWorkspace({
           name: "application-a",
-          isRoot: false,
+          path: "applications/applicationA",
           matchPattern: "applications/*",
-          path: withWindowsPath("applications/applicationA"),
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
-          aliases: [],
-          dependencies: [],
-          dependents: [],
-        },
+        }),
       });
     });
 
@@ -451,16 +408,12 @@ describe("Test Project utilities", () => {
           command: `bun --silent run all-workspaces --watch`,
         },
         scriptName: "all-workspaces",
-        workspace: {
+        workspace: makeTestWorkspace({
           name: "application-a",
-          isRoot: false,
+          path: "applications/applicationA",
           matchPattern: "applications/*",
-          path: withWindowsPath("applications/applicationA"),
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
-          aliases: [],
-          dependencies: [],
-          dependents: [],
-        },
+        }),
       });
     });
 
@@ -479,16 +432,12 @@ describe("Test Project utilities", () => {
           command: `bun --silent run --filter="application-a" all-workspaces --watch`,
         },
         scriptName: "all-workspaces",
-        workspace: {
+        workspace: makeTestWorkspace({
           name: "application-a",
-          isRoot: false,
+          path: "applications/applicationA",
           matchPattern: "applications/*",
-          path: withWindowsPath("applications/applicationA"),
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
-          aliases: [],
-          dependencies: [],
-          dependents: [],
-        },
+        }),
       });
     });
 
@@ -507,16 +456,12 @@ describe("Test Project utilities", () => {
           command: `bun --silent run --filter="application-a" all-workspaces --stuff --hello=there123`,
         },
         scriptName: "all-workspaces",
-        workspace: {
+        workspace: makeTestWorkspace({
           name: "application-a",
-          isRoot: false,
+          path: "applications/applicationA",
           matchPattern: "applications/*",
-          path: withWindowsPath("applications/applicationA"),
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
-          aliases: [],
-          dependencies: [],
-          dependents: [],
-        },
+        }),
       });
     });
 
@@ -538,16 +483,12 @@ describe("Test Project utilities", () => {
           command: `bun --silent run b-workspaces`,
         },
         scriptName: "b-workspaces",
-        workspace: {
+        workspace: makeTestWorkspace({
           name: "library-b",
-          isRoot: false,
+          path: "libraries/libraryB",
           matchPattern: "libraries/**/*",
-          path: withWindowsPath("libraries/libraryB"),
           scripts: ["all-workspaces", "b-workspaces", "library-b"],
-          aliases: [],
-          dependencies: [],
-          dependents: [],
-        },
+        }),
       });
     });
 
@@ -566,16 +507,12 @@ describe("Test Project utilities", () => {
           command: `bun --silent run --filter="library-b" b-workspaces`,
         },
         scriptName: "b-workspaces",
-        workspace: {
+        workspace: makeTestWorkspace({
           name: "library-b",
-          isRoot: false,
+          path: "libraries/libraryB",
           matchPattern: "libraries/**/*",
-          path: withWindowsPath("libraries/libraryB"),
           scripts: ["all-workspaces", "b-workspaces", "library-b"],
-          aliases: [],
-          dependencies: [],
-          dependents: [],
-        },
+        }),
       });
     });
 
@@ -630,16 +567,12 @@ describe("Test Project utilities", () => {
         durationMs: expect.any(Number),
         signal: null,
         metadata: {
-          workspace: {
+          workspace: makeTestWorkspace({
             name: "application-a",
-            isRoot: false,
+            path: "applications/applicationA",
             matchPattern: "applications/*",
-            path: withWindowsPath("applications/applicationA"),
             scripts: ["a-workspaces", "all-workspaces", "application-a"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         },
       });
     });
@@ -670,16 +603,12 @@ describe("Test Project utilities", () => {
         durationMs: expect.any(Number),
         signal: null,
         metadata: {
-          workspace: {
+          workspace: makeTestWorkspace({
             name: "application-a",
-            isRoot: false,
+            path: "applications/applicationA",
             matchPattern: "applications/*",
-            path: withWindowsPath("applications/applicationA"),
             scripts: ["a-workspaces", "all-workspaces", "application-a"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         },
       });
     });
@@ -714,16 +643,12 @@ describe("Test Project utilities", () => {
         durationMs: expect.any(Number),
         signal: null,
         metadata: {
-          workspace: {
+          workspace: makeTestWorkspace({
             name: "application-1a",
-            isRoot: false,
+            path: "applications/applicationA",
             matchPattern: "applications/*",
-            path: withWindowsPath("applications/applicationA"),
             scripts: ["test-echo"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         },
       });
     });
@@ -759,16 +684,12 @@ describe("Test Project utilities", () => {
         durationMs: expect.any(Number),
         signal: null,
         metadata: {
-          workspace: {
+          workspace: makeTestWorkspace({
             name: "application-1a",
-            isRoot: false,
+            path: "applications/applicationA",
             matchPattern: "applications/*",
-            path: withWindowsPath("applications/applicationA"),
             scripts: ["test-echo"],
-            aliases: [],
-            dependencies: [],
-            dependents: [],
-          },
+          }),
         },
       });
     });
@@ -786,26 +707,19 @@ describe("Test Project utilities", () => {
       expect(plainProject.name).toEqual("");
     });
 
-    const testWs1 = {
+    const testWs1 = makeTestWorkspace({
       name: "test-1",
-      isRoot: false,
+      path: "test/test-1",
       matchPattern: "test/*",
       scripts: ["test-script"],
-      aliases: [],
-      dependencies: [],
-      dependents: [],
-      path: withWindowsPath("test/test-1"),
-    };
-    const testWs2 = {
+    });
+    const testWs2 = makeTestWorkspace({
       name: "test-2",
-      isRoot: false,
+      path: "test/test-2",
       matchPattern: "test/*",
       scripts: ["test-script"],
       aliases: ["test-2-alias"],
-      path: withWindowsPath("test/test-2"),
-      dependencies: [],
-      dependents: [],
-    };
+    });
 
     const createTestProject = () =>
       createMemoryProject({
@@ -912,26 +826,18 @@ describe("Test Project utilities", () => {
       expect(() =>
         createMemoryProject({
           workspaces: [
-            {
+            makeTestWorkspace({
               name: "test-1",
-              isRoot: false,
+              path: "test/test-1",
               matchPattern: "test/*",
               scripts: ["test-script"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-              path: withWindowsPath("test/test-1"),
-            },
-            {
+            }),
+            makeTestWorkspace({
               name: "test-1",
-              isRoot: false,
+              path: "test/test-1",
               matchPattern: "test/*",
               scripts: ["test-script"],
-              aliases: [],
-              dependencies: [],
-              dependents: [],
-              path: withWindowsPath("test/test-1"),
-            },
+            }),
           ],
         }),
       ).toThrow(WORKSPACE_ERRORS.DuplicateWorkspaceName);
@@ -941,26 +847,20 @@ describe("Test Project utilities", () => {
       expect(() =>
         createMemoryProject({
           workspaces: [
-            {
+            makeTestWorkspace({
               name: "test-1",
-              isRoot: false,
+              path: "test/test-1",
               matchPattern: "test/*",
               scripts: ["test-script"],
               aliases: ["test-1-alias"],
-              path: withWindowsPath("test/test-1"),
-              dependencies: [],
-              dependents: [],
-            },
-            {
+            }),
+            makeTestWorkspace({
               name: "test-2",
-              isRoot: false,
+              path: "test/test-2",
               matchPattern: "test/*",
               scripts: ["test-script"],
               aliases: ["test-1-alias"],
-              path: withWindowsPath("test/test-2"),
-              dependencies: [],
-              dependents: [],
-            },
+            }),
           ],
         }),
       ).toThrow(WORKSPACE_ERRORS.AliasConflict);

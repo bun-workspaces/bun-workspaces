@@ -2,7 +2,8 @@ import { expect, test, describe } from "bun:test";
 import {
   matchWorkspacesByPatterns,
   parseWorkspacePattern,
-} from "../../src/workspaces/workspacePattern";
+} from "../../../src/workspaces/workspacePattern";
+import { makeTestWorkspace } from "../../util/testData";
 
 describe("Test workspace pattern", () => {
   test("parseWorkspacePattern", () => {
@@ -87,46 +88,26 @@ describe("Test workspace pattern", () => {
 
   test("matchWorkspacesByPatterns", () => {
     const workspaces = {
-      a: {
+      a: makeTestWorkspace({
         name: "workspace-a",
-        isRoot: false,
-        matchPattern: "",
         path: "packages/a",
-        scripts: [],
         aliases: ["wsa"],
-        dependencies: [],
-        dependents: [],
-      },
-      b: {
+      }),
+      b: makeTestWorkspace({
         name: "workspace-b",
-        isRoot: false,
-        matchPattern: "",
         path: "packages/b",
-        scripts: [],
         aliases: ["wsb"],
-        dependencies: [],
-        dependents: [],
-      },
-      c: {
+      }),
+      c: makeTestWorkspace({
         name: "workspace-c",
-        isRoot: false,
-        matchPattern: "",
         path: "packages/nested/c",
-        scripts: [],
         aliases: ["wsc"],
-        dependencies: [],
-        dependents: [],
-      },
-      d: {
+      }),
+      d: makeTestWorkspace({
         name: "workspace-d",
-        isRoot: false,
-        matchPattern: "",
         path: "packages/nested/d",
-        scripts: [],
         aliases: ["wsd"],
-        dependencies: [],
-        dependents: [],
-      },
+      }),
     };
 
     const workspacesArray = Object.values(workspaces);

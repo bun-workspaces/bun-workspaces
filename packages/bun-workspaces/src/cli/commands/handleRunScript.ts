@@ -107,9 +107,7 @@ export const runScript = handleProjectCommand(
           outputChunk.decode(),
           "info",
           process[outputChunk.streamName],
-          options.prefix
-            ? `[${scriptMetadata.workspace.name}:${scriptName}] `
-            : "",
+          options.prefix ? `[${scriptMetadata.workspace.name}] ` : "",
         );
       }
     };

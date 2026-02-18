@@ -4,7 +4,6 @@ import {
   createAsyncIterableQueue,
   defineErrors,
 } from "../internal/core";
-import { logger } from "../internal/logger";
 
 export type ByteStream = SimpleAsyncIterable<Uint8Array<ArrayBufferLike>>;
 
@@ -25,12 +24,18 @@ class _ProcessOutput implements ProcessOutput {
   constructor(stream: ByteStream) {
     this.#inputStream = stream;
 
-    this.#done = new Promise((resolve) => {
-      this.#onDone = () => {
+    this.#done = new Promise((resolve, reject) => {
+      this.#onDone = (error) => {
         if (this.#isDone) return;
         this.#isDone = true;
         this.#byteChunkQueue.close();
-        resolve();
+        this.#onDone = null;
+
+        if (!this.isCancelled && error) {
+          reject(error);
+        } else {
+          resolve();
+        }
       };
     });
 
@@ -43,15 +48,19 @@ class _ProcessOutput implements ProcessOutput {
           this.#byteChunkQueue.push(chunk.slice());
         }
       } catch (error) {
-        logger.error(error as Error);
+        this.#error = error as Error;
       } finally {
-        this.#onDone?.();
+        this.#onDone?.(this.#error);
       }
     })();
   }
 
   get done(): Promise<void> {
     return this.#done;
+  }
+
+  get isCancelled(): boolean {
+    return this.#isCancelled;
   }
 
   bytes(): ByteStream {
@@ -74,15 +83,18 @@ class _ProcessOutput implements ProcessOutput {
     })();
   }
 
-  cancel(reason?: unknown) {
+  async cancel(reason?: unknown) {
     this.#isCancelled = true;
-    (this.#inputStream as ReadableStream).cancel?.(reason).finally(() => {
-      this.#onDone?.();
-    });
+    this.#onDone?.();
+    await (this.#inputStream as ReadableStream).cancel?.(reason);
   }
 
   get isDone(): boolean {
     return this.#isDone;
+  }
+
+  get error(): Error | null {
+    return this.#error;
   }
 
   #onStart(): void {
@@ -101,7 +113,8 @@ class _ProcessOutput implements ProcessOutput {
 
   #isStarted = false;
   #done: Promise<void>;
-  #onDone: (() => void) | null = null;
+  #error: Error | null = null;
+  #onDone: ((error?: Error | null) => void) | null = null;
   #isDone = false;
   #isCancelled = false;
   #inputStream: ByteStream;

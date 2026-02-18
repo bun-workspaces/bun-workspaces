@@ -8,15 +8,16 @@ if (import.meta.main && process.env.CLI === "true") {
     rootDirectory: "test-project",
   });
 
-  const { output } = project.runScriptAcrossWorkspaces({
-    workspacePatterns: ["*"],
-    script:
-      'bun run <projectPath>/script.ts --inline-args="<projectPath> <workspacePath> <workspaceName> <workspaceRelativePath> <scriptName>"',
-    args: '--appended-args="<projectPath> <workspacePath> <workspaceName> <workspaceRelativePath> <scriptName>"',
+  const { output, summary } = project.runScriptAcrossWorkspaces({
+    workspacePatterns: ["workspace-a"],
+    script: "echo hello from <workspaceName> && sleep 5",
     inline: true,
   });
 
-  for await (const { outputChunk } of output) {
-    console.log(outputChunk.decode().trim());
-  }
+  // for await (const { outputChunk } of output) {
+  //   console.log(outputChunk.decode().trim());
+  // }
+
+  const summaryResult = await summary;
+  console.log(summaryResult);
 }

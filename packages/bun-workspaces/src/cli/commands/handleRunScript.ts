@@ -112,6 +112,8 @@ export const runScript = handleProjectCommand(
       }
     };
 
+    process.stdout.write(new Uint8Array([0x01, 0x02, 0x03]));
+
     handleOutput();
 
     const exitResults = await summary;

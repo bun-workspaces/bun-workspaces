@@ -31,5 +31,5 @@ export {
   type RunScriptsParallelOptions,
 } from "./runScript";
 export { type Workspace } from "./workspaces";
-export { type SimpleAsyncIterable } from "./internal/core";
+export { type SimpleAsyncIterable, BunWorkspacesError } from "./internal/core";
 export { setLogLevel, type LogLevelSetting } from "./internal/logger";

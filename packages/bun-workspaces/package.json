@@ -41,6 +41,8 @@
     "prepare": "bun run ajv"
   },
   "devDependencies": {
+    "ajv": "^8.17.1",
+    "ajv-cli": "^5.0.0",
     "@rslib/core": "^0.15.1",
     "bun-workspaces": "file:."
   },

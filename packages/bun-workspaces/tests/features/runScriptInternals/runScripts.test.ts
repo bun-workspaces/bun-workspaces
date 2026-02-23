@@ -75,15 +75,10 @@ describe("Run Multiple Scripts", () => {
     });
 
     let i = 0;
-    for await (const {
-      outputChunk: output,
-      scriptMetadata: metadata,
-    } of result.output) {
+    for await (const { metadata, chunk } of result.processOutput.text()) {
       expect(metadata.name).toBe(`test-script name ${i + 1}`);
-      expect(output.decode()).toMatch(`test-script ${i + 1}`);
-      expect(output.decode({ stripAnsi: true })).toMatch(
-        `test-script ${i + 1}`,
-      );
+      expect(metadata.streamName).toBe("stdout");
+      expect(chunk.trim()).toMatch(`test-script ${i + 1}`);
       i++;
     }
 
@@ -95,6 +90,109 @@ describe("Run Multiple Scripts", () => {
         scriptResults: [
           makeScriptExit({ metadata: { name: "test-script name 1" } }),
           makeScriptExit({ metadata: { name: "test-script name 2" } }),
+        ],
+      }),
+    );
+  });
+
+  test("Run Scripts - stdout and stderr - deprecated output", async () => {
+    const result = await runScripts({
+      scripts: [
+        {
+          metadata: { name: "test-script name 1" },
+          scriptCommand: {
+            command: IS_WINDOWS
+              ? `echo test-script 1 && echo test-script 2 1>&2`
+              : "echo 'test-script 1' && echo 'test-script 2' >&2",
+            workingDirectory: "",
+          },
+          env: {},
+        },
+      ],
+      parallel: false,
+    });
+
+    let outputCount = 0;
+    for await (const { outputChunk, scriptMetadata } of result.output) {
+      expect(scriptMetadata.name).toBe("test-script name 1");
+      expect(outputChunk.streamName).toBe(
+        outputCount === 1 ? "stderr" : "stdout",
+      );
+      expect(outputChunk.decode()).toMatch(`test-script ${outputCount + 1}`);
+      outputCount++;
+    }
+    expect(outputCount).toBe(2);
+  });
+
+  test("Run Scripts - stdout and stderr - process output (bytes)", async () => {
+    const result = await runScripts({
+      scripts: [
+        {
+          metadata: { name: "test-script name 1" },
+          scriptCommand: {
+            command: IS_WINDOWS
+              ? `echo test-script 1 && echo test-script 2 1>&2`
+              : "echo 'test-script 1' && echo 'test-script 2' >&2",
+            workingDirectory: "",
+          },
+          env: {},
+        },
+      ],
+      parallel: false,
+    });
+
+    let outputCount = 0;
+    for await (const { metadata, chunk } of result.processOutput.bytes()) {
+      expect(metadata.name).toBe("test-script name 1");
+      expect(metadata.streamName).toBe(outputCount === 1 ? "stderr" : "stdout");
+      expect(new TextDecoder().decode(chunk)).toMatch(
+        `test-script ${outputCount + 1}`,
+      );
+      outputCount++;
+    }
+    expect(outputCount).toBe(2);
+
+    const summary = await result.summary;
+    expect(summary).toEqual(
+      makeExitSummary({
+        scriptResults: [
+          makeScriptExit({ metadata: { name: "test-script name 1" } }),
+        ],
+      }),
+    );
+  });
+
+  test("Run Scripts - stdout and stderr - process output (text)", async () => {
+    const result = await runScripts({
+      scripts: [
+        {
+          metadata: { name: "test-script name 1" },
+          scriptCommand: {
+            command: IS_WINDOWS
+              ? `echo test-script 1 && echo test-script 2 1>&2`
+              : "echo 'test-script 1' && echo 'test-script 2' >&2",
+            workingDirectory: "",
+          },
+          env: {},
+        },
+      ],
+      parallel: false,
+    });
+
+    let outputCount = 0;
+    for await (const { metadata, chunk } of result.processOutput.text()) {
+      expect(metadata.name).toBe("test-script name 1");
+      expect(metadata.streamName).toBe(outputCount === 1 ? "stderr" : "stdout");
+      expect(chunk.trim()).toBe(`test-script ${outputCount + 1}`);
+      outputCount++;
+    }
+    expect(outputCount).toBe(2);
+
+    const summary = await result.summary;
+    expect(summary).toEqual(
+      makeExitSummary({
+        scriptResults: [
+          makeScriptExit({ metadata: { name: "test-script name 1" } }),
         ],
       }),
     );
@@ -130,15 +228,10 @@ describe("Run Multiple Scripts", () => {
     });
 
     let i = 0;
-    for await (const {
-      outputChunk: output,
-      scriptMetadata: metadata,
-    } of result.output) {
+    for await (const { metadata, chunk } of result.processOutput.text()) {
       expect(metadata.name).toBe(`test-script name ${i + 1}`);
-      expect(output.decode()).toMatch(`test-script ${i + 1}`);
-      expect(output.decode({ stripAnsi: true })).toMatch(
-        `test-script ${i + 1}`,
-      );
+      expect(metadata.streamName).toBe("stdout");
+      expect(chunk.trim()).toMatch(`test-script ${i + 1}`);
       i++;
     }
 
@@ -207,14 +300,11 @@ describe("Run Multiple Scripts", () => {
     });
 
     let i = 0;
-    for await (const { outputChunk, scriptMetadata } of result.output) {
-      expect(outputChunk.streamName).toBe("stdout");
+    for await (const { metadata, chunk } of result.processOutput.text()) {
+      expect(metadata.streamName).toBe("stdout");
       const scriptNum = i === 0 ? 2 : i === 1 ? 3 : 1;
-      expect(scriptMetadata.name).toBe(`test-script name ${scriptNum}`);
-      expect(outputChunk.decode()).toMatch(`test-script ${scriptNum}`);
-      expect(outputChunk.decode({ stripAnsi: true })).toMatch(
-        `test-script ${scriptNum}`,
-      );
+      expect(metadata.name).toBe(`test-script name ${scriptNum}`);
+      expect(chunk.trim()).toMatch(`test-script ${scriptNum}`);
       i++;
     }
 
@@ -291,8 +381,8 @@ describe("Run Multiple Scripts", () => {
       });
 
       let didMaxRun = false;
-      for await (const { outputChunk } of result.output) {
-        const count = parseInt(outputChunk.decode().trim());
+      for await (const { chunk } of result.processOutput.text()) {
+        const count = parseInt(chunk.trim());
         if (count === max) {
           didMaxRun = true;
         }
@@ -341,8 +431,8 @@ describe("Run Multiple Scripts", () => {
         ],
       });
 
-      for await (const { outputChunk } of result.output) {
-        const envMax = outputChunk.decode().trim();
+      for await (const { chunk } of result.processOutput.text()) {
+        const envMax = chunk.trim();
         if (typeof max === "number") {
           expect(envMax).toBe(max.toString());
         } else if (max === "default") {
@@ -386,8 +476,8 @@ describe("Run Multiple Scripts", () => {
         ],
       });
 
-      for await (const { outputChunk } of defaultResult.output) {
-        expect(outputChunk.decode().trim()).toBe(max.toString());
+      for await (const { chunk } of defaultResult.processOutput.text()) {
+        expect(chunk.trim()).toBe(max.toString());
       }
 
       const explicitResult = await runScripts({
@@ -408,8 +498,8 @@ describe("Run Multiple Scripts", () => {
         ],
       });
 
-      for await (const { outputChunk } of explicitResult.output) {
-        expect(outputChunk.decode().trim()).toBe(max.toString());
+      for await (const { chunk } of explicitResult.processOutput.text()) {
+        expect(chunk.trim()).toBe(max.toString());
       }
     },
   );
@@ -433,10 +523,8 @@ describe("Run Multiple Scripts", () => {
       ],
     });
 
-    for await (const { outputChunk } of result.output) {
-      expect(outputChunk.decode().trim()).toBe(
-        availableParallelism().toString(),
-      );
+    for await (const { chunk } of result.processOutput.text()) {
+      expect(chunk.trim()).toBe(availableParallelism().toString());
     }
   });
 

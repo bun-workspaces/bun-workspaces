@@ -82,6 +82,7 @@ export type RunWorkspaceScriptExit = Simplify<
   RunScriptExit<RunWorkspaceScriptMetadata>
 >;
 
+// TODO Rename after removal of deprecated form of RunWorkspaceScriptOutput
 export type RunWorkspaceScriptProcessOutput = MultiProcessOutput<
   RunWorkspaceScriptMetadata & { streamName: OutputStreamName }
 > &
@@ -122,6 +123,7 @@ export type RunScriptAcrossWorkspacesSummary = Simplify<
   RunScriptsSummary<RunWorkspaceScriptMetadata>
 >;
 
+// TODO Rename after removal of deprecated form of RunScriptAcrossWorkspacesOutput
 export type RunScriptAcrossWorkspacesProcessOutput = MultiProcessOutput<
   RunWorkspaceScriptMetadata & { streamName: OutputStreamName }
 > &

@@ -2,7 +2,6 @@ import type {
   GlobalCommandContext,
   ProjectCommandContext,
 } from "./commandHandlerUtils";
-import { runScript } from "./handleRunScript";
 import {
   listScripts,
   workspaceInfo,
@@ -10,6 +9,7 @@ import {
   listWorkspaces,
   doctor,
 } from "./handleSimpleCommands";
+import { runScript } from "./runScript";
 
 export const defineGlobalCommands = (context: GlobalCommandContext) => {
   doctor(context);

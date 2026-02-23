@@ -1,12 +1,12 @@
 import fs from "fs";
 import path from "path";
-import { logger } from "../../internal/logger";
-import type { ParallelMaxValue, ScriptShellOption } from "../../runScript";
+import { logger } from "../../../internal/logger";
+import type { ParallelMaxValue, ScriptShellOption } from "../../../runScript";
 import {
   commandOutputLogger,
   handleProjectCommand,
   splitWorkspacePatterns,
-} from "./commandHandlerUtils";
+} from "../commandHandlerUtils";
 
 export const runScript = handleProjectCommand(
   "runScript",

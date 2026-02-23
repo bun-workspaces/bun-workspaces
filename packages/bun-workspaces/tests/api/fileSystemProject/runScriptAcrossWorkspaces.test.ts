@@ -56,13 +56,10 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
       script: "b-workspaces",
     });
 
-    for await (const { outputChunk, scriptMetadata } of output) {
-      expect(outputChunk.decode().trim()).toMatch("script for b workspaces");
-      expect(outputChunk.decode({ stripAnsi: true }).trim()).toMatch(
-        "script for b workspaces",
-      );
-      expect(outputChunk.streamName).toBe("stdout");
-      expect(scriptMetadata.workspace).toEqual(
+    for await (const { metadata, chunk } of output.text()) {
+      expect(metadata.streamName).toBe("stdout");
+      expect(chunk.trim()).toMatch("script for b workspaces");
+      expect(metadata.workspace).toEqual(
         makeTestWorkspace({
           name: "library-b",
           path: "libraries/libraryB",
@@ -114,13 +111,9 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
     ];
 
     let i = 0;
-    for await (const { outputChunk } of output) {
-      expect(outputChunk.decode().trim()).toBe(
-        expectedOutput[i].outputChunk.text,
-      );
-      expect(outputChunk.decode({ stripAnsi: true }).trim()).toBe(
-        expectedOutput[i].outputChunk.textNoAnsi,
-      );
+    for await (const { metadata, chunk } of output.text()) {
+      expect(metadata.streamName).toBe("stdout");
+      expect(chunk.trim()).toBe(expectedOutput[i].outputChunk.text);
       i++;
     }
 
@@ -219,16 +212,11 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
     ];
 
     let i = 0;
-    for await (const { outputChunk } of output) {
-      expect(outputChunk.decode().trim()).toBe(
-        expectedOutput[i].outputChunk.text,
-      );
-      expect(outputChunk.decode({ stripAnsi: true }).trim()).toBe(
-        expectedOutput[i].outputChunk.textNoAnsi,
-      );
-      expect(outputChunk.streamName).toBe(
+    for await (const { metadata, chunk } of output.text()) {
+      expect(metadata.streamName).toBe(
         expectedOutput[i].outputChunk.streamName,
       );
+      expect(chunk.trim()).toBe(expectedOutput[i].outputChunk.text);
       i++;
     }
 
@@ -350,16 +338,11 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
     ];
 
     let i = 0;
-    for await (const { outputChunk } of output) {
-      expect(outputChunk.decode().trim()).toBe(
-        expectedOutput[i].outputChunk.text,
-      );
-      expect(outputChunk.decode({ stripAnsi: true }).trim()).toBe(
-        expectedOutput[i].outputChunk.textNoAnsi,
-      );
-      expect(outputChunk.streamName).toBe(
+    for await (const { metadata, chunk } of output.text()) {
+      expect(metadata.streamName).toBe(
         expectedOutput[i].outputChunk.streamName,
       );
+      expect(chunk.trim()).toBe(expectedOutput[i].outputChunk.text);
       i++;
     }
 
@@ -460,16 +443,11 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
     ];
 
     let i = 0;
-    for await (const { outputChunk } of output) {
-      expect(outputChunk.decode().trim()).toBe(
-        expectedOutput[i].outputChunk.text,
-      );
-      expect(outputChunk.decode({ stripAnsi: true }).trim()).toBe(
-        expectedOutput[i].outputChunk.textNoAnsi,
-      );
-      expect(outputChunk.streamName).toBe(
+    for await (const { metadata, chunk } of output.text()) {
+      expect(metadata.streamName).toBe(
         expectedOutput[i].outputChunk.streamName,
       );
+      expect(chunk.trim()).toBe(expectedOutput[i].outputChunk.text);
       i++;
     }
   });
@@ -485,15 +463,12 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
     });
 
     let i = 0;
-    for await (const { outputChunk: chunk } of plainResult.output) {
+    for await (const { metadata, chunk } of plainResult.output.text()) {
       const appLetter = i === 0 ? "a" : "b";
-      expect(chunk.decode().trim()).toBe(
+      expect(metadata.streamName).toBe("stdout");
+      expect(chunk.trim()).toBe(
         `${project.rootDirectory} test-root application-${appLetter} ${project.rootDirectory}${withWindowsPath(`/applications/application-${appLetter}`)} ${withWindowsPath(`applications/application-${appLetter}`)} test-echo`,
       );
-      expect(chunk.decode({ stripAnsi: true }).trim()).toBe(
-        `${project.rootDirectory} test-root application-${appLetter} ${project.rootDirectory}${withWindowsPath(`/applications/application-${appLetter}`)} ${withWindowsPath(`applications/application-${appLetter}`)} test-echo`,
-      );
-      expect(chunk.streamName).toBe("stdout");
       i++;
     }
 
@@ -504,15 +479,12 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
     });
 
     let j = 0;
-    for await (const { outputChunk: chunk } of argsResult.output) {
+    for await (const { metadata, chunk } of argsResult.output.text()) {
       const appLetter = j === 0 ? "a" : "b";
-      expect(chunk.decode().trim()).toBe(
+      expect(metadata.streamName).toBe("stdout");
+      expect(chunk.trim()).toBe(
         `${project.rootDirectory} test-root application-${appLetter} ${project.rootDirectory}${withWindowsPath(`/applications/application-${appLetter}`)} ${withWindowsPath(`applications/application-${appLetter}`)} test-echo --arg1=${project.rootDirectory} --arg2=test-root --arg3=application-${appLetter} --arg4=${project.rootDirectory}${withWindowsPath(`/applications/application-${appLetter}`)} --arg5=${withWindowsPath(`applications/application-${appLetter}`)} --arg6=test-echo`,
       );
-      expect(chunk.decode({ stripAnsi: true }).trim()).toBe(
-        `${project.rootDirectory} test-root application-${appLetter} ${project.rootDirectory}${withWindowsPath(`/applications/application-${appLetter}`)} ${withWindowsPath(`applications/application-${appLetter}`)} test-echo --arg1=${project.rootDirectory} --arg2=test-root --arg3=application-${appLetter} --arg4=${project.rootDirectory}${withWindowsPath(`/applications/application-${appLetter}`)} --arg5=${withWindowsPath(`applications/application-${appLetter}`)} --arg6=test-echo`,
-      );
-      expect(chunk.streamName).toBe("stdout");
       j++;
     }
   });
@@ -530,15 +502,12 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
     });
 
     let k = 0;
-    for await (const { outputChunk: chunk } of anonymousScriptResult.output) {
+    for await (const { metadata, chunk } of anonymousScriptResult.output.text()) {
       const appLetter = k === 0 ? "a" : "b";
-      expect(chunk.decode().trim()).toBe(
+      expect(metadata.streamName).toBe("stdout");
+      expect(chunk.trim()).toBe(
         `${project.rootDirectory} application-${appLetter} ${project.rootDirectory}${withWindowsPath(`/applications/application-${appLetter}`)} ${withWindowsPath(`applications/application-${appLetter}`)}`,
       );
-      expect(chunk.decode({ stripAnsi: true }).trim()).toBe(
-        `${project.rootDirectory} application-${appLetter} ${project.rootDirectory}${withWindowsPath(`/applications/application-${appLetter}`)} ${withWindowsPath(`applications/application-${appLetter}`)}`,
-      );
-      expect(chunk.streamName).toBe("stdout");
       k++;
     }
 
@@ -550,21 +519,17 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
     });
 
     let l = 0;
-    for await (const { outputChunk: chunk } of namedScriptResult.output) {
+    for await (const { metadata, chunk } of namedScriptResult.output.text()) {
       const appLetter = l === 0 ? "a" : "b";
-
-      expect(chunk.decode().trim()).toBe(
+      expect(metadata.streamName).toBe("stdout");
+      expect(chunk.trim()).toBe(
         `${project.rootDirectory} application-${appLetter} ${project.rootDirectory}${withWindowsPath(`/applications/application-${appLetter}`)} ${withWindowsPath(`applications/application-${appLetter}`)} my-named-script`,
       );
-      expect(chunk.decode({ stripAnsi: true }).trim()).toBe(
-        `${project.rootDirectory} application-${appLetter} ${project.rootDirectory}${withWindowsPath(`/applications/application-${appLetter}`)} ${withWindowsPath(`applications/application-${appLetter}`)} my-named-script`,
-      );
-      expect(chunk.streamName).toBe("stdout");
       l++;
     }
   });
 
-  test("with failures", async () => {
+  test("with failures - deprecated output", async () => {
     const project = createFileSystemProject({
       rootDirectory: getProjectRoot("runScriptWithFailures"),
     });
@@ -653,6 +618,170 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
 
     const summaryResult = await summary;
 
+    expect(summaryResult).toEqual(
+      makeSummaryResult({
+        totalCount: 4,
+        successCount: 2,
+        failureCount: 2,
+        allSuccess: false,
+        scriptResults: [
+          makeScriptResult({
+            exitCode: 1,
+            success: false,
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "fail1",
+                matchPattern: "packages/**/*",
+                path: "packages/fail1",
+                scripts: ["test-exit"],
+              }),
+            },
+          }),
+          makeScriptResult({
+            exitCode: 2,
+            success: false,
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "fail2",
+                matchPattern: "packages/**/*",
+                path: "packages/fail2",
+                scripts: ["test-exit"],
+              }),
+            },
+          }),
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "success1",
+                matchPattern: "packages/**/*",
+                path: "packages/success1",
+                scripts: ["test-exit"],
+              }),
+            },
+          }),
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "success2",
+                matchPattern: "packages/**/*",
+                path: "packages/success2",
+                scripts: ["test-exit"],
+              }),
+            },
+          }),
+        ],
+      }),
+    );
+  });
+
+  test("with failures - process output (bytes)", async () => {
+    const project = createFileSystemProject({
+      rootDirectory: getProjectRoot("runScriptWithFailures"),
+    });
+
+    const { output, summary } = project.runScriptAcrossWorkspaces({
+      workspacePatterns: ["*"],
+      script: "test-exit",
+    });
+
+    const expectedOutput = [
+      { streamName: "stderr" as const, text: "fail1" },
+      { streamName: "stderr" as const, text: "fail2" },
+      { streamName: "stdout" as const, text: "success1" },
+      { streamName: "stdout" as const, text: "success2" },
+    ];
+
+    let i = 0;
+    for await (const { metadata, chunk } of output.bytes()) {
+      expect(metadata.streamName).toBe(expectedOutput[i].streamName);
+      expect(new TextDecoder().decode(chunk).trim()).toBe(
+        expectedOutput[i].text,
+      );
+      i++;
+    }
+
+    const summaryResult = await summary;
+    expect(summaryResult).toEqual(
+      makeSummaryResult({
+        totalCount: 4,
+        successCount: 2,
+        failureCount: 2,
+        allSuccess: false,
+        scriptResults: [
+          makeScriptResult({
+            exitCode: 1,
+            success: false,
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "fail1",
+                matchPattern: "packages/**/*",
+                path: "packages/fail1",
+                scripts: ["test-exit"],
+              }),
+            },
+          }),
+          makeScriptResult({
+            exitCode: 2,
+            success: false,
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "fail2",
+                matchPattern: "packages/**/*",
+                path: "packages/fail2",
+                scripts: ["test-exit"],
+              }),
+            },
+          }),
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "success1",
+                matchPattern: "packages/**/*",
+                path: "packages/success1",
+                scripts: ["test-exit"],
+              }),
+            },
+          }),
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "success2",
+                matchPattern: "packages/**/*",
+                path: "packages/success2",
+                scripts: ["test-exit"],
+              }),
+            },
+          }),
+        ],
+      }),
+    );
+  });
+
+  test("with failures - process output (text)", async () => {
+    const project = createFileSystemProject({
+      rootDirectory: getProjectRoot("runScriptWithFailures"),
+    });
+
+    const { output, summary } = project.runScriptAcrossWorkspaces({
+      workspacePatterns: ["*"],
+      script: "test-exit",
+    });
+
+    const expectedOutput = [
+      { streamName: "stderr" as const, text: "fail1" },
+      { streamName: "stderr" as const, text: "fail2" },
+      { streamName: "stdout" as const, text: "success1" },
+      { streamName: "stdout" as const, text: "success2" },
+    ];
+
+    let i = 0;
+    for await (const { metadata, chunk } of output.text()) {
+      expect(metadata.streamName).toBe(expectedOutput[i].streamName);
+      expect(chunk.trim()).toBe(expectedOutput[i].text);
+      i++;
+    }
+
+    const summaryResult = await summary;
     expect(summaryResult).toEqual(
       makeSummaryResult({
         totalCount: 4,
@@ -799,16 +928,11 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
     ];
 
     let i = 0;
-    for await (const { outputChunk } of output) {
-      expect(outputChunk.decode().trim()).toBe(
-        expectedOutput[i].outputChunk.text,
-      );
-      expect(outputChunk.decode({ stripAnsi: true }).trim()).toBe(
-        expectedOutput[i].outputChunk.textNoAnsi,
-      );
-      expect(outputChunk.streamName).toBe(
+    for await (const { metadata, chunk } of output.text()) {
+      expect(metadata.streamName).toBe(
         expectedOutput[i].outputChunk.streamName,
       );
+      expect(chunk.trim()).toBe(expectedOutput[i].outputChunk.text);
       i++;
     }
 
@@ -890,8 +1014,8 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
         parallel: { max },
       });
 
-      for await (const { outputChunk } of output) {
-        const maxValue = outputChunk.decode().trim();
+      for await (const { chunk } of output.text()) {
+        const maxValue = chunk.trim();
         if (typeof max === "number") {
           expect(maxValue).toBe(max.toString());
         } else if (max === "default") {

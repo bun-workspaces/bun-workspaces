@@ -140,7 +140,7 @@ export async function* formatRunScriptOutput(
 
   for await (const { metadata, chunk } of output.text()) {
     const workspaceName = metadata.workspace.name;
-    const sanitizedChunk = chunk;
+    const sanitizedChunk = sanitizeChunk(chunk);
 
     const prior = workspaceLineBuffers[workspaceName] ?? "";
 

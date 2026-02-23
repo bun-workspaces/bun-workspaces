@@ -185,5 +185,50 @@ describe("MultiProcessOutput", () => {
         i++;
       }
     });
+
+    test("decodes UTF-8 stream across chunk boundary (emoji split)", async () => {
+      const { processOutput, testStream } = createTestProcess("process 1");
+      // Chunk 1: "hello" + lead byte of 😀 (U+1F600 = F0 9F 98 80)
+      testStream.push(
+        new Uint8Array([0x68, 0x65, 0x6c, 0x6c, 0x6f, 0xf0]),
+      );
+      // Chunk 2: rest of emoji + "world\n"
+      testStream.push(
+        new Uint8Array([0x9f, 0x98, 0x80, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0x0a]),
+      );
+      testStream.close();
+
+      const multiProcessOutput = createMultiProcessOutput([processOutput]);
+      const chunks: string[] = [];
+      for await (const { metadata, chunk } of multiProcessOutput.text()) {
+        expect(metadata).toEqual({ name: "process 1" });
+        chunks.push(chunk);
+      }
+
+      expect(chunks.join("")).toBe("hello😀world\n");
+      expect(chunks.length).toBe(2);
+      expect(chunks[0]).toBe("hello");
+      expect(chunks[1]).toBe("😀world\n");
+    });
+
+    test("flushes final chunk with incomplete multi-byte (emoji)", async () => {
+      const { processOutput, testStream } = createTestProcess("process 1");
+      // "hello" + lead byte of 😀 only (F0); stream ends so decoder flushes replacement char
+      testStream.push(
+        new Uint8Array([0x68, 0x65, 0x6c, 0x6c, 0x6f, 0xf0]),
+      );
+      testStream.close();
+
+      const multiProcessOutput = createMultiProcessOutput([processOutput]);
+      const chunks: string[] = [];
+      for await (const { metadata, chunk } of multiProcessOutput.text()) {
+        expect(metadata).toEqual({ name: "process 1" });
+        chunks.push(chunk);
+      }
+
+      expect(chunks.length).toBe(2);
+      expect(chunks[0]).toBe("hello");
+      expect(chunks[1]).toBe("\uFFFD");
+    });
   });
 });

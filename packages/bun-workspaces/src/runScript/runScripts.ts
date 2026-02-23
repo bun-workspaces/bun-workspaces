@@ -7,7 +7,7 @@ import {
   createMultiProcessOutput,
   type MultiProcessOutput,
 } from "./output/multiProcessOutput";
-import { createProcessOutput, type ByteChunk } from "./output/processOutput";
+import { createProcessOutput } from "./output/processOutput";
 import {
   createOutputChunk,
   type OutputChunk,
@@ -48,7 +48,7 @@ export type RunScriptsOutput<ScriptMetadata extends object = object> = {
   /** The output chunk from a script execution */
   outputChunk: OutputChunk;
   /** The metadata for the script that produced the output chunk */
-  scriptMetadata: ScriptMetadata;
+  scriptMetadata: ScriptMetadata & { streamName: OutputStreamName };
 };
 
 export type RunScriptsResult<ScriptMetadata extends object = object> = {
@@ -211,7 +211,10 @@ export const runScripts = <ScriptMetadata extends object = object>({
                 chunk.metadata.streamName,
                 chunk.chunk,
               ),
-              scriptMetadata: scripts[index].metadata,
+              scriptMetadata: {
+                ...scripts[index].metadata,
+                streamName: chunk.metadata.streamName,
+              },
             });
 
             scriptOutputQueues[index][

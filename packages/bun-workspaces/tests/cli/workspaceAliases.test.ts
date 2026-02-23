@@ -16,7 +16,9 @@ describe("CLI Workspace Aliases", () => {
  - Aliases: appA
  - Path: ${withWindowsPath("applications/application-a")}
  - Glob Match: applications/*
- - Scripts: a-workspaces, all-workspaces, application-a`,
+ - Scripts: a-workspaces, all-workspaces, application-a
+ - Dependencies: 
+ - Dependents: `,
       );
     });
 
@@ -32,7 +34,9 @@ describe("CLI Workspace Aliases", () => {
  - Aliases: appB_file
  - Path: ${withWindowsPath("applications/application-b")}
  - Glob Match: applications/*
- - Scripts: all-workspaces, application-b, b-workspaces`,
+ - Scripts: all-workspaces, application-b, b-workspaces
+ - Dependencies: 
+ - Dependents: `,
       );
     });
 
@@ -48,7 +52,9 @@ describe("CLI Workspace Aliases", () => {
  - Aliases: appA
  - Path: ${withWindowsPath("applications/application-a")}
  - Glob Match: applications/*
- - Scripts: a-workspaces, all-workspaces, application-a`,
+ - Scripts: a-workspaces, all-workspaces, application-a
+ - Dependencies: 
+ - Dependents: `,
       );
     });
 
@@ -64,7 +70,9 @@ describe("CLI Workspace Aliases", () => {
  - Aliases: deprecated_appA, appA
  - Path: ${withWindowsPath("applications/application-a")}
  - Glob Match: applications/*
- - Scripts: a-workspaces, all-workspaces, application-a`,
+ - Scripts: a-workspaces, all-workspaces, application-a
+ - Dependencies: 
+ - Dependents: `,
       );
     });
 
@@ -80,7 +88,9 @@ describe("CLI Workspace Aliases", () => {
  - Aliases: deprecated_appB, appB_file
  - Path: ${withWindowsPath("applications/application-b")}
  - Glob Match: applications/*
- - Scripts: all-workspaces, application-b, b-workspaces`,
+ - Scripts: all-workspaces, application-b, b-workspaces
+ - Dependencies: 
+ - Dependents: `,
       );
     });
 
@@ -96,7 +106,9 @@ describe("CLI Workspace Aliases", () => {
  - Aliases: deprecated_appA, appA
  - Path: ${withWindowsPath("applications/application-a")}
  - Glob Match: applications/*
- - Scripts: a-workspaces, all-workspaces, application-a`,
+ - Scripts: a-workspaces, all-workspaces, application-a
+ - Dependencies: 
+ - Dependents: `,
       );
     });
   });

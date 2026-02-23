@@ -35,6 +35,8 @@ export const createWorkspaceInfoLines = (workspace: Workspace) => [
   ` - Path: ${workspace.path}`,
   ` - Glob Match: ${workspace.matchPattern}`,
   ` - Scripts: ${workspace.scripts.join(", ")}`,
+  ` - Dependencies: ${workspace.dependencies.join(", ")}`,
+  ` - Dependents: ${workspace.dependents.join(", ")}`,
 ];
 
 export const createScriptInfoLines = (

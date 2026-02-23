@@ -32,7 +32,9 @@ describe("CLI Log Level", () => {
  - Aliases: 
  - Path: ${withWindowsPath("applications/applicationA")}
  - Glob Match: applications/*
- - Scripts: a-workspaces, all-workspaces, application-a`,
+ - Scripts: a-workspaces, all-workspaces, application-a
+ - Dependencies: 
+ - Dependents: `,
       );
     });
 
@@ -61,7 +63,9 @@ describe("CLI Log Level", () => {
  - Aliases: 
  - Path: ${withWindowsPath("applications/applicationA")}
  - Glob Match: applications/*
- - Scripts: a-workspaces, all-workspaces, application-a`,
+ - Scripts: a-workspaces, all-workspaces, application-a
+ - Dependencies: 
+ - Dependents: `,
       );
     });
 
@@ -194,7 +198,9 @@ application-a`,
  - Aliases: 
  - Path: ${withWindowsPath("applications/applicationA")}
  - Glob Match: applications/*
- - Scripts: a-workspaces, all-workspaces, application-a`,
+ - Scripts: a-workspaces, all-workspaces, application-a
+ - Dependencies: 
+ - Dependents: `,
       );
     });
 
@@ -223,7 +229,9 @@ application-a`,
  - Aliases: 
  - Path: ${withWindowsPath("applications/applicationA")}
  - Glob Match: applications/*
- - Scripts: a-workspaces, all-workspaces, application-a`,
+ - Scripts: a-workspaces, all-workspaces, application-a
+ - Dependencies: 
+ - Dependents: `,
       );
     });
 

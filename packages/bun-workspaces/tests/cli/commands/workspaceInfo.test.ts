@@ -10,7 +10,9 @@ const APPLICATION_1A_PLAIN_OUTPUT = `Workspace: application-1a
  - Aliases: deprecated_appA
  - Path: ${withWindowsPath("applications/applicationA")}
  - Glob Match: applications/*
- - Scripts: a-workspaces, all-workspaces, application-a`;
+ - Scripts: a-workspaces, all-workspaces, application-a
+ - Dependencies: 
+ - Dependents: `;
 
 const EXPECTED_APPLICATION_1A_JSON = {
   name: "application-1a",
@@ -89,6 +91,23 @@ describe("Workspace Info", () => {
     assertOutputMatches(
       result.stderr.sanitized,
       'Workspace "does-not-exist" not found',
+    );
+  });
+
+  test("with dependencies and dependents", async () => {
+    const { run } = setupCliTest({ testProject: "withDependenciesSimple" });
+    const result = await run("info", "d-depends-e");
+    expect(result.stderr.raw).toBeEmpty();
+    expect(result.exitCode).toBe(0);
+    assertOutputMatches(
+      result.stdout.raw,
+      `Workspace: d-depends-e
+ - Aliases: 
+ - Path: packages/d-depends-e
+ - Glob Match: packages/*
+ - Scripts: 
+ - Dependencies: e
+ - Dependents: b-depends-cd`,
     );
   });
 });

@@ -12,21 +12,29 @@ const PLAIN_OUTPUT_SIMPLE1 = `Workspace: application-1a
  - Path: ${withWindowsPath("applications/applicationA")}
  - Glob Match: applications/*
  - Scripts: a-workspaces, all-workspaces, application-a
+ - Dependencies: 
+ - Dependents: 
 Workspace: application-1b
  - Aliases: deprecated_appB
  - Path: ${withWindowsPath("applications/applicationB")}
  - Glob Match: applications/*
  - Scripts: all-workspaces, application-b, b-workspaces
+ - Dependencies: 
+ - Dependents: 
 Workspace: library-1a
  - Aliases: deprecated_libA
  - Path: ${withWindowsPath("libraries/libraryA")}
  - Glob Match: libraries/*
  - Scripts: a-workspaces, all-workspaces, library-a
+ - Dependencies: 
+ - Dependents: 
 Workspace: library-1b
  - Aliases: deprecated_libB
  - Path: ${withWindowsPath("libraries/libraryB")}
  - Glob Match: libraries/*
- - Scripts: all-workspaces, b-workspaces, library-b`;
+ - Scripts: all-workspaces, b-workspaces, library-b
+ - Dependencies: 
+ - Dependents: `;
 
 const NAME_ONLY_OUTPUT_SIMPLE1 = `application-1a
 application-1b
@@ -104,6 +112,51 @@ describe("List Workspaces", () => {
         assertOutputMatches(result.stdout.raw, PLAIN_OUTPUT_SIMPLE1);
       },
     );
+
+    test.only("with dependencies and dependents", async () => {
+      const { run } = setupCliTest({ testProject: "withDependenciesSimple" });
+      const result = await run("ls");
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
+      assertOutputMatches(
+        result.stdout.raw,
+        `Workspace: a-depends-e
+ - Aliases: 
+ - Path: packages/a-depends-e
+ - Glob Match: packages/*
+ - Scripts: 
+ - Dependencies: e
+ - Dependents: 
+Workspace: b-depends-cd
+ - Aliases: 
+ - Path: packages/b-depends-cd
+ - Glob Match: packages/*
+ - Scripts: 
+ - Dependencies: c-depends-e, d-depends-e
+ - Dependents: 
+Workspace: c-depends-e
+ - Aliases: 
+ - Path: packages/c-depends-e
+ - Glob Match: packages/*
+ - Scripts: 
+ - Dependencies: e
+ - Dependents: b-depends-cd
+Workspace: d-depends-e
+ - Aliases: 
+ - Path: packages/d-depends-e
+ - Glob Match: packages/*
+ - Scripts: 
+ - Dependencies: e
+ - Dependents: b-depends-cd
+Workspace: e
+ - Aliases: 
+ - Path: packages/e
+ - Glob Match: packages/*
+ - Scripts: 
+ - Dependencies: 
+ - Dependents: a-depends-e, c-depends-e, d-depends-e`,
+      );
+    });
 
     test("--name-only outputs workspace names only", async () => {
       const { run } = setupCliTest({ testProject: "simple1" });

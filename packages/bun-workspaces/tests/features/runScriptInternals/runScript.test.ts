@@ -43,7 +43,7 @@ describe("Run Single Script", () => {
   test("Simple success - process output (bytes)", async () => {
     const result = await runScript({
       scriptCommand: {
-        command: "echo 'test-script 1'",
+        command: "echo test-script 1",
         workingDirectory: ".",
       },
       metadata: {},
@@ -75,7 +75,7 @@ describe("Run Single Script", () => {
   test("Simple success - process output (text)", async () => {
     const result = await runScript({
       scriptCommand: {
-        command: "echo 'test-script 1'",
+        command: "echo test-script 1",
         workingDirectory: ".",
       },
       metadata: {},
@@ -190,7 +190,7 @@ describe("Run Single Script", () => {
   test("With stdout and stderr - process output (bytes)", async () => {
     const result = await runScript({
       scriptCommand: {
-        command: "echo 'test-script 1' && echo 'test-script 2' >&2",
+        command: "echo test-script 1 && echo test-script 2 >&2",
         workingDirectory: ".",
       },
       metadata: {},
@@ -215,7 +215,7 @@ describe("Run Single Script", () => {
   test("With stdout and stderr - process output (text)", async () => {
     const result = await runScript({
       scriptCommand: {
-        command: "echo 'test-script 1' && echo 'test-script 2' >&2",
+        command: "echo test-script 1 && echo test-script 2 >&2",
         workingDirectory: ".",
       },
       metadata: {},

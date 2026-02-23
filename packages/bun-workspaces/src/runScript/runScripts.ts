@@ -225,6 +225,10 @@ export const runScripts = <ScriptMetadata extends object = object>({
     await Promise.all(outputReaders);
     await Promise.all(scriptExits);
     outputQueue.close();
+    scriptOutputQueues.forEach(([stdout, stderr]) => {
+      stdout.close();
+      stderr.close();
+    });
   };
 
   const awaitSummary = async () => {

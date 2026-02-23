@@ -465,5 +465,7 @@ describe("Run Multiple Scripts", () => {
       expect(outputChunk.metadata.streamName).toBe("stdout");
       expect(outputChunk.chunk.trim()).toBe(`test ${testValue}`);
     }
+
+    await result.summary;
   });
 });

@@ -157,7 +157,7 @@ const runManyScripts = async () => {
   });
 
   // Get a stream of script output
-  for await (const { chunk, metadata } of output) {
+  for await (const { chunk, metadata } of output.text()) {
     // console.log(chunk); // the content (string)
     // console.log(metadata.streamName); // "stdout" or "stderr"
     // console.log(metadata.workspace); // the workspace that the output came from

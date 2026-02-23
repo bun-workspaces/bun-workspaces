@@ -240,8 +240,8 @@ describe("Test run script shell option", () => {
         inline: true,
       });
 
-      for await (const chunk of defaultResult.output) {
-        expect(chunk.decode().trim()).toBe("bun");
+      for await (const { chunk } of defaultResult.output.text()) {
+        expect(chunk.trim()).toBe("bun");
       }
       expect((await defaultResult.exit).exitCode).toBe(0);
     });
@@ -257,8 +257,8 @@ describe("Test run script shell option", () => {
         inline: true,
       });
 
-      for await (const chunk of osEnvResult.output) {
-        expect(chunk.decode().trim()).toBe("system");
+      for await (const { chunk } of osEnvResult.output.text()) {
+        expect(chunk.trim()).toBe("system");
       }
       expect((await osEnvResult.exit).exitCode).toBe(0);
     });
@@ -274,8 +274,8 @@ describe("Test run script shell option", () => {
         inline: { shell: "default" },
       });
 
-      for await (const chunk of explicitDefaultResult.output) {
-        expect(chunk.decode().trim()).toBe("system");
+      for await (const { chunk } of explicitDefaultResult.output.text()) {
+        expect(chunk.trim()).toBe("system");
       }
       expect((await explicitDefaultResult.exit).exitCode).toBe(0);
     });
@@ -289,8 +289,8 @@ describe("Test run script shell option", () => {
         inline: true,
       });
 
-      for await (const chunk of bunEnvResult.output) {
-        expect(chunk.decode().trim()).toBe("bun");
+      for await (const { chunk } of bunEnvResult.output.text()) {
+        expect(chunk.trim()).toBe("bun");
       }
       expect((await bunEnvResult.exit).exitCode).toBe(0);
     });
@@ -302,8 +302,8 @@ describe("Test run script shell option", () => {
         inline: { shell: "bun" },
       });
 
-      for await (const chunk of explicitBunResult.output) {
-        expect(chunk.decode().trim()).toBe("bun");
+      for await (const { chunk } of explicitBunResult.output.text()) {
+        expect(chunk.trim()).toBe("bun");
       }
       expect((await explicitBunResult.exit).exitCode).toBe(0);
     });
@@ -327,8 +327,8 @@ describe("Test run script shell option", () => {
         inline: { shell: "system" },
       });
 
-      for await (const chunk of explicitOsResult.output) {
-        expect(chunk.decode().trim()).toBe("system");
+      for await (const { chunk } of explicitOsResult.output.text()) {
+        expect(chunk.trim()).toBe("system");
       }
       expect((await explicitOsResult.exit).exitCode).toBe(0);
     });
@@ -357,8 +357,8 @@ describe("Test run script shell option", () => {
         inline: true,
       });
 
-      for await (const { outputChunk } of defaultResult.output) {
-        expect(outputChunk.decode().trim()).toBe("bun");
+      for await (const { chunk } of defaultResult.output.text()) {
+        expect(chunk.trim()).toBe("bun");
       }
       expect((await defaultResult.summary).scriptResults[0].exitCode).toBe(0);
     });
@@ -374,8 +374,8 @@ describe("Test run script shell option", () => {
         inline: true,
       });
 
-      for await (const { outputChunk } of osEnvResult.output) {
-        expect(outputChunk.decode().trim()).toBe("system");
+      for await (const { chunk } of osEnvResult.output.text()) {
+        expect(chunk.trim()).toBe("system");
       }
       expect((await osEnvResult.summary).scriptResults[0].exitCode).toBe(0);
     });
@@ -391,8 +391,8 @@ describe("Test run script shell option", () => {
         inline: { shell: "default" },
       });
 
-      for await (const { outputChunk } of explicitDefaultResult.output) {
-        expect(outputChunk.decode().trim()).toBe("system");
+      for await (const { chunk } of explicitDefaultResult.output.text()) {
+        expect(chunk.trim()).toBe("system");
       }
       expect(
         (await explicitDefaultResult.summary).scriptResults[0].exitCode,
@@ -408,8 +408,8 @@ describe("Test run script shell option", () => {
         inline: true,
       });
 
-      for await (const { outputChunk } of bunEnvResult.output) {
-        expect(outputChunk.decode().trim()).toBe("bun");
+      for await (const { chunk } of bunEnvResult.output.text()) {
+        expect(chunk.trim()).toBe("bun");
       }
       expect((await bunEnvResult.summary).scriptResults[0].exitCode).toBe(0);
     });
@@ -421,8 +421,8 @@ describe("Test run script shell option", () => {
         inline: { shell: "bun" },
       });
 
-      for await (const { outputChunk } of explicitBunResult.output) {
-        expect(outputChunk.decode().trim()).toBe("bun");
+      for await (const { chunk } of explicitBunResult.output.text()) {
+        expect(chunk.trim()).toBe("bun");
       }
       expect((await explicitBunResult.summary).scriptResults[0].exitCode).toBe(
         0,
@@ -450,8 +450,8 @@ describe("Test run script shell option", () => {
         inline: { shell: "system" },
       });
 
-      for await (const { outputChunk } of explicitOsResult.output) {
-        expect(outputChunk.decode().trim()).toBe("system");
+      for await (const { chunk } of explicitOsResult.output.text()) {
+        expect(chunk.trim()).toBe("system");
       }
       expect((await explicitOsResult.summary).scriptResults[0].exitCode).toBe(
         0,

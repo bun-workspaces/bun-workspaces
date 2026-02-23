@@ -502,7 +502,10 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
     });
 
     let k = 0;
-    for await (const { metadata, chunk } of anonymousScriptResult.output.text()) {
+    for await (const {
+      metadata,
+      chunk,
+    } of anonymousScriptResult.output.text()) {
       const appLetter = k === 0 ? "a" : "b";
       expect(metadata.streamName).toBe("stdout");
       expect(chunk.trim()).toBe(

@@ -103,7 +103,7 @@ describe("Workspace Info", () => {
       result.stdout.raw,
       `Workspace: d-depends-e
  - Aliases: 
- - Path: packages/d-depends-e
+ - Path: ${withWindowsPath("packages/d-depends-e")}
  - Glob Match: packages/*
  - Scripts: 
  - Dependencies: e

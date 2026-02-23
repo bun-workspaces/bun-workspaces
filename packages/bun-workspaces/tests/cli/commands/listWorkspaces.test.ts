@@ -128,35 +128,35 @@ describe("List Workspaces", () => {
         result.stdout.raw,
         `Workspace: a-depends-e
  - Aliases: 
- - Path: packages/a-depends-e
+ - Path: ${withWindowsPath("packages/a-depends-e")}
  - Glob Match: packages/*
  - Scripts: 
  - Dependencies: e
  - Dependents: 
 Workspace: b-depends-cd
  - Aliases: 
- - Path: packages/b-depends-cd
+ - Path: ${withWindowsPath("packages/b-depends-cd")}
  - Glob Match: packages/*
  - Scripts: 
  - Dependencies: c-depends-e, d-depends-e
  - Dependents: 
 Workspace: c-depends-e
  - Aliases: 
- - Path: packages/c-depends-e
+ - Path: ${withWindowsPath("packages/c-depends-e")}
  - Glob Match: packages/*
  - Scripts: 
  - Dependencies: e
  - Dependents: b-depends-cd
 Workspace: d-depends-e
  - Aliases: 
- - Path: packages/d-depends-e
+ - Path: ${withWindowsPath("packages/d-depends-e")}
  - Glob Match: packages/*
  - Scripts: 
  - Dependencies: e
  - Dependents: b-depends-cd
 Workspace: e
  - Aliases: 
- - Path: packages/e
+ - Path: ${withWindowsPath("packages/e")}
  - Glob Match: packages/*
  - Scripts: 
  - Dependencies: 

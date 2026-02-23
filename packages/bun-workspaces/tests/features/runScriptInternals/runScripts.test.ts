@@ -439,4 +439,31 @@ describe("Run Multiple Scripts", () => {
       );
     }
   });
+
+  test("Env vars are passed", async () => {
+    const testValue = `test value ${Math.round(Math.random() * 1000000)}`;
+    const scriptCommand = {
+      command: IS_WINDOWS
+        ? `echo %NODE_ENV% %TEST_ENV_VAR%`
+        : "echo $NODE_ENV $TEST_ENV_VAR",
+      workingDirectory: ".",
+      env: { TEST_ENV_VAR: testValue },
+    };
+
+    const options = {
+      scriptCommand,
+      metadata: {},
+      env: { TEST_ENV_VAR: testValue },
+    };
+
+    const result = await runScripts({
+      scripts: [options, options],
+      parallel: false,
+    });
+
+    for await (const outputChunk of result.processOutput.text()) {
+      expect(outputChunk.metadata.streamName).toBe("stdout");
+      expect(outputChunk.chunk.trim()).toBe(`test ${testValue}`);
+    }
+  });
 });

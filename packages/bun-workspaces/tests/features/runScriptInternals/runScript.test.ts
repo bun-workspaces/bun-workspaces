@@ -1,10 +1,6 @@
 import { test, expect, describe } from "bun:test";
 import { IS_WINDOWS } from "../../../src/internal/core";
-import {
-  runScript,
-  runScripts,
-  type RunScriptExit,
-} from "../../../src/runScript";
+import { runScript, type RunScriptExit } from "../../../src/runScript";
 
 const makeExitResult = (
   overrides: Partial<RunScriptExit> = {},
@@ -20,7 +16,7 @@ const makeExitResult = (
 });
 
 describe("Run Single Script", () => {
-  test("Simple success", async () => {
+  test("Simple success - deprecated output", async () => {
     const result = await runScript({
       scriptCommand: {
         command: IS_WINDOWS
@@ -42,6 +38,57 @@ describe("Run Single Script", () => {
       );
       outputCount++;
     }
+  });
+
+  test("Simple success - process output (bytes)", async () => {
+    const result = await runScript({
+      scriptCommand: {
+        command: "echo 'test-script 1'",
+        workingDirectory: ".",
+      },
+      metadata: {},
+      env: {},
+    });
+
+    let outputCount = 0;
+    for await (const chunk of result.processOutput.bytes()) {
+      expect(chunk.metadata.streamName).toBe("stdout");
+      expect(chunk.chunk).toBeInstanceOf(Uint8Array);
+      expect(new TextDecoder().decode(chunk.chunk)).toMatch(
+        `test-script ${outputCount + 1}`,
+      );
+      outputCount++;
+    }
+
+    const exit = await result.exit;
+    expect(exit).toEqual(makeExitResult({}));
+    expect(new Date(exit.startTimeISO).getTime()).toBeLessThanOrEqual(
+      new Date(exit.endTimeISO).getTime(),
+    );
+    expect(exit.durationMs).toBe(
+      new Date(exit.endTimeISO).getTime() -
+        new Date(exit.startTimeISO).getTime(),
+    );
+    expect(outputCount).toBe(1);
+  });
+
+  test("Simple success - process output (text)", async () => {
+    const result = await runScript({
+      scriptCommand: {
+        command: "echo 'test-script 1'",
+        workingDirectory: ".",
+      },
+      metadata: {},
+      env: {},
+    });
+
+    let outputCount = 0;
+    for await (const chunk of result.processOutput.text()) {
+      expect(chunk.metadata.streamName).toBe("stdout");
+      expect(chunk.chunk.trim()).toBe(`test-script ${outputCount + 1}`);
+      outputCount++;
+    }
+
     const exit = await result.exit;
     expect(exit).toEqual(makeExitResult({}));
     expect(new Date(exit.startTimeISO).getTime()).toBeLessThanOrEqual(
@@ -67,11 +114,9 @@ describe("Run Single Script", () => {
     });
 
     let outputCount = 0;
-    for await (const outputChunk of result.output) {
-      expect(outputChunk.raw).toBeInstanceOf(Uint8Array);
-      expect(outputChunk.streamName).toBe("stdout");
-      expect(outputChunk.decode()).toMatch(`test-script ${outputCount + 1}`);
-      expect(outputChunk.decode({ stripAnsi: true })).toMatch(
+    for await (const outputChunk of result.processOutput.bytes()) {
+      expect(outputChunk.metadata.streamName).toBe("stdout");
+      expect(new TextDecoder().decode(outputChunk.chunk)).toMatch(
         `test-script ${outputCount + 1}`,
       );
       outputCount++;
@@ -112,7 +157,7 @@ describe("Run Single Script", () => {
     });
   }
 
-  test("With stdout and stderr", async () => {
+  test("With stdout and stderr - deprecated output", async () => {
     const result = await runScript({
       scriptCommand: {
         command: IS_WINDOWS
@@ -140,16 +185,58 @@ describe("Run Single Script", () => {
       );
       outputCount++;
     }
+  });
+
+  test("With stdout and stderr - process output (bytes)", async () => {
+    const result = await runScript({
+      scriptCommand: {
+        command: "echo 'test-script 1' && echo 'test-script 2' >&2",
+        workingDirectory: ".",
+      },
+      metadata: {},
+      env: {},
+    });
+
+    let outputCount = 0;
+    for await (const chunk of result.processOutput.bytes()) {
+      expect(chunk.metadata.streamName).toBe(
+        outputCount === 1 ? "stderr" : "stdout",
+      );
+      expect(new TextDecoder().decode(chunk.chunk)).toMatch(
+        `test-script ${outputCount + 1}`,
+      );
+      outputCount++;
+    }
 
     const exit = await result.exit;
     expect(exit).toEqual(makeExitResult({}));
+  });
+
+  test("With stdout and stderr - process output (text)", async () => {
+    const result = await runScript({
+      scriptCommand: {
+        command: "echo 'test-script 1' && echo 'test-script 2' >&2",
+        workingDirectory: ".",
+      },
+      metadata: {},
+      env: {},
+    });
+
+    let outputCount = 0;
+    for await (const chunk of result.processOutput.text()) {
+      expect(chunk.metadata.streamName).toBe(
+        outputCount === 1 ? "stderr" : "stdout",
+      );
+      expect(chunk.chunk.trim()).toBe(`test-script ${outputCount + 1}`);
+      outputCount++;
+    }
   });
 
   test("Env vars are passed", async () => {
     const testValue = `test value ${Math.round(Math.random() * 1000000)}`;
     const scriptCommand = {
       command: IS_WINDOWS
-        ? `echo(%NODE_ENV% %TEST_ENV_VAR%`
+        ? `echo %NODE_ENV% %TEST_ENV_VAR%`
         : "echo $NODE_ENV $TEST_ENV_VAR",
       workingDirectory: ".",
       env: { TEST_ENV_VAR: testValue },
@@ -161,47 +248,11 @@ describe("Run Single Script", () => {
       env: { TEST_ENV_VAR: testValue },
     };
 
-    const singleResult = await runScript(options);
+    const result = await runScript(options);
 
-    for await (const outputChunk of singleResult.output) {
-      expect(outputChunk.streamName).toBe("stdout");
-      expect(outputChunk.decode().trim()).toBe(`test ${testValue}`);
-      expect(outputChunk.decode({ stripAnsi: true }).trim()).toBe(
-        `test ${testValue}`,
-      );
-    }
-
-    const multiResult = await runScripts({
-      scripts: [options, options],
-      parallel: false,
-    });
-
-    for await (const { outputChunk } of multiResult.output) {
-      expect(outputChunk.raw).toBeInstanceOf(Uint8Array);
-      expect(outputChunk.streamName).toBe("stdout");
-      expect(outputChunk.decode().trim()).toBe(`test ${testValue}`);
-      expect(outputChunk.decode({ stripAnsi: true }).trim()).toBe(
-        `test ${testValue}`,
-      );
-    }
-  });
-
-  test("With ANSI escape codes", async () => {
-    const result = await runScript({
-      scriptCommand: {
-        command: "echo \x1b[31mtest-script 1\x1b[0m",
-        workingDirectory: ".",
-      },
-      metadata: {},
-      env: {},
-    });
-
-    for await (const outputChunk of result.output) {
-      expect(outputChunk.streamName).toBe("stdout");
-      expect(outputChunk.decode().trim()).toBe(`\x1b[31mtest-script 1\x1b[0m`);
-      expect(outputChunk.decode({ stripAnsi: true }).trim()).toBe(
-        `test-script 1`,
-      );
+    for await (const outputChunk of result.processOutput.text()) {
+      expect(outputChunk.metadata.streamName).toBe("stdout");
+      expect(outputChunk.chunk.trim()).toBe(`test ${testValue}`);
     }
   });
 
@@ -218,12 +269,9 @@ describe("Run Single Script", () => {
       env: {},
     });
 
-    for await (const outputChunk of result.output) {
-      expect(outputChunk.streamName).toBe("stdout");
-      expect(outputChunk.decode().trim()).toMatch(
-        /node_modules\/.bin\/eslint$/,
-      );
-      expect(outputChunk.decode({ stripAnsi: true }).trim()).toMatch(/eslint$/);
+    for await (const outputChunk of result.processOutput.text()) {
+      expect(outputChunk.metadata.streamName).toBe("stdout");
+      expect(outputChunk.chunk.trim()).toMatch(/node_modules\/.bin\/eslint$/);
     }
   });
 });

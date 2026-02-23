@@ -89,16 +89,22 @@ const PATTERN_OUTPUT_APPLICATION_AND_LIBRARY_1B = `Workspace: application-1a
  - Path: ${withWindowsPath("applications/applicationA")}
  - Glob Match: applications/*
  - Scripts: a-workspaces, all-workspaces, application-a
+ - Dependencies: 
+ - Dependents: 
 Workspace: application-1b
  - Aliases: deprecated_appB
  - Path: ${withWindowsPath("applications/applicationB")}
  - Glob Match: applications/*
  - Scripts: all-workspaces, application-b, b-workspaces
+ - Dependencies: 
+ - Dependents: 
 Workspace: library-1b
  - Aliases: deprecated_libB
  - Path: ${withWindowsPath("libraries/libraryB")}
  - Glob Match: libraries/*
- - Scripts: all-workspaces, b-workspaces, library-b`;
+ - Scripts: all-workspaces, b-workspaces, library-b
+ - Dependencies: 
+ - Dependents: `;
 
 describe("List Workspaces", () => {
   describe("output format", () => {
@@ -113,7 +119,7 @@ describe("List Workspaces", () => {
       },
     );
 
-    test.only("with dependencies and dependents", async () => {
+    test("with dependencies and dependents", async () => {
       const { run } = setupCliTest({ testProject: "withDependenciesSimple" });
       const result = await run("ls");
       expect(result.stderr.raw).toBeEmpty();

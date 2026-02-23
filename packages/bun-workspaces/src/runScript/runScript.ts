@@ -3,6 +3,11 @@ import {
   mergeAsyncIterables,
 } from "../internal/core";
 import {
+  createMultiProcessOutput,
+  type MultiProcessOutput,
+} from "./output/multiProcessOutput";
+import { createProcessOutput } from "./output/processOutput";
+import {
   createOutputChunk,
   type OutputChunk,
   type OutputStreamName,
@@ -22,7 +27,11 @@ export type RunScriptExit<ScriptMetadata extends object = object> = {
 };
 
 export type RunScriptResult<ScriptMetadata extends object = object> = {
+  /** @deprecated */
   output: SimpleAsyncIterable<OutputChunk>;
+  processOutput: MultiProcessOutput<
+    ScriptMetadata & { streamName: OutputStreamName }
+  >;
   exit: Promise<RunScriptExit<ScriptMetadata>>;
   metadata: ScriptMetadata;
   kill: (exit?: number | NodeJS.Signals) => void;
@@ -65,21 +74,20 @@ export const runScript = <ScriptMetadata extends object = object>({
   });
 
   proc.exited.finally(cleanup);
-  async function* pipeOutput(
-    streamName: OutputStreamName,
-  ): SimpleAsyncIterable<OutputChunk> {
-    const stream = proc[streamName];
-    if (stream) {
-      for await (const chunk of stream) {
-        yield createOutputChunk(streamName, chunk);
-      }
-    }
-  }
 
-  const output = mergeAsyncIterables([
-    pipeOutput("stdout"),
-    pipeOutput("stderr"),
+  const processOutput = createMultiProcessOutput<
+    ScriptMetadata & { streamName: OutputStreamName }
+  >([
+    createProcessOutput(proc.stdout, { ...metadata, streamName: "stdout" }),
+    createProcessOutput(proc.stderr, { ...metadata, streamName: "stderr" }),
   ]);
+
+  const deprecatedOutput =
+    async function* (): SimpleAsyncIterable<OutputChunk> {
+      for await (const chunk of processOutput.bytes()) {
+        yield createOutputChunk(chunk.metadata.streamName, chunk.chunk);
+      }
+    };
 
   const exit = proc.exited.then<RunScriptExit<ScriptMetadata>>((exitCode) => {
     const endTime = new Date();
@@ -95,7 +103,8 @@ export const runScript = <ScriptMetadata extends object = object>({
   });
 
   return {
-    output,
+    output: deprecatedOutput(),
+    processOutput,
     exit,
     metadata,
     kill: (exit) => proc.kill(exit),

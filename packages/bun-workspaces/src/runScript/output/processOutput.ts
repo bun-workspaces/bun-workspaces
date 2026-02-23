@@ -3,15 +3,41 @@ import {
   type SimpleAsyncIterable,
   createAsyncIterableQueue,
   defineErrors,
-} from "../internal/core";
+} from "../../internal/core";
 
 export type ByteStream = SimpleAsyncIterable<Uint8Array<ArrayBufferLike>>;
 
-export type TextStream = SimpleAsyncIterable<string>;
+export type ProcessOutputChunk<
+  Chunk = unknown,
+  Metadata extends object = object,
+> = {
+  /** The metadata for the script that produced the output chunk */
+  metadata: Metadata;
+  /** The output chunk */
+  chunk: Chunk;
+};
 
-export interface ProcessOutput {
-  bytes(): ByteStream;
-  text(): TextStream;
+export type ByteChunk<Metadata extends object = object> = ProcessOutputChunk<
+  Uint8Array<ArrayBufferLike>,
+  Metadata
+>;
+
+export type TextChunk<Metadata extends object = object> = ProcessOutputChunk<
+  string,
+  Metadata
+>;
+
+export type BytesOutput<Metadata extends object = object> = SimpleAsyncIterable<
+  ByteChunk<Metadata>
+>;
+
+export type TextOutput<Metadata extends object = object> = SimpleAsyncIterable<
+  TextChunk<Metadata>
+>;
+
+export interface ProcessOutput<Metadata extends object = object> {
+  bytes(): BytesOutput<Metadata>;
+  text(): TextOutput<Metadata>;
 }
 
 const ERRORS = defineErrors(
@@ -20,9 +46,12 @@ const ERRORS = defineErrors(
   "OutputStreamDone",
 );
 
-class _ProcessOutput implements ProcessOutput {
-  constructor(stream: ByteStream) {
+class _ProcessOutput<
+  Metadata extends object = object,
+> implements ProcessOutput<Metadata> {
+  constructor(stream: ByteStream, metadata: Metadata) {
     this.#inputStream = stream;
+    this.#metadata = metadata;
 
     this.#done = new Promise((resolve, reject) => {
       this.#onDone = (error) => {
@@ -63,23 +92,34 @@ class _ProcessOutput implements ProcessOutput {
     return this.#isCancelled;
   }
 
-  bytes(): ByteStream {
+  bytes(): BytesOutput<Metadata> {
     this.#onStart();
 
-    return this.#byteChunkQueue;
+    const metadata = this.#metadata;
+    const byteChunkQueue = this.#byteChunkQueue;
+
+    return (async function* () {
+      for await (const chunk of byteChunkQueue) {
+        yield { metadata, chunk };
+      }
+    })();
   }
 
-  text(): TextStream {
+  text(): TextOutput<Metadata> {
     this.#onStart();
 
-    const byteStream = this.#byteChunkQueue;
+    const metadata = this.#metadata;
+    const byteChunkQueue = this.#byteChunkQueue;
+
     return (async function* () {
       const decoder = new TextDecoder();
-      for await (const chunk of byteStream) {
-        yield decoder.decode(chunk, { stream: true });
+      for await (const byteChunk of byteChunkQueue) {
+        yield { metadata, chunk: decoder.decode(byteChunk, { stream: true }) };
       }
-      const flushed = decoder.decode();
-      if (flushed) yield flushed;
+
+      // flush any remaining data in the decoder
+      const danglingChunk = decoder.decode();
+      if (danglingChunk) yield { metadata, chunk: danglingChunk };
     })();
   }
 
@@ -119,7 +159,10 @@ class _ProcessOutput implements ProcessOutput {
   #isCancelled = false;
   #inputStream: ByteStream;
   #byteChunkQueue = createAsyncIterableQueue<Uint8Array<ArrayBufferLike>>();
+  #metadata: Metadata;
 }
 
-export const createProcessOutput = (stream: ByteStream): ProcessOutput =>
-  new _ProcessOutput(stream);
+export const createProcessOutput = <Metadata extends object = object>(
+  stream: ByteStream,
+  metadata: Metadata,
+): ProcessOutput<Metadata> => new _ProcessOutput(stream, metadata);

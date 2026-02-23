@@ -14,7 +14,7 @@ export interface OutputChunk {
   /** Raw output text. Pass `true` to strip ANSI escape codes. */
   decode(options?: DecodeOptions): string;
   /** The raw output content */
-  raw: Uint8Array<ArrayBuffer>;
+  raw: Uint8Array<ArrayBufferLike>;
   /** @deprecated Use `decode()` instead */
   // TODO remove in future major release
   text: string;
@@ -26,7 +26,7 @@ export interface OutputChunk {
 class _OutputChunk implements OutputChunk {
   constructor(
     public readonly streamName: OutputStreamName,
-    public readonly raw: Uint8Array<ArrayBuffer>,
+    public readonly raw: Uint8Array<ArrayBufferLike>,
   ) {}
 
   decode(options?: DecodeOptions): string {
@@ -50,5 +50,5 @@ class _OutputChunk implements OutputChunk {
 
 export const createOutputChunk = (
   streamName: OutputStreamName,
-  raw: Uint8Array<ArrayBuffer>,
+  raw: Uint8Array<ArrayBufferLike>,
 ): OutputChunk => new _OutputChunk(streamName, raw);

@@ -107,12 +107,12 @@ export const runScript = handleProjectCommand(
           outputChunk.decode(),
           "info",
           process[outputChunk.streamName],
-          options.prefix ? `[${scriptMetadata.workspace.name}] ` : "",
+          options.prefix
+            ? `[${scriptMetadata.workspace.name}:${scriptName}] `
+            : "",
         );
       }
     };
-
-    process.stdout.write(new Uint8Array([0x01, 0x02, 0x03]));
 
     handleOutput();
 

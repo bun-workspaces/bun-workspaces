@@ -16,9 +16,9 @@ import {
   type RunScriptsOutput,
   type RunScriptExit,
   type OutputChunk,
+  type OutputStreamName,
 } from "../../runScript";
 import type { MultiProcessOutput } from "../../runScript/output/multiProcessOutput";
-import type { OutputStreamName } from "../../runScript/outputChunk";
 import { checkIsRecursiveScript } from "../../runScript/recursion";
 import {
   resolveScriptShell,
@@ -82,10 +82,11 @@ export type RunWorkspaceScriptExit = Simplify<
   RunScriptExit<RunWorkspaceScriptMetadata>
 >;
 
-export type RunWorkspaceScriptProcessOutput =
-  MultiProcessOutput<RunWorkspaceScriptMetadata> &
-    /** @deprecated */
-    SimpleAsyncIterable<OutputChunk>;
+export type RunWorkspaceScriptProcessOutput = MultiProcessOutput<
+  RunWorkspaceScriptMetadata & { streamName: OutputStreamName }
+> &
+  /** @deprecated */
+  SimpleAsyncIterable<OutputChunk>;
 
 /** Result of `FileSystemProject.runWorkspaceScript` */
 export type RunWorkspaceScriptResult = {
@@ -121,10 +122,11 @@ export type RunScriptAcrossWorkspacesSummary = Simplify<
   RunScriptsSummary<RunWorkspaceScriptMetadata>
 >;
 
-export type RunScriptAcrossWorkspacesProcessOutput =
-  MultiProcessOutput<RunWorkspaceScriptMetadata> &
-    /** @deprecated */
-    SimpleAsyncIterable<RunScriptAcrossWorkspacesOutput>;
+export type RunScriptAcrossWorkspacesProcessOutput = MultiProcessOutput<
+  RunWorkspaceScriptMetadata & { streamName: OutputStreamName }
+> &
+  /** @deprecated */
+  SimpleAsyncIterable<RunScriptAcrossWorkspacesOutput>;
 
 /** Result of `FileSystemProject.runScriptAcrossWorkspaces` */
 export type RunScriptAcrossWorkspacesResult = {
@@ -278,7 +280,7 @@ class _FileSystemProject extends ProjectBase implements Project {
     };
 
     return {
-      ...result,
+      exit: result.exit,
       output,
     };
   }
@@ -416,7 +418,7 @@ class _FileSystemProject extends ProjectBase implements Project {
     };
 
     return {
-      ...result,
+      summary: result.summary,
       output,
     };
   }

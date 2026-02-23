@@ -1,6 +1,5 @@
 import { sanitizeAnsi } from "../internal/core";
 
-/** @deprecated */
 export type OutputStreamName = "stdout" | "stderr";
 
 /** @deprecated */

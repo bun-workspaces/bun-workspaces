@@ -39,12 +39,9 @@ describe("FileSystemProject runWorkspaceScript", () => {
       script: "a-workspaces",
     });
 
-    for await (const chunk of output) {
-      expect(chunk.decode().trim()).toMatch("script for a workspaces");
-      expect(chunk.decode({ stripAnsi: true }).trim()).toMatch(
-        "script for a workspaces",
-      );
-      expect(chunk.streamName).toBe("stdout");
+    for await (const { metadata, chunk } of output.text()) {
+      expect(metadata.streamName).toBe("stdout");
+      expect(chunk.trim()).toMatch("script for a workspaces");
     }
 
     const exitResult = await exit;
@@ -73,12 +70,9 @@ describe("FileSystemProject runWorkspaceScript", () => {
       script: "a-workspaces",
     });
 
-    for await (const chunk of output) {
-      expect(chunk.decode().trim()).toMatch("script for a workspaces");
-      expect(chunk.decode({ stripAnsi: true }).trim()).toMatch(
-        "script for a workspaces",
-      );
-      expect(chunk.streamName).toBe("stdout");
+    for await (const { metadata, chunk } of output.text()) {
+      expect(metadata.streamName).toBe("stdout");
+      expect(chunk.trim()).toMatch("script for a workspaces");
     }
 
     const exitResult = await exit;
@@ -113,7 +107,7 @@ describe("FileSystemProject runWorkspaceScript", () => {
     }
   });
 
-  test("expected output", async () => {
+  test("expected output - deprecated output", async () => {
     const project = createFileSystemProject({
       rootDirectory: getProjectRoot("runScriptWithMixedOutput"),
     });
@@ -169,6 +163,88 @@ describe("FileSystemProject runWorkspaceScript", () => {
     );
   });
 
+  test("expected output - process output (bytes)", async () => {
+    const project = createFileSystemProject({
+      rootDirectory: getProjectRoot("runScriptWithMixedOutput"),
+    });
+
+    const { output, exit } = project.runWorkspaceScript({
+      workspaceNameOrAlias: "fail1",
+      script: "test-exit",
+    });
+
+    const expectedOutput = [
+      { text: "fail1 stdout 1", streamName: "stdout" as const },
+      { text: "fail1 stderr 1", streamName: "stderr" as const },
+      { text: "fail1 stdout 2", streamName: "stdout" as const },
+    ];
+
+    let i = 0;
+    for await (const { metadata, chunk } of output.bytes()) {
+      expect(metadata.streamName).toBe(expectedOutput[i].streamName);
+      expect(new TextDecoder().decode(chunk).trim()).toMatch(
+        expectedOutput[i].text,
+      );
+      i++;
+    }
+
+    const exitResult = await exit;
+    expect(exitResult).toEqual(
+      makeExitResult({
+        exitCode: 1,
+        success: false,
+        metadata: {
+          workspace: makeTestWorkspace({
+            name: "fail1",
+            path: "packages/fail1",
+            matchPattern: "packages/**/*",
+            scripts: ["test-exit"],
+          }),
+        },
+      }),
+    );
+  });
+
+  test("expected output - process output (text)", async () => {
+    const project = createFileSystemProject({
+      rootDirectory: getProjectRoot("runScriptWithMixedOutput"),
+    });
+
+    const { output, exit } = project.runWorkspaceScript({
+      workspaceNameOrAlias: "fail1",
+      script: "test-exit",
+    });
+
+    const expectedOutput = [
+      { text: "fail1 stdout 1", streamName: "stdout" as const },
+      { text: "fail1 stderr 1", streamName: "stderr" as const },
+      { text: "fail1 stdout 2", streamName: "stdout" as const },
+    ];
+
+    let i = 0;
+    for await (const { metadata, chunk } of output.text()) {
+      expect(metadata.streamName).toBe(expectedOutput[i].streamName);
+      expect(chunk.trim()).toMatch(expectedOutput[i].text);
+      i++;
+    }
+
+    const exitResult = await exit;
+    expect(exitResult).toEqual(
+      makeExitResult({
+        exitCode: 1,
+        success: false,
+        metadata: {
+          workspace: makeTestWorkspace({
+            name: "fail1",
+            path: "packages/fail1",
+            matchPattern: "packages/**/*",
+            scripts: ["test-exit"],
+          }),
+        },
+      }),
+    );
+  });
+
   test("runtime metadata", async () => {
     const project = createFileSystemProject({
       rootDirectory: getProjectRoot("runScriptWithRuntimeMetadataDebug"),
@@ -179,14 +255,11 @@ describe("FileSystemProject runWorkspaceScript", () => {
       script: "test-echo",
     });
 
-    for await (const chunk of plainResult.output) {
-      expect(chunk.decode().trim()).toBe(
+    for await (const { metadata, chunk } of plainResult.output.text()) {
+      expect(metadata.streamName).toBe("stdout");
+      expect(chunk.trim()).toBe(
         `${project.rootDirectory} test-root application-a ${project.rootDirectory}${withWindowsPath("/applications/application-a")} ${withWindowsPath("applications/application-a")} test-echo`,
       );
-      expect(chunk.decode({ stripAnsi: true }).trim()).toBe(
-        `${project.rootDirectory} test-root application-a ${project.rootDirectory}${withWindowsPath("/applications/application-a")} ${withWindowsPath("applications/application-a")} test-echo`,
-      );
-      expect(chunk.streamName).toBe("stdout");
     }
 
     const argsResult = project.runWorkspaceScript({
@@ -195,14 +268,11 @@ describe("FileSystemProject runWorkspaceScript", () => {
       args: "--arg1=<projectPath> --arg2=<projectName> --arg3=<workspaceName> --arg4=<workspacePath> --arg5=<workspaceRelativePath> --arg6=<scriptName>",
     });
 
-    for await (const chunk of argsResult.output) {
-      expect(chunk.decode().trim()).toBe(
+    for await (const { metadata, chunk } of argsResult.output.text()) {
+      expect(metadata.streamName).toBe("stdout");
+      expect(chunk.trim()).toBe(
         `${project.rootDirectory} test-root application-a ${project.rootDirectory}${withWindowsPath("/applications/application-a")} ${withWindowsPath("applications/application-a")} test-echo --arg1=${project.rootDirectory} --arg2=test-root --arg3=application-a --arg4=${project.rootDirectory}${withWindowsPath("/applications/application-a")} --arg5=${withWindowsPath("applications/application-a")} --arg6=test-echo`,
       );
-      expect(chunk.decode({ stripAnsi: true }).trim()).toBe(
-        `${project.rootDirectory} test-root application-a ${project.rootDirectory}${withWindowsPath("/applications/application-a")} ${withWindowsPath("applications/application-a")} test-echo --arg1=${project.rootDirectory} --arg2=test-root --arg3=application-a --arg4=${project.rootDirectory}${withWindowsPath("/applications/application-a")} --arg5=${withWindowsPath("applications/application-a")} --arg6=test-echo`,
-      );
-      expect(chunk.streamName).toBe("stdout");
     }
   });
 
@@ -218,14 +288,14 @@ describe("FileSystemProject runWorkspaceScript", () => {
       inline: true,
     });
 
-    for await (const chunk of anonymousScriptResult.output) {
-      expect(chunk.decode().trim()).toBe(
+    for await (const {
+      metadata,
+      chunk,
+    } of anonymousScriptResult.output.text()) {
+      expect(metadata.streamName).toBe("stdout");
+      expect(chunk.trim()).toBe(
         `${project.rootDirectory} test-root application-a ${project.rootDirectory}${withWindowsPath("/applications/application-a")} ${withWindowsPath("applications/application-a")}`,
       );
-      expect(chunk.decode({ stripAnsi: true }).trim()).toBe(
-        `${project.rootDirectory} test-root application-a ${project.rootDirectory}${withWindowsPath("/applications/application-a")} ${withWindowsPath("applications/application-a")}`,
-      );
-      expect(chunk.streamName).toBe("stdout");
     }
 
     const namedScriptResult = project.runWorkspaceScript({
@@ -235,14 +305,11 @@ describe("FileSystemProject runWorkspaceScript", () => {
       inline: { scriptName: "my-named-script" },
     });
 
-    for await (const chunk of namedScriptResult.output) {
-      expect(chunk.decode().trim()).toBe(
+    for await (const { metadata, chunk } of namedScriptResult.output.text()) {
+      expect(metadata.streamName).toBe("stdout");
+      expect(chunk.trim()).toBe(
         `${project.rootDirectory} test-root application-a ${project.rootDirectory}${withWindowsPath("/applications/application-a")} ${withWindowsPath("applications/application-a")} my-named-script`,
       );
-      expect(chunk.decode({ stripAnsi: true }).trim()).toBe(
-        `${project.rootDirectory} test-root application-a ${project.rootDirectory}${withWindowsPath("/applications/application-a")} ${withWindowsPath("applications/application-a")} my-named-script`,
-      );
-      expect(chunk.streamName).toBe("stdout");
     }
   });
 });

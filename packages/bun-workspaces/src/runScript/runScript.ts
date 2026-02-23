@@ -1,7 +1,4 @@
-import {
-  type SimpleAsyncIterable,
-  mergeAsyncIterables,
-} from "../internal/core";
+import { type SimpleAsyncIterable } from "../internal/core";
 import {
   createMultiProcessOutput,
   type MultiProcessOutput,

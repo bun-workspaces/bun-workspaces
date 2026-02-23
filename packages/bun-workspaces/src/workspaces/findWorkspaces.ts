@@ -5,7 +5,6 @@ import {
   createDefaultWorkspaceConfig,
   loadWorkspaceConfig,
   type ProjectConfig,
-  type ResolvedWorkspaceConfig,
 } from "../config";
 import { BUN_LOCK_ERRORS, readBunLockfile } from "../internal/bun";
 import { BunWorkspacesError } from "../internal/core";

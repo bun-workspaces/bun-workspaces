@@ -3,7 +3,6 @@ import path from "path";
 import { logger } from "../../../internal/logger";
 import type { ParallelMaxValue, ScriptShellOption } from "../../../runScript";
 import {
-  commandOutputLogger,
   handleProjectCommand,
   splitWorkspacePatterns,
 } from "../commandHandlerUtils";

@@ -232,6 +232,53 @@ describe("Run Single Script", () => {
     }
   });
 
+  test("processOutput.text() decodes UTF-8 stream across chunk boundary (emoji split)", async () => {
+    // Two writes: "hello" + lead byte of 😀 (U+1F600 = F0 9F 98 80), then rest of emoji + "world\n"
+    const result = await runScript({
+      scriptCommand: {
+        command:
+          "bun -e \"process.stdout.write(new Uint8Array([0x68,0x65,0x6c,0x6c,0x6f,0xf0]));process.stdout.write(new Uint8Array([0x9f,0x98,0x80,0x77,0x6f,0x72,0x6c,0x64,0x0a]));\"",
+        workingDirectory: ".",
+      },
+      metadata: {},
+      env: {},
+    });
+
+    const chunks: string[] = [];
+    for await (const { metadata, chunk } of result.processOutput.text()) {
+      expect(metadata.streamName).toBe("stdout");
+      chunks.push(chunk);
+    }
+
+    expect(chunks.join("")).toBe("hello😀world\n");
+    expect(chunks.length).toBe(2);
+    expect(chunks[0]).toBe("hello");
+    expect(chunks[1]).toBe("😀world\n");
+  });
+
+  test("processOutput.text() flushes final chunk with incomplete multi-byte (emoji)", async () => {
+    // Single write: "hello" + lead byte of 😀 only (F0); stream ends so decoder flushes replacement char
+    const result = await runScript({
+      scriptCommand: {
+        command:
+          "bun -e \"process.stdout.write(new Uint8Array([0x68,0x65,0x6c,0x6c,0x6f,0xf0]));\"",
+        workingDirectory: ".",
+      },
+      metadata: {},
+      env: {},
+    });
+
+    const chunks: string[] = [];
+    for await (const { metadata, chunk } of result.processOutput.text()) {
+      expect(metadata.streamName).toBe("stdout");
+      chunks.push(chunk);
+    }
+
+    expect(chunks.length).toBe(2);
+    expect(chunks[0]).toBe("hello");
+    expect(chunks[1]).toBe("\uFFFD");
+  });
+
   test("Env vars are passed", async () => {
     const testValue = `test value ${Math.round(Math.random() * 1000000)}`;
     const scriptCommand = {

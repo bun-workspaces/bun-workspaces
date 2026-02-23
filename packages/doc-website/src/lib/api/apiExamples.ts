@@ -138,11 +138,10 @@ const { output, exit } = project.runWorkspaceScript({
 });
 
 // Get a stream of the script subprocess's output
-for await (const { outputChunk } of output) {
-  // outputChunk.raw // The raw output content (Uint8Array)
-  // outputChunk.decode() // The output chunk's content (string)
-  // outputChunk.decode({ stripAnsi: true }) // Text with ANSI codes sanitized (string)
-  // outputChunk.streamName // The output stream, "stdout" or "stderr"
+for await (const { chunk, metadata } of output.text()) {
+  // console.log(chunk); // The output chunk's content (string)
+  // console.log(metadata.streamName); // The output stream, "stdout" or "stderr"
+  // console.log(metadata.workspace); // The target Workspace
 }
 
 // Get data about the script execution after it exits
@@ -177,14 +176,10 @@ const { output, summary } = project.runScriptAcrossWorkspaces({
 });
 
 // Get a stream of script output
-for await (const { outputChunk, scriptMetadata } of output) {
-  // outputChunk.decode() // the output chunk's content (string)
-  // outputChunk.decode({ stripAnsi: true }) // text with ANSI codes sanitized (string)
-  // outputChunk.streamName // "stdout" or "stderr"
-
-  // The metadata can distinguish which workspace script 
-  // the current output chunk came from
-  // scriptMetadata.workspace // Workspace object
+for await (const { chunk, metadata } of output.text()) {
+  // console.log(chunk); // the output chunk's content (string)
+  // console.log(metadata.streamName); // "stdout" or "stderr"
+  // console.log(metadata.workspace); // the Workspace that the output came from
 }
 
 // Get final summary data and script exit details after all scripts have completed

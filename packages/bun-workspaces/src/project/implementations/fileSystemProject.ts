@@ -276,6 +276,11 @@ class _FileSystemProject extends ProjectBase implements Project {
 
     const output = result.processOutput as RunWorkspaceScriptProcessOutput;
     output[Symbol.asyncIterator] = async function* () {
+      logger.warn(
+        new Error(
+          "Iterating directly over runWorkspaceScript output is deprecated: Use output.bytes() or output.text() instead",
+        ),
+      );
       for await (const chunk of result.output) {
         yield chunk;
       }
@@ -414,6 +419,11 @@ class _FileSystemProject extends ProjectBase implements Project {
     const output =
       result.processOutput as RunScriptAcrossWorkspacesProcessOutput;
     output[Symbol.asyncIterator] = async function* () {
+      logger.warn(
+        new Error(
+          "Iterating directly over runScriptAcrossWorkspaces output is deprecated: Use output.bytes() or output.text() instead",
+        ),
+      );
       for await (const chunk of result.output) {
         yield chunk;
       }

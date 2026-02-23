@@ -1,13 +1,15 @@
 import { sanitizeAnsi } from "../internal/core";
 
+/** @deprecated */
 export type OutputStreamName = "stdout" | "stderr";
 
+/** @deprecated */
 export interface DecodeOptions {
   /** Whether to strip ANSI escape codes */
   stripAnsi?: boolean;
 }
 
-/** Output captured from a script subprocess */
+/** @deprecated Output captured from a script subprocess */
 export interface OutputChunk {
   /** The source of the output, `"stdout"` or `"stderr"` */
   streamName: OutputStreamName;
@@ -23,6 +25,7 @@ export interface OutputChunk {
   textNoAnsi: string;
 }
 
+/** @deprecated */
 class _OutputChunk implements OutputChunk {
   constructor(
     public readonly streamName: OutputStreamName,
@@ -48,6 +51,7 @@ class _OutputChunk implements OutputChunk {
   }
 }
 
+/** @deprecated */
 export const createOutputChunk = (
   streamName: OutputStreamName,
   raw: Uint8Array<ArrayBufferLike>,

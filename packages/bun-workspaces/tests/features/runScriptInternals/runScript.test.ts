@@ -15,7 +15,7 @@ const makeExitResult = (
   ...overrides,
 });
 
-describe("Run Single Script", () => {
+describe("Run Script", () => {
   test("Simple success - deprecated output", async () => {
     const result = await runScript({
       scriptCommand: {

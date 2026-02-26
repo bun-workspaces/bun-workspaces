@@ -46,7 +46,7 @@ afterAll(() => {
     originalParallelMaxDefault;
 });
 
-describe("Run Multiple Scripts", () => {
+describe("Run Scripts", () => {
   test("Run Scripts - simple series", async () => {
     const result = await runScripts({
       scripts: [
@@ -558,7 +558,7 @@ describe("Run Multiple Scripts", () => {
   });
 });
 
-describe("Script Dependencies", () => {
+describe("Run Scripts - Dependencies", () => {
   test("dependency ordering in serial mode", async () => {
     const executionOrder: string[] = [];
 
@@ -794,7 +794,7 @@ describe("Script Dependencies", () => {
     ).toThrow(/invalid index 99/);
   });
 
-  test("diamond dependency", async () => {
+  test.only("diamond dependency", async () => {
     const executionOrder: string[] = [];
 
     const result = await runScripts({
@@ -825,6 +825,65 @@ describe("Script Dependencies", () => {
           env: {},
           shell: "bun",
           dependsOn: [1, 2],
+        },
+      ],
+      parallel: true,
+    });
+
+    for await (const { metadata } of result.processOutput.text()) {
+      executionOrder.push(metadata.name);
+    }
+
+    // A must run first, B and C after A (in any order), D after both B and C
+    expect(executionOrder.indexOf("A")).toBeLessThan(
+      executionOrder.indexOf("B"),
+    );
+    expect(executionOrder.indexOf("A")).toBeLessThan(
+      executionOrder.indexOf("C"),
+    );
+    expect(executionOrder.indexOf("B")).toBeLessThan(
+      executionOrder.indexOf("D"),
+    );
+    expect(executionOrder.indexOf("C")).toBeLessThan(
+      executionOrder.indexOf("D"),
+    );
+
+    const summary = await result.summary;
+    expect(summary.totalCount).toBe(4);
+    expect(summary.allSuccess).toBe(true);
+  });
+
+  test.only("diamond dependency (different pass order)", async () => {
+    const executionOrder: string[] = [];
+
+    const result = await runScripts({
+      scripts: [
+        {
+          metadata: { name: "D" },
+          scriptCommand: { command: "echo A", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+          dependsOn: [1, 3],
+        },
+        {
+          metadata: { name: "B" },
+          scriptCommand: { command: "echo B", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+          dependsOn: [2],
+        },
+        {
+          metadata: { name: "A" },
+          scriptCommand: { command: "echo C", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+        },
+        {
+          metadata: { name: "C" },
+          scriptCommand: { command: "echo D", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+          dependsOn: [2],
         },
       ],
       parallel: true,

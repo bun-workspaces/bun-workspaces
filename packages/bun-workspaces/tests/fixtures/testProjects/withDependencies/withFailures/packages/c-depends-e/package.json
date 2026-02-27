@@ -4,6 +4,6 @@
     "e": "workspace:*"
   },
   "scripts": {
-    "test-script": "echo C"
+    "test-script": "echo C && exit 1"
   }
 }

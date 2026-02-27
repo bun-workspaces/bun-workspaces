@@ -1,6 +1,6 @@
 {
   "name": "e",
   "scripts": {
-    "test-script": "echo E"
+    "test-script": "echo F"
   }
 }

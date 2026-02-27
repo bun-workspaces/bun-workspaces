@@ -2,5 +2,8 @@
   "name": "b-depends-a",
   "dependencies": {
     "a-depends-c": "workspace:*"
+  },
+  "scripts": {
+    "test-script": "echo B"
   }
 }

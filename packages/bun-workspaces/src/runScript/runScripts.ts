@@ -211,9 +211,7 @@ export const runScripts = <ScriptMetadata extends object = object>({
     () => null,
   );
 
-  const createSkippedExit = (
-    index: number,
-  ): RunScriptExit<ScriptMetadata> => {
+  const createSkippedExit = (index: number): RunScriptExit<ScriptMetadata> => {
     const now = new Date().toISOString();
     return {
       exitCode: -1,
@@ -246,7 +244,9 @@ export const runScripts = <ScriptMetadata extends object = object>({
   const hasDependencyFailure = (index: number): boolean => {
     const deps = scripts[index].dependsOn;
     if (!deps) return false;
-    return deps.some((dep) => exitResults[dep] !== null && !exitResults[dep]!.success);
+    return deps.some(
+      (dep) => exitResults[dep] !== null && !exitResults[dep]!.success,
+    );
   };
 
   const areDependenciesMet = (index: number): boolean => {

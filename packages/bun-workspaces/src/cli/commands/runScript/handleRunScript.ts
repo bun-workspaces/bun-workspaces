@@ -71,6 +71,10 @@ export const runScript = handleProjectCommand(
       } (parallel: ${!!options.parallel}, args: ${JSON.stringify(scriptArgs)})`,
     );
 
+    const workspaceCount = project.findWorkspacesByPattern(
+      ...workspacePatterns,
+    ).length;
+
     const { output, summary } = project.runScriptAcrossWorkspaces({
       workspacePatterns: workspacePatterns.length
         ? workspacePatterns
@@ -105,6 +109,7 @@ export const runScript = handleProjectCommand(
       for await (const { line, metadata } of formatRunScriptOutput(output, {
         prefix: options.prefix,
         scriptName,
+        stripDisruptiveControls: workspaceCount > 1 || !!options.parallel,
       })) {
         process[metadata.streamName].write(line);
       }

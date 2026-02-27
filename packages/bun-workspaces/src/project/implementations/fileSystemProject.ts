@@ -113,6 +113,10 @@ export type RunScriptAcrossWorkspacesOptions = {
   args?: string;
   /** Whether to run the scripts in parallel (series by default) */
   parallel?: ParallelOption;
+  /** When `true`, run scripts so that dependent workspaces run only after their dependencies */
+  dependencyOrder?: boolean;
+  /** When `true`, continue running scripts even if a dependency fails (Only relevant when `dependencyOrder` is `true`) */
+  continueOnDependencyFailure?: boolean;
 };
 
 export type RunScriptAcrossWorkspacesOutput = Simplify<

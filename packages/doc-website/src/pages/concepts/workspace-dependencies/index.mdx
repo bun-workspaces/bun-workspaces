@@ -1,7 +1,7 @@
 ---
-title: Concepts > Workspace Aliases
+title: Concepts > Workspace Dependencies
 titleSuffix: " | bun-workspaces"
-description: "Workspace Aliases | Concepts | Documentation for bun-workspaces: A CLI and API to help manage Bun monorepos"
+description: "Workspace Dependencies | Concepts | Documentation for bun-workspaces: A CLI and API to help manage Bun monorepos"
 pageType: doc
 sidebar: false
 outline: true
@@ -13,25 +13,59 @@ import { SyntaxHighlighter } from '../../../lib/util/highlight';
 import { exampleWorkspaceConfigArray, exampleWorkspaceConfigSimple } from '../../../lib/config/exampleConfig';
 import { ConceptsHeader } from "../../../lib/concepts/ConceptsHeader";
 
-<ConceptsHeader activeHref="workspaceAliases" />
+<ConceptsHeader activeHref="workspaceDependencies" />
 
-A workspace alias is a short name for a workspace that can be used instead of the full name in commands such as [run-script](/cli/commands#run-script).
+[Workspaces](/concepts/glossary#workspace) can depend on other workspaces and import/export code between them.
 
-Aliases are validated to be unique to each workspace and to not clash with other workspaces' `package.json` names.
-
-### Example Configuration
-
-Workspace aliases are defined in the [workspace configuration](/config/workspace).
-
-In the below examples, `"myApp"` may make a simpler reference to a workspace named `"@my-organization/my-application"`.
+For example, this might be some workspace's `package.json` file, where `my-workspace-a` depends on `my-workspace-b`:
 
 <SyntaxHighlighter language="json">
-  {(() => {
-    const { alias, ...rest } = exampleWorkspaceConfigSimple;
-    return JSON.stringify({ alias }, null, 2);
-  })()}
+  {JSON.stringify({
+    "name": "my-workspace-a",
+    "dependencies": {
+      "my-workspace-b": "workspace:*"
+    }
+  }, null, 2)}
 </SyntaxHighlighter>
-A workspace can have multiple aliases:
-<SyntaxHighlighter language="json">
-  {JSON.stringify(exampleWorkspaceConfigArray, null, 2)}
+
+Code in `my-workspace-a` can then import code from `my-workspace-b` like any other dependency:
+
+<SyntaxHighlighter language="typescript">
+  {`import { myFunction } from "my-workspace-b";
+
+myFunction();`}
+</SyntaxHighlighter>
+
+## Running Scripts in Dependency Order
+
+When running scripts via the [CLI](/cli/commands#run-script) or [API](/api/runScriptAcrossWorkspaces), workspaces can be run in dependency order.
+
+This means that a workspace's script will wait until any workspaces it depends on have completed. 
+This is similar to how Bun's [`--filter` flag](https://bun.com/docs/pm/filter#dependency-order) works, though for `bun-workspaces`,
+this behavior is opt-in.
+
+This can be useful in situations where one workspace depends on another workspace's output, such as a build script's output.
+
+### CLI:
+<SyntaxHighlighter language="bash">
+  {`bw run my-script --dep-order
+
+# Run all scripts even if a dependency fails
+bw run my-script --dep-order --ignore-dep-failure
+  `}
+</SyntaxHighlighter>
+
+### API:
+<SyntaxHighlighter language="typescript">
+  {`
+import { createFileSystemProject } from "bun-workspaces";
+
+const project = createFileSystemProject();
+
+project.runScriptAcrossWorkspaces({
+\ \ script: "my-script",
+\ \ dependencyOrder: true,
+\ \ ignoreDependencyFailure: true,
+});
+`}
 </SyntaxHighlighter>

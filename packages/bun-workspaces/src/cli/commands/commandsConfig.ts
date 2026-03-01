@@ -177,9 +177,9 @@ export const CLI_COMMANDS_CONFIG = {
           "Scripts for dependent workspaces run only after their dependencies",
       },
       ignoreDepFailure: {
-        flags: ["-c", "--ignore-dep-failure"],
+        flags: ["-f", "--ignore-dep-failure"],
         description:
-          "Continue running scripts even if a dependency fails (Only relevant when --dep-order is passed)",
+          "In dependency order, continue running scripts even if a dependency fails",
       },
       jsonOutfile: {
         flags: ["-j", "--json-outfile <file>"],

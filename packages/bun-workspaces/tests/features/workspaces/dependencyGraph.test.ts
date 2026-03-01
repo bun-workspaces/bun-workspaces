@@ -71,10 +71,10 @@ describe("preventDependencyCycles", () => {
     ];
     const { workspaces: result, cycles } = preventDependencyCycles(workspaces);
     expect(cycles).toEqual([{ dependency: "a", dependent: "b" }]);
-    // Back-edge b→a is removed: "a" dropped from b.dependencies, "b" dropped from a.dependents
+    // All edges between cycle nodes {a, b} are removed
     expect(result).toEqual([
-      makeTestWorkspace({ name: "a", dependencies: ["b"], dependents: [] }),
-      makeTestWorkspace({ name: "b", dependencies: [], dependents: ["a"] }),
+      makeTestWorkspace({ name: "a" }),
+      makeTestWorkspace({ name: "b" }),
     ]);
   });
 
@@ -86,11 +86,11 @@ describe("preventDependencyCycles", () => {
     ];
     const { workspaces: result, cycles } = preventDependencyCycles(workspaces);
     expect(cycles).toEqual([{ dependency: "a", dependent: "c" }]);
-    // Back-edge c→a is removed: "a" dropped from c.dependencies, "c" dropped from a.dependents
+    // All edges between cycle nodes {a, b, c} are removed
     expect(result).toEqual([
-      makeTestWorkspace({ name: "a", dependencies: ["b"], dependents: [] }),
-      makeTestWorkspace({ name: "b", dependencies: ["c"], dependents: ["a"] }),
-      makeTestWorkspace({ name: "c", dependencies: [], dependents: ["b"] }),
+      makeTestWorkspace({ name: "a" }),
+      makeTestWorkspace({ name: "b" }),
+      makeTestWorkspace({ name: "c" }),
     ]);
   });
 
@@ -103,12 +103,12 @@ describe("preventDependencyCycles", () => {
     ];
     const { workspaces: result, cycles } = preventDependencyCycles(workspaces);
     expect(cycles).toEqual([{ dependency: "a", dependent: "d" }]);
-    // Back-edge d→a is removed: "a" dropped from d.dependencies, "d" dropped from a.dependents
+    // All edges between cycle nodes {a, b, c, d} are removed
     expect(result).toEqual([
-      makeTestWorkspace({ name: "a", dependencies: ["b"], dependents: [] }),
-      makeTestWorkspace({ name: "b", dependencies: ["c"], dependents: ["a"] }),
-      makeTestWorkspace({ name: "c", dependencies: ["d"], dependents: ["b"] }),
-      makeTestWorkspace({ name: "d", dependencies: [], dependents: ["c"] }),
+      makeTestWorkspace({ name: "a" }),
+      makeTestWorkspace({ name: "b" }),
+      makeTestWorkspace({ name: "c" }),
+      makeTestWorkspace({ name: "d" }),
     ]);
   });
 
@@ -116,9 +116,7 @@ describe("preventDependencyCycles", () => {
     const workspaces = [makeTestWorkspace({ name: "a", dependencies: ["a"] })];
     const { workspaces: result, cycles } = preventDependencyCycles(workspaces);
     expect(cycles).toEqual([{ dependency: "a", dependent: "a" }]);
-    expect(result).toEqual([
-      makeTestWorkspace({ name: "a", dependencies: [] }),
-    ]);
+    expect(result).toEqual([makeTestWorkspace({ name: "a" })]);
   });
 
   test("detects and removes multiple independent cycles", () => {
@@ -133,12 +131,29 @@ describe("preventDependencyCycles", () => {
       { dependency: "a", dependent: "b" },
       { dependency: "c", dependent: "d" },
     ]);
-    // Back-edges b→a and d→c are removed
+    // All edges within each cycle group ({a,b} and {c,d}) are removed
     expect(result).toEqual([
-      makeTestWorkspace({ name: "a", dependencies: ["b"], dependents: [] }),
-      makeTestWorkspace({ name: "b", dependencies: [], dependents: ["a"] }),
-      makeTestWorkspace({ name: "c", dependencies: ["d"], dependents: [] }),
-      makeTestWorkspace({ name: "d", dependencies: [], dependents: ["c"] }),
+      makeTestWorkspace({ name: "a" }),
+      makeTestWorkspace({ name: "b" }),
+      makeTestWorkspace({ name: "c" }),
+      makeTestWorkspace({ name: "d" }),
+    ]);
+  });
+
+  test("preserves edges to non-cycle workspaces when cycle nodes have outside connections", () => {
+    // e depends on a; a and b form a cycle; e is not part of the cycle
+    const workspaces = [
+      makeTestWorkspace({ name: "a", dependencies: ["b"], dependents: ["b", "e"] }),
+      makeTestWorkspace({ name: "b", dependencies: ["a"], dependents: ["a"] }),
+      makeTestWorkspace({ name: "e", dependencies: ["a"] }),
+    ];
+    const { workspaces: result, cycles } = preventDependencyCycles(workspaces);
+    expect(cycles).toEqual([{ dependency: "a", dependent: "b" }]);
+    // Edges between cycle nodes {a,b} are removed; e→a is preserved
+    expect(result).toEqual([
+      makeTestWorkspace({ name: "a", dependents: ["e"] }),
+      makeTestWorkspace({ name: "b" }),
+      makeTestWorkspace({ name: "e", dependencies: ["a"] }),
     ]);
   });
 });

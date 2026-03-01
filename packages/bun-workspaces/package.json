@@ -1,6 +1,6 @@
 {
   "name": "bun-workspaces",
-  "version": "1.0.0-alpha.37",
+  "version": "1.0.0-alpha.38",
   "main": "src/index.ts",
   "private": true,
   "description": "A monorepo management tool for Bun, with a CLI and API to enhance Bun's native workspaces.",

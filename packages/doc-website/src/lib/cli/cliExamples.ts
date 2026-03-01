@@ -27,6 +27,13 @@ bw run lint my-workspace # Run for a single workspace
 bw run lint my-workspace-a my-workspace-b # Run for multiple workspaces
 bw run lint my-alias-a my-alias-b # Run by alias (set by optional config)
 
+# A workspace's script will wait until any workspaces it depends on have completed
+# Similar to Bun's --filter behavior
+bw run lint --dep-order
+
+# Continue running scripts even if a dependency fails
+bw run lint --dep-order --ignore-dep-failure
+
 bw run lint "my-workspace-*" # Run for matching workspace names
 bw run lint "alias:my-alias-pattern-*" "path:my-glob/**/*" # Use matching specifiers
 

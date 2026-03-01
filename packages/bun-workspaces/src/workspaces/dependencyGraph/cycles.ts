@@ -81,15 +81,18 @@ export const preventDependencyCycles = (
 
   for (const cycle of cycles) {
     const { dependency, dependent } = cycle;
+    // The cycle-closing back-edge is: dependent → dependency.
+    // Remove it from both sides.
     const dependencyWorkspace = workspaces.find((w) => w.name === dependency);
     const dependentWorkspace = workspaces.find((w) => w.name === dependent);
-    if (dependencyWorkspace) {
-      dependencyWorkspace.dependencies =
-        dependencyWorkspace.dependencies.filter((d) => d !== dependent);
-    }
     if (dependentWorkspace) {
-      dependentWorkspace.dependents = dependentWorkspace.dependents.filter(
+      dependentWorkspace.dependencies = dependentWorkspace.dependencies.filter(
         (d) => d !== dependency,
+      );
+    }
+    if (dependencyWorkspace) {
+      dependencyWorkspace.dependents = dependencyWorkspace.dependents.filter(
+        (d) => d !== dependent,
       );
     }
   }

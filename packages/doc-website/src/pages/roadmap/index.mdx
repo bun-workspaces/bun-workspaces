@@ -31,17 +31,12 @@ We aim to preserve these goals and values for the life of this project.
 
 ## Short Term Goals
 
-#### A workspace dependency graph
-  * Making bun-workspaces aware of how workspaces depend on each other is core to several other future features
-#### Parity with Bun's `--filter`
-  * This depends on the workspace dependency graph being implemented to allow workspaces to run in the order of how they depend on each other
-
-## Medium/Long Term Goals
 #### An "affected workspaces" feature
   * This refers to the ability to detect which workspaces are affected by code changes
   * This feature will likely be released as experimental
   * The workspace dependency graph will be used to determine which workspaces are implicitly affected by another's change
   * It should be possible to pass git refs as the basis of comparison for changes or a simple list of files
+## Medium/Long Term Goals
 #### A type generation feature
   * The ability to generate TypeScript types specific to your project, similar to [Chakra UI's](https://www.chakra-ui.com/docs/get-started/cli#chakra-typegen) typegen feature, such as for workspace and script names
 #### A local cache

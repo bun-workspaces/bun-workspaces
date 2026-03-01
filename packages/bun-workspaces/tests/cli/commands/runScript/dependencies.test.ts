@@ -76,8 +76,8 @@ describe("CLI Run Script (dependency order)", () => {
 [c-depends-e-fails:test-script] C
 [d-depends-e:test-script] D
 [f-fails:test-script] F
-🚫 a-depends-f: test-script (skipped due to dependency failure)
-🚫 b-depends-cd: test-script (skipped due to dependency failure)
+➖ a-depends-f: test-script (skipped due to dependency failure)
+➖ b-depends-cd: test-script (skipped due to dependency failure)
 ❌ c-depends-e-fails: test-script (exited with code 1)
 ✅ d-depends-e: test-script
 ✅ e: test-script

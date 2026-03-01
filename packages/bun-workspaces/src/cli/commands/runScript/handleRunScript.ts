@@ -128,7 +128,7 @@ export const runScript = handleProjectCommand(
         const isSkipped = exitCode === -1;
         if (isSkipped) {
           logger.info(
-            `🚫 ${workspace.name}: ${scriptName} (skipped due to dependency failure)`,
+            `➖ ${workspace.name}: ${scriptName} (skipped due to dependency failure)`,
           );
         } else {
           logger.info(

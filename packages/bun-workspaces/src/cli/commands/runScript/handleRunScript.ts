@@ -92,7 +92,7 @@ export const runScript = handleProjectCommand(
         : undefined,
       args: scriptArgs,
       dependencyOrder: options.depOrder,
-      continueOnDependencyFailure: options.ignoreDepFailure,
+      ignoreDependencyFailure: options.ignoreDepFailure,
       parallel:
         typeof options.parallel === "boolean" ||
         typeof options.parallel === "undefined"

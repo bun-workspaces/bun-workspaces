@@ -74,7 +74,7 @@ export type RunScriptsOptions<ScriptMetadata extends object = object> = {
   scripts: RunScriptsScript<ScriptMetadata>[];
   parallel: boolean | RunScriptsParallelOptions;
   /** When true, run scripts even if a dependency failed. Default: false (skip them). */
-  continueOnDependencyFailure?: boolean;
+  ignoreDependencyFailure?: boolean;
 };
 
 /** Validate dependency indices and detect cycles via DFS */
@@ -137,7 +137,7 @@ const validateScriptDependencies = (
 export const runScripts = <ScriptMetadata extends object = object>({
   scripts,
   parallel,
-  continueOnDependencyFailure = false,
+  ignoreDependencyFailure = false,
 }: RunScriptsOptions<ScriptMetadata>): RunScriptsResult<ScriptMetadata> => {
   validateScriptDependencies(scripts);
 
@@ -263,7 +263,7 @@ export const runScripts = <ScriptMetadata extends object = object>({
         if (runningScripts.size >= parallelMax) return;
         if (!areDependenciesMet(index)) continue;
 
-        if (!continueOnDependencyFailure && hasDependencyFailure(index)) {
+        if (!ignoreDependencyFailure && hasDependencyFailure(index)) {
           pendingScripts.delete(index);
           completedScripts.add(index);
           scriptResults[index] = createSkippedResult(index);

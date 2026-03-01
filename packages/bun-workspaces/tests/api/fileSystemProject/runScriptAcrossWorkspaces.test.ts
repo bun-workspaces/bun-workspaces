@@ -1537,7 +1537,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
         );
       });
 
-      test("runs all workspaces with continueOnDependencyFailure: true", async () => {
+      test("runs all workspaces with ignoreDependencyFailure: true", async () => {
         const project = createFileSystemProject({
           rootDirectory: getProjectRoot("withDependenciesWithFailures"),
         });
@@ -1545,7 +1545,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
         const { output, summary } = project.runScriptAcrossWorkspaces({
           script: "test-script",
           dependencyOrder: true,
-          continueOnDependencyFailure: true,
+          ignoreDependencyFailure: true,
         });
 
         // same order as before but nothing is skipped:

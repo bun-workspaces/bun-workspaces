@@ -706,7 +706,7 @@ describe("Run Scripts - Dependencies", () => {
         },
       ],
       parallel: false,
-      continueOnDependencyFailure: true,
+      ignoreDependencyFailure: true,
     });
 
     const outputTexts: string[] = [];

@@ -117,7 +117,7 @@ export type RunScriptAcrossWorkspacesOptions = {
   /** When `true`, run scripts so that dependent workspaces run only after their dependencies */
   dependencyOrder?: boolean;
   /** When `true`, continue running scripts even if a dependency fails (Only relevant when `dependencyOrder` is `true`) */
-  continueOnDependencyFailure?: boolean;
+  ignoreDependencyFailure?: boolean;
 };
 
 export type RunScriptAcrossWorkspacesOutput = Simplify<
@@ -432,7 +432,7 @@ class _FileSystemProject extends ProjectBase implements Project {
             : undefined,
         };
       }),
-      continueOnDependencyFailure: options.continueOnDependencyFailure,
+      ignoreDependencyFailure: options.ignoreDependencyFailure,
       parallel:
         options.parallel === true
           ? { max: this.config.root.defaults.parallelMax }

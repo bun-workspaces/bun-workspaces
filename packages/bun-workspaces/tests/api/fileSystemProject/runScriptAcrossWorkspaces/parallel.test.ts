@@ -6,7 +6,7 @@ import { getProjectRoot } from "../../../fixtures/testProjects";
 import { makeTestWorkspace } from "../../../util/testData";
 import { makeScriptResult, makeSummaryResult } from "./util";
 
-describe("FileSystemProject runScriptAcrossWorkspaces", () => {
+describe("FileSystemProject runScriptAcrossWorkspaces - parallel", () => {
   test("parallel", async () => {
     const project = createFileSystemProject({
       rootDirectory: getProjectRoot("runScriptWithDelays"),

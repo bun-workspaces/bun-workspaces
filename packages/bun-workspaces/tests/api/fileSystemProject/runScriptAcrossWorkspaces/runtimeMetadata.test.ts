@@ -3,7 +3,7 @@ import { createFileSystemProject } from "../../../../src/project";
 import { getProjectRoot } from "../../../fixtures/testProjects";
 import { withWindowsPath } from "../../../util/windows";
 
-describe("FileSystemProject runScriptAcrossWorkspaces", () => {
+describe("FileSystemProject runScriptAcrossWorkspaces - runtime metadata", () => {
   test("runtime metadata", async () => {
     const project = createFileSystemProject({
       rootDirectory: getProjectRoot("runScriptWithRuntimeMetadataDebug"),

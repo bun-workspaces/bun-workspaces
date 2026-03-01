@@ -4,7 +4,7 @@ import { getProjectRoot } from "../../../fixtures/testProjects";
 import { makeTestWorkspace } from "../../../util/testData";
 import { makeScriptResult, makeSummaryResult } from "./util";
 
-describe("FileSystemProject runScriptAcrossWorkspaces", () => {
+describe("FileSystemProject runScriptAcrossWorkspaces - dependencies", () => {
   describe("dependencyOrder", () => {
     const makeSimpleDepWorkspace = (
       overrides: Parameters<typeof makeTestWorkspace>[0],

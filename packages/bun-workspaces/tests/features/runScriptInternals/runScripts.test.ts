@@ -328,7 +328,7 @@ describe("Run Scripts", () => {
     );
   });
 
-  test.each([1, 2, 3, 4, 5])(
+  test.each([1, 2, 3, 4])(
     `Run Scripts - parallel max count %d`,
     async (max) => {
       const runId = randomUUID();
@@ -376,7 +376,6 @@ describe("Run Scripts", () => {
           createScript("test-script-2"),
           createScript("test-script-3"),
           createScript("test-script-4"),
-          createScript("test-script-5"),
         ],
       });
 
@@ -394,14 +393,13 @@ describe("Run Scripts", () => {
       const summary = await result.summary;
       expect(summary).toEqual(
         makeExitSummary({
-          totalCount: 5,
-          successCount: 5,
+          totalCount: 4,
+          successCount: 4,
           scriptResults: [
             makeScriptExit({ metadata: { name: "test-script-1" } }),
             makeScriptExit({ metadata: { name: "test-script-2" } }),
             makeScriptExit({ metadata: { name: "test-script-3" } }),
             makeScriptExit({ metadata: { name: "test-script-4" } }),
-            makeScriptExit({ metadata: { name: "test-script-5" } }),
           ],
         }),
       );

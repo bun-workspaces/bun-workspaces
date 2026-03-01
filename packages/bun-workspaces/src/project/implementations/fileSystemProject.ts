@@ -424,9 +424,11 @@ class _FileSystemProject extends ProjectBase implements Project {
           env: createScriptRuntimeEnvVars(scriptRuntimeMetadata),
           shell,
           dependsOn: options.dependencyOrder
-            ? workspace.dependencies.map((dependency) =>
-                workspaces.findIndex((w) => w.name === dependency),
-              )
+            ? workspace.dependencies
+                .map((dependency) =>
+                  workspaces.findIndex((w) => w.name === dependency),
+                )
+                .filter((index) => index !== -1)
             : undefined,
         };
       }),

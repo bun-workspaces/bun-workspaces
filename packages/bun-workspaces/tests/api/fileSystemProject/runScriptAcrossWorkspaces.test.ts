@@ -1004,6 +1004,228 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
     );
   });
 
+  describe("dependencyOrder", () => {
+    const makeSimpleDepWorkspace = (
+      overrides: Parameters<typeof makeTestWorkspace>[0],
+    ) =>
+      makeTestWorkspace({
+        matchPattern: "packages/*",
+        scripts: ["test-script"],
+        ...overrides,
+      });
+
+    test("runs in alphabetical order without dependencyOrder", async () => {
+      const project = createFileSystemProject({
+        rootDirectory: getProjectRoot("withDependenciesSimple"),
+      });
+
+      const { output, summary } = project.runScriptAcrossWorkspaces({
+        script: "test-script",
+      });
+
+      const outputLetters: string[] = [];
+      for await (const { chunk } of output.text()) {
+        outputLetters.push(chunk.trim());
+      }
+
+      expect(outputLetters).toEqual(["A", "B", "C", "D", "E"]);
+
+      const summaryResult = await summary;
+      expect(summaryResult).toEqual(
+        makeSummaryResult({
+          totalCount: 5,
+          successCount: 5,
+          scriptResults: [
+            makeScriptResult({
+              metadata: {
+                workspace: makeSimpleDepWorkspace({
+                  name: "a-depends-e",
+                  path: "packages/a-depends-e",
+                  dependencies: ["e"],
+                }),
+              },
+            }),
+            makeScriptResult({
+              metadata: {
+                workspace: makeSimpleDepWorkspace({
+                  name: "b-depends-cd",
+                  path: "packages/b-depends-cd",
+                  dependencies: ["c-depends-e", "d-depends-e"],
+                }),
+              },
+            }),
+            makeScriptResult({
+              metadata: {
+                workspace: makeSimpleDepWorkspace({
+                  name: "c-depends-e",
+                  path: "packages/c-depends-e",
+                  dependencies: ["e"],
+                  dependents: ["b-depends-cd"],
+                }),
+              },
+            }),
+            makeScriptResult({
+              metadata: {
+                workspace: makeSimpleDepWorkspace({
+                  name: "d-depends-e",
+                  path: "packages/d-depends-e",
+                  dependencies: ["e"],
+                  dependents: ["b-depends-cd"],
+                }),
+              },
+            }),
+            makeScriptResult({
+              metadata: {
+                workspace: makeSimpleDepWorkspace({
+                  name: "e",
+                  path: "packages/e",
+                  dependents: ["a-depends-e", "c-depends-e", "d-depends-e"],
+                }),
+              },
+            }),
+          ],
+        }),
+      );
+    });
+
+    test("runs in dependency graph order with dependencyOrder: true", async () => {
+      const project = createFileSystemProject({
+        rootDirectory: getProjectRoot("withDependenciesSimple"),
+      });
+
+      const { output, summary } = project.runScriptAcrossWorkspaces({
+        script: "test-script",
+        dependencyOrder: true,
+      });
+
+      // e has no deps so it runs first; then a/c/d unblock (in index order);
+      // then b unblocks once both c and d are done
+      const outputLetters: string[] = [];
+      for await (const { chunk } of output.text()) {
+        outputLetters.push(chunk.trim());
+      }
+
+      expect(outputLetters).toEqual(["E", "A", "C", "D", "B"]);
+
+      // summary scriptResults are always in workspace index (alphabetical) order
+      const summaryResult = await summary;
+      expect(summaryResult).toEqual(
+        makeSummaryResult({
+          totalCount: 5,
+          successCount: 5,
+          scriptResults: [
+            makeScriptResult({
+              metadata: {
+                workspace: makeSimpleDepWorkspace({
+                  name: "a-depends-e",
+                  path: "packages/a-depends-e",
+                  dependencies: ["e"],
+                }),
+              },
+            }),
+            makeScriptResult({
+              metadata: {
+                workspace: makeSimpleDepWorkspace({
+                  name: "b-depends-cd",
+                  path: "packages/b-depends-cd",
+                  dependencies: ["c-depends-e", "d-depends-e"],
+                }),
+              },
+            }),
+            makeScriptResult({
+              metadata: {
+                workspace: makeSimpleDepWorkspace({
+                  name: "c-depends-e",
+                  path: "packages/c-depends-e",
+                  dependencies: ["e"],
+                  dependents: ["b-depends-cd"],
+                }),
+              },
+            }),
+            makeScriptResult({
+              metadata: {
+                workspace: makeSimpleDepWorkspace({
+                  name: "d-depends-e",
+                  path: "packages/d-depends-e",
+                  dependencies: ["e"],
+                  dependents: ["b-depends-cd"],
+                }),
+              },
+            }),
+            makeScriptResult({
+              metadata: {
+                workspace: makeSimpleDepWorkspace({
+                  name: "e",
+                  path: "packages/e",
+                  dependents: ["a-depends-e", "c-depends-e", "d-depends-e"],
+                }),
+              },
+            }),
+          ],
+        }),
+      );
+    });
+
+    test("runs subset of workspaces in dependency graph order", async () => {
+      const project = createFileSystemProject({
+        rootDirectory: getProjectRoot("withDependenciesSimple"),
+      });
+
+      const { output, summary } = project.runScriptAcrossWorkspaces({
+        workspacePatterns: ["b-depends-cd", "d-depends-e", "e"],
+        script: "test-script",
+        dependencyOrder: true,
+      });
+
+      // e has no deps; d unblocks after e; b unblocks after d
+      // (c-depends-e is not in the subset so b's dep on it is ignored)
+      const outputLetters: string[] = [];
+      for await (const { chunk } of output.text()) {
+        outputLetters.push(chunk.trim());
+      }
+
+      expect(outputLetters).toEqual(["E", "D", "B"]);
+
+      const summaryResult = await summary;
+      expect(summaryResult).toEqual(
+        makeSummaryResult({
+          totalCount: 3,
+          successCount: 3,
+          scriptResults: [
+            makeScriptResult({
+              metadata: {
+                workspace: makeSimpleDepWorkspace({
+                  name: "b-depends-cd",
+                  path: "packages/b-depends-cd",
+                  dependencies: ["c-depends-e", "d-depends-e"],
+                }),
+              },
+            }),
+            makeScriptResult({
+              metadata: {
+                workspace: makeSimpleDepWorkspace({
+                  name: "d-depends-e",
+                  path: "packages/d-depends-e",
+                  dependencies: ["e"],
+                  dependents: ["b-depends-cd"],
+                }),
+              },
+            }),
+            makeScriptResult({
+              metadata: {
+                workspace: makeSimpleDepWorkspace({
+                  name: "e",
+                  path: "packages/e",
+                  dependents: ["a-depends-e", "c-depends-e", "d-depends-e"],
+                }),
+              },
+            }),
+          ],
+        }),
+      );
+    });
+  });
+
   test.each([1, 2, 3, "default", "auto", "unbounded", "100%", "50%"])(
     "parallel with max (%p)",
     async (max) => {

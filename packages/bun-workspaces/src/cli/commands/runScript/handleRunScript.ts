@@ -23,6 +23,8 @@ export const runScript = handleProjectCommand(
       inline: boolean;
       inlineName: string | undefined;
       shell: string | undefined;
+      depOrder: boolean;
+      ignoreDepFailure: boolean;
       jsonOutfile: string | undefined;
     },
   ) => {
@@ -71,6 +73,10 @@ export const runScript = handleProjectCommand(
       } (parallel: ${!!options.parallel}, args: ${JSON.stringify(scriptArgs)})`,
     );
 
+    const workspaceCount = project.findWorkspacesByPattern(
+      ...workspacePatterns,
+    ).length;
+
     const { output, summary } = project.runScriptAcrossWorkspaces({
       workspacePatterns: workspacePatterns.length
         ? workspacePatterns
@@ -85,6 +91,8 @@ export const runScript = handleProjectCommand(
           : true
         : undefined,
       args: scriptArgs,
+      dependencyOrder: options.depOrder,
+      ignoreDependencyFailure: options.ignoreDepFailure,
       parallel:
         typeof options.parallel === "boolean" ||
         typeof options.parallel === "undefined"
@@ -105,6 +113,7 @@ export const runScript = handleProjectCommand(
       for await (const { line, metadata } of formatRunScriptOutput(output, {
         prefix: options.prefix,
         scriptName,
+        stripDisruptiveControls: workspaceCount > 1 || !!options.parallel,
       })) {
         process[metadata.streamName].write(line);
       }
@@ -116,19 +125,30 @@ export const runScript = handleProjectCommand(
 
     exitResults.scriptResults.forEach(
       ({ success, metadata: { workspace }, exitCode }) => {
-        logger.info(
-          `${success ? "✅" : "❌"} ${workspace.name}: ${scriptName}${exitCode ? ` (exited with code ${exitCode})` : ""}`,
-        );
+        const isSkipped = exitCode === -1;
+        if (isSkipped) {
+          logger.info(
+            `➖ ${workspace.name}: ${scriptName} (skipped due to dependency failure)`,
+          );
+        } else {
+          logger.info(
+            `${success ? "✅" : "❌"} ${workspace.name}: ${scriptName}${exitCode ? ` (exited with code ${exitCode})` : ""}`,
+          );
+        }
       },
     );
 
     const s = exitResults.scriptResults.length === 1 ? "" : "s";
+    const skippedCount = exitResults.scriptResults.filter(
+      ({ exitCode }) => exitCode === -1,
+    ).length;
+    const skippedMessage = skippedCount ? ` (${skippedCount} skipped)` : "";
     if (exitResults.failureCount) {
-      const message = `${exitResults.failureCount} of ${exitResults.scriptResults.length} script${s} failed`;
+      const message = `${exitResults.failureCount} of ${exitResults.scriptResults.length} script${s} failed${skippedMessage}`;
       logger.info(message);
     } else {
       logger.info(
-        `${exitResults.scriptResults.length} script${s} ran successfully`,
+        `${exitResults.scriptResults.length} script${s} ran successfully${skippedMessage}`,
       );
     }
 

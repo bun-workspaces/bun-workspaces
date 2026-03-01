@@ -130,35 +130,35 @@ describe("List Workspaces", () => {
  - Aliases: 
  - Path: ${withWindowsPath("packages/a-depends-e")}
  - Glob Match: packages/*
- - Scripts: 
+ - Scripts: test-script
  - Dependencies: e
  - Dependents: 
 Workspace: b-depends-cd
  - Aliases: 
  - Path: ${withWindowsPath("packages/b-depends-cd")}
  - Glob Match: packages/*
- - Scripts: 
+ - Scripts: test-script
  - Dependencies: c-depends-e, d-depends-e
  - Dependents: 
 Workspace: c-depends-e
  - Aliases: 
  - Path: ${withWindowsPath("packages/c-depends-e")}
  - Glob Match: packages/*
- - Scripts: 
+ - Scripts: test-script
  - Dependencies: e
  - Dependents: b-depends-cd
 Workspace: d-depends-e
  - Aliases: 
  - Path: ${withWindowsPath("packages/d-depends-e")}
  - Glob Match: packages/*
- - Scripts: 
+ - Scripts: test-script
  - Dependencies: e
  - Dependents: b-depends-cd
 Workspace: e
  - Aliases: 
  - Path: ${withWindowsPath("packages/e")}
  - Glob Match: packages/*
- - Scripts: 
+ - Scripts: test-script
  - Dependencies: 
  - Dependents: a-depends-e, c-depends-e, d-depends-e`,
       );

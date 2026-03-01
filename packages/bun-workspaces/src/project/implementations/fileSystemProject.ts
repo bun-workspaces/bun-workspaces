@@ -29,6 +29,7 @@ import {
   sortWorkspaces,
   type Workspace,
 } from "../../workspaces";
+import { preventDependencyCycles } from "../../workspaces/dependencyGraph";
 import { PROJECT_ERRORS } from "../errors";
 import type { Project, ProjectConfig } from "../project";
 import {
@@ -113,6 +114,10 @@ export type RunScriptAcrossWorkspacesOptions = {
   args?: string;
   /** Whether to run the scripts in parallel (series by default) */
   parallel?: ParallelOption;
+  /** When `true`, run scripts so that dependent workspaces run only after their dependencies */
+  dependencyOrder?: boolean;
+  /** When `true`, continue running scripts even if a dependency fails (Only relevant when `dependencyOrder` is `true`) */
+  ignoreDependencyFailure?: boolean;
 };
 
 export type RunScriptAcrossWorkspacesOutput = Simplify<
@@ -302,7 +307,7 @@ class _FileSystemProject extends ProjectBase implements Project {
       ).flatMap((pattern) => this.findWorkspacesByPattern(pattern)),
     );
 
-    const workspaces = matchedWorkspaces
+    let workspaces = matchedWorkspaces
       .filter(
         (workspace) =>
           options.inline || workspace.scripts.includes(options.script),
@@ -336,6 +341,16 @@ class _FileSystemProject extends ProjectBase implements Project {
           ? `Workspace name or alias not found: ${JSON.stringify(options?.workspacePatterns?.[0])}`
           : `No matching workspaces found with script ${JSON.stringify(options.script)}`,
       );
+    }
+
+    if (options.dependencyOrder) {
+      const cycleDetection = preventDependencyCycles(workspaces);
+      workspaces = cycleDetection.workspaces;
+      for (const cycle of cycleDetection.cycles) {
+        logger.warn(
+          `Dependency cycle detected: ${cycle.dependency} -> ${cycle.dependent} (ignoring)`,
+        );
+      }
     }
 
     const recursiveWorkspace = workspaces.find((workspace) =>
@@ -408,8 +423,16 @@ class _FileSystemProject extends ProjectBase implements Project {
           scriptCommand,
           env: createScriptRuntimeEnvVars(scriptRuntimeMetadata),
           shell,
+          dependsOn: options.dependencyOrder
+            ? workspace.dependencies
+                .map((dependency) =>
+                  workspaces.findIndex((w) => w.name === dependency),
+                )
+                .filter((index) => index !== -1)
+            : undefined,
         };
       }),
+      ignoreDependencyFailure: options.ignoreDependencyFailure,
       parallel:
         options.parallel === true
           ? { max: this.config.root.defaults.parallelMax }

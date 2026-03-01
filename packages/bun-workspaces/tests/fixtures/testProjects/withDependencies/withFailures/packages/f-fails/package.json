@@ -1,0 +1,6 @@
+{
+  "name": "f-fails",
+  "scripts": {
+    "test-script": "echo F && exit 1"
+  }
+}

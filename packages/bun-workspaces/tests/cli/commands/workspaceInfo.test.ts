@@ -105,7 +105,7 @@ describe("Workspace Info", () => {
  - Aliases: 
  - Path: ${withWindowsPath("packages/d-depends-e")}
  - Glob Match: packages/*
- - Scripts: 
+ - Scripts: test-script
  - Dependencies: e
  - Dependents: b-depends-cd`,
     );

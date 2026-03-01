@@ -3,6 +3,7 @@ const LINKS = {
   glossary: "/concepts/glossary",
   workspaceAliases: "/concepts/workspace-aliases",
   workspacePatterns: "/concepts/workspace-patterns",
+  workspaceDependencies: "/concepts/workspace-dependencies",
   parallelScripts: "/concepts/parallel-scripts",
   rootWorkspace: "/concepts/root-workspace",
   scriptRuntimeMetadata: "/concepts/script-runtime-metadata",
@@ -39,6 +40,12 @@ export const ConceptsHeader = ({
           className={activeHref === "workspacePatterns" ? "active" : ""}
         >
           Workspace Patterns
+        </Link>
+        <Link
+          href={LINKS.workspaceDependencies}
+          className={activeHref === "workspaceDependencies" ? "active" : ""}
+        >
+          Workspace Dependencies
         </Link>
         <Link
           href={LINKS.rootWorkspace}

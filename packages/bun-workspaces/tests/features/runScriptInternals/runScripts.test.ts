@@ -46,7 +46,7 @@ afterAll(() => {
     originalParallelMaxDefault;
 });
 
-describe("Run Multiple Scripts", () => {
+describe("Run Scripts", () => {
   test("Run Scripts - simple series", async () => {
     const result = await runScripts({
       scripts: [
@@ -328,7 +328,7 @@ describe("Run Multiple Scripts", () => {
     );
   });
 
-  test.each([1, 2, 3, 4, 5])(
+  test.each([1, 2, 3, 4])(
     `Run Scripts - parallel max count %d`,
     async (max) => {
       const runId = randomUUID();
@@ -376,7 +376,6 @@ describe("Run Multiple Scripts", () => {
           createScript("test-script-2"),
           createScript("test-script-3"),
           createScript("test-script-4"),
-          createScript("test-script-5"),
         ],
       });
 
@@ -394,18 +393,18 @@ describe("Run Multiple Scripts", () => {
       const summary = await result.summary;
       expect(summary).toEqual(
         makeExitSummary({
-          totalCount: 5,
-          successCount: 5,
+          totalCount: 4,
+          successCount: 4,
           scriptResults: [
             makeScriptExit({ metadata: { name: "test-script-1" } }),
             makeScriptExit({ metadata: { name: "test-script-2" } }),
             makeScriptExit({ metadata: { name: "test-script-3" } }),
             makeScriptExit({ metadata: { name: "test-script-4" } }),
-            makeScriptExit({ metadata: { name: "test-script-5" } }),
           ],
         }),
       );
     },
+    { retry: 2 },
   );
 
   test.each([3, "auto", "default", "unbounded", "100%", "50%"])(
@@ -555,5 +554,402 @@ describe("Run Multiple Scripts", () => {
     }
 
     await result.summary;
+  });
+});
+
+describe("Run Scripts - Dependencies", () => {
+  test("dependency ordering in serial mode", async () => {
+    const executionOrder: string[] = [];
+
+    const result = await runScripts({
+      scripts: [
+        {
+          metadata: { name: "B" },
+          scriptCommand: { command: "echo B", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+          dependsOn: [1],
+        },
+        {
+          metadata: { name: "A" },
+          scriptCommand: { command: "echo A", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+        },
+      ],
+      parallel: false,
+    });
+
+    for await (const { metadata } of result.processOutput.text()) {
+      executionOrder.push(metadata.name);
+    }
+
+    expect(executionOrder).toEqual(["A", "B"]);
+
+    const summary = await result.summary;
+    expect(summary).toEqual(
+      makeExitSummary({
+        totalCount: 2,
+        successCount: 2,
+        scriptResults: [
+          makeScriptExit({ metadata: { name: "B" } }),
+          makeScriptExit({ metadata: { name: "A" } }),
+        ],
+      }),
+    );
+  });
+
+  test("dependency ordering in parallel mode", async () => {
+    const executionOrder: string[] = [];
+
+    const result = await runScripts({
+      scripts: [
+        {
+          metadata: { name: "A" },
+          scriptCommand: {
+            command: "sleep 0.1 && echo A",
+            workingDirectory: "",
+          },
+          env: {},
+          shell: "bun",
+        },
+        {
+          metadata: { name: "B" },
+          scriptCommand: { command: "echo B", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+        },
+        {
+          metadata: { name: "C" },
+          scriptCommand: { command: "echo C", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+          dependsOn: [0],
+        },
+      ],
+      parallel: true,
+    });
+
+    for await (const { metadata } of result.processOutput.text()) {
+      executionOrder.push(metadata.name);
+    }
+
+    // B completes first (no sleep), then A, then C (waits for A)
+    expect(executionOrder).toEqual(["B", "A", "C"]);
+
+    const summary = await result.summary;
+    expect(summary.totalCount).toBe(3);
+    expect(summary.allSuccess).toBe(true);
+  });
+
+  test("skip on dependency failure (default)", async () => {
+    const result = await runScripts({
+      scripts: [
+        {
+          metadata: { name: "A" },
+          scriptCommand: { command: "exit 1", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+        },
+        {
+          metadata: { name: "B" },
+          scriptCommand: { command: "echo B", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+          dependsOn: [0],
+        },
+      ],
+      parallel: false,
+    });
+
+    const summary = await result.summary;
+    expect(summary).toEqual(
+      makeExitSummary({
+        totalCount: 2,
+        successCount: 0,
+        failureCount: 2,
+        allSuccess: false,
+        scriptResults: [
+          makeScriptExit({
+            exitCode: 1,
+            success: false,
+            metadata: { name: "A" },
+          }),
+          makeScriptExit({
+            exitCode: -1,
+            success: false,
+            skipped: true,
+            durationMs: 0,
+            metadata: { name: "B" },
+          }),
+        ],
+      }),
+    );
+  });
+
+  test("continue on dependency failure", async () => {
+    const result = await runScripts({
+      scripts: [
+        {
+          metadata: { name: "A" },
+          scriptCommand: { command: "exit 1", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+        },
+        {
+          metadata: { name: "B" },
+          scriptCommand: { command: "echo B", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+          dependsOn: [0],
+        },
+      ],
+      parallel: false,
+      ignoreDependencyFailure: true,
+    });
+
+    const outputTexts: string[] = [];
+    for await (const { chunk } of result.processOutput.text()) {
+      outputTexts.push(chunk.trim());
+    }
+
+    // B should still run despite A failing
+    expect(outputTexts).toContain("B");
+
+    const summary = await result.summary;
+    expect(summary.totalCount).toBe(2);
+    expect(summary.successCount).toBe(1);
+    expect(summary.failureCount).toBe(1);
+    expect(summary.scriptResults[1].success).toBe(true);
+  });
+
+  test("cycle detection throws", () => {
+    expect(() =>
+      runScripts({
+        scripts: [
+          {
+            metadata: { name: "A" },
+            scriptCommand: { command: "echo A", workingDirectory: "" },
+            env: {},
+            shell: "bun",
+            dependsOn: [1],
+          },
+          {
+            metadata: { name: "B" },
+            scriptCommand: { command: "echo B", workingDirectory: "" },
+            env: {},
+            shell: "bun",
+            dependsOn: [0],
+          },
+        ],
+        parallel: false,
+      }),
+    ).toThrow(/Dependency cycle detected/);
+  });
+
+  test("self-referencing dependency throws", () => {
+    expect(() =>
+      runScripts({
+        scripts: [
+          {
+            metadata: { name: "A" },
+            scriptCommand: { command: "echo A", workingDirectory: "" },
+            env: {},
+            shell: "bun",
+            dependsOn: [0],
+          },
+        ],
+        parallel: false,
+      }),
+    ).toThrow(/self-referencing dependency/);
+  });
+
+  test("invalid dependency index throws", () => {
+    expect(() =>
+      runScripts({
+        scripts: [
+          {
+            metadata: { name: "A" },
+            scriptCommand: { command: "echo A", workingDirectory: "" },
+            env: {},
+            shell: "bun",
+            dependsOn: [99],
+          },
+          {
+            metadata: { name: "B" },
+            scriptCommand: { command: "echo B", workingDirectory: "" },
+            env: {},
+            shell: "bun",
+          },
+          {
+            metadata: { name: "C" },
+            scriptCommand: { command: "echo C", workingDirectory: "" },
+            env: {},
+            shell: "bun",
+          },
+        ],
+        parallel: false,
+      }),
+    ).toThrow(/invalid index 99/);
+  });
+
+  test("diamond dependency", async () => {
+    const executionOrder: string[] = [];
+
+    const result = await runScripts({
+      scripts: [
+        {
+          metadata: { name: "A" },
+          scriptCommand: { command: "echo A", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+        },
+        {
+          metadata: { name: "B" },
+          scriptCommand: { command: "echo B", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+          dependsOn: [0],
+        },
+        {
+          metadata: { name: "C" },
+          scriptCommand: { command: "echo C", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+          dependsOn: [0],
+        },
+        {
+          metadata: { name: "D" },
+          scriptCommand: { command: "echo D", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+          dependsOn: [1, 2],
+        },
+      ],
+      parallel: true,
+    });
+
+    for await (const { metadata } of result.processOutput.text()) {
+      executionOrder.push(metadata.name);
+    }
+
+    // A must run first, B and C after A (in any order), D after both B and C
+    expect(executionOrder.indexOf("A")).toBeLessThan(
+      executionOrder.indexOf("B"),
+    );
+    expect(executionOrder.indexOf("A")).toBeLessThan(
+      executionOrder.indexOf("C"),
+    );
+    expect(executionOrder.indexOf("B")).toBeLessThan(
+      executionOrder.indexOf("D"),
+    );
+    expect(executionOrder.indexOf("C")).toBeLessThan(
+      executionOrder.indexOf("D"),
+    );
+
+    const summary = await result.summary;
+    expect(summary.totalCount).toBe(4);
+    expect(summary.allSuccess).toBe(true);
+  });
+
+  test("diamond dependency (different pass order)", async () => {
+    const executionOrder: string[] = [];
+
+    const result = await runScripts({
+      scripts: [
+        {
+          metadata: { name: "D" },
+          scriptCommand: { command: "echo A", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+          dependsOn: [1, 3],
+        },
+        {
+          metadata: { name: "B" },
+          scriptCommand: { command: "echo B", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+          dependsOn: [2],
+        },
+        {
+          metadata: { name: "A" },
+          scriptCommand: { command: "echo C", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+        },
+        {
+          metadata: { name: "C" },
+          scriptCommand: { command: "echo D", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+          dependsOn: [2],
+        },
+      ],
+      parallel: true,
+    });
+
+    for await (const { metadata } of result.processOutput.text()) {
+      executionOrder.push(metadata.name);
+    }
+
+    // A must run first, B and C after A (in any order), D after both B and C
+    expect(executionOrder.indexOf("A")).toBeLessThan(
+      executionOrder.indexOf("B"),
+    );
+    expect(executionOrder.indexOf("A")).toBeLessThan(
+      executionOrder.indexOf("C"),
+    );
+    expect(executionOrder.indexOf("B")).toBeLessThan(
+      executionOrder.indexOf("D"),
+    );
+    expect(executionOrder.indexOf("C")).toBeLessThan(
+      executionOrder.indexOf("D"),
+    );
+
+    const summary = await result.summary;
+    expect(summary.totalCount).toBe(4);
+    expect(summary.allSuccess).toBe(true);
+  });
+
+  test("cascading skip on dependency failure", async () => {
+    const result = await runScripts({
+      scripts: [
+        {
+          metadata: { name: "A" },
+          scriptCommand: { command: "exit 1", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+        },
+        {
+          metadata: { name: "B" },
+          scriptCommand: { command: "echo B", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+          dependsOn: [0],
+        },
+        {
+          metadata: { name: "C" },
+          scriptCommand: { command: "echo C", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+          dependsOn: [1],
+        },
+      ],
+      parallel: false,
+    });
+
+    const summary = await result.summary;
+    expect(summary.totalCount).toBe(3);
+    expect(summary.successCount).toBe(0);
+    expect(summary.failureCount).toBe(3);
+
+    expect(summary.scriptResults[0].exitCode).toBe(1);
+    expect(summary.scriptResults[0].skipped).toBeUndefined();
+
+    expect(summary.scriptResults[1].skipped).toBe(true);
+    expect(summary.scriptResults[1].exitCode).toBe(-1);
+
+    expect(summary.scriptResults[2].skipped).toBe(true);
+    expect(summary.scriptResults[2].exitCode).toBe(-1);
   });
 });

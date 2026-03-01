@@ -1,0 +1,9 @@
+{
+  "name": "d-depends-e",
+  "devDependencies": {
+    "e-depends-f": "workspace:*"
+  },
+  "scripts": {
+    "test-script": "echo D"
+  }
+}

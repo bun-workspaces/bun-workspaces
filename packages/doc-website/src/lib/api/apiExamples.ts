@@ -173,6 +173,14 @@ const { output, summary } = project.runScriptAcrossWorkspaces({
 
   // Optional. Whether to run the scripts in parallel
   parallel: true,
+
+  // Optional. When true, a workspace's script will wait 
+  // until any workspaces it depends on have completed
+  dependencyOrder: true,
+
+  // Optional. When true and dependencyOrder is true, 
+  // continue running scripts even if a dependency fails
+  ignoreDependencyFailure: true,
 });
 
 // Get a stream of script output

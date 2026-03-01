@@ -7,7 +7,7 @@ import {
   createMultiProcessOutput,
   type MultiProcessOutput,
 } from "./output/multiProcessOutput";
-import { createProcessOutput } from "./output/processOutput";
+import { createProcessOutput, type BytesOutput } from "./output/processOutput";
 import {
   createOutputChunk,
   type OutputChunk,
@@ -20,11 +20,16 @@ import {
   type RunScriptResult,
 } from "./runScript";
 import { type ScriptCommand } from "./scriptCommand";
+import { type ScriptShellOption } from "./scriptShellOption";
 
 export type RunScriptsScript<ScriptMetadata extends object = object> = {
   scriptCommand: ScriptCommand;
   metadata: ScriptMetadata;
   env: Record<string, string>;
+  /** The shell to use to run the script */
+  shell?: ScriptShellOption;
+  /** Indices of other scripts in the array that must complete before this one starts */
+  dependsOn?: number[];
 };
 
 export type RunScriptsScriptResult<ScriptMetadata extends object = object> = {
@@ -68,13 +73,74 @@ export type RunScriptsParallelOptions = {
 export type RunScriptsOptions<ScriptMetadata extends object = object> = {
   scripts: RunScriptsScript<ScriptMetadata>[];
   parallel: boolean | RunScriptsParallelOptions;
+  /** When true, run scripts even if a dependency failed. Default: false (skip them). */
+  ignoreDependencyFailure?: boolean;
+};
+
+/** Validate dependency indices and detect cycles via DFS */
+const validateScriptDependencies = (
+  scripts: { dependsOn?: number[] }[],
+): void => {
+  const scriptCount = scripts.length;
+
+  for (let i = 0; i < scriptCount; i++) {
+    const deps = scripts[i].dependsOn;
+    if (!deps) continue;
+
+    for (const dep of deps) {
+      if (dep === i) {
+        throw new Error(
+          `Script at index ${i} has a self-referencing dependency`,
+        );
+      }
+      if (dep < 0 || dep >= scriptCount) {
+        throw new Error(
+          `Script at index ${i} depends on invalid index ${dep} (valid range: 0-${scriptCount - 1})`,
+        );
+      }
+    }
+  }
+
+  const WHITE = 0;
+  const GRAY = 1;
+  const BLACK = 2;
+  const colors = new Array<number>(scriptCount).fill(WHITE);
+
+  const visit = (node: number, path: number[]): void => {
+    colors[node] = GRAY;
+    const deps = scripts[node].dependsOn;
+    if (deps) {
+      for (const dep of deps) {
+        if (colors[dep] === GRAY) {
+          const cycleStart = path.indexOf(dep);
+          const cycle = path.slice(cycleStart);
+          throw new Error(
+            `Dependency cycle detected: ${[...cycle, dep].join(" -> ")}`,
+          );
+        }
+        if (colors[dep] === WHITE) {
+          visit(dep, [...path, dep]);
+        }
+      }
+    }
+    colors[node] = BLACK;
+  };
+
+  for (let i = 0; i < scriptCount; i++) {
+    if (colors[i] === WHITE) {
+      visit(i, [i]);
+    }
+  }
 };
 
 /** Run a list of scripts */
 export const runScripts = <ScriptMetadata extends object = object>({
   scripts,
   parallel,
+  ignoreDependencyFailure = false,
 }: RunScriptsOptions<ScriptMetadata>): RunScriptsResult<ScriptMetadata> => {
+  validateScriptDependencies(scripts);
+
   const startTime = new Date();
 
   type ScriptTrigger = {
@@ -128,39 +194,111 @@ export const runScripts = <ScriptMetadata extends object = object>({
     );
   }
 
-  let runningScriptCount = 0;
-  let nextScriptIndex = 0;
-  const queueScript = (index: number) => {
-    if (runningScriptCount >= parallelMax) {
-      return;
-    }
+  const pendingScripts = new Set<number>(scripts.map((_, i) => i));
+  const runningScripts = new Set<number>();
+  const completedScripts = new Set<number>();
+  const exitResults: (RunScriptExit<ScriptMetadata> | null)[] = scripts.map(
+    () => null,
+  );
 
-    const scriptResult = {
-      ...scripts[index],
-      result: runScript({
-        ...scripts[index],
-        env: {
-          ...scripts[index].env,
-          _BW_PARALLEL_MAX: parallelMax.toString(),
-        },
-      }),
+  // Eagerly-created output iterators to prevent race condition where a fast
+  // process completes and its ProcessOutput stream is fully drained before
+  // handleScriptProcesses calls .bytes() (which throws OutputStreamDone).
+  type ScriptProcessBytes = BytesOutput<
+    ScriptMetadata & { streamName: OutputStreamName }
+  >;
+  const scriptProcessBytes: (ScriptProcessBytes | null)[] = scripts.map(
+    () => null,
+  );
+
+  const createSkippedExit = (index: number): RunScriptExit<ScriptMetadata> => {
+    const now = new Date().toISOString();
+    return {
+      exitCode: -1,
+      signal: null,
+      success: false,
+      skipped: true,
+      startTimeISO: now,
+      endTimeISO: now,
+      durationMs: 0,
+      metadata: scripts[index].metadata,
     };
+  };
 
-    scriptResults[index] = scriptResult;
+  const createSkippedResult = (
+    index: number,
+  ): RunScriptsScriptResult<ScriptMetadata> => {
+    const skippedExit = createSkippedExit(index);
+    exitResults[index] = skippedExit;
+    return {
+      result: {
+        output: (async function* () {})(),
+        processOutput: createMultiProcessOutput([]),
+        exit: Promise.resolve(skippedExit),
+        metadata: scripts[index].metadata,
+        kill: () => {},
+      },
+    };
+  };
 
-    scriptTriggers[index].trigger();
+  const hasDependencyFailure = (index: number): boolean => {
+    const deps = scripts[index].dependsOn;
+    if (!deps) return false;
+    return deps.some(
+      (dep) => exitResults[dep] !== null && !exitResults[dep]!.success,
+    );
+  };
 
-    runningScriptCount++;
-    nextScriptIndex++;
+  const areDependenciesMet = (index: number): boolean => {
+    const deps = scripts[index].dependsOn;
+    if (!deps) return true;
+    return deps.every((dep) => completedScripts.has(dep));
+  };
 
-    scriptResults[index].result.exit.then(() => {
-      runningScriptCount--;
-      if (nextScriptIndex < scripts.length) {
-        queueScript(nextScriptIndex);
+  const scheduleReadyScripts = () => {
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (const index of [...pendingScripts]) {
+        if (runningScripts.size >= parallelMax) return;
+        if (!areDependenciesMet(index)) continue;
+
+        if (!ignoreDependencyFailure && hasDependencyFailure(index)) {
+          pendingScripts.delete(index);
+          completedScripts.add(index);
+          scriptResults[index] = createSkippedResult(index);
+          scriptProcessBytes[index] = (async function* () {})();
+          scriptTriggers[index].trigger();
+          changed = true;
+          continue;
+        }
+
+        pendingScripts.delete(index);
+        runningScripts.add(index);
+
+        const scriptResult = {
+          ...scripts[index],
+          result: runScript({
+            ...scripts[index],
+            env: {
+              ...scripts[index].env,
+              _BW_PARALLEL_MAX: parallelMax.toString(),
+            },
+          }),
+        };
+
+        scriptResults[index] = scriptResult;
+        scriptProcessBytes[index] = scriptResult.result.processOutput.bytes();
+        scriptTriggers[index].trigger();
+
+        scriptResult.result.exit.then((exit) => {
+          runningScripts.delete(index);
+          completedScripts.add(index);
+          exitResults[index] = exit;
+          scheduleReadyScripts();
+        });
       }
-    });
-
-    return scriptResult;
+    }
   };
 
   const scriptOutputQueues = scripts.map(() =>
@@ -203,9 +341,7 @@ export const runScripts = <ScriptMetadata extends object = object>({
 
       outputReaders.push(
         (async () => {
-          for await (const chunk of scriptResults[
-            index
-          ].result.processOutput.bytes()) {
+          for await (const chunk of scriptProcessBytes[index]!) {
             outputQueue.push({
               outputChunk: createOutputChunk(
                 chunk.metadata.streamName,
@@ -235,7 +371,7 @@ export const runScripts = <ScriptMetadata extends object = object>({
   };
 
   const awaitSummary = async () => {
-    scripts.forEach((_, index) => queueScript(index));
+    scheduleReadyScripts();
 
     await handleScriptProcesses();
 

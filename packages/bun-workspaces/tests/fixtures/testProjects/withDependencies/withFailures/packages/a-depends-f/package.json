@@ -1,0 +1,9 @@
+{
+  "name": "a-depends-f",
+  "dependencies": {
+    "f-fails": "workspace:*"
+  },
+  "scripts": {
+    "test-script": "echo A"
+  }
+}

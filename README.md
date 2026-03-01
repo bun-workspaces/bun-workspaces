@@ -67,6 +67,13 @@ bw run lint my-alias-a my-alias-b # Run by alias (set by optional config)
 bw run lint "my-workspace-*" # Run for matching workspace names
 bw run lint "alias:my-alias-pattern-*" "path:my-glob/**/*" # Use matching specifiers
 
+# A workspace's script will wait until any workspaces it depends on have completed
+# Similar to Bun's --filter behavior
+bw run lint --dep-order
+
+# Continue running scripts even if a dependency fails
+bw run lint --dep-order --ignore-dep-failure
+
 bw run lint --args="--my-appended-args" # Add args to each script call
 bw run lint --args="--my-arg=<workspaceName>" # Use the workspace name in args
 
@@ -154,6 +161,14 @@ const runManyScripts = async () => {
 
     // Optional. Whether to run the scripts in parallel
     parallel: true,
+
+    // Optional. When true, a workspace's script will wait
+    // until any workspaces it depends on have completed
+    dependencyOrder: true,
+
+    // Optional. When true and dependencyOrder is true,
+    // continue running scripts even if a dependency fails
+    ignoreDependencyFailure: true,
   });
 
   // Get a stream of script output

@@ -50,6 +50,8 @@ An object representing a workspace in a [Project](/api/reference#project).
 
 Set [workspace aliases](/concepts/workspace-aliases) in the [workspace configuration](/config/workspace) to make it easier to reference workspaces.
 
+The `dependencies` and `dependents` fields are names of other workspaces that are [dependencies](/concepts/workspace-dependencies) or dependents of this workspace, respectively.
+
 See more on the [root workspace](/concepts/root-workspace).
 
 <SyntaxHighlighter language="typescript">
@@ -190,17 +192,17 @@ Run a script in a given workspace.
 
 ### .runScriptAcrossWorkspaces
 `runScriptAcrossWorkspaces(options: RunScriptAcrossWorkspacesOptions): RunScriptAcrossWorkspacesResult`
-,
+
 Run a script in all workspaces that have it in their package.json "scripts" field.
 
 <SyntaxHighlighter language="typescript">
 {RUN_SCRIPT_ACROSS_WORKSPACES_EXAMPLE}
 </SyntaxHighlighter>
 
-
 ### More Info
 
 * See more on the syntax of [workspace patterns](/concepts/workspace-patterns) for selecting workspaces to run.
+* See more on [workspace dependencies](/concepts/workspace-dependencies) for running scripts in dependency order.
 * See more on running [inline scripts](/concepts/inline-scripts).
 * See more on running [parallel scripts](/concepts/parallel-scripts).
 * See more on [script runtime metadata](/concepts/script-runtime-metadata), such as environment variables available in scripts and interpolating values in inline scripts and args such as `<workspaceName>`.<br/>

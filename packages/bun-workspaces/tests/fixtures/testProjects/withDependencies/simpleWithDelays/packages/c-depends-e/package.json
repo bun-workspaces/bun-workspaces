@@ -1,0 +1,9 @@
+{
+  "name": "c-depends-e",
+  "devDependencies": {
+    "e": "workspace:*"
+  },
+  "scripts": {
+    "test-script": "echo C && sleep 0.25"
+  }
+}

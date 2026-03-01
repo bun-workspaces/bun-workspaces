@@ -1,0 +1,6 @@
+{
+  "name": "e",
+  "scripts": {
+    "test-script": "echo E && sleep 0.25"
+  }
+}

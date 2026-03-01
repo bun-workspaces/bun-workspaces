@@ -5,11 +5,19 @@ import type {
 import type { OutputStreamName } from "../../../runScript";
 
 export type FormatRunScriptOutputOptions = {
+  stripDisruptiveControls?: boolean;
   prefix?: boolean;
   scriptName: string;
 };
 
-const sanitizeChunk = (input: string) => {
+const sanitizeChunk = (
+  input: string,
+  stripDisruptiveControls: boolean = false,
+) => {
+  if (!stripDisruptiveControls) {
+    return input.replace(/\r\n/g, "\n");
+  }
+
   // 1) Normalize newline-ish controls
   let s = input
     .replace(/\r\n/g, "\n")
@@ -120,7 +128,11 @@ const sanitizeChunk = (input: string) => {
 
 export async function* formatRunScriptOutput(
   output: RunScriptAcrossWorkspacesProcessOutput,
-  { scriptName, prefix = false }: FormatRunScriptOutputOptions,
+  {
+    scriptName,
+    stripDisruptiveControls = true,
+    prefix = false,
+  }: FormatRunScriptOutputOptions,
 ): AsyncGenerator<{
   line: string;
   metadata: RunWorkspaceScriptMetadata & { streamName: OutputStreamName };
@@ -140,7 +152,7 @@ export async function* formatRunScriptOutput(
 
   for await (const { metadata, chunk } of output.text()) {
     const workspaceName = metadata.workspace.name;
-    const sanitizedChunk = sanitizeChunk(chunk);
+    const sanitizedChunk = sanitizeChunk(chunk, stripDisruptiveControls);
 
     const prior = workspaceLineBuffers[workspaceName] ?? "";
 

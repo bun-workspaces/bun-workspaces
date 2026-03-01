@@ -17,6 +17,8 @@ export type RunScriptExit<ScriptMetadata extends object = object> = {
   exitCode: number;
   signal: NodeJS.Signals | null;
   success: boolean;
+  /** Whether the script was skipped due to a failed dependency */
+  skipped?: boolean;
   startTimeISO: string;
   endTimeISO: string;
   durationMs: number;

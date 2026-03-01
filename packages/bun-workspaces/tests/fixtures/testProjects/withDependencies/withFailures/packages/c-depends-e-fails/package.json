@@ -1,0 +1,9 @@
+{
+  "name": "c-depends-e-fails",
+  "devDependencies": {
+    "e": "workspace:*"
+  },
+  "scripts": {
+    "test-script": "echo C && exit 1"
+  }
+}

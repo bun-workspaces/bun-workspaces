@@ -1388,6 +1388,211 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
       );
     });
 
+    describe("withDependenciesWithFailures", () => {
+      const makeFailuresWorkspace = (
+        overrides: Parameters<typeof makeTestWorkspace>[0],
+      ) =>
+        makeTestWorkspace({
+          matchPattern: "packages/*",
+          scripts: ["test-script"],
+          ...overrides,
+        });
+
+      test("skips dependents of failed workspaces by default", async () => {
+        const project = createFileSystemProject({
+          rootDirectory: getProjectRoot("withDependenciesWithFailures"),
+        });
+
+        const { output, summary } = project.runScriptAcrossWorkspaces({
+          script: "test-script",
+          dependencyOrder: true,
+        });
+
+        // e runs first; c and d unblock (both dep on e); c fails, d succeeds;
+        // f has no deps so runs next and fails;
+        // a (deps f) and b (deps c+d, but c failed) are both skipped
+        const outputLetters: string[] = [];
+        for await (const { chunk } of output.text()) {
+          outputLetters.push(chunk.trim());
+        }
+
+        expect(outputLetters).toEqual(["E", "C", "D", "F"]);
+
+        const summaryResult = await summary;
+        expect(summaryResult).toEqual(
+          makeSummaryResult({
+            totalCount: 6,
+            successCount: 2,
+            failureCount: 4,
+            allSuccess: false,
+            scriptResults: [
+              makeScriptResult({
+                exitCode: -1,
+                success: false,
+                skipped: true,
+                durationMs: 0,
+                metadata: {
+                  workspace: makeFailuresWorkspace({
+                    name: "a-depends-f",
+                    path: "packages/a-depends-f",
+                    dependencies: ["f-fails"],
+                  }),
+                },
+              }),
+              makeScriptResult({
+                exitCode: -1,
+                success: false,
+                skipped: true,
+                durationMs: 0,
+                metadata: {
+                  workspace: makeFailuresWorkspace({
+                    name: "b-depends-cd",
+                    path: "packages/b-depends-cd",
+                    dependencies: ["c-depends-e-fails", "d-depends-e"],
+                  }),
+                },
+              }),
+              makeScriptResult({
+                exitCode: 1,
+                success: false,
+                metadata: {
+                  workspace: makeFailuresWorkspace({
+                    name: "c-depends-e-fails",
+                    path: "packages/c-depends-e-fails",
+                    dependencies: ["e"],
+                    dependents: ["b-depends-cd"],
+                  }),
+                },
+              }),
+              makeScriptResult({
+                metadata: {
+                  workspace: makeFailuresWorkspace({
+                    name: "d-depends-e",
+                    path: "packages/d-depends-e",
+                    dependencies: ["e"],
+                    dependents: ["b-depends-cd"],
+                  }),
+                },
+              }),
+              makeScriptResult({
+                metadata: {
+                  workspace: makeFailuresWorkspace({
+                    name: "e",
+                    path: "packages/e",
+                    dependents: ["c-depends-e-fails", "d-depends-e"],
+                  }),
+                },
+              }),
+              makeScriptResult({
+                exitCode: 1,
+                success: false,
+                metadata: {
+                  workspace: makeFailuresWorkspace({
+                    name: "f-fails",
+                    path: "packages/f-fails",
+                    dependents: ["a-depends-f"],
+                  }),
+                },
+              }),
+            ],
+          }),
+        );
+      });
+
+      test("runs all workspaces with continueOnDependencyFailure: true", async () => {
+        const project = createFileSystemProject({
+          rootDirectory: getProjectRoot("withDependenciesWithFailures"),
+        });
+
+        const { output, summary } = project.runScriptAcrossWorkspaces({
+          script: "test-script",
+          dependencyOrder: true,
+          continueOnDependencyFailure: true,
+        });
+
+        // same order as before but nothing is skipped:
+        // e → c (fail) → d → b (runs despite c failing) → f (fail) → a
+        const outputLetters: string[] = [];
+        for await (const { chunk } of output.text()) {
+          outputLetters.push(chunk.trim());
+        }
+
+        expect(outputLetters).toEqual(["E", "C", "D", "B", "F", "A"]);
+
+        const summaryResult = await summary;
+        expect(summaryResult).toEqual(
+          makeSummaryResult({
+            totalCount: 6,
+            successCount: 4,
+            failureCount: 2,
+            allSuccess: false,
+            scriptResults: [
+              makeScriptResult({
+                metadata: {
+                  workspace: makeFailuresWorkspace({
+                    name: "a-depends-f",
+                    path: "packages/a-depends-f",
+                    dependencies: ["f-fails"],
+                  }),
+                },
+              }),
+              makeScriptResult({
+                metadata: {
+                  workspace: makeFailuresWorkspace({
+                    name: "b-depends-cd",
+                    path: "packages/b-depends-cd",
+                    dependencies: ["c-depends-e-fails", "d-depends-e"],
+                  }),
+                },
+              }),
+              makeScriptResult({
+                exitCode: 1,
+                success: false,
+                metadata: {
+                  workspace: makeFailuresWorkspace({
+                    name: "c-depends-e-fails",
+                    path: "packages/c-depends-e-fails",
+                    dependencies: ["e"],
+                    dependents: ["b-depends-cd"],
+                  }),
+                },
+              }),
+              makeScriptResult({
+                metadata: {
+                  workspace: makeFailuresWorkspace({
+                    name: "d-depends-e",
+                    path: "packages/d-depends-e",
+                    dependencies: ["e"],
+                    dependents: ["b-depends-cd"],
+                  }),
+                },
+              }),
+              makeScriptResult({
+                metadata: {
+                  workspace: makeFailuresWorkspace({
+                    name: "e",
+                    path: "packages/e",
+                    dependents: ["c-depends-e-fails", "d-depends-e"],
+                  }),
+                },
+              }),
+              makeScriptResult({
+                exitCode: 1,
+                success: false,
+                metadata: {
+                  workspace: makeFailuresWorkspace({
+                    name: "f-fails",
+                    path: "packages/f-fails",
+                    dependents: ["a-depends-f"],
+                  }),
+                },
+              }),
+            ],
+          }),
+        );
+      });
+    });
+
     test("runs subset of workspaces in dependency graph order", async () => {
       const project = createFileSystemProject({
         rootDirectory: getProjectRoot("withDependenciesSimple"),

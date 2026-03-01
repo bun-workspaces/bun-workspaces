@@ -190,17 +190,17 @@ Run a script in a given workspace.
 
 ### .runScriptAcrossWorkspaces
 `runScriptAcrossWorkspaces(options: RunScriptAcrossWorkspacesOptions): RunScriptAcrossWorkspacesResult`
-,
+
 Run a script in all workspaces that have it in their package.json "scripts" field.
 
 <SyntaxHighlighter language="typescript">
 {RUN_SCRIPT_ACROSS_WORKSPACES_EXAMPLE}
 </SyntaxHighlighter>
 
-
 ### More Info
 
 * See more on the syntax of [workspace patterns](/concepts/workspace-patterns) for selecting workspaces to run.
+* See more on [workspace dependencies](/concepts/workspace-dependencies) for running scripts in dependency order.
 * See more on running [inline scripts](/concepts/inline-scripts).
 * See more on running [parallel scripts](/concepts/parallel-scripts).
 * See more on [script runtime metadata](/concepts/script-runtime-metadata), such as environment variables available in scripts and interpolating values in inline scripts and args such as `<workspaceName>`.<br/>

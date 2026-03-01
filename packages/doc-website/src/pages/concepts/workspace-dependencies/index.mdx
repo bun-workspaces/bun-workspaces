@@ -15,7 +15,7 @@ import { ConceptsHeader } from "../../../lib/concepts/ConceptsHeader";
 
 <ConceptsHeader activeHref="workspaceDependencies" />
 
-[Workspaces](/concepts/glossary#workspace) can depend on other workspaces and import/export code between them.
+[Workspaces](/concepts/glossary#workspace) can depend on other workspaces and import/export code between them. This is a native capability of workspaces in Bun.
 
 For example, this might be some workspace's `package.json` file, where `my-workspace-a` depends on `my-workspace-b`:
 
@@ -38,7 +38,7 @@ myFunction();`}
 
 ## Running Scripts in Dependency Order
 
-When running scripts via the [CLI](/cli/commands#run-script) or [API](/api/runScriptAcrossWorkspaces), workspaces can be run in dependency order.
+When running scripts via the [CLI](/cli/commands#run-script) or [API](/api/reference#runscriptacrossworkspaces), workspaces can be run in dependency order.
 
 This means that a workspace's script will wait until any workspaces it depends on have completed. 
 This is similar to how Bun's [`--filter` flag](https://bun.com/docs/pm/filter#dependency-order) works, though for `bun-workspaces`,
@@ -46,7 +46,7 @@ this behavior is opt-in.
 
 This can be useful in situations where one workspace depends on another workspace's output, such as a build script's output.
 
-### CLI:
+### CLI Example
 <SyntaxHighlighter language="bash">
   {`bw run my-script --dep-order
 
@@ -55,7 +55,7 @@ bw run my-script --dep-order --ignore-dep-failure
   `}
 </SyntaxHighlighter>
 
-### API:
+### API Example
 <SyntaxHighlighter language="typescript">
   {`
 import { createFileSystemProject } from "bun-workspaces";

@@ -1166,6 +1166,44 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
       );
     });
 
+    test("runs dependency batches in parallel when parallel is enabled", async () => {
+      const project = createFileSystemProject({
+        rootDirectory: getProjectRoot("withDependenciesSimpleWithDelays"),
+      });
+
+      const { summary } = project.runScriptAcrossWorkspaces({
+        script: "test-script",
+        dependencyOrder: true,
+        parallel: true,
+      });
+
+      const { scriptResults } = await summary;
+
+      const byName = new Map(
+        scriptResults.map((r) => [r.metadata.workspace.name, r] as const),
+      );
+      const toMs = (iso: string) => new Date(iso).getTime();
+
+      const e = byName.get("e")!;
+      const a = byName.get("a-depends-e")!;
+      const c = byName.get("c-depends-e")!;
+      const d = byName.get("d-depends-e")!;
+      const b = byName.get("b-depends-cd")!;
+
+      // batch 1 → batch 2: e must finish before a, c, d can start
+      expect(toMs(e.endTimeISO)).toBeLessThanOrEqual(toMs(a.startTimeISO));
+      expect(toMs(e.endTimeISO)).toBeLessThanOrEqual(toMs(c.startTimeISO));
+      expect(toMs(e.endTimeISO)).toBeLessThanOrEqual(toMs(d.startTimeISO));
+
+      // batch 2 → batch 3: c and d must finish before b can start
+      expect(toMs(c.endTimeISO)).toBeLessThanOrEqual(toMs(b.startTimeISO));
+      expect(toMs(d.endTimeISO)).toBeLessThanOrEqual(toMs(b.startTimeISO));
+
+      // c and d ran concurrently (their ranges overlap)
+      expect(toMs(c.startTimeISO)).toBeLessThan(toMs(d.endTimeISO));
+      expect(toMs(d.startTimeISO)).toBeLessThan(toMs(c.endTimeISO));
+    });
+
     test("detects a direct dependency cycle and runs remaining graph in order", async () => {
       const project = createFileSystemProject({
         rootDirectory: getProjectRoot("withDependenciesDirectCycle"),

@@ -56,6 +56,7 @@ const TEST_PROJECTS = {
   withRootWorkspace: "withRootWorkspace/simple",
   withRootWorkspaceWithConfigFiles: "withRootWorkspace/withConfigFiles",
   withDependenciesSimple: "withDependencies/simple",
+  withDependenciesSimpleWithDelays: "withDependencies/simpleWithDelays",
   withDependenciesWithFailures: "withDependencies/withFailures",
   withDependenciesDirectCycle: "withDependencies/withDirectCycle",
   withDependenciesIndirectCycle: "withDependencies/withIndirectCycle",

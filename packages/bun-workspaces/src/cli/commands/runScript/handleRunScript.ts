@@ -125,19 +125,30 @@ export const runScript = handleProjectCommand(
 
     exitResults.scriptResults.forEach(
       ({ success, metadata: { workspace }, exitCode }) => {
-        logger.info(
-          `${success ? "✅" : "❌"} ${workspace.name}: ${scriptName}${exitCode ? ` (exited with code ${exitCode})` : ""}`,
-        );
+        const isSkipped = exitCode === -1;
+        if (isSkipped) {
+          logger.info(
+            `🚫 ${workspace.name}: ${scriptName} (skipped due to dependency failure)`,
+          );
+        } else {
+          logger.info(
+            `${success ? "✅" : "❌"} ${workspace.name}: ${scriptName}${exitCode ? ` (exited with code ${exitCode})` : ""}`,
+          );
+        }
       },
     );
 
     const s = exitResults.scriptResults.length === 1 ? "" : "s";
+    const skippedCount = exitResults.scriptResults.filter(
+      ({ exitCode }) => exitCode === -1,
+    ).length;
+    const skippedMessage = skippedCount ? ` (${skippedCount} skipped)` : "";
     if (exitResults.failureCount) {
-      const message = `${exitResults.failureCount} of ${exitResults.scriptResults.length} script${s} failed`;
+      const message = `${exitResults.failureCount} of ${exitResults.scriptResults.length} script${s} failed${skippedMessage}`;
       logger.info(message);
     } else {
       logger.info(
-        `${exitResults.scriptResults.length} script${s} ran successfully`,
+        `${exitResults.scriptResults.length} script${s} ran successfully${skippedMessage}`,
       );
     }
 

@@ -43,7 +43,9 @@ describe("CLI Run Script (dependency order)", () => {
   });
 
   test("withDependenciesDirectCycle - logs cycle warning and runs remaining graph in order with --dep-order", async () => {
-    const { run } = setupCliTest({ testProject: "withDependenciesDirectCycle" });
+    const { run } = setupCliTest({
+      testProject: "withDependenciesDirectCycle",
+    });
     const result = await run("run", "test-script", "--dep-order");
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
@@ -74,13 +76,13 @@ describe("CLI Run Script (dependency order)", () => {
 [c-depends-e-fails:test-script] C
 [d-depends-e:test-script] D
 [f-fails:test-script] F
-❌ a-depends-f: test-script (exited with code -1)
-❌ b-depends-cd: test-script (exited with code -1)
+🚫 a-depends-f: test-script (skipped due to dependency failure)
+🚫 b-depends-cd: test-script (skipped due to dependency failure)
 ❌ c-depends-e-fails: test-script (exited with code 1)
 ✅ d-depends-e: test-script
 ✅ e: test-script
 ❌ f-fails: test-script (exited with code 1)
-4 of 6 scripts failed`,
+4 of 6 scripts failed (2 skipped)`,
     );
   });
 

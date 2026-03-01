@@ -134,7 +134,7 @@ project.findWorkspacesByPattern(
   "my-workspace-alias",
   "my-name-pattern-*",
   "alias:my-alias-*",
-  "path:my-glob/**/*"
+  "path:my-glob/**/*",
 ); // find workspaces by pattern like the CLI
 project.runWorkspaceScript({
   workspaceNameOrAlias: "my-workspace",

@@ -51,7 +51,8 @@ export const preventDependencyCycles = (
         // Mark every node between `dep` and `name` (inclusive) as a cycle participant.
         // `name` is already at stack[stack.length - 1] since it was pushed above.
         const depIndex = stack.indexOf(dep);
-        for (let i = depIndex; i < stack.length; i++) cycleNodeSet.add(stack[i]);
+        for (let i = depIndex; i < stack.length; i++)
+          cycleNodeSet.add(stack[i]);
         continue;
       }
 

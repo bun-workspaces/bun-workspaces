@@ -143,7 +143,11 @@ describe("preventDependencyCycles", () => {
   test("preserves edges to non-cycle workspaces when cycle nodes have outside connections", () => {
     // e depends on a; a and b form a cycle; e is not part of the cycle
     const workspaces = [
-      makeTestWorkspace({ name: "a", dependencies: ["b"], dependents: ["b", "e"] }),
+      makeTestWorkspace({
+        name: "a",
+        dependencies: ["b"],
+        dependents: ["b", "e"],
+      }),
       makeTestWorkspace({ name: "b", dependencies: ["a"], dependents: ["a"] }),
       makeTestWorkspace({ name: "e", dependencies: ["a"] }),
     ];

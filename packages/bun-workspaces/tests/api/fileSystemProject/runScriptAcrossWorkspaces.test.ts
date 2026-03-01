@@ -1176,8 +1176,8 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
         dependencyOrder: true,
       });
 
-      // a-depends-c ↔ c-depends-a forms a cycle; the forward edge a→c is broken.
-      // c still depends on a, and b depends on c → order: A, C, B
+      // a-depends-c ↔ c-depends-a forms a cycle; all edges between cycle nodes are stripped.
+      // c and a both become dep-free; b still depends on c → order: A, C, B
       const outputLetters: string[] = [];
       for await (const { chunk } of output.text()) {
         outputLetters.push(chunk.trim());
@@ -1223,6 +1223,163 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
                   scripts: ["test-script"],
                   dependencies: [],
                   dependents: ["b-depends-c"],
+                }),
+              },
+            }),
+          ],
+        }),
+      );
+    });
+
+    test("detects an indirect dependency cycle and runs remaining graph in order", async () => {
+      const project = createFileSystemProject({
+        rootDirectory: getProjectRoot("withDependenciesIndirectCycle"),
+      });
+
+      const { output, summary } = project.runScriptAcrossWorkspaces({
+        script: "test-script",
+        dependencyOrder: true,
+      });
+
+      // a→b→c→a forms a cycle; all three nodes are cycle participants so all
+      // edges between them are stripped — each runs dep-free in alphabetical order
+      const outputLetters: string[] = [];
+      for await (const { chunk } of output.text()) {
+        outputLetters.push(chunk.trim());
+      }
+
+      expect(outputLetters).toEqual(["A", "B", "C"]);
+
+      const summaryResult = await summary;
+      expect(summaryResult).toEqual(
+        makeSummaryResult({
+          totalCount: 3,
+          successCount: 3,
+          scriptResults: [
+            makeScriptResult({
+              metadata: {
+                workspace: makeTestWorkspace({
+                  name: "a-depends-b",
+                  path: "packages/a-depends-b",
+                  matchPattern: "packages/*",
+                  scripts: ["test-script"],
+                }),
+              },
+            }),
+            makeScriptResult({
+              metadata: {
+                workspace: makeTestWorkspace({
+                  name: "b-depends-c",
+                  path: "packages/b-depends-c",
+                  matchPattern: "packages/*",
+                  scripts: ["test-script"],
+                }),
+              },
+            }),
+            makeScriptResult({
+              metadata: {
+                workspace: makeTestWorkspace({
+                  name: "c-depends-a",
+                  path: "packages/c-depends-a",
+                  matchPattern: "packages/*",
+                  scripts: ["test-script"],
+                }),
+              },
+            }),
+          ],
+        }),
+      );
+    });
+
+    test("detects an indirect cycle among a mixed graph and runs non-cycle workspaces in dependency order", async () => {
+      const project = createFileSystemProject({
+        rootDirectory: getProjectRoot("withDependenciesIndirectCycleMixed"),
+      });
+
+      const { output, summary } = project.runScriptAcrossWorkspaces({
+        script: "test-script",
+        dependencyOrder: true,
+      });
+
+      // a→b→c→a cycle: all three nodes stripped of mutual edges, run dep-free alphabetically.
+      // f depends on b (not a cycle node), e depends on f, d depends on e →
+      // after a/b/c finish, f unblocks, then e, then d → A, B, C, F, E, D
+      const outputLetters: string[] = [];
+      for await (const { chunk } of output.text()) {
+        outputLetters.push(chunk.trim());
+      }
+
+      expect(outputLetters).toEqual(["A", "B", "C", "F", "E", "D"]);
+
+      const summaryResult = await summary;
+      expect(summaryResult).toEqual(
+        makeSummaryResult({
+          totalCount: 6,
+          successCount: 6,
+          scriptResults: [
+            makeScriptResult({
+              metadata: {
+                workspace: makeTestWorkspace({
+                  name: "a-depends-b",
+                  path: "packages/a-depends-b",
+                  matchPattern: "packages/*",
+                  scripts: ["test-script"],
+                }),
+              },
+            }),
+            makeScriptResult({
+              metadata: {
+                workspace: makeTestWorkspace({
+                  name: "b-depends-c",
+                  path: "packages/b-depends-c",
+                  matchPattern: "packages/*",
+                  scripts: ["test-script"],
+                  dependents: ["f-depends-b"],
+                }),
+              },
+            }),
+            makeScriptResult({
+              metadata: {
+                workspace: makeTestWorkspace({
+                  name: "c-depends-a",
+                  path: "packages/c-depends-a",
+                  matchPattern: "packages/*",
+                  scripts: ["test-script"],
+                }),
+              },
+            }),
+            makeScriptResult({
+              metadata: {
+                workspace: makeTestWorkspace({
+                  name: "d-depends-e",
+                  path: "packages/d-depends-e",
+                  matchPattern: "packages/*",
+                  scripts: ["test-script"],
+                  dependencies: ["e-depends-f"],
+                }),
+              },
+            }),
+            makeScriptResult({
+              metadata: {
+                workspace: makeTestWorkspace({
+                  name: "e-depends-f",
+                  path: "packages/e-depends-f",
+                  matchPattern: "packages/*",
+                  scripts: ["test-script"],
+                  dependencies: ["f-depends-b"],
+                  dependents: ["d-depends-e"],
+                }),
+              },
+            }),
+            makeScriptResult({
+              metadata: {
+                workspace: makeTestWorkspace({
+                  name: "f-depends-b",
+                  path: "packages/f-depends-b",
+                  matchPattern: "packages/*",
+                  scripts: ["test-script"],
+                  dependencies: ["b-depends-c"],
+                  dependents: ["e-depends-f"],
                 }),
               },
             }),

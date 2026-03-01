@@ -59,6 +59,7 @@ const TEST_PROJECTS = {
   withDependenciesWithFailures: "withDependencies/withFailures",
   withDependenciesDirectCycle: "withDependencies/withDirectCycle",
   withDependenciesIndirectCycle: "withDependencies/withIndirectCycle",
+  withDependenciesIndirectCycleMixed: "withDependencies/withIndirectCycleMixed",
   recursiveScript: "recursiveScript",
 };
 

@@ -1166,6 +1166,71 @@ describe("FileSystemProject runScriptAcrossWorkspaces", () => {
       );
     });
 
+    test("detects a direct dependency cycle and runs remaining graph in order", async () => {
+      const project = createFileSystemProject({
+        rootDirectory: getProjectRoot("withDependenciesDirectCycle"),
+      });
+
+      const { output, summary } = project.runScriptAcrossWorkspaces({
+        script: "test-script",
+        dependencyOrder: true,
+      });
+
+      // a-depends-c ↔ c-depends-a forms a cycle; the forward edge a→c is broken.
+      // c still depends on a, and b depends on c → order: A, C, B
+      const outputLetters: string[] = [];
+      for await (const { chunk } of output.text()) {
+        outputLetters.push(chunk.trim());
+      }
+
+      expect(outputLetters).toEqual(["A", "C", "B"]);
+
+      const summaryResult = await summary;
+      expect(summaryResult).toEqual(
+        makeSummaryResult({
+          totalCount: 3,
+          successCount: 3,
+          scriptResults: [
+            makeScriptResult({
+              metadata: {
+                workspace: makeTestWorkspace({
+                  name: "a-depends-c",
+                  path: "packages/a-depends-c",
+                  matchPattern: "packages/*",
+                  scripts: ["test-script"],
+                  dependencies: [],
+                  dependents: ["c-depends-a"],
+                }),
+              },
+            }),
+            makeScriptResult({
+              metadata: {
+                workspace: makeTestWorkspace({
+                  name: "b-depends-c",
+                  path: "packages/b-depends-c",
+                  matchPattern: "packages/*",
+                  scripts: ["test-script"],
+                  dependencies: ["c-depends-a"],
+                }),
+              },
+            }),
+            makeScriptResult({
+              metadata: {
+                workspace: makeTestWorkspace({
+                  name: "c-depends-a",
+                  path: "packages/c-depends-a",
+                  matchPattern: "packages/*",
+                  scripts: ["test-script"],
+                  dependencies: ["a-depends-c"],
+                  dependents: ["b-depends-c"],
+                }),
+              },
+            }),
+          ],
+        }),
+      );
+    });
+
     test("runs subset of workspaces in dependency graph order", async () => {
       const project = createFileSystemProject({
         rootDirectory: getProjectRoot("withDependenciesSimple"),

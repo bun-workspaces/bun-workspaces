@@ -171,6 +171,16 @@ export const CLI_COMMANDS_CONFIG = {
         values: [...SCRIPT_SHELL_OPTIONS, "default"],
         description: `When using --inline, the shell to use to run the script`,
       },
+      depOrder: {
+        flags: ["-d", "--dep-order"],
+        description:
+          "Scripts for dependent workspaces run only after their dependencies",
+      },
+      ignoreDepFailure: {
+        flags: ["-c", "--ignore-dep-failure"],
+        description:
+          "Continue running scripts even if a dependency fails (Only relevant when --dep-order is passed)",
+      },
       jsonOutfile: {
         flags: ["-j", "--json-outfile <file>"],
         description: "Output results in a JSON file",

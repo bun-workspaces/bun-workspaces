@@ -23,6 +23,8 @@ export const runScript = handleProjectCommand(
       inline: boolean;
       inlineName: string | undefined;
       shell: string | undefined;
+      depOrder: boolean;
+      ignoreDepFailure: boolean;
       jsonOutfile: string | undefined;
     },
   ) => {
@@ -89,6 +91,8 @@ export const runScript = handleProjectCommand(
           : true
         : undefined,
       args: scriptArgs,
+      dependencyOrder: options.depOrder,
+      continueOnDependencyFailure: options.ignoreDepFailure,
       parallel:
         typeof options.parallel === "boolean" ||
         typeof options.parallel === "undefined"

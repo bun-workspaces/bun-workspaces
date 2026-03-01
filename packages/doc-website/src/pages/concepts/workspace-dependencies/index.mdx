@@ -1,0 +1,37 @@
+---
+title: Concepts > Workspace Aliases
+titleSuffix: " | bun-workspaces"
+description: "Workspace Aliases | Concepts | Documentation for bun-workspaces: A CLI and API to help manage Bun monorepos"
+pageType: doc
+sidebar: false
+outline: true
+footer: false
+---
+
+import { getScriptRuntimeMetadataConfig } from 'bun-workspaces/src/runScript/scriptRuntimeMetadata';
+import { SyntaxHighlighter } from '../../../lib/util/highlight';
+import { exampleWorkspaceConfigArray, exampleWorkspaceConfigSimple } from '../../../lib/config/exampleConfig';
+import { ConceptsHeader } from "../../../lib/concepts/ConceptsHeader";
+
+<ConceptsHeader activeHref="workspaceAliases" />
+
+A workspace alias is a short name for a workspace that can be used instead of the full name in commands such as [run-script](/cli/commands#run-script).
+
+Aliases are validated to be unique to each workspace and to not clash with other workspaces' `package.json` names.
+
+### Example Configuration
+
+Workspace aliases are defined in the [workspace configuration](/config/workspace).
+
+In the below examples, `"myApp"` may make a simpler reference to a workspace named `"@my-organization/my-application"`.
+
+<SyntaxHighlighter language="json">
+  {(() => {
+    const { alias, ...rest } = exampleWorkspaceConfigSimple;
+    return JSON.stringify({ alias }, null, 2);
+  })()}
+</SyntaxHighlighter>
+A workspace can have multiple aliases:
+<SyntaxHighlighter language="json">
+  {JSON.stringify(exampleWorkspaceConfigArray, null, 2)}
+</SyntaxHighlighter>

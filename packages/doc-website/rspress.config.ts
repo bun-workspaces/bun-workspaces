@@ -323,6 +323,10 @@ export default defineConfig({
             link: "/concepts/workspace-patterns",
           },
           {
+            text: "Workspace Dependencies",
+            link: "/concepts/workspace-dependencies",
+          },
+          {
             text: "Root Workspace",
             link: "/concepts/root-workspace",
           },

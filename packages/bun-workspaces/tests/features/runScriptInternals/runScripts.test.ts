@@ -794,7 +794,7 @@ describe("Run Scripts - Dependencies", () => {
     ).toThrow(/invalid index 99/);
   });
 
-  test.only("diamond dependency", async () => {
+  test("diamond dependency", async () => {
     const executionOrder: string[] = [];
 
     const result = await runScripts({
@@ -853,7 +853,7 @@ describe("Run Scripts - Dependencies", () => {
     expect(summary.allSuccess).toBe(true);
   });
 
-  test.only("diamond dependency (different pass order)", async () => {
+  test("diamond dependency (different pass order)", async () => {
     const executionOrder: string[] = [];
 
     const result = await runScripts({

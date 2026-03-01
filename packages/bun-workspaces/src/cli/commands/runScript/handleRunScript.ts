@@ -109,12 +109,12 @@ export const runScript = handleProjectCommand(
       : script;
 
     const handleOutput = async () => {
-      if (logger.printLevel === "silent") return;
       for await (const { line, metadata } of formatRunScriptOutput(output, {
         prefix: options.prefix,
         scriptName,
         stripDisruptiveControls: workspaceCount > 1 || !!options.parallel,
       })) {
+        if (logger.printLevel === "silent") continue; // continue to drain the queue without printing
         process[metadata.streamName].write(line);
       }
     };

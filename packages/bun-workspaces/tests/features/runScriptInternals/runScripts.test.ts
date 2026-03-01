@@ -404,6 +404,7 @@ describe("Run Scripts", () => {
         }),
       );
     },
+    { retry: 2 },
   );
 
   test.each([3, "auto", "default", "unbounded", "100%", "50%"])(

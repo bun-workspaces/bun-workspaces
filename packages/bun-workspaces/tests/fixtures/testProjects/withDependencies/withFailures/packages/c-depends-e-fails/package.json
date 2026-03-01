@@ -1,5 +1,5 @@
 {
-  "name": "c-depends-e",
+  "name": "c-depends-e-fails",
   "devDependencies": {
     "e": "workspace:*"
   },

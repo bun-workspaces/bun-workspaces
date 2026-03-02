@@ -41,6 +41,13 @@ export const createCli = ({
 
     process.on("unhandledRejection", errorListener);
 
+    const handleSigterm = () => {
+      process.off("SIGTERM", handleSigterm);
+      process.kill(-process.pid, "SIGTERM");
+    };
+
+    process.on("SIGTERM", handleSigterm);
+
     try {
       const program = createCommand("bun-workspaces")
         .description("A CLI on top of native Bun workspaces")

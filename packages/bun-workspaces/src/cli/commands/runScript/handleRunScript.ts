@@ -93,6 +93,7 @@ export const runScript = handleProjectCommand(
       args: scriptArgs,
       dependencyOrder: options.depOrder,
       ignoreDependencyFailure: options.ignoreDepFailure,
+      ignoreOutput: logger.printLevel === "silent",
       parallel:
         typeof options.parallel === "boolean" ||
         typeof options.parallel === "undefined"
@@ -109,7 +110,6 @@ export const runScript = handleProjectCommand(
       : script;
 
     const handleOutput = async () => {
-      if (logger.printLevel === "silent") return;
       for await (const { line, metadata } of formatRunScriptOutput(output, {
         prefix: options.prefix,
         scriptName,

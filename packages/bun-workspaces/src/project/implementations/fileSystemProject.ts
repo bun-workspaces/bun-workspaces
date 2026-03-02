@@ -72,6 +72,8 @@ export type RunWorkspaceScriptOptions = {
   inline?: boolean | InlineScriptOptions;
   /** The arguments to append to the script command */
   args?: string;
+  /** Set to `true` to ignore all output from the script. This saves memory when you don't need script output. */
+  ignoreOutput?: boolean;
 };
 
 /** Metadata associated with a workspace script */
@@ -118,6 +120,8 @@ export type RunScriptAcrossWorkspacesOptions = {
   dependencyOrder?: boolean;
   /** When `true`, continue running scripts even if a dependency fails (Only relevant when `dependencyOrder` is `true`) */
   ignoreDependencyFailure?: boolean;
+  /** Set to `true` to ignore all output from the scripts. This saves memory when you don't need script output. */
+  ignoreOutput?: boolean;
 };
 
 export type RunScriptAcrossWorkspacesOutput = Simplify<
@@ -277,6 +281,7 @@ class _FileSystemProject extends ProjectBase implements Project {
       },
       env: createScriptRuntimeEnvVars(scriptRuntimeMetadata),
       shell,
+      ignoreOutput: options.ignoreOutput ?? false,
     });
 
     const output = result.processOutput as RunWorkspaceScriptProcessOutput;
@@ -437,6 +442,7 @@ class _FileSystemProject extends ProjectBase implements Project {
         options.parallel === true
           ? { max: this.config.root.defaults.parallelMax }
           : (options.parallel ?? false),
+      ignoreOutput: options.ignoreOutput ?? false,
     });
 
     const output =

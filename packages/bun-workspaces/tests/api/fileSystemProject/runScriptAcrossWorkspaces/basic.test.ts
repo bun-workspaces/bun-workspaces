@@ -1,5 +1,6 @@
 import { expect, test, describe } from "bun:test";
 import { createFileSystemProject } from "../../../../src/project";
+import { type ScriptEventName } from "../../../../src/runScript";
 import { getProjectRoot } from "../../../fixtures/testProjects";
 import { makeTestWorkspace } from "../../../util/testData";
 import { makeSummaryResult, makeScriptResult } from "./util";
@@ -392,6 +393,45 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
         ],
       }),
     );
+  });
+
+  test("onScriptEvent fires start, exit, and skip events with workspace metadata", async () => {
+    const project = createFileSystemProject({
+      rootDirectory: getProjectRoot("withDependenciesWithFailures"),
+    });
+
+    const events: { event: ScriptEventName; workspaceName: string }[] = [];
+
+    const { summary } = project.runScriptAcrossWorkspaces({
+      script: "test-script",
+      dependencyOrder: true,
+      onScriptEvent: async (event, { workspace }) => {
+        events.push({ event, workspaceName: workspace.name });
+      },
+    });
+
+    await summary;
+
+    const namesByEvent = (eventName: ScriptEventName) =>
+      new Set(
+        events
+          .filter(({ event }) => event === eventName)
+          .map(({ workspaceName }) => workspaceName),
+      );
+
+    // e, c-depends-e-fails, d-depends-e, f-fails actually run
+    const runWorkspaces = new Set([
+      "e",
+      "c-depends-e-fails",
+      "d-depends-e",
+      "f-fails",
+    ]);
+    // a-depends-f and b-depends-cd are skipped due to dependency failures
+    const skippedWorkspaces = new Set(["a-depends-f", "b-depends-cd"]);
+
+    expect(namesByEvent("start")).toEqual(runWorkspaces);
+    expect(namesByEvent("exit")).toEqual(runWorkspaces);
+    expect(namesByEvent("skip")).toEqual(skippedWorkspaces);
   });
 
   test("with args", async () => {

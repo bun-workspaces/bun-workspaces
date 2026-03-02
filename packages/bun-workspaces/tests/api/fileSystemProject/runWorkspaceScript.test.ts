@@ -60,6 +60,40 @@ describe("FileSystemProject runWorkspaceScript", () => {
     );
   });
 
+  test("ignore output", async () => {
+    const project = createFileSystemProject({
+      rootDirectory: getProjectRoot("default"),
+    });
+
+    const { output, exit } = project.runWorkspaceScript({
+      workspaceNameOrAlias: "application-a",
+      script: "a-workspaces",
+      ignoreOutput: true,
+    });
+
+    let chunkCount = 0;
+    for await (const _chunk of output.text()) {
+      chunkCount++;
+    }
+
+    expect(chunkCount).toBe(0);
+
+    const exitResult = await exit;
+
+    expect(exitResult).toEqual(
+      makeExitResult({
+        metadata: {
+          workspace: makeTestWorkspace({
+            name: "application-a",
+            path: "applications/applicationA",
+            matchPattern: "applications/*",
+            scripts: ["a-workspaces", "all-workspaces", "application-a"],
+          }),
+        },
+      }),
+    );
+  });
+
   test("using workspace alias", async () => {
     const project = createFileSystemProject({
       rootDirectory: getProjectRoot("workspaceConfigPackageOnly"),

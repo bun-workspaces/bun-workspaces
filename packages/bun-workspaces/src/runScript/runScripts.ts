@@ -30,6 +30,8 @@ export type RunScriptsScript<ScriptMetadata extends object = object> = {
   shell?: ScriptShellOption;
   /** Indices of other scripts in the array that must complete before this one starts */
   dependsOn?: number[];
+  /** Set to `true` to ignore all output from the script. This saves memory you don't need script output. */
+  ignoreOutput?: boolean;
 };
 
 export type RunScriptsScriptResult<ScriptMetadata extends object = object> = {
@@ -75,6 +77,8 @@ export type RunScriptsOptions<ScriptMetadata extends object = object> = {
   parallel: boolean | RunScriptsParallelOptions;
   /** When true, run scripts even if a dependency failed. Default: false (skip them). */
   ignoreDependencyFailure?: boolean;
+  /** Set to `true` to ignore all output from the scripts. This saves memory you don't need script output. */
+  ignoreOutput?: boolean;
 };
 
 /** Validate dependency indices and detect cycles via DFS */
@@ -138,6 +142,7 @@ export const runScripts = <ScriptMetadata extends object = object>({
   scripts,
   parallel,
   ignoreDependencyFailure = false,
+  ignoreOutput = false,
 }: RunScriptsOptions<ScriptMetadata>): RunScriptsResult<ScriptMetadata> => {
   validateScriptDependencies(scripts);
 
@@ -290,6 +295,7 @@ export const runScripts = <ScriptMetadata extends object = object>({
               ...scripts[index].env,
               _BW_PARALLEL_MAX: parallelMax.toString(),
             },
+            ignoreOutput,
           }),
         };
 

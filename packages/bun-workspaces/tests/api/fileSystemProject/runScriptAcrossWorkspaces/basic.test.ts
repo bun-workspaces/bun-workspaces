@@ -47,6 +47,43 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
     );
   });
 
+  test("ignore output", async () => {
+    const project = createFileSystemProject({
+      rootDirectory: getProjectRoot("default"),
+    });
+
+    const { output, summary } = project.runScriptAcrossWorkspaces({
+      workspacePatterns: ["library-b"],
+      script: "b-workspaces",
+      ignoreOutput: true,
+    });
+    let chunkCount = 0;
+    for await (const _chunk of output.text()) {
+      chunkCount++;
+    }
+    expect(chunkCount).toBe(0);
+
+    const summaryResult = await summary;
+    expect(summaryResult).toEqual(
+      makeSummaryResult({
+        totalCount: 1,
+        successCount: 1,
+        scriptResults: [
+          makeScriptResult({
+            metadata: {
+              workspace: makeTestWorkspace({
+                name: "library-b",
+                path: "libraries/libraryB",
+                matchPattern: "libraries/**/*",
+                scripts: ["all-workspaces", "b-workspaces", "library-b"],
+              }),
+            },
+          }),
+        ],
+      }),
+    );
+  });
+
   test("all workspaces", async () => {
     const project = createFileSystemProject({
       rootDirectory: getProjectRoot("simple1"),

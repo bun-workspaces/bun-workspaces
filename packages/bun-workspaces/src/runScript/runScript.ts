@@ -42,6 +42,8 @@ export type RunScriptOptions<ScriptMetadata extends object = object> = {
   env: Record<string, string>;
   /** The shell to use to run the script. Defaults to "system". */
   shell?: ScriptShellOption;
+  /** Set to `true` to ignore all output from the script. This saves memory you don't need script output. */
+  ignoreOutput?: boolean;
 };
 
 /**
@@ -54,6 +56,7 @@ export const runScript = <ScriptMetadata extends object = object>({
   metadata,
   env,
   shell = "system",
+  ignoreOutput = false,
 }: RunScriptOptions<ScriptMetadata>): RunScriptResult<ScriptMetadata> => {
   const startTime = new Date();
 
@@ -67,8 +70,8 @@ export const runScript = <ScriptMetadata extends object = object>({
       _BW_SCRIPT_SHELL_OPTION: shell,
       FORCE_COLOR: "1",
     },
-    stdout: "pipe",
-    stderr: "pipe",
+    stdout: ignoreOutput ? "ignore" : "pipe",
+    stderr: ignoreOutput ? "ignore" : "pipe",
     stdin: "ignore",
   });
 
@@ -77,8 +80,22 @@ export const runScript = <ScriptMetadata extends object = object>({
   const processOutput = createMultiProcessOutput<
     ScriptMetadata & { streamName: OutputStreamName }
   >([
-    createProcessOutput(proc.stdout, { ...metadata, streamName: "stdout" }),
-    createProcessOutput(proc.stderr, { ...metadata, streamName: "stderr" }),
+    createProcessOutput(
+      proc.stdout
+        ? proc.stdout
+        : (async function* () {
+            /* empty */
+          })(),
+      { ...metadata, streamName: "stdout" },
+    ),
+    createProcessOutput(
+      proc.stderr
+        ? proc.stderr
+        : (async function* () {
+            /* empty */
+          })(),
+      { ...metadata, streamName: "stderr" },
+    ),
   ]);
 
   const deprecatedOutput =

@@ -93,6 +93,7 @@ export const runScript = handleProjectCommand(
       args: scriptArgs,
       dependencyOrder: options.depOrder,
       ignoreDependencyFailure: options.ignoreDepFailure,
+      ignoreOutput: logger.printLevel === "silent",
       parallel:
         typeof options.parallel === "boolean" ||
         typeof options.parallel === "undefined"
@@ -114,7 +115,6 @@ export const runScript = handleProjectCommand(
         scriptName,
         stripDisruptiveControls: workspaceCount > 1 || !!options.parallel,
       })) {
-        if (logger.printLevel === "silent") continue; // continue to drain the queue without printing
         process[metadata.streamName].write(line);
       }
     };

@@ -82,10 +82,7 @@ export type RunScriptsOptions<ScriptMetadata extends object = object> = {
   /** Set to `true` to ignore all output from the scripts. This saves memory when you don't need script output. */
   ignoreOutput?: boolean;
   /** Callback to invoke when a script event occurs */
-  onScriptEvent?: (
-    event: ScriptEventName,
-    scriptIndex: number,
-  ) => Promise<void>;
+  onScriptEvent?: (event: ScriptEventName, scriptIndex: number) => void;
 };
 
 /** Validate dependency indices and detect cycles via DFS */

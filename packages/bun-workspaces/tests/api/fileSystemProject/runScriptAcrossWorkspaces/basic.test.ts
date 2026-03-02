@@ -1,6 +1,12 @@
 import { expect, test, describe } from "bun:test";
-import { createFileSystemProject } from "../../../../src/project";
-import { type ScriptEventName } from "../../../../src/runScript";
+import {
+  createFileSystemProject,
+  type RunWorkspaceScriptMetadata,
+} from "../../../../src/project";
+import {
+  type RunScriptExit,
+  type ScriptEventName,
+} from "../../../../src/runScript";
 import { getProjectRoot } from "../../../fixtures/testProjects";
 import { makeTestWorkspace } from "../../../util/testData";
 import { makeSummaryResult, makeScriptResult } from "./util";
@@ -400,13 +406,17 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
       rootDirectory: getProjectRoot("withDependenciesWithFailures"),
     });
 
-    const events: { event: ScriptEventName; workspaceName: string }[] = [];
+    const events: {
+      event: ScriptEventName;
+      workspaceName: string;
+      exitResult: RunScriptExit<RunWorkspaceScriptMetadata> | null;
+    }[] = [];
 
     const { summary } = project.runScriptAcrossWorkspaces({
       script: "test-script",
       dependencyOrder: true,
-      onScriptEvent: async (event, { workspace }) => {
-        events.push({ event, workspaceName: workspace.name });
+      onScriptEvent: async (event, { workspace }, exitResult) => {
+        events.push({ event, workspaceName: workspace.name, exitResult });
       },
     });
 
@@ -432,6 +442,20 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
     expect(namesByEvent("start")).toEqual(runWorkspaces);
     expect(namesByEvent("exit")).toEqual(runWorkspaces);
     expect(namesByEvent("skip")).toEqual(skippedWorkspaces);
+
+    // start and skip events receive null exitResult; exit events receive the actual exit result
+    events
+      .filter(({ event }) => event === "start" || event === "skip")
+      .forEach(({ exitResult }) => expect(exitResult).toBeNull());
+    events
+      .filter(({ event }) => event === "exit")
+      .forEach(({ workspaceName, exitResult }) => {
+        expect(exitResult).not.toBeNull();
+        expect(exitResult?.success).toBe(
+          workspaceName.includes("fails") ? false : true,
+        );
+        expect(exitResult?.metadata.workspace.name).toBe(workspaceName);
+      });
   });
 
   test("with args", async () => {

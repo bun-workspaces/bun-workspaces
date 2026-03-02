@@ -11,10 +11,10 @@ describe("CLI Run Script (args)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
-        `[application-1a:test-echo] passed args: test-args
-[application-1b:test-echo] passed args: test-args
-[library-1a:test-echo] passed args: test-args
-[library-1b:test-echo] passed args: test-args
+        `[application-1a] passed args: test-args
+[application-1b] passed args: test-args
+[library-1a] passed args: test-args
+[library-1b] passed args: test-args
 ✅ application-1a: test-echo
 ✅ application-1b: test-echo
 ✅ library-1a: test-echo
@@ -31,10 +31,10 @@ describe("CLI Run Script (args)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
-        `[application-1a:test-echo] passed args: test-args
-[application-1b:test-echo] passed args: test-args
-[library-1a:test-echo] passed args: test-args
-[library-1b:test-echo] passed args: test-args
+        `[application-1a] passed args: test-args
+[application-1b] passed args: test-args
+[library-1a] passed args: test-args
+[library-1b] passed args: test-args
 ✅ application-1a: test-echo
 ✅ application-1b: test-echo
 ✅ library-1a: test-echo
@@ -55,10 +55,10 @@ describe("CLI Run Script (args)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
-        `[application-1a:test-echo] passed args: hello there application-1a
-[application-1b:test-echo] passed args: hello there application-1b
-[library-1a:test-echo] passed args: hello there library-1a
-[library-1b:test-echo] passed args: hello there library-1b
+        `[application-1a] passed args: hello there application-1a
+[application-1b] passed args: hello there application-1b
+[library-1a] passed args: hello there library-1a
+[library-1b] passed args: hello there library-1b
 ✅ application-1a: test-echo
 ✅ application-1b: test-echo
 ✅ library-1a: test-echo
@@ -79,10 +79,10 @@ describe("CLI Run Script (args)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
-        `[application-1a:test-echo] passed args: application-1a and application-1a and application-1a
-[application-1b:test-echo] passed args: application-1b and application-1b and application-1b
-[library-1a:test-echo] passed args: library-1a and library-1a and library-1a
-[library-1b:test-echo] passed args: library-1b and library-1b and library-1b
+        `[application-1a] passed args: application-1a and application-1a and application-1a
+[application-1b] passed args: application-1b and application-1b and application-1b
+[library-1a] passed args: library-1a and library-1a and library-1a
+[library-1b] passed args: library-1b and library-1b and library-1b
 ✅ application-1a: test-echo
 ✅ application-1b: test-echo
 ✅ library-1a: test-echo
@@ -105,8 +105,8 @@ describe("CLI Run Script (args)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
-        `[application-1a:test-echo] passed args: for workspace application-1a
-[library-1b:test-echo] passed args: for workspace library-1b
+        `[application-1a] passed args: for workspace application-1a
+[library-1b] passed args: for workspace library-1b
 ✅ application-1a: test-echo
 ✅ library-1b: test-echo
 2 scripts ran successfully`,
@@ -181,10 +181,10 @@ passed args: library-1b
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
-        `[application-1a:test-echo] passed args: test-args --another-arg
-[application-1b:test-echo] passed args: test-args --another-arg
-[library-1a:test-echo] passed args: test-args --another-arg
-[library-1b:test-echo] passed args: test-args --another-arg
+        `[application-1a] passed args: test-args --another-arg
+[application-1b] passed args: test-args --another-arg
+[library-1a] passed args: test-args --another-arg
+[library-1b] passed args: test-args --another-arg
 ✅ application-1a: test-echo
 ✅ application-1b: test-echo
 ✅ library-1a: test-echo

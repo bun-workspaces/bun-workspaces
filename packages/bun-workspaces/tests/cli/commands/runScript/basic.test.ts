@@ -9,7 +9,7 @@ describe("CLI Run Script (basic)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
-        `[application-a:application-a] script for application-a
+        `[application-a] script for application-a
 ✅ application-a: application-a
 1 script ran successfully`,
       );
@@ -21,8 +21,8 @@ describe("CLI Run Script (basic)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
-        `[application-a:a-workspaces] script for a workspaces
-[library-a:a-workspaces] script for a workspaces
+        `[application-a] script for a workspaces
+[library-a] script for a workspaces
 ✅ application-a: a-workspaces
 ✅ library-a: a-workspaces
 2 scripts ran successfully`,
@@ -35,7 +35,7 @@ describe("CLI Run Script (basic)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
-        `[library-a:a-workspaces] script for a workspaces
+        `[library-a] script for a workspaces
 ✅ library-a: a-workspaces
 1 script ran successfully`,
       );
@@ -47,11 +47,11 @@ describe("CLI Run Script (basic)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
-        `[application-a:all-workspaces] script for all workspaces
-[application-b:all-workspaces] script for all workspaces
-[library-a:all-workspaces] script for all workspaces
-[library-b:all-workspaces] script for all workspaces
-[library-c:all-workspaces] script for all workspaces
+        `[application-a] script for all workspaces
+[application-b] script for all workspaces
+[library-a] script for all workspaces
+[library-b] script for all workspaces
+[library-c] script for all workspaces
 ✅ application-a: all-workspaces
 ✅ application-b: all-workspaces
 ✅ library-a: all-workspaces

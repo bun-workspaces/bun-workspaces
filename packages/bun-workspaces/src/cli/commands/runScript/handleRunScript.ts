@@ -112,7 +112,6 @@ export const runScript = handleProjectCommand(
     const handleOutput = async () => {
       for await (const { line, metadata } of renderPlainOutput(output, {
         prefix: options.prefix,
-        scriptName,
         stripDisruptiveControls: workspaceCount > 1 || !!options.parallel,
       })) {
         process[metadata.streamName].write(line);

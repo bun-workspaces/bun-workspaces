@@ -14,10 +14,10 @@ describe("CLI Run Script (inline scripts)", () => {
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,
-      `[application-1a:(inline)] this is my inline script for application-1a
-[application-1b:(inline)] this is my inline script for application-1b
-[library-1a:(inline)] this is my inline script for library-1a
-[library-1b:(inline)] this is my inline script for library-1b
+      `[application-1a] this is my inline script for application-1a
+[application-1b] this is my inline script for application-1b
+[library-1a] this is my inline script for library-1a
+[library-1b] this is my inline script for library-1b
 ✅ application-1a: (inline)
 ✅ application-1b: (inline)
 ✅ library-1a: (inline)
@@ -38,10 +38,10 @@ describe("CLI Run Script (inline scripts)", () => {
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,
-      `[application-1a:(inline)] this is my inline script for application-1a
-[application-1b:(inline)] this is my inline script for application-1b
-[library-1a:(inline)] this is my inline script for library-1a
-[library-1b:(inline)] this is my inline script for library-1b
+      `[application-1a] this is my inline script for application-1a
+[application-1b] this is my inline script for application-1b
+[library-1a] this is my inline script for library-1a
+[library-1b] this is my inline script for library-1b
 ✅ application-1a: (inline)
 ✅ application-1b: (inline)
 ✅ library-1a: (inline)
@@ -63,10 +63,10 @@ describe("CLI Run Script (inline scripts)", () => {
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,
-      `[application-1a:(inline)] this is my inline script for application-1a test-args-application-1a
-[application-1b:(inline)] this is my inline script for application-1b test-args-application-1b
-[library-1a:(inline)] this is my inline script for library-1a test-args-library-1a
-[library-1b:(inline)] this is my inline script for library-1b test-args-library-1b
+      `[application-1a] this is my inline script for application-1a test-args-application-1a
+[application-1b] this is my inline script for application-1b test-args-application-1b
+[library-1a] this is my inline script for library-1a test-args-library-1a
+[library-1b] this is my inline script for library-1b test-args-library-1b
 ✅ application-1a: (inline)
 ✅ application-1b: (inline)
 ✅ library-1a: (inline)
@@ -116,10 +116,10 @@ describe("CLI Run Script (named inline scripts)", () => {
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,
-      `[application-1a:test-echo-inline] this is my inline script for application-1a
-[application-1b:test-echo-inline] this is my inline script for application-1b
-[library-1a:test-echo-inline] this is my inline script for library-1a
-[library-1b:test-echo-inline] this is my inline script for library-1b
+      `[application-1a] this is my inline script for application-1a
+[application-1b] this is my inline script for application-1b
+[library-1a] this is my inline script for library-1a
+[library-1b] this is my inline script for library-1b
 ✅ application-1a: test-echo-inline
 ✅ application-1b: test-echo-inline
 ✅ library-1a: test-echo-inline
@@ -141,10 +141,10 @@ describe("CLI Run Script (named inline scripts)", () => {
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,
-      `[application-1a:test-echo-inline] this is my inline script for application-1a
-[application-1b:test-echo-inline] this is my inline script for application-1b
-[library-1a:test-echo-inline] this is my inline script for library-1a
-[library-1b:test-echo-inline] this is my inline script for library-1b
+      `[application-1a] this is my inline script for application-1a
+[application-1b] this is my inline script for application-1b
+[library-1a] this is my inline script for library-1a
+[library-1b] this is my inline script for library-1b
 ✅ application-1a: test-echo-inline
 ✅ application-1b: test-echo-inline
 ✅ library-1a: test-echo-inline

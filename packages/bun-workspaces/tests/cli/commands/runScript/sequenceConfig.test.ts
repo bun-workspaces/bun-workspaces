@@ -11,11 +11,11 @@ describe("CLI Run Script (sequence config)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
-        `[first:test-delay] first
-[second:test-delay] second
-[third:test-delay] third
-[fourth:test-delay] fourth
-[fifth:test-delay] fifth
+        `[first] first
+[second] second
+[third] third
+[fourth] fourth
+[fifth] fifth
 ✅ first: test-delay
 ✅ second: test-delay
 ✅ third: test-delay
@@ -33,11 +33,11 @@ describe("CLI Run Script (sequence config)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
-        `[first:test-delay] first
-[second:test-delay] second
-[third:test-delay] third
-[fourth:test-delay] fourth
-[fifth:test-delay] fifth
+        `[first] first
+[second] second
+[third] third
+[fourth] fourth
+[fifth] fifth
 ✅ first: test-delay
 ✅ second: test-delay
 ✅ third: test-delay
@@ -57,11 +57,11 @@ describe("CLI Run Script (sequence config)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
-        `[first:test-echo] first
-[second:test-echo] second
-[third:test-echo] third
-[fourth:test-echo] fourth
-[fifth:test-echo] fifth
+        `[first] first
+[second] second
+[third] third
+[fourth] fourth
+[fifth] fifth
 ✅ first: test-echo
 ✅ second: test-echo
 ✅ third: test-echo
@@ -99,11 +99,11 @@ describe("CLI Run Script (sequence config)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
-        `[e:test-echo] e
-[d:test-echo] d
-[b:test-echo] b
-[a:test-echo] a
-[c:test-echo] c
+        `[e] e
+[d] d
+[b] b
+[a] a
+[c] c
 ✅ e: test-echo
 ✅ d: test-echo
 ✅ b: test-echo

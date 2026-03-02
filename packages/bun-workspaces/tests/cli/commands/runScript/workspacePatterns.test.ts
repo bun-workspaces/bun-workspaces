@@ -9,10 +9,10 @@ describe("CLI Run Script (workspace patterns)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
-        `[application-1a:all-workspaces] script for all workspaces
-[application-1b:all-workspaces] script for all workspaces
-[library-1a:all-workspaces] script for all workspaces
-[library-1b:all-workspaces] script for all workspaces
+        `[application-1a] script for all workspaces
+[application-1b] script for all workspaces
+[library-1a] script for all workspaces
+[library-1b] script for all workspaces
 ✅ application-1a: all-workspaces
 ✅ application-1b: all-workspaces
 ✅ library-1a: all-workspaces
@@ -27,8 +27,8 @@ describe("CLI Run Script (workspace patterns)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
-        `[application-1a:all-workspaces] script for all workspaces
-[application-1b:all-workspaces] script for all workspaces
+        `[application-1a] script for all workspaces
+[application-1b] script for all workspaces
 ✅ application-1a: all-workspaces
 ✅ application-1b: all-workspaces
 2 scripts ran successfully`,
@@ -46,9 +46,9 @@ describe("CLI Run Script (workspace patterns)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
-        `[application-1a:all-workspaces] script for all workspaces
-[application-1b:all-workspaces] script for all workspaces
-[library-1a:all-workspaces] script for all workspaces
+        `[application-1a] script for all workspaces
+[application-1b] script for all workspaces
+[library-1a] script for all workspaces
 ✅ application-1a: all-workspaces
 ✅ application-1b: all-workspaces
 ✅ library-1a: all-workspaces
@@ -62,8 +62,8 @@ describe("CLI Run Script (workspace patterns)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
-        `[application-1a:all-workspaces] script for all workspaces
-[library-1a:all-workspaces] script for all workspaces
+        `[application-1a] script for all workspaces
+[library-1a] script for all workspaces
 ✅ application-1a: all-workspaces
 ✅ library-1a: all-workspaces
 2 scripts ran successfully`,
@@ -95,8 +95,8 @@ describe("CLI Run Script (workspace patterns)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
-        `[application-1b:all-workspaces] script for all workspaces
-[library-1a:all-workspaces] script for all workspaces
+        `[application-1b] script for all workspaces
+[library-1a] script for all workspaces
 ✅ application-1b: all-workspaces
 ✅ library-1a: all-workspaces
 2 scripts ran successfully`,
@@ -115,9 +115,9 @@ describe("CLI Run Script (workspace patterns)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
-        `[application-1a:all-workspaces] script for all workspaces
-[application-1b:all-workspaces] script for all workspaces
-[library-1b:all-workspaces] script for all workspaces
+        `[application-1a] script for all workspaces
+[application-1b] script for all workspaces
+[library-1b] script for all workspaces
 ✅ application-1a: all-workspaces
 ✅ application-1b: all-workspaces
 ✅ library-1b: all-workspaces
@@ -136,9 +136,9 @@ describe("CLI Run Script (workspace patterns)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
-        `[application-1a:all-workspaces] script for all workspaces
-[application-1b:all-workspaces] script for all workspaces
-[library-1b:all-workspaces] script for all workspaces
+        `[application-1a] script for all workspaces
+[application-1b] script for all workspaces
+[library-1b] script for all workspaces
 ✅ application-1a: all-workspaces
 ✅ application-1b: all-workspaces
 ✅ library-1b: all-workspaces

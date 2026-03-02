@@ -8,30 +8,19 @@ import { sanitizeChunk } from "./sanitizeChunk";
 export type RenderPlainOutputOptions = {
   stripDisruptiveControls?: boolean;
   prefix?: boolean;
-  scriptName: string;
 };
 
 export async function* renderPlainOutput(
   output: RunScriptAcrossWorkspacesProcessOutput,
-  {
-    scriptName,
-    stripDisruptiveControls = true,
-    prefix = false,
-  }: RenderPlainOutputOptions,
+  { stripDisruptiveControls = true, prefix = false }: RenderPlainOutputOptions,
 ): AsyncGenerator<{
   line: string;
   metadata: RunWorkspaceScriptMetadata & { streamName: OutputStreamName };
 }> {
   const workspaceLineBuffers: Record<string, string> = {};
 
-  const formatLine = (
-    line: string,
-    workspaceName: string,
-    scriptName: string,
-  ) => {
-    const prefixedLine = prefix
-      ? `[${workspaceName}:${scriptName}] ${line}`
-      : line;
+  const formatLine = (line: string, workspaceName: string) => {
+    const prefixedLine = prefix ? `[${workspaceName}] ${line}` : line;
     return `\x1b[0m${prefixedLine}\n`;
   };
 
@@ -47,7 +36,7 @@ export async function* renderPlainOutput(
     for (const line of lines) {
       if (line)
         yield {
-          line: formatLine(line, workspaceName, scriptName),
+          line: formatLine(line, workspaceName),
           metadata,
         };
     }

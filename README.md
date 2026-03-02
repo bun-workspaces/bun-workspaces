@@ -164,11 +164,16 @@ const runManyScripts = async () => {
 
     // Optional. When true, a workspace's script will wait
     // until any workspaces it depends on have completed
-    dependencyOrder: true,
+    dependencyOrder: false,
 
     // Optional. When true and dependencyOrder is true,
     // continue running scripts even if a dependency fails
-    ignoreDependencyFailure: true,
+    ignoreDependencyFailure: false,
+
+    // Optional, callback when script starts, skips, or exits
+    onScriptEvent: (event, { workspace }) => {
+      // event: "start", "skip", "exit"
+    },
   });
 
   // Get a stream of script output

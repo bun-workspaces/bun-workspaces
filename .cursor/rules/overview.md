@@ -137,7 +137,7 @@ project.findWorkspacesByPattern(
   "my-workspace-alias",
   "my-name-pattern-*",
   "alias:my-alias-*",
-  "path:my-glob/**/*",
+  "path:my-glob/**/*"
 ); // find workspaces by pattern like the CLI
 project.runWorkspaceScript({
   workspaceNameOrAlias: "my-workspace",
@@ -154,8 +154,11 @@ project.runScriptAcrossWorkspaces({
     "workspace-alias-b",
   ],
   parallel: true, // also could be { max: 2 }, max taking same options as seen in CLI examples above (e.g. "50%", "auto", etc.)
-  dependencyOrder: true,
-  ignoreDependencyFailure: true,
+  dependencyOrder: false, // optional
+  ignoreDependencyFailure: false, // optional
+  onScriptEvent: (event, { workspace }) => {
+    // event: "start", "skip", "exit"
+  },
 });
 ```
 

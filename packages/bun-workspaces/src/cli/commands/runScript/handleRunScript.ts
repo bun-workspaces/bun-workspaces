@@ -109,16 +109,10 @@ export const runScript = handleProjectCommand(
       ? options.inlineName || "(inline)"
       : script;
 
-    const handleOutput = async () => {
-      for await (const { line, metadata } of renderPlainOutput(output, {
-        prefix: options.prefix,
-        stripDisruptiveControls: workspaceCount > 1 || !!options.parallel,
-      })) {
-        process[metadata.streamName].write(line);
-      }
-    };
-
-    handleOutput();
+    await renderPlainOutput(output, {
+      prefix: options.prefix,
+      stripDisruptiveControls: workspaceCount > 1 || !!options.parallel,
+    });
 
     const exitResults = await summary;
 

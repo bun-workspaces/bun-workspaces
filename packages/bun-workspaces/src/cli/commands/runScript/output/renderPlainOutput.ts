@@ -1,8 +1,4 @@
-import type {
-  RunScriptAcrossWorkspacesProcessOutput,
-  RunWorkspaceScriptMetadata,
-} from "../../../../project";
-import type { OutputStreamName } from "../../../../runScript";
+import type { RunScriptAcrossWorkspacesProcessOutput } from "../../../../project";
 import { sanitizeChunk } from "./sanitizeChunk";
 
 export type RenderPlainOutputOptions = {
@@ -10,13 +6,10 @@ export type RenderPlainOutputOptions = {
   prefix?: boolean;
 };
 
-export async function* renderPlainOutput(
+export const renderPlainOutput = async (
   output: RunScriptAcrossWorkspacesProcessOutput,
   { stripDisruptiveControls = true, prefix = false }: RenderPlainOutputOptions,
-): AsyncGenerator<{
-  line: string;
-  metadata: RunWorkspaceScriptMetadata & { streamName: OutputStreamName };
-}> {
+) => {
   const workspaceLineBuffers: Record<string, string> = {};
 
   const formatLine = (line: string, workspaceName: string) => {
@@ -35,14 +28,11 @@ export async function* renderPlainOutput(
 
     for (const line of lines) {
       if (line)
-        yield {
-          line: formatLine(line, workspaceName),
-          metadata,
-        };
+        process[metadata.streamName].write(formatLine(line, workspaceName));
     }
 
     workspaceLineBuffers[workspaceName] = content.endsWith("\n")
       ? ""
       : (lines[lines.length - 1] ?? "");
   }
-}
+};

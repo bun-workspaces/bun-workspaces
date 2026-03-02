@@ -232,11 +232,15 @@ export const runScripts = <ScriptMetadata extends object = object>({
     exitResults[index] = skippedExit;
     return {
       result: {
-        output: (async function* () {})(),
+        output: (async function* () {
+          /* empty */
+        })(),
         processOutput: createMultiProcessOutput([]),
         exit: Promise.resolve(skippedExit),
         metadata: scripts[index].metadata,
-        kill: () => {},
+        kill: () => {
+          /* empty */
+        },
       },
     };
   };
@@ -267,7 +271,9 @@ export const runScripts = <ScriptMetadata extends object = object>({
           pendingScripts.delete(index);
           completedScripts.add(index);
           scriptResults[index] = createSkippedResult(index);
-          scriptProcessBytes[index] = (async function* () {})();
+          scriptProcessBytes[index] = (async function* () {
+            /* empty */
+          })();
           scriptTriggers[index].trigger();
           changed = true;
           continue;

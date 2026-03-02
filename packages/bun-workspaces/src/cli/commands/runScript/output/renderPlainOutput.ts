@@ -6,10 +6,10 @@ export type RenderPlainOutputOptions = {
   prefix?: boolean;
 };
 
-export const renderPlainOutput = async (
+export async function* generatePlainOutputLines(
   output: RunScriptAcrossWorkspacesProcessOutput,
   { stripDisruptiveControls = true, prefix = false }: RenderPlainOutputOptions,
-) => {
+) {
   const workspaceLineBuffers: Record<string, string> = {};
 
   const formatLine = (line: string, workspaceName: string) => {
@@ -27,12 +27,23 @@ export const renderPlainOutput = async (
     const lines = content.split("\n");
 
     for (const line of lines) {
-      if (line)
-        process[metadata.streamName].write(formatLine(line, workspaceName));
+      if (line) yield { line: formatLine(line, workspaceName), metadata };
     }
 
     workspaceLineBuffers[workspaceName] = content.endsWith("\n")
       ? ""
       : (lines[lines.length - 1] ?? "");
+  }
+}
+
+export const renderPlainOutput = async (
+  output: RunScriptAcrossWorkspacesProcessOutput,
+  { stripDisruptiveControls = true, prefix = false }: RenderPlainOutputOptions,
+) => {
+  for await (const { line, metadata } of generatePlainOutputLines(output, {
+    stripDisruptiveControls,
+    prefix,
+  })) {
+    process[metadata.streamName].write(line);
   }
 };

@@ -6,7 +6,7 @@ import {
   handleProjectCommand,
   splitWorkspacePatterns,
 } from "../commandHandlerUtils";
-import { formatRunScriptOutput } from "./formatRunScriptOutput";
+import { renderPlainOutput } from "./output/renderPlainOutput";
 
 export const runScript = handleProjectCommand(
   "runScript",
@@ -110,7 +110,7 @@ export const runScript = handleProjectCommand(
       : script;
 
     const handleOutput = async () => {
-      for await (const { line, metadata } of formatRunScriptOutput(output, {
+      for await (const { line, metadata } of renderPlainOutput(output, {
         prefix: options.prefix,
         scriptName,
         stripDisruptiveControls: workspaceCount > 1 || !!options.parallel,

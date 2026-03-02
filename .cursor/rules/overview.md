@@ -156,7 +156,7 @@ project.runScriptAcrossWorkspaces({
   parallel: true, // also could be { max: 2 }, max taking same options as seen in CLI examples above (e.g. "50%", "auto", etc.)
   dependencyOrder: false, // optional
   ignoreDependencyFailure: false, // optional
-  onScriptEvent: (event, { workspace }) => {
+  onScriptEvent: (event, { workspace, exitResult }) => {
     // event: "start", "skip", "exit"
   },
 });

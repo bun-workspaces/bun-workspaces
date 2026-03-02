@@ -191,7 +191,7 @@ const { output, summary } = project.runScriptAcrossWorkspaces({
   ignoreOutput: false,
 
   // Optional, callback when script starts, skips, or exits
-  onScriptEvent: (event, { workspace }) => {
+  onScriptEvent: (event, { workspace, exitResult }) => {
     // event: "start", "skip", "exit"
   }
 });

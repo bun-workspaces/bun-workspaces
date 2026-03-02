@@ -101,6 +101,16 @@ export type RunWorkspaceScriptResult = {
 
 export type ParallelOption = boolean | RunScriptsParallelOptions;
 
+export type ScriptEventMetadata = {
+  workspace: Workspace;
+  exitResult: RunScriptExit<RunWorkspaceScriptMetadata> | null;
+};
+
+export type OnScriptEventCallback = (
+  event: ScriptEventName,
+  metadata: ScriptEventMetadata,
+) => unknown;
+
 /** Arguments for `FileSystemProject.runScriptAcrossWorkspaces` */
 export type RunScriptAcrossWorkspacesOptions = {
   /**
@@ -124,11 +134,7 @@ export type RunScriptAcrossWorkspacesOptions = {
   /** Set to `true` to ignore all output from the scripts. This saves memory when you don't need script output. */
   ignoreOutput?: boolean;
   /** Callback to invoke when a script event occurs (start, skip, exit) */
-  onScriptEvent?: (
-    event: ScriptEventName,
-    metadata: RunWorkspaceScriptMetadata,
-    exitResult: RunScriptExit<RunWorkspaceScriptMetadata> | null,
-  ) => Promise<void>;
+  onScriptEvent?: OnScriptEventCallback;
 };
 
 export type RunScriptAcrossWorkspacesOutput = Simplify<
@@ -451,11 +457,10 @@ class _FileSystemProject extends ProjectBase implements Project {
           : (options.parallel ?? false),
       ignoreOutput: options.ignoreOutput ?? false,
       onScriptEvent: (event, index, exitResult) =>
-        options.onScriptEvent?.(
-          event,
-          { workspace: workspaces[index] },
+        options.onScriptEvent?.(event, {
+          workspace: workspaces[index],
           exitResult,
-        ),
+        }),
     });
 
     const output =

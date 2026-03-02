@@ -415,7 +415,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
     const { summary } = project.runScriptAcrossWorkspaces({
       script: "test-script",
       dependencyOrder: true,
-      onScriptEvent: async (event, { workspace }, exitResult) => {
+      onScriptEvent: async (event, { workspace, exitResult }) => {
         events.push({ event, workspaceName: workspace.name, exitResult });
       },
     });

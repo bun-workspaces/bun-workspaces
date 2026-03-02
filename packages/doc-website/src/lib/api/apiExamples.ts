@@ -135,6 +135,10 @@ const { output, exit } = project.runWorkspaceScript({
   workspaceNameOrAlias: "my-workspace",
   script: "my-script",
   args: "--my --appended --args", // optional, arguments to add to the command
+
+  // Optional. Whether to ignore all output from the script. 
+  // This saves memory when you don't need script output.
+  ignoreOutput: false,
 });
 
 // Get a stream of the script subprocess's output
@@ -176,14 +180,18 @@ const { output, summary } = project.runScriptAcrossWorkspaces({
 
   // Optional. When true, a workspace's script will wait 
   // until any workspaces it depends on have completed
-  dependencyOrder: true,
+  dependencyOrder: false,
 
   // Optional. When true and dependencyOrder is true, 
   // continue running scripts even if a dependency fails
-  ignoreDependencyFailure: true,
+  ignoreDependencyFailure: false,
+
+  // Optional. Whether to ignore all output from the scripts. 
+  // This saves memory when you don't need script output.
+  ignoreOutput: false,
 });
 
-// Get a stream of script output
+// Get a stream of script output 
 for await (const { chunk, metadata } of output.text()) {
   // console.log(chunk); // the output chunk's content (string)
   // console.log(metadata.streamName); // "stdout" or "stderr"

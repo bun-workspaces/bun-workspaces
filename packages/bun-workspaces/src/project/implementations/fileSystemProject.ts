@@ -72,7 +72,7 @@ export type RunWorkspaceScriptOptions = {
   inline?: boolean | InlineScriptOptions;
   /** The arguments to append to the script command */
   args?: string;
-  /** Set to `true` to ignore all output from the script. This saves memory you don't need script output. */
+  /** Set to `true` to ignore all output from the script. This saves memory when you don't need script output. */
   ignoreOutput?: boolean;
 };
 
@@ -120,7 +120,7 @@ export type RunScriptAcrossWorkspacesOptions = {
   dependencyOrder?: boolean;
   /** When `true`, continue running scripts even if a dependency fails (Only relevant when `dependencyOrder` is `true`) */
   ignoreDependencyFailure?: boolean;
-  /** Set to `true` to ignore all output from the scripts. This saves memory you don't need script output. */
+  /** Set to `true` to ignore all output from the scripts. This saves memory when you don't need script output. */
   ignoreOutput?: boolean;
 };
 

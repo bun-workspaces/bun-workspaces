@@ -42,7 +42,7 @@ export type RunScriptOptions<ScriptMetadata extends object = object> = {
   env: Record<string, string>;
   /** The shell to use to run the script. Defaults to "system". */
   shell?: ScriptShellOption;
-  /** Set to `true` to ignore all output from the script. This saves memory you don't need script output. */
+  /** Set to `true` to ignore all output from the script. This saves memory when you don't need script output. */
   ignoreOutput?: boolean;
 };
 

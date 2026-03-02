@@ -58,6 +58,8 @@ export type RunScriptsOutput<ScriptMetadata extends object = object> = {
   scriptMetadata: ScriptMetadata & { streamName: OutputStreamName };
 };
 
+export type ScriptEventName = "start" | "skip" | "exit";
+
 export type RunScriptsResult<ScriptMetadata extends object = object> = {
   /** @deprecated Allows async iteration of output chunks from all script executions */
   output: SimpleAsyncIterable<RunScriptsOutput<ScriptMetadata>>;
@@ -79,6 +81,11 @@ export type RunScriptsOptions<ScriptMetadata extends object = object> = {
   ignoreDependencyFailure?: boolean;
   /** Set to `true` to ignore all output from the scripts. This saves memory when you don't need script output. */
   ignoreOutput?: boolean;
+  /** Callback to invoke when a script event occurs */
+  onScriptEvent?: (
+    event: ScriptEventName,
+    scriptIndex: number,
+  ) => Promise<void>;
 };
 
 /** Validate dependency indices and detect cycles via DFS */
@@ -143,6 +150,7 @@ export const runScripts = <ScriptMetadata extends object = object>({
   parallel,
   ignoreDependencyFailure = false,
   ignoreOutput = false,
+  onScriptEvent,
 }: RunScriptsOptions<ScriptMetadata>): RunScriptsResult<ScriptMetadata> => {
   validateScriptDependencies(scripts);
 
@@ -279,6 +287,7 @@ export const runScripts = <ScriptMetadata extends object = object>({
           scriptProcessBytes[index] = (async function* () {
             /* empty */
           })();
+          onScriptEvent?.("skip", index);
           scriptTriggers[index].trigger();
           changed = true;
           continue;
@@ -301,12 +310,14 @@ export const runScripts = <ScriptMetadata extends object = object>({
 
         scriptResults[index] = scriptResult;
         scriptProcessBytes[index] = scriptResult.result.processOutput.bytes();
+        onScriptEvent?.("start", index);
         scriptTriggers[index].trigger();
 
         scriptResult.result.exit.then((exit) => {
           runningScripts.delete(index);
           completedScripts.add(index);
           exitResults[index] = exit;
+          onScriptEvent?.("exit", index);
           scheduleReadyScripts();
         });
       }

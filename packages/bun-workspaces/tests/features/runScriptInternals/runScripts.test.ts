@@ -9,6 +9,7 @@ import {
   runScripts,
   type RunScriptExit,
   type RunScriptsSummary,
+  type ScriptEventName,
 } from "../../../src/runScript";
 
 const makeScriptExit = <Metadata extends object = object>(
@@ -909,6 +910,119 @@ describe("Run Scripts - Dependencies", () => {
     const summary = await result.summary;
     expect(summary.totalCount).toBe(4);
     expect(summary.allSuccess).toBe(true);
+  });
+
+  test("onScriptEvent - fires start and exit for a running script", async () => {
+    const events: { event: ScriptEventName; index: number }[] = [];
+
+    const result = runScripts({
+      scripts: [
+        {
+          metadata: { name: "A" },
+          scriptCommand: { command: "echo A", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+        },
+        {
+          metadata: { name: "B" },
+          scriptCommand: { command: "echo B", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+        },
+      ],
+      parallel: false,
+      onScriptEvent: async (event, index) => {
+        events.push({ event, index });
+      },
+    });
+
+    await result.summary;
+
+    expect(events).toEqual([
+      { event: "start", index: 0 },
+      { event: "exit", index: 0 },
+      { event: "start", index: 1 },
+      { event: "exit", index: 1 },
+    ]);
+  });
+
+  test("onScriptEvent - fires skip (not start or exit) for a dependency-failed script", async () => {
+    const events: { event: ScriptEventName; index: number }[] = [];
+
+    const result = runScripts({
+      scripts: [
+        {
+          metadata: { name: "A" },
+          scriptCommand: { command: "exit 1", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+        },
+        {
+          metadata: { name: "B" },
+          scriptCommand: { command: "echo B", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+          dependsOn: [0],
+        },
+      ],
+      parallel: false,
+      onScriptEvent: async (event, index) => {
+        events.push({ event, index });
+      },
+    });
+
+    await result.summary;
+
+    expect(events).toContainEqual({ event: "start", index: 0 });
+    expect(events).toContainEqual({ event: "exit", index: 0 });
+    expect(events).toContainEqual({ event: "skip", index: 1 });
+    expect(events).not.toContainEqual({ event: "start", index: 1 });
+    expect(events).not.toContainEqual({ event: "exit", index: 1 });
+  });
+
+  test("onScriptEvent - all three event types fire across scripts in a single run", async () => {
+    const events: { event: ScriptEventName; index: number }[] = [];
+
+    const result = runScripts({
+      scripts: [
+        {
+          metadata: { name: "A" },
+          scriptCommand: { command: "exit 1", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+        },
+        {
+          metadata: { name: "B" },
+          scriptCommand: { command: "echo B", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+        },
+        {
+          metadata: { name: "C" },
+          scriptCommand: { command: "echo C", workingDirectory: "" },
+          env: {},
+          shell: "bun",
+          dependsOn: [0],
+        },
+      ],
+      parallel: false,
+      onScriptEvent: async (event, index) => {
+        events.push({ event, index });
+      },
+    });
+
+    await result.summary;
+
+    // A fails: start + exit
+    expect(events).toContainEqual({ event: "start", index: 0 });
+    expect(events).toContainEqual({ event: "exit", index: 0 });
+    // B succeeds: start + exit
+    expect(events).toContainEqual({ event: "start", index: 1 });
+    expect(events).toContainEqual({ event: "exit", index: 1 });
+    // C skipped due to A's failure: skip only
+    expect(events).toContainEqual({ event: "skip", index: 2 });
+    expect(events).not.toContainEqual({ event: "start", index: 2 });
+    expect(events).not.toContainEqual({ event: "exit", index: 2 });
   });
 
   test("cascading skip on dependency failure", async () => {

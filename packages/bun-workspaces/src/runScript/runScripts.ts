@@ -82,7 +82,11 @@ export type RunScriptsOptions<ScriptMetadata extends object = object> = {
   /** Set to `true` to ignore all output from the scripts. This saves memory when you don't need script output. */
   ignoreOutput?: boolean;
   /** Callback to invoke when a script event occurs */
-  onScriptEvent?: (event: ScriptEventName, scriptIndex: number) => void;
+  onScriptEvent?: (
+    event: ScriptEventName,
+    scriptIndex: number,
+    result: RunScriptExit<ScriptMetadata> | null,
+  ) => void;
 };
 
 /** Validate dependency indices and detect cycles via DFS */
@@ -284,7 +288,7 @@ export const runScripts = <ScriptMetadata extends object = object>({
           scriptProcessBytes[index] = (async function* () {
             /* empty */
           })();
-          onScriptEvent?.("skip", index);
+          onScriptEvent?.("skip", index, null);
           scriptTriggers[index].trigger();
           changed = true;
           continue;
@@ -307,14 +311,14 @@ export const runScripts = <ScriptMetadata extends object = object>({
 
         scriptResults[index] = scriptResult;
         scriptProcessBytes[index] = scriptResult.result.processOutput.bytes();
-        onScriptEvent?.("start", index);
+        onScriptEvent?.("start", index, null);
         scriptTriggers[index].trigger();
 
         scriptResult.result.exit.then((exit) => {
           runningScripts.delete(index);
           completedScripts.add(index);
           exitResults[index] = exit;
-          onScriptEvent?.("exit", index);
+          onScriptEvent?.("exit", index, exit);
           scheduleReadyScripts();
         });
       }

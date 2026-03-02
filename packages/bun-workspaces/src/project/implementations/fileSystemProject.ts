@@ -127,6 +127,7 @@ export type RunScriptAcrossWorkspacesOptions = {
   onScriptEvent?: (
     event: ScriptEventName,
     metadata: RunWorkspaceScriptMetadata,
+    exitResult: RunScriptExit<RunWorkspaceScriptMetadata> | null,
   ) => Promise<void>;
 };
 
@@ -449,8 +450,12 @@ class _FileSystemProject extends ProjectBase implements Project {
           ? { max: this.config.root.defaults.parallelMax }
           : (options.parallel ?? false),
       ignoreOutput: options.ignoreOutput ?? false,
-      onScriptEvent: (event, index) =>
-        options.onScriptEvent?.(event, { workspace: workspaces[index] }),
+      onScriptEvent: (event, index, exitResult) =>
+        options.onScriptEvent?.(
+          event,
+          { workspace: workspaces[index] },
+          exitResult,
+        ),
     });
 
     const output =

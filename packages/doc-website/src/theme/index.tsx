@@ -87,4 +87,5 @@ export default {
 
 export * from "rspress/theme";
 
+console.log("\n" + process.env.BWUNSTER_ASCII);
 console.log("bun-workspaces Documentation:", process.env.BUILD_ID);

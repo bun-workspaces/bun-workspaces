@@ -65,6 +65,11 @@ const PLACEHOLDER_STUB_PATH = path.resolve(
   "src/stubs/placeholderModule.ts",
 );
 
+const BWUNSTER_ASCII = fs.readFileSync(
+  path.resolve(__dirname, "../../bwunster.txt"),
+  "utf8",
+);
+
 export default defineConfig({
   root: "src/pages",
   themeDir: path.join(__dirname, "src/theme"),
@@ -111,6 +116,7 @@ export default defineConfig({
           YEAR: ${JSON.stringify(new Date().getFullYear())},
           BUILD_ID: ${JSON.stringify(process.env.BUILD_ID ?? "(no build ID)")},
           REQUIRED_BUN_VERSION: ${JSON.stringify(REQUIRED_BUN_VERSION)},
+          BWUNSTER_ASCII: ${JSON.stringify(BWUNSTER_ASCII)},
         }})`,
       },
     },

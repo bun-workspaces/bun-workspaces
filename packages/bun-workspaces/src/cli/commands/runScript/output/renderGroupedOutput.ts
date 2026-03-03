@@ -142,10 +142,9 @@ export const renderGroupedOutput = async (
   );
 
   let previousHeight = 0;
-  let hadSignal = false;
   let didFinalRender = false;
   const render = (isFinal = false) => {
-    if (didFinalRender || (hadSignal && !isFinal)) {
+    if (didFinalRender) {
       return;
     }
 
@@ -310,12 +309,9 @@ export const renderGroupedOutput = async (
 
   runOnExit((reason) => {
     if (typeof reason === "string" && reason.startsWith("SIG")) {
-      hadSignal = true;
       process.stdout.write("\r" + lineOps.clearFull());
     }
-  });
 
-  runOnExit((reason) => {
     Object.keys(workspaceState).forEach((workspaceName) => {
       handleExitResult({
         metadata: { workspace: { name: workspaceName } as Workspace },

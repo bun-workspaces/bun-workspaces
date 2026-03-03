@@ -153,7 +153,7 @@ export const renderGroupedOutput = async (
       didFinalRender = true;
     }
 
-    const width = process.stdout.columns;
+    const width = Math.max(2, process.stdout.columns);
 
     const linesToWrite: Line[] = [];
 
@@ -161,7 +161,9 @@ export const renderGroupedOutput = async (
       const state = workspaceState[workspace.name];
 
       linesToWrite.push({
-        text: textOps.intenseBlue("┌" + "─".repeat(width - 2) + "┐"),
+        text: textOps.intenseBlue(
+          "┌" + "─".repeat(Math.max(0, width - 2)) + "┐",
+        ),
         type: "border",
       });
 
@@ -200,7 +202,9 @@ export const renderGroupedOutput = async (
       });
 
       linesToWrite.push({
-        text: textOps.intenseBlue("└" + "─".repeat(width - 2) + "┘"),
+        text: textOps.intenseBlue(
+          "└" + "─".repeat(Math.max(0, width - 2)) + "┘",
+        ),
         type: "border",
       });
 
@@ -236,17 +240,15 @@ export const renderGroupedOutput = async (
         const visibleLength = strippedLine.length;
 
         const truncated =
-          (visibleLength > width
+          (visibleLength + (line.type === "borderedContent" ? 2 : 0) > width
             ? line.text.slice(
                 0,
-                sliceIndexForVisibleWidth(
-                  line.text,
-                  width - (line.type === "borderedContent" ? 3 : 2),
-                ),
+                sliceIndexForVisibleWidth(line.text, width - 2),
               ) + "\x1b[0m…"
             : line.text) +
           (line.type === "borderedContent"
-            ? " ".repeat(width - visibleLength - 1) + textOps.cyan("│")
+            ? " ".repeat(Math.max(0, width - visibleLength - 1)) +
+              textOps.cyan("│")
             : "");
 
         process.stdout.write(truncated.replace(/\n?$/, "\n"));

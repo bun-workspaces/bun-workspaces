@@ -139,23 +139,29 @@ export const renderGroupedOutput = async (
       process.stdout.write(cursorOps.toColumn(1));
       process.stdout.write(lineOps.clearFull());
 
-      const visibleLength = Bun.stripANSI(line).length;
-      const truncated =
-        visibleLength > maxLineWidth
-          ? line.slice(0, sliceIndexForVisibleWidth(line, maxLineWidth - 2)) +
-            "\x1b[0m…"
-          : line;
-      process.stdout.write(truncated.trimEnd() + "\n");
+      if (isFinal) {
+        process.stdout.write(line.replace(/\n?$/, "\n"));
+      } else {
+        const visibleLength = Bun.stripANSI(line).length;
+        const truncated =
+          visibleLength > maxLineWidth
+            ? line.slice(0, sliceIndexForVisibleWidth(line, maxLineWidth - 2)) +
+              "\x1b[0m…"
+            : line;
+        process.stdout.write(truncated.replace(/\n?$/, "\n"));
+      }
     }
 
-    // Clear any lines that belonged to the previous (taller) frame
-    for (let i = 0; i < previousHeight - linesToWrite.length; i++) {
-      process.stdout.write(cursorOps.toColumn(1));
-      process.stdout.write(lineOps.clearFull());
-      process.stdout.write("\n");
-    }
+    if (!isFinal) {
+      // Clear any lines that belonged to the previous (taller) frame
+      for (let i = 0; i < previousHeight - linesToWrite.length; i++) {
+        process.stdout.write(cursorOps.toColumn(1));
+        process.stdout.write(lineOps.clearFull());
+        process.stdout.write("\n");
+      }
 
-    previousHeight = linesToWrite.length;
+      previousHeight = linesToWrite.length;
+    }
   };
 
   scriptEventTarget.addEventListener("start", (event) => {

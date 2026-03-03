@@ -80,11 +80,45 @@ const textOps = {
   cyan: (s: string) => `\x1b[36m${s}\x1b[0m`,
   white: (s: string) => `\x1b[37m${s}\x1b[0m`,
   gray: (s: string) => `\x1b[90m${s}\x1b[0m`,
+  intenseBlack: (s: string) => `\x1b[0;90m${s}\x1b[0m`,
+  intenseRed: (s: string) => `\x1b[0;91m${s}\x1b[0m`,
+  intenseGreen: (s: string) => `\x1b[0;92m${s}\x1b[0m`,
+  intenseYellow: (s: string) => `\x1b[0;93m${s}\x1b[0m`,
+  intenseBlue: (s: string) => `\x1b[0;94m${s}\x1b[0m`,
+  intenseMagenta: (s: string) => `\x1b[0;95m${s}\x1b[0m`,
+  intenseCyan: (s: string) => `\x1b[0;96m${s}\x1b[0m`,
+  intenseWhite: (s: string) => `\x1b[0;97m${s}\x1b[0m`,
+};
+
+type Line = {
+  text: string;
+  type: "border" | "borderedContent" | "scriptOutput";
 };
 
 type WorkspaceState = {
-  lines: string[];
-  status: "pending" | "running" | "skipped" | "success" | "failure";
+  lines: Line[];
+  status:
+    | "pending"
+    | "running"
+    | "skipped"
+    | "success"
+    | "failure"
+    | "interrupted"
+    | "cancelled"
+    | "killed";
+  exitCode: number | null;
+  signal: string | null;
+};
+
+const STATUS_COLORS: Record<WorkspaceState["status"], keyof typeof textOps> = {
+  pending: "gray",
+  running: "intenseMagenta",
+  skipped: "gray",
+  success: "intenseGreen",
+  failure: "intenseRed",
+  interrupted: "intenseYellow",
+  cancelled: "gray",
+  killed: "intenseRed",
 };
 
 export const renderGroupedOutput = async (
@@ -99,6 +133,8 @@ export const renderGroupedOutput = async (
       acc[workspace.name] = {
         lines: [],
         status: "pending",
+        exitCode: null,
+        signal: null,
       };
       return acc;
     },
@@ -106,9 +142,10 @@ export const renderGroupedOutput = async (
   );
 
   let previousHeight = 0;
+  let hadSignal = false;
   let didFinalRender = false;
   const render = (isFinal = false) => {
-    if (didFinalRender) {
+    if (didFinalRender || (hadSignal && !isFinal)) {
       return;
     }
 
@@ -118,49 +155,108 @@ export const renderGroupedOutput = async (
 
     const width = process.stdout.columns;
 
-    const linesToWrite: string[] = [];
+    const linesToWrite: Line[] = [];
 
     workspaces.forEach((workspace) => {
       const state = workspaceState[workspace.name];
-      linesToWrite.push("### " + workspace.name + " " + state.status + " ###");
+
+      linesToWrite.push({
+        text: textOps.intenseBlue("┌" + "─".repeat(width - 2) + "┐"),
+        type: "border",
+      });
+
+      linesToWrite.push({
+        text: `${textOps.intenseBlue("│ ") + "Workspace: " + textOps.bold(workspace.name)}`,
+        type: "borderedContent",
+      });
+
+      let statusText = state.status;
+
+      const hasExitCode = state.exitCode && state.exitCode !== -1;
+
+      const exitState =
+        hasExitCode && state.signal
+          ? "exitAndSignal"
+          : hasExitCode
+            ? "exit"
+            : state.signal
+              ? "signal"
+              : null;
+
+      if (exitState === "exitAndSignal") {
+        statusText += ` (exit code: ${state.exitCode}, signal: ${state.signal})`;
+      } else if (exitState === "exit") {
+        statusText += ` (exit code: ${state.exitCode})`;
+      } else if (exitState === "signal") {
+        statusText += ` (signal: ${state.signal})`;
+      }
+
+      linesToWrite.push({
+        text:
+          textOps.intenseBlue("│ ") +
+          "   Status: " +
+          textOps[STATUS_COLORS[state.status]](statusText),
+        type: "borderedContent",
+      });
+
+      linesToWrite.push({
+        text: textOps.intenseBlue("└" + "─".repeat(width - 2) + "┘"),
+        type: "border",
+      });
+
       linesToWrite.push(
-        ...state.lines.slice(isFinal ? undefined : -scriptMaxLines),
+        ...state.lines.slice(isFinal ? undefined : -scriptMaxLines).map(
+          (line) =>
+            ({
+              text: `${isFinal ? "" : textOps.cyan("│")}${line.text}`,
+              type: "scriptOutput",
+            }) as const,
+        ),
       );
+
       return linesToWrite;
     });
 
-    // Move cursor back to the start of this block so we overwrite in place
     if (previousHeight > 0) {
+      // clear previous frame
       process.stdout.write(cursorOps.up(previousHeight));
-    }
-
-    const maxLineWidth = width ?? 80;
-    for (const line of linesToWrite) {
-      process.stdout.write(cursorOps.toColumn(1));
-      process.stdout.write(lineOps.clearFull());
-
-      if (isFinal) {
-        process.stdout.write(line.replace(/\n?$/, "\n"));
-      } else {
-        const visibleLength = Bun.stripANSI(line).length;
-        const truncated =
-          visibleLength > maxLineWidth
-            ? line.slice(0, sliceIndexForVisibleWidth(line, maxLineWidth - 2)) +
-              "\x1b[0m…"
-            : line;
-        process.stdout.write(truncated.replace(/\n?$/, "\n"));
-      }
-    }
-
-    if (!isFinal) {
-      // Clear any lines that belonged to the previous (taller) frame
-      for (let i = 0; i < previousHeight - linesToWrite.length; i++) {
+      for (let i = 0; i < previousHeight; i++) {
         process.stdout.write(cursorOps.toColumn(1));
         process.stdout.write(lineOps.clearFull());
         process.stdout.write("\n");
       }
+      process.stdout.write(cursorOps.up(previousHeight));
+    }
 
-      previousHeight = linesToWrite.length;
+    for (const line of linesToWrite) {
+      if (isFinal && line.type === "scriptOutput") {
+        process.stdout.write(line.text.replace(/\n?$/, "\n"));
+      } else {
+        const strippedLine = Bun.stripANSI(line.text);
+        const visibleLength = strippedLine.length;
+
+        const truncated =
+          (visibleLength > width
+            ? line.text.slice(
+                0,
+                sliceIndexForVisibleWidth(
+                  line.text,
+                  width - (line.type === "borderedContent" ? 3 : 2),
+                ),
+              ) + "\x1b[0m…"
+            : line.text) +
+          (line.type === "borderedContent"
+            ? " ".repeat(width - visibleLength - 1) + textOps.cyan("│")
+            : "");
+
+        process.stdout.write(truncated.replace(/\n?$/, "\n"));
+      }
+    }
+
+    previousHeight = linesToWrite.length;
+
+    if (isFinal) {
+      process.stdout.write(cursorOps.show());
     }
   };
 
@@ -176,19 +272,60 @@ export const renderGroupedOutput = async (
     render();
   });
 
+  const handleExitResult = (
+    result: RunScriptExit<RunWorkspaceScriptMetadata>,
+  ) => {
+    const state = workspaceState[result.metadata.workspace.name];
+
+    if (result.signal) {
+      if (state.status === "running") {
+        if (result.signal === "SIGINT") {
+          state.status = "interrupted";
+        } else {
+          state.status = "killed";
+          state.signal = result.signal ?? null;
+        }
+      } else if (state.status === "pending") {
+        state.status = "cancelled";
+      }
+    } else {
+      state.status = result.skipped
+        ? "skipped"
+        : result.success
+          ? "success"
+          : "failure";
+    }
+
+    state.exitCode = result.exitCode ?? process.exitCode ?? null;
+  };
+
   scriptEventTarget.addEventListener("exit", (event) => {
-    const { workspace, exitResult } = event;
-    workspaceState[workspace.name].status = exitResult?.success
-      ? "success"
-      : "failure";
+    if (event.exitResult) handleExitResult(event.exitResult);
     render();
   });
 
   process.on("SIGWINCH", render);
 
-  runOnExit(() => {
-    process.stdout.write(cursorOps.show());
+  runOnExit((reason) => {
+    if (typeof reason === "string" && reason.startsWith("SIG")) {
+      hadSignal = true;
+      process.stdout.write("\r" + lineOps.clearFull());
+    }
+  });
+
+  runOnExit((reason) => {
+    Object.keys(workspaceState).forEach((workspaceName) => {
+      handleExitResult({
+        metadata: { workspace: { name: workspaceName } as Workspace },
+        skipped: false,
+        success: false,
+        exitCode: typeof process.exitCode === "number" ? process.exitCode : -1,
+        signal: typeof reason === "string" ? (reason as NodeJS.Signals) : null,
+      } as RunScriptExit<RunWorkspaceScriptMetadata>);
+    });
+
     render(true);
+    process.stdout.write(cursorOps.show());
   });
 
   process.stdout.write(cursorOps.hide());
@@ -200,22 +337,18 @@ export const renderGroupedOutput = async (
     prefix: false,
   })) {
     const workspaceName = metadata.workspace.name;
-    workspaceState[workspaceName].lines.push(line);
+    workspaceState[workspaceName].lines.push({
+      text: line,
+      type: "scriptOutput",
+    });
     render();
   }
 
   summary.then((summary) => {
     // fallback logic to resolve race conditions with script events
     summary.scriptResults.forEach((result) => {
-      const workspaceName = result.metadata.workspace.name;
-      workspaceState[workspaceName].status = result.skipped
-        ? "skipped"
-        : result.success
-          ? "success"
-          : "failure";
+      handleExitResult(result);
     });
     render(true);
   });
-
-  process.stdout.write(cursorOps.show());
 };

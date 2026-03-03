@@ -6,6 +6,11 @@ import {
   handleProjectCommand,
   splitWorkspacePatterns,
 } from "../commandHandlerUtils";
+import {
+  createScriptEvent,
+  createScriptEventTarget,
+  renderGroupedOutput,
+} from "./output/renderGroupedOutput";
 import { renderPlainOutput } from "./output/renderPlainOutput";
 
 export const runScript = handleProjectCommand(
@@ -73,9 +78,11 @@ export const runScript = handleProjectCommand(
       } (parallel: ${!!options.parallel}, args: ${JSON.stringify(scriptArgs)})`,
     );
 
-    const workspaceCount = project.findWorkspacesByPattern(
-      ...workspacePatterns,
-    ).length;
+    const workspaces = workspacePatterns.length
+      ? project.findWorkspacesByPattern(...workspacePatterns)
+      : project.workspaces;
+
+    const scriptEventTarget = createScriptEventTarget();
 
     const { output, summary } = project.runScriptAcrossWorkspaces({
       workspacePatterns: workspacePatterns.length
@@ -94,6 +101,14 @@ export const runScript = handleProjectCommand(
       dependencyOrder: options.depOrder,
       ignoreDependencyFailure: options.ignoreDepFailure,
       ignoreOutput: logger.printLevel === "silent",
+      onScriptEvent: (event, { workspace, exitResult }) => {
+        scriptEventTarget.dispatchEvent(
+          createScriptEvent[event]({
+            workspace,
+            exitResult,
+          }),
+        );
+      },
       parallel:
         typeof options.parallel === "boolean" ||
         typeof options.parallel === "undefined"
@@ -109,10 +124,12 @@ export const runScript = handleProjectCommand(
       ? options.inlineName || "(inline)"
       : script;
 
-    await renderPlainOutput(output, {
-      prefix: options.prefix,
-      stripDisruptiveControls: workspaceCount > 1 || !!options.parallel,
-    });
+    // await renderPlainOutput(output, {
+    //   prefix: options.prefix,
+    //   stripDisruptiveControls: workspaceCount > 1 || !!options.parallel,
+    // });
+
+    await renderGroupedOutput(workspaces, output, scriptEventTarget);
 
     const exitResults = await summary;
 

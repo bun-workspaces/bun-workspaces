@@ -1,4 +1,6 @@
+import { runOnExit } from "../../../../internal/core";
 import {
+  createTypedEventFactory,
   type TypedEvent,
   TypedEventTarget,
 } from "../../../../internal/core/language/events/typedEventTarget";
@@ -10,22 +12,32 @@ import type { RunScriptExit, ScriptEventName } from "../../../../runScript";
 import type { Workspace } from "../../../../workspaces";
 import { generatePlainOutputLines } from "./renderPlainOutput";
 
+type ScriptEvent = TypedEvent<
+  ScriptEventName,
+  {
+    workspace: Workspace;
+    exitResult: RunScriptExit<RunWorkspaceScriptMetadata> | null;
+  }
+>;
+
 class ScriptEventTarget extends TypedEventTarget<{
-  [key in ScriptEventName]: TypedEvent<
-    key,
-    {
-      workspace: Workspace;
-      exitResult: RunScriptExit<RunWorkspaceScriptMetadata> | null;
-    }
-  >;
+  [key in ScriptEvent["type"]]: ScriptEvent;
 }> {}
 
 export const createScriptEventTarget = () => new ScriptEventTarget();
+
+export const createScriptEvent = {
+  start: createTypedEventFactory<ScriptEvent>("start"),
+  skip: createTypedEventFactory<ScriptEvent>("skip"),
+  exit: createTypedEventFactory<ScriptEvent>("exit"),
+};
 
 const cursorOps = {
   up: (n: number) => `\x1b[${n}A`,
   down: (n: number) => `\x1b[${n}B`,
   toColumn: (n: number) => `\x1b[${n}G`,
+  hide: () => `\x1b[?25l`,
+  show: () => `\x1b[?25h`,
 };
 
 const lineOps = {
@@ -67,13 +79,48 @@ export const renderGroupedOutput = async (
     {} as Record<string, WorkspaceState>,
   );
 
+  process.stdout.write(cursorOps.hide());
+  runOnExit(() => {
+    process.stdout.write(cursorOps.show());
+  });
+
   let previousHeight = 0;
   const render = () => {
     const width = process.stdout.columns;
 
     const linesToWrite: string[] = [];
 
-    // const workspaceLines = workspaces.map((workspace) => {
+    workspaces.forEach((workspace) => {
+      const state = workspaceState[workspace.name];
+      linesToWrite.push("---");
+      linesToWrite.push("NAME:" + workspace.name);
+      linesToWrite.push("STATUS:" + state.status);
+      linesToWrite.push(...state.lines);
+      linesToWrite.push("---");
+      return linesToWrite;
+    });
+
+    for (const line of linesToWrite) {
+      process.stdout.write(cursorOps.toColumn(1));
+      process.stdout.write(lineOps.clearToEnd());
+
+      const colLength = Bun.stripANSI(line).length;
+      process.stdout.write(
+        (colLength > width ? line.slice(0, width - 1) + "…" : line) + "\n",
+      );
+    }
+
+    for (let i = 0; i < previousHeight - linesToWrite.length; i++) {
+      process.stdout.write(cursorOps.toColumn(1));
+      process.stdout.write(lineOps.clearToEnd());
+      process.stdout.write("\n");
+    }
+
+    process.stdout.write(
+      cursorOps.up(Math.max(previousHeight, linesToWrite.length)),
+    );
+
+    previousHeight = linesToWrite.length;
   };
 
   render();
@@ -106,4 +153,8 @@ export const renderGroupedOutput = async (
     workspaceState[workspaceName].lines.push(line);
     render();
   }
+
+  render();
+
+  process.stdout.write(cursorOps.show());
 };

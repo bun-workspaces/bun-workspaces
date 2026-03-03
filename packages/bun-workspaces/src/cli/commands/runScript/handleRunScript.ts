@@ -80,7 +80,9 @@ export const runScript = handleProjectCommand(
 
     const workspaces = workspacePatterns.length
       ? project.findWorkspacesByPattern(...workspacePatterns)
-      : project.workspaces;
+      : options.inline
+        ? project.workspaces
+        : project.listWorkspacesWithScript(script);
 
     const scriptEventTarget = createScriptEventTarget();
 
@@ -129,7 +131,7 @@ export const runScript = handleProjectCommand(
     //   stripDisruptiveControls: workspaceCount > 1 || !!options.parallel,
     // });
 
-    await renderGroupedOutput(workspaces, output, scriptEventTarget);
+    await renderGroupedOutput(workspaces, output, summary, scriptEventTarget);
 
     const exitResults = await summary;
 

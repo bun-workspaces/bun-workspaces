@@ -8,7 +8,11 @@ import type {
   RunScriptAcrossWorkspacesProcessOutput,
   RunWorkspaceScriptMetadata,
 } from "../../../../project";
-import type { RunScriptExit, ScriptEventName } from "../../../../runScript";
+import type {
+  RunScriptExit,
+  RunScriptsSummary,
+  ScriptEventName,
+} from "../../../../runScript";
 import type { Workspace } from "../../../../workspaces";
 import { generatePlainOutputLines } from "./renderPlainOutput";
 
@@ -46,6 +50,26 @@ const lineOps = {
   clearFull: () => `\x1b[2K`,
 };
 
+/**
+ * Index in `str` (exclusive) so that the visible length of str.slice(0, index)
+ * is at most `maxVisible`, skipping ANSI CSI sequences so they are not counted.
+ */
+const sliceIndexForVisibleWidth = (str: string, maxVisible: number): number => {
+  let i = 0;
+  let visibleCount = 0;
+  while (i < str.length && visibleCount < maxVisible) {
+    if (str[i] === "\x1b" && str[i + 1] === "[") {
+      i += 2;
+      while (i < str.length && /[0-9;?]/.test(str[i])) i++;
+      if (i < str.length) i++;
+    } else {
+      visibleCount++;
+      i++;
+    }
+  }
+  return i;
+};
+
 const textOps = {
   bold: (s: string) => `\x1b[1m${s}\x1b[0m`,
   red: (s: string) => `\x1b[31m${s}\x1b[0m`,
@@ -66,7 +90,9 @@ type WorkspaceState = {
 export const renderGroupedOutput = async (
   workspaces: Workspace[],
   output: RunScriptAcrossWorkspacesProcessOutput,
+  summary: Promise<RunScriptsSummary<RunWorkspaceScriptMetadata>>,
   scriptEventTarget: ScriptEventTarget,
+  scriptMaxLines = 5,
 ) => {
   const workspaceState: Record<string, WorkspaceState> = workspaces.reduce(
     (acc, workspace) => {
@@ -79,51 +105,58 @@ export const renderGroupedOutput = async (
     {} as Record<string, WorkspaceState>,
   );
 
-  process.stdout.write(cursorOps.hide());
-  runOnExit(() => {
-    process.stdout.write(cursorOps.show());
-  });
-
   let previousHeight = 0;
-  const render = () => {
+  let didFinalRender = false;
+  const render = (isFinal = false) => {
+    if (didFinalRender) {
+      return;
+    }
+
+    if (isFinal) {
+      didFinalRender = true;
+    }
+
     const width = process.stdout.columns;
 
     const linesToWrite: string[] = [];
 
     workspaces.forEach((workspace) => {
       const state = workspaceState[workspace.name];
-      linesToWrite.push("---");
-      linesToWrite.push("NAME:" + workspace.name);
-      linesToWrite.push("STATUS:" + state.status);
-      linesToWrite.push(...state.lines);
-      linesToWrite.push("---");
+      linesToWrite.push("### " + workspace.name + " " + state.status + " ###");
+      linesToWrite.push(
+        ...state.lines.slice(isFinal ? undefined : -scriptMaxLines),
+      );
       return linesToWrite;
     });
 
-    for (const line of linesToWrite) {
-      process.stdout.write(cursorOps.toColumn(1));
-      process.stdout.write(lineOps.clearToEnd());
-
-      const colLength = Bun.stripANSI(line).length;
-      process.stdout.write(
-        (colLength > width ? line.slice(0, width - 1) + "…" : line) + "\n",
-      );
+    // Move cursor back to the start of this block so we overwrite in place
+    if (previousHeight > 0) {
+      process.stdout.write(cursorOps.up(previousHeight));
     }
 
+    const maxLineWidth = width ?? 80;
+    for (const line of linesToWrite) {
+      process.stdout.write(cursorOps.toColumn(1));
+      process.stdout.write(lineOps.clearFull());
+
+      const visibleLength = Bun.stripANSI(line).length;
+      const truncated =
+        visibleLength > maxLineWidth
+          ? line.slice(0, sliceIndexForVisibleWidth(line, maxLineWidth - 2)) +
+            "\x1b[0m…"
+          : line;
+      process.stdout.write(truncated.trimEnd() + "\n");
+    }
+
+    // Clear any lines that belonged to the previous (taller) frame
     for (let i = 0; i < previousHeight - linesToWrite.length; i++) {
       process.stdout.write(cursorOps.toColumn(1));
-      process.stdout.write(lineOps.clearToEnd());
+      process.stdout.write(lineOps.clearFull());
       process.stdout.write("\n");
     }
 
-    process.stdout.write(
-      cursorOps.up(Math.max(previousHeight, linesToWrite.length)),
-    );
-
     previousHeight = linesToWrite.length;
   };
-
-  render();
 
   scriptEventTarget.addEventListener("start", (event) => {
     const { workspace } = event;
@@ -145,6 +178,17 @@ export const renderGroupedOutput = async (
     render();
   });
 
+  process.on("SIGWINCH", render);
+
+  runOnExit(() => {
+    process.stdout.write(cursorOps.show());
+    render(true);
+  });
+
+  process.stdout.write(cursorOps.hide());
+
+  render();
+
   for await (const { metadata, line } of generatePlainOutputLines(output, {
     stripDisruptiveControls: true,
     prefix: false,
@@ -154,7 +198,18 @@ export const renderGroupedOutput = async (
     render();
   }
 
-  render();
+  summary.then((summary) => {
+    // fallback logic to resolve race conditions with script events
+    summary.scriptResults.forEach((result) => {
+      const workspaceName = result.metadata.workspace.name;
+      workspaceState[workspaceName].status = result.skipped
+        ? "skipped"
+        : result.success
+          ? "success"
+          : "failure";
+    });
+    render(true);
+  });
 
   process.stdout.write(cursorOps.show());
 };

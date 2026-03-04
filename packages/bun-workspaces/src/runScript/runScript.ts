@@ -35,7 +35,6 @@ export type RunScriptResult<ScriptMetadata extends object = object> = {
   exit: Promise<RunScriptExit<ScriptMetadata>>;
   metadata: ScriptMetadata;
   kill: (exit?: number | NodeJS.Signals) => void;
-  subprocess: Bun.Subprocess<"ignore", "pipe" | "ignore", "pipe" | "ignore">;
 };
 
 export type RunScriptOptions<ScriptMetadata extends object = object> = {
@@ -126,6 +125,5 @@ export const runScript = <ScriptMetadata extends object = object>({
     exit,
     metadata,
     kill: (exit) => proc.kill(exit),
-    subprocess: proc,
   };
 };

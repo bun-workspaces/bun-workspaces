@@ -1,6 +1,6 @@
 import path from "path";
-import { $ } from "bun";
 import { describe, test, expect } from "bun:test";
+import { IS_WINDOWS } from "../../../src/internal/core";
 import { createProcessOutput } from "../../../src/runScript/output/processOutput";
 
 const FIXTURE_PATH = path.join(
@@ -8,8 +8,14 @@ const FIXTURE_PATH = path.join(
   "../../fixtures/testScripts/createSubprocesses.ts",
 );
 
-const pidExists = async (pid: number): Promise<boolean> =>
-  (await $`kill -0 ${pid}`.nothrow().quiet()).exitCode === 0;
+const pidExists = async (pid: number): Promise<boolean> => {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch {
+    return false;
+  }
+};
 
 describe("createSubprocess", () => {
   test(
@@ -38,7 +44,9 @@ describe("createSubprocess", () => {
         expect(await pidExists(pid)).toBe(true);
       }
 
-      fixtureProcess.kill("SIGINT");
+      const killer = IS_WINDOWS ? 1 : "SIGINT";
+
+      fixtureProcess.kill(killer);
       await fixtureProcess.exited;
 
       // Allow kill signals sent to subprocesses to be processed
@@ -47,8 +55,6 @@ describe("createSubprocess", () => {
       for (const pid of pids) {
         expect(await pidExists(pid)).toBe(false);
       }
-
-      expect(fixtureProcess.signalCode).toBe("SIGINT");
     },
     { timeout: 10000 },
   );

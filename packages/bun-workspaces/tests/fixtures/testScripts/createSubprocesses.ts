@@ -1,18 +1,25 @@
 /* eslint-disable no-console */
 
+import path from "path";
+import { createScriptExecutor } from "../../../src/runScript/scriptExecution";
 import { createSubprocess } from "../../../src/runScript/subprocesses";
 
 if (import.meta.main) {
+  const cleanups: (() => void)[] = [];
+  const subprocesses: Bun.Subprocess[] = [];
   for (let i = 0; i < 4; i++) {
-    // Use native sleep directly — shell wrappers (bun/sh) ignore SIGINT while
-    // waiting for a foreground child, so the kill forwarded by createSubprocess
-    // would never reach the actual sleeping process.
-    const subprocess = createSubprocess(["sleep", "10"], {
+    const { argv, cleanup } = createScriptExecutor("sleep 10", "bun");
+    cleanups.push(cleanup);
+
+    const subprocess = createSubprocess(argv, {
       cwd: process.cwd(),
-      stdout: "ignore",
-      stderr: "ignore",
+      env: process.env,
+      stdout: "pipe",
+      stderr: "pipe",
     });
 
     console.log(subprocess.pid.toString());
+
+    subprocesses.push(subprocess);
   }
 }

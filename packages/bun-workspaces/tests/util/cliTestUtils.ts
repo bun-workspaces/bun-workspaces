@@ -3,6 +3,7 @@ import { expect } from "bun:test";
 import packageJson from "../../package.json";
 import { getCliCommandConfig, type CliCommandName } from "../../src/cli";
 import { createRawPattern } from "../../src/internal/core";
+import { createSubprocess } from "../../src/runScript/subprocesses";
 import { getProjectRoot, type TestProjectName } from "../fixtures/testProjects";
 
 export const listCommandAndAliases = (commandName: CliCommandName) => {
@@ -84,7 +85,7 @@ export const setupCliTest = (
     text.replace(/\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g, "");
 
   const run = async (...argv: string[]) => {
-    const subprocess = Bun.spawn(
+    const subprocess = createSubprocess(
       [
         "bun",
         path.resolve(__dirname, "../../", packageJson.bin["bun-workspaces"]),

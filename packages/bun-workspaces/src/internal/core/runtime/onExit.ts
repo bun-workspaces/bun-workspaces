@@ -1,36 +1,52 @@
-import type { ProcessEventMap } from "process";
+type ExitCodeOrSignal = NodeJS.Signals | number;
+type ExitHandler = (exit?: ExitCodeOrSignal) => unknown;
 
-export const runOnExit = <
-  F extends (exit?: keyof ProcessEventMap | number) => unknown,
->(
-  fn: F,
-) => {
+let handlers: ExitHandler[] = [];
+let listenersRegistered = false;
+
+const runAllHandlers = (exit?: ExitCodeOrSignal) => {
+  for (const handler of handlers) {
+    handler(exit);
+  }
+  handlers = [];
+};
+
+const registerListeners = () => {
+  if (listenersRegistered) return;
+  listenersRegistered = true;
+
+  process.on("exit", (code) => {
+    runAllHandlers(code);
+    process.exit(code);
+  });
+
+  for (const signal of [
+    "SIGINT",
+    "SIGTERM",
+    "SIGUSR1",
+    "SIGUSR2",
+    "SIGHUP",
+    "SIGQUIT",
+  ] satisfies NodeJS.Signals[]) {
+    const handleSignal = () => {
+      runAllHandlers(signal);
+      process.off(signal, handleSignal);
+      process.kill(process.pid, signal);
+    };
+    process.on(signal, handleSignal);
+  }
+};
+
+export const runOnExit = <F extends ExitHandler>(fn: F) => {
+  registerListeners();
   let ran = false;
 
-  const run = (exit?: keyof ProcessEventMap | number) => {
+  const wrapped = (exit?: ExitCodeOrSignal) => {
     if (ran) return;
     ran = true;
     fn(exit);
+    handlers = handlers.filter((handler) => handler !== wrapped);
   };
 
-  const onExit = (exit?: number) => {
-    run(exit);
-    process.removeListener("exit", onExit);
-  };
-
-  process.on("exit", onExit);
-
-  for (const signal of [
-    `SIGINT`,
-    `SIGUSR1`,
-    `SIGUSR2`,
-    `SIGTERM`,
-  ] satisfies (keyof ProcessEventMap)[]) {
-    const onSignal = (signal: keyof ProcessEventMap) => {
-      run(signal);
-      process.removeListener(signal, onSignal);
-      process.kill(process.pid, signal);
-    };
-    process.on(signal, onSignal);
-  }
+  handlers.push(wrapped);
 };

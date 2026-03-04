@@ -10,7 +10,7 @@
     "catalogs": {}
   },
   "scripts": {
-    "bw": "bun cli run -N -W bw",
+    "bw": "bun cli run -N -W bw --script=",
     "bw:test": "bun cli run -N test bw --",
     "bw:lint": "bun cli run -N lint bw --",
     "bw:build": "bun cli run -N build bw --",

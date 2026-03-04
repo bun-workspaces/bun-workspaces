@@ -12,6 +12,7 @@ import {
 import type { ScriptCommand } from "./scriptCommand";
 import { createScriptExecutor } from "./scriptExecution";
 import type { ScriptShellOption } from "./scriptShellOption";
+import { createSubprocess } from "./subprocesses";
 
 export type RunScriptExit<ScriptMetadata extends object = object> = {
   exitCode: number;
@@ -62,7 +63,7 @@ export const runScript = <ScriptMetadata extends object = object>({
 
   const { argv, cleanup } = createScriptExecutor(scriptCommand.command, shell);
 
-  const proc = Bun.spawn(argv, {
+  const proc = createSubprocess(argv, {
     cwd: scriptCommand.workingDirectory || process.cwd(),
     env: {
       ...process.env,

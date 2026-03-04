@@ -5,8 +5,12 @@ const SUBPROCESS_REGISTRY: Record<number, Bun.Subprocess> = {};
 
 runOnExit((codeOrSignal) => {
   Object.values(SUBPROCESS_REGISTRY).forEach((subprocess) => {
-    logger.debug("Killing subprocess", { pid: subprocess.pid, codeOrSignal });
-    subprocess.kill(codeOrSignal);
+    if (!subprocess.killed && subprocess.exitCode === null) {
+      logger.debug(
+        `Killing subprocess ${subprocess.pid} with signal ${codeOrSignal}`,
+      );
+      subprocess.kill(codeOrSignal);
+    }
   });
 });
 

@@ -17,6 +17,7 @@ const registerListeners = () => {
 
   process.on("exit", (code) => {
     runAllHandlers(code);
+    process.exit(code);
   });
 
   for (const signal of [

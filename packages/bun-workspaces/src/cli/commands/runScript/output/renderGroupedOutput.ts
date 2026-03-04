@@ -63,8 +63,13 @@ const sliceIndexForVisibleWidth = (str: string, maxVisible: number): number => {
       while (i < str.length && /[0-9;?]/.test(str[i])) i++;
       if (i < str.length) i++;
     } else {
-      visibleCount++;
-      i++;
+      const codePoint = str.codePointAt(i)!;
+      const char = String.fromCodePoint(codePoint);
+      const isWide = /\p{Emoji_Presentation}/u.test(char);
+      const charWidth = isWide ? 2 : 1;
+      if (visibleCount + charWidth > maxVisible) break;
+      visibleCount += charWidth;
+      i += char.length; // accounts for surrogate pairs
     }
   }
   return i;
@@ -211,7 +216,7 @@ export const renderGroupedOutput = async (
         ...state.lines.slice(isFinal ? undefined : -scriptMaxLines).map(
           (line) =>
             ({
-              text: `${isFinal ? "" : textOps.cyan("│")}${line.text}`,
+              text: line.text,
               type: "scriptOutput",
             }) as const,
         ),
@@ -242,7 +247,7 @@ export const renderGroupedOutput = async (
           (visibleLength + (line.type === "borderedContent" ? 2 : 0) > width
             ? line.text.slice(
                 0,
-                sliceIndexForVisibleWidth(line.text, width - 2),
+                sliceIndexForVisibleWidth(line.text, width - 1),
               ) + "\x1b[0m…"
             : line.text) +
           (line.type === "borderedContent"
@@ -336,7 +341,7 @@ export const renderGroupedOutput = async (
   })) {
     const workspaceName = metadata.workspace.name;
     workspaceState[workspaceName].lines.push({
-      text: line,
+      text: line.replace(/\n$/, ""),
       type: "scriptOutput",
     });
     render();

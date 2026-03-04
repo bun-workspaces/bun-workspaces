@@ -40,7 +40,7 @@ script for all workspaces
     );
   });
 
-  test("--no-prefix with failures shows failure output", async () => {
+  test.only("--no-prefix with failures shows failure output", async () => {
     const result = await setupCliTest({
       testProject: "runScriptWithFailures",
     }).run("run-script", "test-exit", "--no-prefix");

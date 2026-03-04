@@ -14,7 +14,7 @@ export async function* generatePlainOutputLines(
 
   const formatLine = (line: string, workspaceName: string) => {
     const prefixedLine = prefix ? `[${workspaceName}] ${line}` : line;
-    return `\x1b[0m${prefixedLine}\n`;
+    return `\x1b[0m${prefixedLine}`;
   };
 
   for await (const { metadata, chunk } of output.text()) {
@@ -44,6 +44,6 @@ export const renderPlainOutput = async (
     stripDisruptiveControls,
     prefix,
   })) {
-    process[metadata.streamName].write(line);
+    process[metadata.streamName].write(line + "\n");
   }
 };

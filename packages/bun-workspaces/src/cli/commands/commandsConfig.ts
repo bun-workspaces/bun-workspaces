@@ -1,4 +1,5 @@
 import { SCRIPT_SHELL_OPTIONS } from "../../runScript/scriptShellOption";
+import { OUTPUT_STYLE_VALUES } from "./runScript/output/outputStyle";
 
 export interface CliCommandConfig {
   command: string;
@@ -152,6 +153,11 @@ export const CLI_COMMANDS_CONFIG = {
       args: {
         flags: ["-a", "--args <args>"],
         description: "Args to append to the script command",
+      },
+      outputStyle: {
+        flags: ["-o", "--output-style <style>"],
+        description: "The output style to use",
+        values: [...OUTPUT_STYLE_VALUES],
       },
       noPrefix: {
         flags: ["-N", "--no-prefix"],

@@ -7,6 +7,11 @@ import {
   splitWorkspacePatterns,
 } from "../commandHandlerUtils";
 import {
+  getDefaultOutputStyle,
+  validateOutputStyle,
+  type OutputStyleName,
+} from "./output/outputStyle";
+import {
   createScriptEvent,
   createScriptEventTarget,
   renderGroupedOutput,
@@ -31,6 +36,7 @@ export const runScript = handleProjectCommand(
       depOrder: boolean;
       ignoreDepFailure: boolean;
       jsonOutfile: string | undefined;
+      outputStyle: string | undefined;
     },
   ) => {
     options.inlineName = options.inlineName?.trim();
@@ -126,12 +132,25 @@ export const runScript = handleProjectCommand(
       ? options.inlineName || "(inline)"
       : script;
 
-    // await renderPlainOutput(output, {
-    //   prefix: options.prefix,
-    //   stripDisruptiveControls: workspaceCount > 1 || !!options.parallel,
-    // });
+    const stripDisruptiveControls = workspaces.length > 1 || !!options.parallel;
 
-    await renderGroupedOutput(workspaces, output, summary, scriptEventTarget);
+    const outputStyleHandlers: Record<OutputStyleName, () => Promise<void>> = {
+      grouped: () =>
+        renderGroupedOutput(workspaces, output, summary, scriptEventTarget),
+      prefixed: () =>
+        renderPlainOutput(output, { prefix: true, stripDisruptiveControls }),
+      plain: () =>
+        renderPlainOutput(output, {
+          prefix: false,
+          stripDisruptiveControls,
+        }),
+    };
+
+    const outputStyle = options.outputStyle
+      ? validateOutputStyle(options.outputStyle)
+      : getDefaultOutputStyle();
+
+    await outputStyleHandlers[outputStyle]();
 
     const exitResults = await summary;
 

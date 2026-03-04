@@ -144,14 +144,14 @@ describe("Run Script", () => {
         env: {},
       });
 
-      result.kill("SIGABRT");
+      result.kill("SIGINT");
 
       const exit = await result.exit;
       expect(exit).toEqual(
         makeExitResult({
-          exitCode: 134,
+          exitCode: 130,
           success: false,
-          signal: "SIGABRT",
+          signal: "SIGINT",
         }),
       );
     });

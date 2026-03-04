@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 
-import path from "path";
 import { createScriptExecutor } from "../../../src/runScript/scriptExecution";
 import { createSubprocess } from "../../../src/runScript/subprocesses";
 

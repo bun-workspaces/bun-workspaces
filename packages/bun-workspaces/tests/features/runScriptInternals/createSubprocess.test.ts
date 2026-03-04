@@ -18,6 +18,11 @@ const pidExists = async (pid: number): Promise<boolean> => {
 };
 
 describe("createSubprocess", () => {
+  if (IS_WINDOWS) {
+    /** @todo Windows support for Bun.Subprocess.kill is needed */
+    return;
+  }
+
   test(
     "kills registered subprocesses when main process exits via signal",
     async () => {
@@ -44,9 +49,7 @@ describe("createSubprocess", () => {
         expect(await pidExists(pid)).toBe(true);
       }
 
-      const killer = IS_WINDOWS ? 1 : "SIGINT";
-
-      fixtureProcess.kill(killer);
+      fixtureProcess.kill("SIGINT");
       await fixtureProcess.exited;
 
       // Allow kill signals sent to subprocesses to be processed

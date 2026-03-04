@@ -4,6 +4,10 @@ import {
   type TypedEvent,
   TypedEventTarget,
 } from "../../../../internal/core/language/events/typedEventTarget";
+import {
+  calculateVisibleLength,
+  truncateTerminalString,
+} from "../../../../internal/core/language/string/utf/visibleLength";
 import type {
   RunScriptAcrossWorkspacesProcessOutput,
   RunWorkspaceScriptMetadata,
@@ -50,31 +54,6 @@ const lineOps = {
   clearFull: () => `\x1b[2K`,
 };
 
-/**
- * Index in `str` (exclusive) so that the visible length of str.slice(0, index)
- * is at most `maxVisible`, skipping ANSI CSI sequences so they are not counted.
- */
-const sliceIndexForVisibleWidth = (str: string, maxVisible: number): number => {
-  let i = 0;
-  let visibleCount = 0;
-  while (i < str.length && visibleCount < maxVisible) {
-    if (str[i] === "\x1b" && str[i + 1] === "[") {
-      i += 2;
-      while (i < str.length && /[0-9;?]/.test(str[i])) i++;
-      if (i < str.length) i++;
-    } else {
-      const codePoint = str.codePointAt(i)!;
-      const char = String.fromCodePoint(codePoint);
-      const isWide = /\p{Emoji_Presentation}/u.test(char);
-      const charWidth = isWide ? 2 : 1;
-      if (visibleCount + charWidth > maxVisible) break;
-      visibleCount += charWidth;
-      i += char.length; // accounts for surrogate pairs
-    }
-  }
-  return i;
-};
-
 const textOps = {
   bold: (s: string) => `\x1b[1m${s}\x1b[0m`,
   red: (s: string) => `\x1b[31m${s}\x1b[0m`,
@@ -117,7 +96,7 @@ type WorkspaceState = {
 
 const STATUS_COLORS: Record<WorkspaceState["status"], keyof typeof textOps> = {
   pending: "gray",
-  running: "intenseMagenta",
+  running: "intenseCyan",
   skipped: "gray",
   success: "intenseGreen",
   failure: "intenseRed",
@@ -199,8 +178,8 @@ export const renderGroupedOutput = async (
 
       linesToWrite.push({
         text:
-          textOps.intenseBlue("│ ") +
-          "   Status: " +
+          textOps.intenseBlue("│") +
+          "    Status: " +
           textOps[STATUS_COLORS[state.status]](statusText),
         type: "borderedContent",
       });
@@ -211,6 +190,16 @@ export const renderGroupedOutput = async (
         ),
         type: "border",
       });
+
+      if (state.lines.length > scriptMaxLines && !isFinal) {
+        const hiddenLines = state.lines.length - scriptMaxLines;
+        linesToWrite.push({
+          text: textOps.gray(
+            `(${hiddenLines} line${hiddenLines === 1 ? "" : "s"} hidden until exit)`,
+          ),
+          type: "scriptOutput",
+        });
+      }
 
       linesToWrite.push(
         ...state.lines.slice(isFinal ? undefined : -scriptMaxLines).map(
@@ -240,15 +229,11 @@ export const renderGroupedOutput = async (
       if (isFinal && line.type === "scriptOutput") {
         process.stdout.write(line.text.replace(/\n?$/, "\n"));
       } else {
-        const strippedLine = Bun.stripANSI(line.text);
-        const visibleLength = strippedLine.length;
+        const visibleLength = calculateVisibleLength(line.text);
 
         const truncated =
           (visibleLength + (line.type === "borderedContent" ? 2 : 0) > width
-            ? line.text.slice(
-                0,
-                sliceIndexForVisibleWidth(line.text, width - 1),
-              ) + "\x1b[0m…"
+            ? truncateTerminalString(line.text, width - 1) + "\x1b[0m…"
             : line.text) +
           (line.type === "borderedContent"
             ? " ".repeat(Math.max(0, width - visibleLength - 1)) +

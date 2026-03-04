@@ -455,7 +455,7 @@ describe("Run Scripts", () => {
     },
   );
 
-  test.each([1, 2, 3])(
+  test.serial.each([1, 2, 3])(
     "Run Scripts - uses default parallel max (%d)",
     async (max) => {
       process.env[getUserEnvVarName("parallelMaxDefault")] = max.toString();

@@ -1,12 +1,10 @@
-import type { ProcessEventMap } from "process";
-
-type ExitReason = keyof ProcessEventMap | number;
-type ExitHandler = (exit?: ExitReason) => unknown;
+type ExitCodeOrSignal = NodeJS.Signals | number;
+type ExitHandler = (exit?: ExitCodeOrSignal) => unknown;
 
 let handlers: ExitHandler[] = [];
 let listenersRegistered = false;
 
-const runAllHandlers = (exit?: ExitReason) => {
+const runAllHandlers = (exit?: ExitCodeOrSignal) => {
   for (const handler of handlers) {
     handler(exit);
   }
@@ -19,6 +17,7 @@ const registerListeners = () => {
 
   process.on("exit", (code) => {
     runAllHandlers(code);
+    process.exit(code);
   });
 
   for (const signal of [
@@ -28,7 +27,7 @@ const registerListeners = () => {
     "SIGUSR2",
     "SIGHUP",
     "SIGQUIT",
-  ] satisfies (keyof ProcessEventMap)[]) {
+  ] satisfies NodeJS.Signals[]) {
     const handleSignal = () => {
       runAllHandlers(signal);
       process.off(signal, handleSignal);
@@ -42,7 +41,7 @@ export const runOnExit = <F extends ExitHandler>(fn: F) => {
   registerListeners();
   let ran = false;
 
-  const wrapped = (exit?: ExitReason) => {
+  const wrapped = (exit?: ExitCodeOrSignal) => {
     if (ran) return;
     ran = true;
     fn(exit);

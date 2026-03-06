@@ -251,18 +251,6 @@ export const renderGroupedOutput = async (
     }
   };
 
-  scriptEventTarget.addEventListener("start", (event) => {
-    const { workspace } = event;
-    workspaceState[workspace.name].status = "running";
-    render();
-  });
-
-  scriptEventTarget.addEventListener("skip", (event) => {
-    const { workspace } = event;
-    workspaceState[workspace.name].status = "skipped";
-    render();
-  });
-
   const handleExitResult = (
     result: RunScriptExit<RunWorkspaceScriptMetadata>,
   ) => {
@@ -290,12 +278,31 @@ export const renderGroupedOutput = async (
     state.exitCode = result.exitCode ?? process.exitCode ?? null;
   };
 
+  scriptEventTarget.addEventListener("start", (event) => {
+    const { workspace } = event;
+    workspaceState[workspace.name].status = "running";
+    render();
+  });
+
+  scriptEventTarget.addEventListener("skip", (event) => {
+    const { workspace } = event;
+    workspaceState[workspace.name].status = "skipped";
+    render();
+  });
+
   scriptEventTarget.addEventListener("exit", (event) => {
     if (event.exitResult) handleExitResult(event.exitResult);
     render();
   });
 
   process.on("SIGWINCH", render);
+
+  process.stdin.setRawMode(true);
+
+  process.stdin.on("data", (data) => {
+    if (data[0] === 0x03) process.kill(process.pid, "SIGINT");
+    if (data[0] === 0x1c) process.kill(process.pid, "SIGQUIT");
+  });
 
   runOnExit((reason) => {
     if (typeof reason === "string" && reason.startsWith("SIG")) {
@@ -314,6 +321,7 @@ export const renderGroupedOutput = async (
 
     render(true);
     process.stdout.write(cursorOps.show());
+    process.stdin.setRawMode(false);
   });
 
   process.stdout.write(cursorOps.hide());

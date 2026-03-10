@@ -125,6 +125,17 @@ export const renderGroupedOutput = async (
     {} as Record<string, WorkspaceState>,
   );
 
+  const initializeTuiTerminal = () => {
+    process.stdout.write(cursorOps.hide());
+    process.stdin.setRawMode(true);
+  };
+
+  const resetTerminal = () => {
+    process.stdout.write(cursorOps.show());
+    process.stdin.unref();
+    process.stdin.setRawMode(false);
+  };
+
   let previousHeight = 0;
   let didFinalRender = false;
   const render = (isFinal = false) => {
@@ -247,7 +258,7 @@ export const renderGroupedOutput = async (
     previousHeight = linesToWrite.length;
 
     if (isFinal) {
-      process.stdout.write(cursorOps.show());
+      resetTerminal();
     }
   };
 
@@ -297,8 +308,6 @@ export const renderGroupedOutput = async (
 
   process.on("SIGWINCH", render);
 
-  process.stdin.setRawMode(true);
-
   process.stdin.on("data", (data) => {
     if (data[0] === 0x03) process.kill(process.pid, "SIGINT");
     if (data[0] === 0x1c) process.kill(process.pid, "SIGQUIT");
@@ -320,11 +329,10 @@ export const renderGroupedOutput = async (
     });
 
     render(true);
-    process.stdout.write(cursorOps.show());
-    process.stdin.setRawMode(false);
+    resetTerminal();
   });
 
-  process.stdout.write(cursorOps.hide());
+  initializeTuiTerminal();
 
   render();
 
@@ -340,7 +348,7 @@ export const renderGroupedOutput = async (
     render();
   }
 
-  summary.then((summary) => {
+  await summary.then((summary) => {
     // fallback logic to resolve race conditions with script events
     summary.scriptResults.forEach((result) => {
       handleExitResult(result);

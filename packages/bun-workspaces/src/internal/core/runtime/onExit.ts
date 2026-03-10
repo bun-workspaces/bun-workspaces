@@ -23,8 +23,9 @@ const registerListeners = () => {
   if (listenersRegistered) return;
   listenersRegistered = true;
 
+  logger.debug("Registering exit listeners");
+
   process.on("exit", (code) => {
-    console.log("Exit event", code);
     runAllHandlers(code);
     process.exit(code);
   });

@@ -231,6 +231,8 @@ export const runScript = handleProjectCommand(
 
     if (exitResults.failureCount) {
       process.exit(1);
+    } else {
+      process.exit(0);
     }
   },
 );

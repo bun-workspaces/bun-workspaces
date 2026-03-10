@@ -1,3 +1,5 @@
+import { logger } from "../../logger";
+
 type ExitCodeOrSignal = NodeJS.Signals | number;
 type ExitHandler = (exit?: ExitCodeOrSignal) => unknown;
 
@@ -6,8 +8,14 @@ let listenersRegistered = false;
 
 const runAllHandlers = (exit?: ExitCodeOrSignal) => {
   for (const handler of handlers) {
-    handler(exit);
+    try {
+      handler(exit);
+    } catch (error) {
+      logger.error("Error running exit handler");
+      logger.error(error as Error);
+    }
   }
+  logger.debug("Exit handlers ran");
   handlers = [];
 };
 

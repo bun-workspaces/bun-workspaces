@@ -944,9 +944,17 @@ describe("Run Scripts - Dependencies", () => {
 
     expect(events).toEqual([
       { event: "start", index: 0, result: null },
-      { event: "exit", index: 0, result: makeScriptExit({ metadata: { name: "A" } }) },
+      {
+        event: "exit",
+        index: 0,
+        result: makeScriptExit({ metadata: { name: "A" } }),
+      },
       { event: "start", index: 1, result: null },
-      { event: "exit", index: 1, result: makeScriptExit({ metadata: { name: "B" } }) },
+      {
+        event: "exit",
+        index: 1,
+        result: makeScriptExit({ metadata: { name: "B" } }),
+      },
     ]);
   });
 
@@ -985,11 +993,19 @@ describe("Run Scripts - Dependencies", () => {
     expect(events).toContainEqual({
       event: "exit",
       index: 0,
-      result: makeScriptExit({ exitCode: 1, success: false, metadata: { name: "A" } }),
+      result: makeScriptExit({
+        exitCode: 1,
+        success: false,
+        metadata: { name: "A" },
+      }),
     });
     expect(events).toContainEqual({ event: "skip", index: 1, result: null });
-    expect(events).not.toContainEqual(expect.objectContaining({ event: "start", index: 1 }));
-    expect(events).not.toContainEqual(expect.objectContaining({ event: "exit", index: 1 }));
+    expect(events).not.toContainEqual(
+      expect.objectContaining({ event: "start", index: 1 }),
+    );
+    expect(events).not.toContainEqual(
+      expect.objectContaining({ event: "exit", index: 1 }),
+    );
   });
 
   test("onScriptEvent - all three event types fire across scripts in a single run", async () => {
@@ -1034,7 +1050,11 @@ describe("Run Scripts - Dependencies", () => {
     expect(events).toContainEqual({
       event: "exit",
       index: 0,
-      result: makeScriptExit({ exitCode: 1, success: false, metadata: { name: "A" } }),
+      result: makeScriptExit({
+        exitCode: 1,
+        success: false,
+        metadata: { name: "A" },
+      }),
     });
     // B succeeds: start (null result) + exit (success result)
     expect(events).toContainEqual({ event: "start", index: 1, result: null });
@@ -1045,8 +1065,12 @@ describe("Run Scripts - Dependencies", () => {
     });
     // C skipped due to A's failure: skip (null result) only
     expect(events).toContainEqual({ event: "skip", index: 2, result: null });
-    expect(events).not.toContainEqual(expect.objectContaining({ event: "start", index: 2 }));
-    expect(events).not.toContainEqual(expect.objectContaining({ event: "exit", index: 2 }));
+    expect(events).not.toContainEqual(
+      expect.objectContaining({ event: "start", index: 2 }),
+    );
+    expect(events).not.toContainEqual(
+      expect.objectContaining({ event: "exit", index: 2 }),
+    );
   });
 
   test("cascading skip on dependency failure", async () => {

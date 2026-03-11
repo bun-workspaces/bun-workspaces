@@ -105,7 +105,7 @@ const STATUS_COLORS: Record<WorkspaceState["status"], keyof typeof textOps> = {
   killed: "intenseRed",
 };
 
-const BORDER_COLOR = "intenseBlue" satisfies keyof typeof textOps;
+const BORDER_COLOR = "blue" satisfies keyof typeof textOps;
 
 export const renderGroupedOutput = async (
   workspaces: Workspace[],

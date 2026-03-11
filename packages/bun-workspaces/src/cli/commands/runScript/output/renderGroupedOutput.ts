@@ -105,6 +105,8 @@ const STATUS_COLORS: Record<WorkspaceState["status"], keyof typeof textOps> = {
   killed: "intenseRed",
 };
 
+const BORDER_COLOR = "intenseBlue" satisfies keyof typeof textOps;
+
 export const renderGroupedOutput = async (
   workspaces: Workspace[],
   output: RunScriptAcrossWorkspacesProcessOutput,
@@ -155,14 +157,29 @@ export const renderGroupedOutput = async (
       const state = workspaceState[workspace.name];
 
       linesToWrite.push({
-        text: textOps.intenseBlue(
+        text: textOps[BORDER_COLOR](
           "┌" + "─".repeat(Math.max(0, width - 2)) + "┐",
         ),
         type: "border",
       });
 
+      const borderText = (text: string) => {
+        const padding = 4; // left border, spaces, right border
+        const visibleLength = calculateVisibleLength(text);
+        const truncated =
+          visibleLength > width - padding
+            ? truncateTerminalString(text, width - padding - 1) + "\x1b[0m…"
+            : text;
+        return (
+          textOps[BORDER_COLOR]("│ ") +
+          truncated +
+          " ".repeat(Math.max(0, width - visibleLength - padding)) +
+          textOps[BORDER_COLOR](" │")
+        );
+      };
+
       linesToWrite.push({
-        text: `${textOps.intenseBlue("│ ") + "Workspace: " + textOps.bold(workspace.name)}`,
+        text: borderText("Workspace: " + textOps.bold(workspace.name)),
         type: "borderedContent",
       });
 
@@ -188,15 +205,14 @@ export const renderGroupedOutput = async (
       }
 
       linesToWrite.push({
-        text:
-          textOps.intenseBlue("│") +
-          "    Status: " +
-          textOps[STATUS_COLORS[state.status]](statusText),
+        text: borderText(
+          "   Status: " + textOps[STATUS_COLORS[state.status]](statusText),
+        ),
         type: "borderedContent",
       });
 
       linesToWrite.push({
-        text: textOps.intenseBlue(
+        text: textOps[BORDER_COLOR](
           "└" + "─".repeat(Math.max(0, width - 2)) + "┘",
         ),
         type: "border",
@@ -247,13 +263,9 @@ export const renderGroupedOutput = async (
         const visibleLength = calculateVisibleLength(line.text);
 
         const truncated =
-          (visibleLength + (line.type === "borderedContent" ? 2 : 0) > width
-            ? truncateTerminalString(line.text, width - 1) + "\x1b[0m…"
-            : line.text) +
-          (line.type === "borderedContent"
-            ? " ".repeat(Math.max(0, width - visibleLength - 1)) +
-              textOps.cyan("│")
-            : "");
+          visibleLength > width
+            ? truncateTerminalString(line.text, width - 2) + "\x1b[0m…"
+            : line.text;
 
         process.stdout.write(truncated.replace(/\n?$/, "\n"));
       }

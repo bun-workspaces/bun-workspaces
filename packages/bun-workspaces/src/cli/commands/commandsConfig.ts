@@ -162,7 +162,7 @@ export const CLI_COMMANDS_CONFIG = {
         values: [...OUTPUT_STYLE_VALUES],
       },
       groupedLines: {
-        flags: ["-l", "--grouped-lines <count>"],
+        flags: ["-L", "--grouped-lines <count>"],
         description: `When using "grouped" output, the number of active script lines to preview (number or "all", default ${DEFAULT_GROUPED_LINES})`,
       },
       noPrefix: {

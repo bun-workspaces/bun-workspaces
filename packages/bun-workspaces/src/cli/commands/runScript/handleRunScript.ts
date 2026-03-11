@@ -143,16 +143,9 @@ export const runScript = handleProjectCommand(
       } else {
         const parsedGroupedLines = parseInt(options.groupedLines as string);
 
-        if (isNaN(parsedGroupedLines)) {
+        if (parsedGroupedLines <= 0 || isNaN(parsedGroupedLines)) {
           logger.error(
-            `Invalid grouped lines value: ${options.groupedLines}. Must be a number or "all".`,
-          );
-          process.exit(1);
-        }
-
-        if (parsedGroupedLines <= 0) {
-          logger.error(
-            `Invalid grouped lines value: ${options.groupedLines}. Must be a positive number or "all".`,
+            `Invalid max grouped lines value: ${options.groupedLines}. Must be a positive number or "all".`,
           );
           process.exit(1);
         }

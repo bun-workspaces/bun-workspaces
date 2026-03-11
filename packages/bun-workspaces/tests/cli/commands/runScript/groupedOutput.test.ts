@@ -1,5 +1,6 @@
 import { Terminal } from "@xterm/headless";
 import { describe, expect, test } from "bun:test";
+import { DEFAULT_GROUPED_LINES } from "../../../../src/cli";
 import { createAsyncIterableQueue } from "../../../../src/internal/core";
 import type { TestProjectName } from "../../../fixtures/testProjects";
 import { createCliSubprocess } from "../../../util/cliTestUtils";
@@ -64,7 +65,7 @@ const runSnapshotTest = async ({
 
   expect(
     snapshotIndex,
-    `The following snapshot was never matched:\n${expectedSnapshots[snapshotIndex]}`,
+    `The following snapshot was never matched:\n${expectedSnapshots[snapshotIndex]}\n\nEnding snapshot:\n${getTerminalContent(xTerm).trim()}`,
   ).toBe(expectedSnapshots.length);
 
   if (expectFinalSnapshotAtExit) {
@@ -401,7 +402,7 @@ test-script c
   );
 
   describe("handle wide output", async () => {
-    test.only("100-wide output - 100 columns", async () => {
+    test("100-wide output - 100 columns", async () => {
       await runSnapshotTest({
         runScriptArgv: ["test-script", "has-100-wide-output"],
         testProject: "runScriptForGroupedOutput",
@@ -426,7 +427,7 @@ this test script has a very very very long output that is exactly one hundred ch
         cols: 100,
       });
     });
-    test.only("100-wide output - 99 columns", async () => {
+    test("100-wide output - 99 columns", async () => {
       await runSnapshotTest({
         runScriptArgv: ["test-script", "has-100-wide-output"],
         testProject: "runScriptForGroupedOutput",
@@ -436,7 +437,7 @@ this test script has a very very very long output that is exactly one hundred ch
 │ Workspace: has-100-wide-output                                                                  │
 │    Status: running                                                                              │
 └─────────────────────────────────────────────────────────────────────────────────────────────────┘
-this test script has a very very very long output that is exactly one hundred characters long inde…`,
+this test script has a very very very long output that is exactly one hundred characters long ind… `,
           `
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ Workspace: has-100-wide-output                                                                  │
@@ -453,7 +454,7 @@ d
       });
     });
 
-    test.only("100-wide output - 50 columns", async () => {
+    test("100-wide output - 50 columns", async () => {
       await runSnapshotTest({
         runScriptArgv: ["test-script", "has-100-wide-output"],
         testProject: "runScriptForGroupedOutput",
@@ -463,7 +464,7 @@ d
 │ Workspace: has-100-wide-output                 │
 │    Status: running                             │
 └────────────────────────────────────────────────┘
-this test script has a very very very long output…`,
+this test script has a very very very long outpu… `,
           `
 ┌────────────────────────────────────────────────┐
 │ Workspace: has-100-wide-output                 │
@@ -479,5 +480,598 @@ that is exactly one hundred characters long indeed
         cols: 50,
       });
     });
+  });
+
+  describe("handle wide workspace name", async () => {
+    test("40-wide workspace name - 55 columns", async () => {
+      await runSnapshotTest({
+        runScriptArgv: [
+          "test-script",
+          "has-40-wide-workspace-name-which-is-long",
+        ],
+        testProject: "runScriptForGroupedOutput",
+        expectedSnapshots: [
+          `
+┌─────────────────────────────────────────────────────┐
+│ Workspace: has-40-wide-workspace-name-which-is-long │
+│    Status: pending                                  │
+└─────────────────────────────────────────────────────┘`,
+        ],
+        rows: 50,
+        cols: 55,
+      });
+    });
+
+    test("40-wide workspace name - 54 columns", async () => {
+      await runSnapshotTest({
+        runScriptArgv: [
+          "test-script",
+          "has-40-wide-workspace-name-which-is-long",
+        ],
+        testProject: "runScriptForGroupedOutput",
+        expectedSnapshots: [
+          `
+┌────────────────────────────────────────────────────┐
+│ Workspace: has-40-wide-workspace-name-which-is-lo… │
+│    Status: pending                                 │
+└────────────────────────────────────────────────────┘`,
+          `
+┌────────────────────────────────────────────────────┐
+│ Workspace: has-40-wide-workspace-name-which-is-lo… │
+│    Status: success                                 │
+└────────────────────────────────────────────────────┘
+long workspace name
+✅ has-40-wide-workspace-name-which-is-long: test-scrip
+t
+1 script ran successfully`,
+        ],
+        rows: 50,
+        cols: 54,
+      });
+    });
+
+    test("40-wide workspace name - 18 columns", async () => {
+      await runSnapshotTest({
+        runScriptArgv: [
+          "test-script",
+          "has-40-wide-workspace-name-which-is-long",
+        ],
+        testProject: "runScriptForGroupedOutput",
+        expectedSnapshots: [
+          `
+┌────────────────┐
+│ Workspace: ha… │
+│    Status: pe… │
+└────────────────┘`,
+        ],
+        rows: 50,
+        cols: 18,
+      });
+    });
+
+    test("40-wide workspace name - 12 columns", async () => {
+      await runSnapshotTest({
+        runScriptArgv: [
+          "test-script",
+          "has-40-wide-workspace-name-which-is-long",
+        ],
+        testProject: "runScriptForGroupedOutput",
+        expectedSnapshots: [
+          `
+┌──────────┐
+│ Workspa… │
+│    Stat… │
+└──────────┘`,
+        ],
+        rows: 50,
+        cols: 12,
+      });
+    });
+
+    test("40-wide workspace name - 1 column", async () => {
+      await runSnapshotTest({
+        runScriptArgv: [
+          "test-script",
+          "has-40-wide-workspace-name-which-is-long",
+        ],
+        testProject: "runScriptForGroupedOutput",
+        expectedSnapshots: [
+          `
+┌┐
+…
+…
+└┘`,
+        ],
+        rows: 50,
+        cols: 1,
+      });
+    });
+  });
+
+  describe("handle max script output preview lines", () => {
+    /** just so terminal output shows everything in the snapshot */
+    const padding = 100;
+
+    test(`50-line output: Default max (${DEFAULT_GROUPED_LINES})`, async () => {
+      await runSnapshotTest({
+        runScriptArgv: ["test-script", "has-50-line-output"],
+        testProject: "runScriptForGroupedOutput",
+        expectedSnapshots: [
+          `
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Workspace: has-50-line-output                                                                    │
+│    Status: success                                                                               │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+(30 lines hidden until exit)
+31 this test script has a very very very long output that is exactly one hundred characters long i…
+32 this test script has a very very very long output that is exactly one hundred characters long i…
+33 this test script has a very very very long output that is exactly one hundred characters long i…
+34 this test script has a very very very long output that is exactly one hundred characters long i…
+35 this test script has a very very very long output that is exactly one hundred characters long i…
+36 this test script has a very very very long output that is exactly one hundred characters long i…
+37 this test script has a very very very long output that is exactly one hundred characters long i…
+38 this test script has a very very very long output that is exactly one hundred characters long i…
+39 this test script has a very very very long output that is exactly one hundred characters long i…
+40 this test script has a very very very long output that is exactly one hundred characters long i…
+41 this test script has a very very very long output that is exactly one hundred characters long i…
+42 this test script has a very very very long output that is exactly one hundred characters long i…
+43 this test script has a very very very long output that is exactly one hundred characters long i…
+44 this test script has a very very very long output that is exactly one hundred characters long i…
+45 this test script has a very very very long output that is exactly one hundred characters long i…
+46 this test script has a very very very long output that is exactly one hundred characters long i…
+47 this test script has a very very very long output that is exactly one hundred characters long i…
+48 this test script has a very very very long output that is exactly one hundred characters long i…
+49 this test script has a very very very long output that is exactly one hundred characters long i…
+50 this test script has a very very very long output that is exactly one hundred characters long i…
+`,
+          `
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Workspace: has-50-line-output                                                                    │
+│    Status: success                                                                               │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+1 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+2 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+3 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+4 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+5 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+6 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+7 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+8 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+9 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+10 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+11 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+12 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+13 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+14 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+15 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+16 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+17 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+18 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+19 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+20 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+21 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+22 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+23 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+24 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+25 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+26 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+27 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+28 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+29 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+30 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+31 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+32 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+33 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+34 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+35 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+36 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+37 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+38 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+39 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+40 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+41 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+42 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+43 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+44 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+45 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+46 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+47 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+48 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+49 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+50 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+✅ has-50-line-output: test-script
+1 script ran successfully
+`,
+        ],
+        expectFinalSnapshotAtExit: true,
+        rows: DEFAULT_GROUPED_LINES + padding,
+        cols: 100,
+      });
+    });
+
+    test(`50-line output: 5 lines`, async () => {
+      await runSnapshotTest({
+        runScriptArgv: [
+          "test-script",
+          "has-50-line-output",
+          "--grouped-lines=5",
+        ],
+        testProject: "runScriptForGroupedOutput",
+        expectedSnapshots: [
+          `
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Workspace: has-50-line-output                                                                    │
+│    Status: running                                                                               │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+(45 lines hidden until exit)
+46 this test script has a very very very long output that is exactly one hundred characters long i…
+47 this test script has a very very very long output that is exactly one hundred characters long i…
+48 this test script has a very very very long output that is exactly one hundred characters long i…
+49 this test script has a very very very long output that is exactly one hundred characters long i…
+50 this test script has a very very very long output that is exactly one hundred characters long i…
+`,
+          `
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Workspace: has-50-line-output                                                                    │
+│    Status: success                                                                               │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+1 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+2 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+3 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+4 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+5 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+6 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+7 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+8 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+9 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+10 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+11 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+12 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+13 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+14 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+15 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+16 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+17 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+18 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+19 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+20 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+21 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+22 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+23 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+24 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+25 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+26 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+27 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+28 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+29 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+30 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+31 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+32 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+33 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+34 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+35 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+36 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+37 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+38 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+39 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+40 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+41 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+42 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+43 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+44 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+45 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+46 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+47 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+48 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+49 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+50 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+✅ has-50-line-output: test-script
+1 script ran successfully
+`,
+        ],
+        expectFinalSnapshotAtExit: true,
+        rows: 50 + padding,
+        cols: 100,
+      });
+    });
+
+    test(`50-line output: all lines`, async () => {
+      await runSnapshotTest({
+        runScriptArgv: [
+          "test-script",
+          "has-50-line-output",
+          "--grouped-lines=all",
+        ],
+        testProject: "runScriptForGroupedOutput",
+        expectedSnapshots: [
+          `
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Workspace: has-50-line-output                                                                    │
+│    Status: success                                                                               │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+1 this test script has a very very very long output that is exactly one hundred characters long in…
+2 this test script has a very very very long output that is exactly one hundred characters long in…
+3 this test script has a very very very long output that is exactly one hundred characters long in…
+4 this test script has a very very very long output that is exactly one hundred characters long in…
+5 this test script has a very very very long output that is exactly one hundred characters long in…
+6 this test script has a very very very long output that is exactly one hundred characters long in…
+7 this test script has a very very very long output that is exactly one hundred characters long in…
+8 this test script has a very very very long output that is exactly one hundred characters long in…
+9 this test script has a very very very long output that is exactly one hundred characters long in…
+10 this test script has a very very very long output that is exactly one hundred characters long i…
+11 this test script has a very very very long output that is exactly one hundred characters long i…
+12 this test script has a very very very long output that is exactly one hundred characters long i…
+13 this test script has a very very very long output that is exactly one hundred characters long i…
+14 this test script has a very very very long output that is exactly one hundred characters long i…
+15 this test script has a very very very long output that is exactly one hundred characters long i…
+16 this test script has a very very very long output that is exactly one hundred characters long i…
+17 this test script has a very very very long output that is exactly one hundred characters long i…
+18 this test script has a very very very long output that is exactly one hundred characters long i…
+19 this test script has a very very very long output that is exactly one hundred characters long i…
+20 this test script has a very very very long output that is exactly one hundred characters long i…
+21 this test script has a very very very long output that is exactly one hundred characters long i…
+22 this test script has a very very very long output that is exactly one hundred characters long i…
+23 this test script has a very very very long output that is exactly one hundred characters long i…
+24 this test script has a very very very long output that is exactly one hundred characters long i…
+25 this test script has a very very very long output that is exactly one hundred characters long i…
+26 this test script has a very very very long output that is exactly one hundred characters long i…
+27 this test script has a very very very long output that is exactly one hundred characters long i…
+28 this test script has a very very very long output that is exactly one hundred characters long i…
+29 this test script has a very very very long output that is exactly one hundred characters long i…
+30 this test script has a very very very long output that is exactly one hundred characters long i…
+31 this test script has a very very very long output that is exactly one hundred characters long i…
+32 this test script has a very very very long output that is exactly one hundred characters long i…
+33 this test script has a very very very long output that is exactly one hundred characters long i…
+34 this test script has a very very very long output that is exactly one hundred characters long i…
+35 this test script has a very very very long output that is exactly one hundred characters long i…
+36 this test script has a very very very long output that is exactly one hundred characters long i…
+37 this test script has a very very very long output that is exactly one hundred characters long i…
+38 this test script has a very very very long output that is exactly one hundred characters long i…
+39 this test script has a very very very long output that is exactly one hundred characters long i…
+40 this test script has a very very very long output that is exactly one hundred characters long i…
+41 this test script has a very very very long output that is exactly one hundred characters long i…
+42 this test script has a very very very long output that is exactly one hundred characters long i…
+43 this test script has a very very very long output that is exactly one hundred characters long i…
+44 this test script has a very very very long output that is exactly one hundred characters long i…
+45 this test script has a very very very long output that is exactly one hundred characters long i…
+46 this test script has a very very very long output that is exactly one hundred characters long i…
+47 this test script has a very very very long output that is exactly one hundred characters long i…
+48 this test script has a very very very long output that is exactly one hundred characters long i…
+49 this test script has a very very very long output that is exactly one hundred characters long i…
+50 this test script has a very very very long output that is exactly one hundred characters long i…
+`,
+          `
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Workspace: has-50-line-output                                                                    │
+│    Status: success                                                                               │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+1 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+2 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+3 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+4 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+5 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+6 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+7 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+8 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+9 this test script has a very very very long output that is exactly one hundred characters long inde
+ed
+10 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+11 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+12 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+13 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+14 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+15 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+16 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+17 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+18 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+19 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+20 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+21 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+22 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+23 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+24 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+25 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+26 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+27 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+28 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+29 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+30 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+31 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+32 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+33 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+34 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+35 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+36 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+37 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+38 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+39 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+40 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+41 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+42 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+43 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+44 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+45 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+46 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+47 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+48 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+49 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+50 this test script has a very very very long output that is exactly one hundred characters long ind
+eed
+✅ has-50-line-output: test-script
+1 script ran successfully
+`,
+        ],
+        expectFinalSnapshotAtExit: true,
+        rows: 50 + padding,
+        cols: 100,
+      });
+    });
+
+    test.each([-1, "invalid", NaN, Infinity, -Infinity, 0])(
+      "invalid number: %p",
+      async (value) => {
+        await runSnapshotTest({
+          runScriptArgv: [
+            "test-script",
+            "has-50-line-output",
+            `--grouped-lines=${value}`,
+          ],
+          testProject: "runScriptForGroupedOutput",
+          expectedSnapshots: [
+            `Invalid max grouped lines value: ${value}. Must be a positive number or "all".`,
+          ],
+          rows: 10,
+          cols: 100,
+        });
+      },
+    );
   });
 });

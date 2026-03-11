@@ -81,7 +81,7 @@ export const createCli = ({
       );
 
       if (postTerminatorArgs.length) {
-        logger.debug("Has post terminator args");
+        logger.debug("Has post-terminator args");
       }
 
       logger.debug(`Bun version: ${Bun.version}`);

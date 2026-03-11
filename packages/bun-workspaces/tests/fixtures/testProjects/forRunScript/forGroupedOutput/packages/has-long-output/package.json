@@ -1,0 +1,6 @@
+{
+  "name": "has-long-output",
+  "scripts": {
+    "test-script": "sleep 0.1 && echo 'this test script has a very very very long output that is exactly one hundred characters long indeed'"
+  }
+}

@@ -17,6 +17,7 @@ const getTerminalContent = (terminal: Terminal): string => {
 type SnapshotTestOptions = {
   runScriptArgv: string[];
   expectedSnapshots: string[];
+  expectLastSnapshotAtEnd?: boolean;
   testProject: TestProjectName;
   rows: number;
   cols: number;
@@ -25,6 +26,7 @@ type SnapshotTestOptions = {
 const runSnapshotTest = async ({
   runScriptArgv,
   expectedSnapshots,
+  expectLastSnapshotAtEnd,
   testProject,
   rows,
   cols,
@@ -56,9 +58,18 @@ const runSnapshotTest = async ({
   for await (const chunk of dataQueue) {
     await new Promise((resolve) => xTerm.write(chunk, () => resolve(true)));
     const content = getTerminalContent(xTerm);
-    if (content.trim() === expectedSnapshots[snapshotIndex]) {
+    if (content.trim() === expectedSnapshots[snapshotIndex].trim()) {
       snapshotIndex++;
     }
+    if (snapshotIndex === expectedSnapshots.length) {
+      break;
+    }
+  }
+
+  if (expectLastSnapshotAtEnd) {
+    expect(getTerminalContent(xTerm).trim()).toBe(
+      expectedSnapshots[expectedSnapshots.length - 1].trim(),
+    );
   }
 
   expect(snapshotIndex).toBe(expectedSnapshots.length);
@@ -70,7 +81,8 @@ describe("grouped output", () => {
       runScriptArgv: ["a-workspaces"],
       testProject: "simple1",
       expectedSnapshots: [
-        `┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+        `
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ Workspace: application-1a                                                                        │
 │    Status: success                                                                               │
 └──────────────────────────────────────────────────────────────────────────────────────────────────┘
@@ -84,6 +96,7 @@ script for a workspaces
 ✅ library-1a: a-workspaces
 2 scripts ran successfully`,
       ],
+      expectLastSnapshotAtEnd: true,
       rows: 50,
       cols: 100,
     });

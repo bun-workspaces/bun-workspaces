@@ -58,11 +58,8 @@ const runSnapshotTest = async ({
   for await (const chunk of dataQueue) {
     await new Promise((resolve) => xTerm.write(chunk, () => resolve(true)));
     const content = getTerminalContent(xTerm);
-    if (content.trim() === expectedSnapshots[snapshotIndex].trim()) {
+    if (content.trim() === expectedSnapshots[snapshotIndex]?.trim()) {
       snapshotIndex++;
-    }
-    if (snapshotIndex === expectedSnapshots.length) {
-      break;
     }
   }
 

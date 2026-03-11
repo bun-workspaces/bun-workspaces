@@ -69,7 +69,6 @@ describe("CLI Global Options", () => {
     test("accepts debug level", async () => {
       const { run } = setupCliTest();
       const result = await run("--log-level=debug", "ls");
-      expect(result.stderr.raw).toBeEmpty();
       expect(result.exitCode).toBe(0);
     });
 

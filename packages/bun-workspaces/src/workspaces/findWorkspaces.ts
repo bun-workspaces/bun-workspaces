@@ -8,6 +8,7 @@ import {
 } from "../config";
 import { BUN_LOCK_ERRORS, readBunLockfile } from "../internal/bun";
 import { BunWorkspacesError } from "../internal/core";
+import { logger } from "../internal/logger/logger";
 import {
   resolveWorkspaceDependencies,
   type WorkspaceMap,
@@ -87,10 +88,13 @@ export const findWorkspaces = ({
 }: FindWorkspacesOptions) => {
   rootDirectory = path.resolve(rootDirectory);
 
+  logger.debug(`Finding workspaces in ${rootDirectory}`);
+
   let workspaces: Workspace[] = [];
 
   const workspaceMap: WorkspaceMap = {};
 
+  logger.debug(`Reading bun.lock`);
   const bunLock = readBunLockfile(rootDirectory);
 
   if (bunLock instanceof BunWorkspacesError) {
@@ -137,6 +141,10 @@ export const findWorkspaces = ({
         workspaceGlobs.find((glob) => new bun.Glob(glob).match(relativePath)) ??
         "";
 
+      if (!matchPattern) {
+        logger.debug(`No match pattern found for ${relativePath}`);
+      }
+
       const workspace: Workspace = {
         name: packageJsonContent.name ?? "",
         isRoot: workspacePath === rootDirectory,
@@ -156,6 +164,7 @@ export const findWorkspaces = ({
       };
 
       if (workspace.isRoot) {
+        logger.debug(`Found root workspace: ${workspace.name}`);
         rootWorkspace = workspace;
       }
 
@@ -181,6 +190,10 @@ export const findWorkspaces = ({
   );
 
   validateWorkspaceAliases(workspaces, workspaceAliases, rootWorkspace.name);
+
+  logger.debug(
+    `Found ${workspaces.length} workspaces: ${workspaces.map((ws) => ws.name).join(", ")}`,
+  );
 
   return { workspaces, workspaceMap, rootWorkspace };
 };

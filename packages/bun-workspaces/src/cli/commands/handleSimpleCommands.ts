@@ -15,6 +15,7 @@ import {
 export const doctor = handleGlobalCommand(
   "doctor",
   (_, options: { json: boolean; pretty: boolean }) => {
+    logger.debug(`Options: ${JSON.stringify(options)}`);
     const info = getDoctorInfo();
     if (options.json) {
       commandOutputLogger.info(
@@ -56,9 +57,7 @@ export const listWorkspaces = handleProjectCommand(
       pretty: boolean;
     },
   ) => {
-    logger.debug(
-      `Command: List workspaces (options: ${JSON.stringify(options)})`,
-    );
+    logger.debug(`Options: ${JSON.stringify(options)}`);
 
     const lines: string[] = [];
 
@@ -111,7 +110,7 @@ export const listScripts = handleProjectCommand(
     { project },
     options: { nameOnly: boolean; json: boolean; pretty: boolean },
   ) => {
-    logger.debug(`Command: List scripts (options: ${JSON.stringify(options)})`);
+    logger.debug(`Options: ${JSON.stringify(options)}`);
 
     const scripts = project.mapScriptsToWorkspaces();
     const lines: string[] = [];
@@ -161,9 +160,7 @@ export const workspaceInfo = handleProjectCommand(
     workspaceName: string,
     options: { json: boolean; pretty: boolean },
   ) => {
-    logger.debug(
-      `Command: Workspace info for ${workspaceName} (options: ${JSON.stringify(options)})`,
-    );
+    logger.debug(`Options: ${JSON.stringify(options)}`);
 
     const workspace =
       workspaceName === ROOT_WORKSPACE_SELECTOR
@@ -190,9 +187,7 @@ export const scriptInfo = handleProjectCommand(
     script: string,
     options: { workspacesOnly: boolean; json: boolean; pretty: boolean },
   ) => {
-    logger.debug(
-      `Command: Script info for ${script} (options: ${JSON.stringify(options)})`,
-    );
+    logger.debug(`Options: ${JSON.stringify(options)}`);
 
     const scripts = project.mapScriptsToWorkspaces();
     const scriptMetadata = scripts[script];

@@ -80,12 +80,13 @@ export const runScript = handleProjectCommand(
       : splitWorkspacePatterns(options.workspacePatterns ?? "");
 
     logger.debug(
-      `Command: Run script ${JSON.stringify(script)} for ${
+      `Command: Run ${options.inline ? "inline " : ""}script ${JSON.stringify(script)} for ${
         workspacePatterns.length
           ? "workspaces " + workspacePatterns.join(", ")
           : "all workspaces"
-      } (parallel: ${!!options.parallel}, args: ${JSON.stringify(scriptArgs)})`,
+      }`,
     );
+    logger.debug(`Options: ${JSON.stringify(options)}`);
 
     const workspaces = workspacePatterns.length
       ? project.findWorkspacesByPattern(...workspacePatterns)
@@ -135,7 +136,11 @@ export const runScript = handleProjectCommand(
       ? options.inlineName || "(inline)"
       : script;
 
+    logger.debug(`Script name: ${scriptName}`);
+
     const stripDisruptiveControls = workspaces.length > 1 || !!options.parallel;
+
+    logger.debug(`Strip disruptive controls: ${stripDisruptiveControls}`);
 
     let groupedLines: number | "all" = DEFAULT_GROUPED_LINES;
     if (options.groupedLines) {
@@ -154,6 +159,8 @@ export const runScript = handleProjectCommand(
         groupedLines = parsedGroupedLines;
       }
     }
+
+    logger.debug(`Effective grouped lines: ${JSON.stringify(groupedLines)}`);
 
     if (!options.prefix) {
       logger.warn(
@@ -182,6 +189,8 @@ export const runScript = handleProjectCommand(
     const outputStyle = options.outputStyle
       ? validateOutputStyle(options.outputStyle)
       : getDefaultOutputStyle();
+
+    logger.debug(`Effective output style: ${outputStyle}`);
 
     await outputStyleHandlers[outputStyle]();
 
@@ -226,6 +235,9 @@ export const runScript = handleProjectCommand(
       const jsonOutputDir = path.dirname(fullOutputPath);
       if (!fs.existsSync(jsonOutputDir)) {
         try {
+          logger.debug(
+            `Creating JSON output file directory "${jsonOutputDir}"`,
+          );
           fs.mkdirSync(jsonOutputDir, { recursive: true });
         } catch (error) {
           logger.error(
@@ -252,6 +264,7 @@ export const runScript = handleProjectCommand(
       }
 
       try {
+        logger.debug(`Writing JSON output file "${fullOutputPath}"`);
         fs.writeFileSync(fullOutputPath, JSON.stringify(exitResults, null, 2));
       } catch (error) {
         logger.error(

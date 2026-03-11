@@ -27,7 +27,7 @@ describe("setLogLevel", () => {
   /* eslint-enable */
 
   test("should set the log level", () => {
-    const debugSpy = spyOn(console, "debug");
+    const debugSpy = spyOn(process.stderr, "write");
     const infoSpy = spyOn(console, "info");
     const warnSpy = spyOn(console, "warn");
     const errorSpy = spyOn(console, "error");
@@ -40,7 +40,7 @@ describe("setLogLevel", () => {
     logger.warn("test warn 1");
     logger.error("test error 1");
     expect(debugSpy).toHaveBeenCalledWith(
-      "[bun-workspaces DEBUG]: test debug 1",
+      "[bun-workspaces DEBUG]: test debug 1\n",
     );
     expect(infoSpy).toHaveBeenCalledWith("test info 1");
     expect(stripANSI(warnSpy.mock.calls[0][0])).toMatch(

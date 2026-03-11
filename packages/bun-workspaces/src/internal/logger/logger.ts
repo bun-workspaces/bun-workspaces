@@ -83,14 +83,21 @@ class _Logger implements Logger {
       if (message instanceof Error) {
         message.message = formattedMessage;
       }
+      const mainMessage = message instanceof Error ? message : formattedMessage;
+      const metadataMessages = metadata ? [{ metadata }] : [];
       if (level === "debug") {
-        process.stderr.write(Bun.inspect(log, { colors: true }));
+        process.stderr.write(
+          (typeof mainMessage === "string"
+            ? mainMessage
+            : Bun.inspect(mainMessage, { colors: true })) +
+            metadataMessages
+              .map((m) => Bun.inspect(m, { colors: true }))
+              .join("\n") +
+            "\n",
+        );
       } else {
         // eslint-disable-next-line no-console
-        console[level](
-          message instanceof Error ? message : formattedMessage,
-          ...(metadata ? [{ metadata }] : []),
-        );
+        console[level](mainMessage, ...metadataMessages);
       }
     }
 

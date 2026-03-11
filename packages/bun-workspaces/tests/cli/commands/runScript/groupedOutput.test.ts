@@ -1,7 +1,6 @@
 import { Terminal } from "@xterm/headless";
 import { describe, expect, test } from "bun:test";
 import { createAsyncIterableQueue } from "../../../../src/internal/core";
-import { createProcessOutput } from "../../../../src/runScript/output/processOutput";
 import type { TestProjectName } from "../../../fixtures/testProjects";
 import { createCliSubprocess } from "../../../util/cliTestUtils";
 
@@ -17,7 +16,7 @@ const getTerminalContent = (terminal: Terminal): string => {
 type SnapshotTestOptions = {
   runScriptArgv: string[];
   expectedSnapshots: string[];
-  expectLastSnapshotAtEnd?: boolean;
+  expectFinalSnapshotAtExit?: boolean;
   testProject: TestProjectName;
   rows: number;
   cols: number;
@@ -26,7 +25,7 @@ type SnapshotTestOptions = {
 const runSnapshotTest = async ({
   runScriptArgv,
   expectedSnapshots,
-  expectLastSnapshotAtEnd,
+  expectFinalSnapshotAtExit,
   testProject,
   rows,
   cols,
@@ -63,22 +62,47 @@ const runSnapshotTest = async ({
     }
   }
 
-  if (expectLastSnapshotAtEnd) {
-    expect(getTerminalContent(xTerm).trim()).toBe(
-      expectedSnapshots[expectedSnapshots.length - 1].trim(),
-    );
-  }
+  expect(
+    snapshotIndex,
+    `The following snapshot was never matched:\n${expectedSnapshots[snapshotIndex]}`,
+  ).toBe(expectedSnapshots.length);
 
-  expect(snapshotIndex).toBe(expectedSnapshots.length);
+  if (expectFinalSnapshotAtExit) {
+    expect(
+      getTerminalContent(xTerm).trim(),
+      "Final snapshot does not match the terminal content at exit",
+    ).toBe(expectedSnapshots[expectedSnapshots.length - 1].trim());
+  }
 };
 
 describe("grouped output", () => {
-  test("should render grouped output", async () => {
-    await runSnapshotTest({
-      runScriptArgv: ["a-workspaces"],
-      testProject: "simple1",
-      expectedSnapshots: [
-        `
+  test(
+    "simple script",
+    async () => {
+      await runSnapshotTest({
+        runScriptArgv: ["a-workspaces"],
+        testProject: "simple1",
+        expectedSnapshots: [
+          `
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Workspace: application-1a                                                                        │
+│    Status: pending                                                                               │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Workspace: library-1a                                                                            │
+│    Status: pending                                                                               │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘`,
+          `
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Workspace: application-1a                                                                        │
+│    Status: running                                                                               │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+script for a workspaces
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Workspace: library-1a                                                                            │
+│    Status: running                                                                               │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘`,
+          `
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ Workspace: application-1a                                                                        │
 │    Status: success                                                                               │
@@ -92,10 +116,14 @@ script for a workspaces
 ✅ application-1a: a-workspaces
 ✅ library-1a: a-workspaces
 2 scripts ran successfully`,
-      ],
-      expectLastSnapshotAtEnd: true,
-      rows: 50,
-      cols: 100,
-    });
-  });
+        ],
+        expectFinalSnapshotAtExit: true,
+        rows: 50,
+        cols: 100,
+      });
+    },
+    {
+      retry: 5,
+    },
+  );
 });

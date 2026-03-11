@@ -1,0 +1,6 @@
+{
+  "name": "has-an-especially-workspace-name-indeed",
+  "scripts": {
+    "test-script": "sleep 0.1 && echo 39-character workspace name"
+  }
+}

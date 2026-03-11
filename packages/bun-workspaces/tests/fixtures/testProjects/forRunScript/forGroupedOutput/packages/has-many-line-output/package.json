@@ -1,6 +1,0 @@
-{
-  "name": "has-many-line-output",
-  "scripts": {
-    "test-script": "sleep 0.1 && for i in {1..50}; do echo \"$i this test script has a very very very long output that is exactly one hundred characters long indeed\"; done"
-  }
-}

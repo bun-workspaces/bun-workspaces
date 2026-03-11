@@ -114,15 +114,15 @@ describe("CLI Run Script (args)", () => {
     });
   });
 
-  describe("--no-prefix with --args", () => {
-    test("--args=literal with --no-prefix", async () => {
+  describe("--output-style=plain with --args", () => {
+    test("--args=literal with --output-style=plain", async () => {
       const { run } = setupCliTest({
         testProject: "runScriptWithEchoArgs",
       });
       const result = await run(
         "run-script",
         "test-echo",
-        "--no-prefix",
+        "--output-style=plain",
         "--args=test-args",
       );
       expect(result.exitCode).toBe(0);
@@ -140,14 +140,14 @@ passed args: test-args
       );
     });
 
-    test("--args=<workspaceName> with --no-prefix", async () => {
+    test("--args=<workspaceName> with --output-style=plain", async () => {
       const { run } = setupCliTest({
         testProject: "runScriptWithEchoArgs",
       });
       const result = await run(
         "run-script",
         "test-echo",
-        "--no-prefix",
+        "--output-style=plain",
         "--args=<workspaceName>",
       );
       expect(result.exitCode).toBe(0);

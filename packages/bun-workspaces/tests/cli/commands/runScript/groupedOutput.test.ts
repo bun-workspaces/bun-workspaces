@@ -480,6 +480,33 @@ that is exactly one hundred characters long indeed
         cols: 50,
       });
     });
+
+    test("100-wide output with emoji - 50 columns", async () => {
+      await runSnapshotTest({
+        runScriptArgv: ["test-script", "has-100-wide-emoji-output"],
+        testProject: "runScriptForGroupedOutput",
+        expectedSnapshots: [
+          `
+┌────────────────────────────────────────────────┐
+│ Workspace: has-100-wide-emoji-output           │
+│    Status: running                             │
+└────────────────────────────────────────────────┘
+this test script has a ⚠️ ⚠️ ⚠️ long output that… `,
+          `
+┌────────────────────────────────────────────────┐
+│ Workspace: has-100-wide-emoji-output           │
+│    Status: success                             │
+└────────────────────────────────────────────────┘
+this test script has a ⚠️ ⚠️ ⚠️ long output that is e
+xactly one hundred characters long indeed
+✅ has-100-wide-emoji-output: test-script
+1 script ran successfully`,
+        ],
+        expectFinalSnapshotAtExit: true,
+        rows: 50,
+        cols: 50,
+      });
+    });
   });
 
   describe("handle wide workspace name", async () => {
@@ -1073,5 +1100,68 @@ eed
         });
       },
     );
+  });
+
+  test("Combo of output boundaries", async () => {
+    await runSnapshotTest({
+      runScriptArgv: ["test-script", "has-*"],
+      testProject: "runScriptForGroupedOutput",
+      expectedSnapshots: [
+        `
+┌────────────────────────────────────────────────┐
+│ Workspace: has-100-wide-emoji-output           │
+│    Status: success                             │
+└────────────────────────────────────────────────┘
+this test script has a ⚠️ ⚠️ ⚠️ long output that is e
+xactly one hundred characters long indeed
+┌────────────────────────────────────────────────┐
+│ Workspace: has-100-wide-output                 │
+│    Status: success                             │
+└────────────────────────────────────────────────┘
+this test script has a very very very long output 
+that is exactly one hundred characters long indeed
+┌────────────────────────────────────────────────┐
+│ Workspace: has-40-wide-workspace-name-which-i… │
+│    Status: success                             │
+└────────────────────────────────────────────────┘
+long workspace name
+┌────────────────────────────────────────────────┐
+│ Workspace: has-50-line-output                  │
+│    Status: success                             │
+└────────────────────────────────────────────────┘
+1 this test script has a very very very long outpu
+t that is exactly one hundred characters long inde
+ed
+2 this test script has a very very very long outpu
+t that is exactly one hundred characters long inde
+ed
+3 this test script has a very very very long outpu
+t that is exactly one hundred characters long inde
+ed
+4 this test script has a very very very long outpu
+t that is exactly one hundred characters long inde
+ed
+5 this test script has a very very very long outpu
+t that is exactly one hundred characters long inde
+ed
+6 this test script has a very very very long outpu
+t that is exactly one hundred characters long inde
+ed
+7 this test script has a very very very long outpu
+t that is exactly one hundred characters long inde
+ed
+8 this test script has a very very very long outpu
+t that is exactly one hundred characters long inde
+ed
+9 this test script has a very very very long outpu
+t that is exactly one hundred characters long inde
+ed
+10 this test script has a very very very long outp
+ut that is exactly one hundred characters long ind`,
+      ],
+      expectFinalSnapshotAtExit: true,
+      rows: 50,
+      cols: 50,
+    });
   });
 });

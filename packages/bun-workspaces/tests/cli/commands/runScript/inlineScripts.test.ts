@@ -75,7 +75,7 @@ describe("CLI Run Script (inline scripts)", () => {
     );
   });
 
-  test("--inline with --args and --no-prefix", async () => {
+  test("--inline with --args and --output-style=plain", async () => {
     const { run } = setupCliTest({
       testProject: "runScriptWithEchoArgs",
     });
@@ -84,7 +84,7 @@ describe("CLI Run Script (inline scripts)", () => {
       "echo this is my inline script for <workspaceName>",
       "--inline",
       "--args=test-args-<workspaceName>",
-      "--no-prefix",
+      "--output-style=plain",
     );
     expect(result.exitCode).toBe(0);
     assertOutputMatches(

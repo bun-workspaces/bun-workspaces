@@ -2,10 +2,10 @@ import { test, expect, describe } from "bun:test";
 import { assertOutputMatches, setupCliTest } from "../../../util/cliTestUtils";
 
 describe("CLI Run Script (output format)", () => {
-  test("--no-prefix strips prefix from script output", async () => {
+  test("--output-style=plain strips prefix from script output", async () => {
     const result = await setupCliTest({
       testProject: "simple1",
-    }).run("run-script", "all-workspaces", "--no-prefix");
+    }).run("run-script", "all-workspaces", "--output-style=plain");
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,
@@ -21,10 +21,10 @@ script for all workspaces
     );
   });
 
-  test("-N strips prefix from script output", async () => {
+  test("--output-style=plain strips prefix from script output", async () => {
     const result = await setupCliTest({
       testProject: "simple1",
-    }).run("run-script", "all-workspaces", "-N");
+    }).run("run-script", "all-workspaces", "--output-style=plain");
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,
@@ -40,10 +40,10 @@ script for all workspaces
     );
   });
 
-  test.only("--no-prefix with failures shows failure output", async () => {
+  test.only("--output-style=plain with failures shows failure output", async () => {
     const result = await setupCliTest({
       testProject: "runScriptWithFailures",
-    }).run("run-script", "test-exit", "--no-prefix");
+    }).run("run-script", "test-exit", "--output-style=plain");
     expect(result.exitCode).toBe(1);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,

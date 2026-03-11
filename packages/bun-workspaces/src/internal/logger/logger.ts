@@ -86,6 +86,7 @@ class _Logger implements Logger {
       const mainMessage = message instanceof Error ? message : formattedMessage;
       const metadataMessages = metadata ? [{ metadata }] : [];
       if (level === "debug") {
+        // debug goes to stderr (console.debug goes to stdout which messes with machine-readable output etc.)
         process.stderr.write(
           (typeof mainMessage === "string"
             ? mainMessage

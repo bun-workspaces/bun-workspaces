@@ -97,6 +97,19 @@ bw run "bun build" --inline
 bw run "bun build" --inline --inline-name="my-script"
 bw run "bun build" --inline --shell=system # use the system shell
 
+# Use the grouped output style (default when on a TTY)
+bw run my-script --output-style=grouped
+
+# Set the max preview lines for script output in grouped output style
+bw run my-script --output-style=grouped --grouped-lines=all
+bw run my-script --output-style=grouped --grouped-lines=10
+
+# Use simple script output with workspace prefixes (default when not on a TTY)
+bw run my-script --output-style=prefixed
+
+# Use the plain output style (no workspace prefixes)
+bw run my-script --output-style=plain
+
 ### Global Options ###
 # Root directory of project:
 bw --cwd=/path/to/project ls

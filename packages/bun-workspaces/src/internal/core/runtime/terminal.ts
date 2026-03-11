@@ -1,1 +1,1 @@
-export const IS_TTY = !!process.stdout.isTTY;
+export const IS_TTY = !!process.stdout?.isTTY;

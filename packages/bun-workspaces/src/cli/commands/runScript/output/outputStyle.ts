@@ -1,4 +1,5 @@
-import { BunWorkspacesError, IS_TTY } from "../../../../internal/core";
+import { BunWorkspacesError } from "../../../../internal/core/error";
+import { IS_TTY } from "../../../../internal/core/runtime/terminal";
 
 export const OUTPUT_STYLE_VALUES = ["grouped", "prefixed", "plain"] as const;
 

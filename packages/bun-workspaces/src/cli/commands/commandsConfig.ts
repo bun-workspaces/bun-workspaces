@@ -12,6 +12,7 @@ export interface CliCommandConfig {
       flags: string[] | readonly string[];
       description: string;
       values?: string[];
+      deprecated?: boolean;
     }
   >;
 }
@@ -163,12 +164,12 @@ export const CLI_COMMANDS_CONFIG = {
       },
       groupedLines: {
         flags: ["-L", "--grouped-lines <count>"],
-        description: `When using "grouped" output, the number of active script lines to preview (number or "all", default ${DEFAULT_GROUPED_LINES})`,
+        description: `With "grouped" output, the max preview lines (number or "all", default ${DEFAULT_GROUPED_LINES})`,
       },
       noPrefix: {
         flags: ["-N", "--no-prefix"],
-        description:
-          "(DEPRECATED) Do not prefix the workspace name to the script output",
+        description: "(DEPRECATED) Use --output-style=plain instead",
+        deprecated: true,
       },
       inline: {
         flags: ["-i", "--inline"],

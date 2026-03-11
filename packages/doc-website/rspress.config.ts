@@ -112,12 +112,15 @@ export default defineConfig({
     },
     source: {
       define: {
-        process: `({ env: {
-          YEAR: ${JSON.stringify(new Date().getFullYear())},
-          BUILD_ID: ${JSON.stringify(process.env.BUILD_ID ?? "(no build ID)")},
-          REQUIRED_BUN_VERSION: ${JSON.stringify(REQUIRED_BUN_VERSION)},
-          BWUNSTER_ASCII: ${JSON.stringify(BWUNSTER_ASCII)},
-        }})`,
+        process: `({ 
+          env: {
+            YEAR: ${JSON.stringify(new Date().getFullYear())},
+            BUILD_ID: ${JSON.stringify(process.env.BUILD_ID ?? "(no build ID)")},
+            REQUIRED_BUN_VERSION: ${JSON.stringify(REQUIRED_BUN_VERSION)},
+            BWUNSTER_ASCII: ${JSON.stringify(BWUNSTER_ASCII)},
+          },
+          on: function(){}
+        })`,
       },
     },
     html: {

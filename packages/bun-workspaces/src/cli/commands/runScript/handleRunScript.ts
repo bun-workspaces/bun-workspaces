@@ -6,6 +6,7 @@ import {
   handleProjectCommand,
   splitWorkspacePatterns,
 } from "../commandHandlerUtils";
+import { DEFAULT_GROUPED_LINES } from "../commandsConfig";
 import {
   getDefaultOutputStyle,
   validateOutputStyle,
@@ -37,6 +38,7 @@ export const runScript = handleProjectCommand(
       ignoreDepFailure: boolean;
       jsonOutfile: string | undefined;
       outputStyle: string | undefined;
+      groupedLines: string | undefined;
     },
   ) => {
     options.inlineName = options.inlineName?.trim();
@@ -134,9 +136,46 @@ export const runScript = handleProjectCommand(
 
     const stripDisruptiveControls = workspaces.length > 1 || !!options.parallel;
 
+    let groupedLines: number | "all" = DEFAULT_GROUPED_LINES;
+    if (options.groupedLines) {
+      if (options.groupedLines === "all") {
+        groupedLines = "all";
+      } else {
+        const parsedGroupedLines = parseInt(options.groupedLines as string);
+
+        if (isNaN(parsedGroupedLines)) {
+          logger.error(
+            `Invalid grouped lines value: ${options.groupedLines}. Must be a number or "all".`,
+          );
+          process.exit(1);
+        }
+
+        if (parsedGroupedLines <= 0) {
+          logger.error(
+            `Invalid grouped lines value: ${options.groupedLines}. Must be a positive number or "all".`,
+          );
+          process.exit(1);
+        }
+
+        groupedLines = parsedGroupedLines;
+      }
+    }
+
+    if (!options.prefix) {
+      logger.warn(
+        "--no-prefix is deprecated and will be removed in a future version. Use --output-style=plain instead.",
+      );
+    }
+
     const outputStyleHandlers: Record<OutputStyleName, () => Promise<void>> = {
       grouped: () =>
-        renderGroupedOutput(workspaces, output, summary, scriptEventTarget),
+        renderGroupedOutput(
+          workspaces,
+          output,
+          summary,
+          scriptEventTarget,
+          groupedLines,
+        ),
       prefixed: () =>
         renderPlainOutput(output, { prefix: true, stripDisruptiveControls }),
       plain: () =>

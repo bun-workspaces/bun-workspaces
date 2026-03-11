@@ -33,6 +33,8 @@ export type CliProjectCommandName = Exclude<
 
 export const JSON_FLAGS = ["-j", "--json"] as const;
 
+export const DEFAULT_GROUPED_LINES = 20;
+
 export const CLI_COMMANDS_CONFIG = {
   doctor: {
     command: "doctor",
@@ -159,9 +161,14 @@ export const CLI_COMMANDS_CONFIG = {
         description: "The output style to use",
         values: [...OUTPUT_STYLE_VALUES],
       },
+      groupedLines: {
+        flags: ["-l", "--grouped-lines <count>"],
+        description: `When using "grouped" output, the number of active script lines to preview (number or "all", default ${DEFAULT_GROUPED_LINES})`,
+      },
       noPrefix: {
         flags: ["-N", "--no-prefix"],
-        description: "Do not prefix the workspace name to the script output",
+        description:
+          "(DEPRECATED) Do not prefix the workspace name to the script output",
       },
       inline: {
         flags: ["-i", "--inline"],

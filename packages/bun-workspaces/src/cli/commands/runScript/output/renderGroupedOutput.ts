@@ -110,7 +110,7 @@ export const renderGroupedOutput = async (
   output: RunScriptAcrossWorkspacesProcessOutput,
   summary: Promise<RunScriptsSummary<RunWorkspaceScriptMetadata>>,
   scriptEventTarget: ScriptEventTarget,
-  scriptMaxLines = 5,
+  activeScriptLines: number | "all",
 ) => {
   const workspaceState: Record<string, WorkspaceState> = workspaces.reduce(
     (acc, workspace) => {
@@ -202,8 +202,12 @@ export const renderGroupedOutput = async (
         type: "border",
       });
 
-      if (state.lines.length > scriptMaxLines && !isFinal) {
-        const hiddenLines = state.lines.length - scriptMaxLines;
+      if (
+        activeScriptLines !== "all" &&
+        state.lines.length > activeScriptLines &&
+        !isFinal
+      ) {
+        const hiddenLines = state.lines.length - activeScriptLines;
         linesToWrite.push({
           text: textOps.gray(
             `(${hiddenLines} line${hiddenLines === 1 ? "" : "s"} hidden until exit)`,
@@ -213,7 +217,7 @@ export const renderGroupedOutput = async (
       }
 
       linesToWrite.push(
-        ...state.lines.slice(isFinal ? undefined : -scriptMaxLines).map(
+        ...state.lines.slice(isFinal ? undefined : -activeScriptLines).map(
           (line) =>
             ({
               text: line.text,

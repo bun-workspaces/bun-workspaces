@@ -30,6 +30,7 @@ export const runScript = handleProjectCommand(
       workspacePatterns: string | undefined;
       parallel: boolean | string;
       args: string;
+      /** @deprecated by --output-style=plain instead */
       prefix: boolean;
       inline: boolean;
       inlineName: string | undefined;

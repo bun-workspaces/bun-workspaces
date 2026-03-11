@@ -7,7 +7,7 @@ on:
         description: The Bun version to test
         required: true
         type: string
-        default: 1.3.5
+        default: 1.3.10
       os:
         description: The OS to test
         required: true
@@ -20,7 +20,7 @@ on:
         description: The Bun version to test
         required: true
         type: string
-        default: 1.3.5
+        default: 1.3.10
       os:
         description: The OS to test
         required: true

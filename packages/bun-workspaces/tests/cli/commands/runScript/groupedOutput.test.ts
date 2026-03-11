@@ -70,8 +70,8 @@ const runSnapshotTest = async ({
   if (expectFinalSnapshotAtExit) {
     expect(
       getTerminalContent(xTerm).trim(),
-      "Final snapshot does not match the terminal content at exit",
-    ).toBe(expectedSnapshots[expectedSnapshots.length - 1].trim());
+      "Final snapshot does not match the terminal content at exit.",
+    ).toBe(expectedSnapshots[expectedSnapshots.length - 1]?.trim());
   }
 };
 
@@ -399,4 +399,85 @@ test-script c
       retry: 5,
     },
   );
+
+  describe("handle wide output", async () => {
+    test.only("100-wide output - 100 columns", async () => {
+      await runSnapshotTest({
+        runScriptArgv: ["test-script", "has-100-wide-output"],
+        testProject: "runScriptForGroupedOutput",
+        expectedSnapshots: [
+          `
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Workspace: has-100-wide-output                                                                   │
+│    Status: running                                                                               │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+this test script has a very very very long output that is exactly one hundred characters long indeed`,
+          `
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Workspace: has-100-wide-output                                                                   │
+│    Status: success                                                                               │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+this test script has a very very very long output that is exactly one hundred characters long indeed
+✅ has-100-wide-output: test-script
+1 script ran successfully`,
+        ],
+        expectFinalSnapshotAtExit: true,
+        rows: 50,
+        cols: 100,
+      });
+    });
+    test.only("100-wide output - 99 columns", async () => {
+      await runSnapshotTest({
+        runScriptArgv: ["test-script", "has-100-wide-output"],
+        testProject: "runScriptForGroupedOutput",
+        expectedSnapshots: [
+          `
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Workspace: has-100-wide-output                                                                  │
+│    Status: running                                                                              │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+this test script has a very very very long output that is exactly one hundred characters long inde…`,
+          `
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Workspace: has-100-wide-output                                                                  │
+│    Status: success                                                                              │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+this test script has a very very very long output that is exactly one hundred characters long indee
+d
+✅ has-100-wide-output: test-script
+1 script ran successfully`,
+        ],
+        expectFinalSnapshotAtExit: true,
+        rows: 50,
+        cols: 99,
+      });
+    });
+
+    test.only("100-wide output - 50 columns", async () => {
+      await runSnapshotTest({
+        runScriptArgv: ["test-script", "has-100-wide-output"],
+        testProject: "runScriptForGroupedOutput",
+        expectedSnapshots: [
+          `
+┌────────────────────────────────────────────────┐
+│ Workspace: has-100-wide-output                 │
+│    Status: running                             │
+└────────────────────────────────────────────────┘
+this test script has a very very very long output…`,
+          `
+┌────────────────────────────────────────────────┐
+│ Workspace: has-100-wide-output                 │
+│    Status: success                             │
+└────────────────────────────────────────────────┘
+this test script has a very very very long output 
+that is exactly one hundred characters long indeed
+✅ has-100-wide-output: test-script
+1 script ran successfully`,
+        ],
+        expectFinalSnapshotAtExit: true,
+        rows: 50,
+        cols: 50,
+      });
+    });
+  });
 });

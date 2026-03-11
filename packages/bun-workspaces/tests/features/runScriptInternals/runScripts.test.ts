@@ -914,166 +914,178 @@ describe("Run Scripts - Dependencies", () => {
     expect(summary.allSuccess).toBe(true);
   });
 
-  test("onScriptEvent - fires start and exit for a running script", async () => {
-    const events: {
-      event: ScriptEventName;
-      index: number;
-      result: RunScriptExit<{ name: string }> | null;
-    }[] = [];
+  test(
+    "onScriptEvent - fires start and exit for a running script",
+    async () => {
+      const events: {
+        event: ScriptEventName;
+        index: number;
+        result: RunScriptExit<{ name: string }> | null;
+      }[] = [];
 
-    const result = runScripts({
-      scripts: [
-        {
-          metadata: { name: "A" },
-          scriptCommand: { command: "echo A", workingDirectory: "" },
-          env: {},
-          shell: "bun",
+      const result = runScripts({
+        scripts: [
+          {
+            metadata: { name: "A" },
+            scriptCommand: { command: "echo A", workingDirectory: "" },
+            env: {},
+            shell: "bun",
+          },
+          {
+            metadata: { name: "B" },
+            scriptCommand: { command: "echo B", workingDirectory: "" },
+            env: {},
+            shell: "bun",
+          },
+        ],
+        parallel: false,
+        onScriptEvent: (event, index, exitResult) => {
+          events.push({ event, index, result: exitResult });
         },
+      });
+
+      await result.summary;
+
+      expect(events).toEqual([
+        { event: "start", index: 0, result: null },
         {
-          metadata: { name: "B" },
-          scriptCommand: { command: "echo B", workingDirectory: "" },
-          env: {},
-          shell: "bun",
+          event: "exit",
+          index: 0,
+          result: makeScriptExit({ metadata: { name: "A" } }),
         },
-      ],
-      parallel: false,
-      onScriptEvent: (event, index, exitResult) => {
-        events.push({ event, index, result: exitResult });
-      },
-    });
+        { event: "start", index: 1, result: null },
+        {
+          event: "exit",
+          index: 1,
+          result: makeScriptExit({ metadata: { name: "B" } }),
+        },
+      ]);
+    },
+    { retry: DEFAULT_RETRY },
+  );
 
-    await result.summary;
+  test(
+    "onScriptEvent - fires skip (not start or exit) for a dependency-failed script",
+    async () => {
+      const events: {
+        event: ScriptEventName;
+        index: number;
+        result: RunScriptExit<{ name: string }> | null;
+      }[] = [];
 
-    expect(events).toEqual([
-      { event: "start", index: 0, result: null },
-      {
+      const result = runScripts({
+        scripts: [
+          {
+            metadata: { name: "A" },
+            scriptCommand: { command: "exit 1", workingDirectory: "" },
+            env: {},
+            shell: "bun",
+          },
+          {
+            metadata: { name: "B" },
+            scriptCommand: { command: "echo B", workingDirectory: "" },
+            env: {},
+            shell: "bun",
+            dependsOn: [0],
+          },
+        ],
+        parallel: false,
+        onScriptEvent: (event, index, exitResult) => {
+          events.push({ event, index, result: exitResult });
+        },
+      });
+
+      await result.summary;
+
+      expect(events).toContainEqual({ event: "start", index: 0, result: null });
+      expect(events).toContainEqual({
         event: "exit",
         index: 0,
-        result: makeScriptExit({ metadata: { name: "A" } }),
-      },
-      { event: "start", index: 1, result: null },
-      {
+        result: makeScriptExit({
+          exitCode: 1,
+          success: false,
+          metadata: { name: "A" },
+        }),
+      });
+      expect(events).toContainEqual({ event: "skip", index: 1, result: null });
+      expect(events).not.toContainEqual(
+        expect.objectContaining({ event: "start", index: 1 }),
+      );
+      expect(events).not.toContainEqual(
+        expect.objectContaining({ event: "exit", index: 1 }),
+      );
+    },
+    { retry: DEFAULT_RETRY },
+  );
+
+  test(
+    "onScriptEvent - all three event types fire across scripts in a single run",
+    async () => {
+      const events: {
+        event: ScriptEventName;
+        index: number;
+        result: RunScriptExit<{ name: string }> | null;
+      }[] = [];
+
+      const result = runScripts({
+        scripts: [
+          {
+            metadata: { name: "A" },
+            scriptCommand: { command: "exit 1", workingDirectory: "" },
+            env: {},
+            shell: "bun",
+          },
+          {
+            metadata: { name: "B" },
+            scriptCommand: { command: "echo B", workingDirectory: "" },
+            env: {},
+            shell: "bun",
+          },
+          {
+            metadata: { name: "C" },
+            scriptCommand: { command: "echo C", workingDirectory: "" },
+            env: {},
+            shell: "bun",
+            dependsOn: [0],
+          },
+        ],
+        parallel: false,
+        onScriptEvent: (event, index, exitResult) => {
+          events.push({ event, index, result: exitResult });
+        },
+      });
+
+      await result.summary;
+
+      // A fails: start (null result) + exit (failed result)
+      expect(events).toContainEqual({ event: "start", index: 0, result: null });
+      expect(events).toContainEqual({
+        event: "exit",
+        index: 0,
+        result: makeScriptExit({
+          exitCode: 1,
+          success: false,
+          metadata: { name: "A" },
+        }),
+      });
+      // B succeeds: start (null result) + exit (success result)
+      expect(events).toContainEqual({ event: "start", index: 1, result: null });
+      expect(events).toContainEqual({
         event: "exit",
         index: 1,
         result: makeScriptExit({ metadata: { name: "B" } }),
-      },
-    ]);
-  }, { retry: DEFAULT_RETRY });
-
-  test("onScriptEvent - fires skip (not start or exit) for a dependency-failed script", async () => {
-    const events: {
-      event: ScriptEventName;
-      index: number;
-      result: RunScriptExit<{ name: string }> | null;
-    }[] = [];
-
-    const result = runScripts({
-      scripts: [
-        {
-          metadata: { name: "A" },
-          scriptCommand: { command: "exit 1", workingDirectory: "" },
-          env: {},
-          shell: "bun",
-        },
-        {
-          metadata: { name: "B" },
-          scriptCommand: { command: "echo B", workingDirectory: "" },
-          env: {},
-          shell: "bun",
-          dependsOn: [0],
-        },
-      ],
-      parallel: false,
-      onScriptEvent: (event, index, exitResult) => {
-        events.push({ event, index, result: exitResult });
-      },
-    });
-
-    await result.summary;
-
-    expect(events).toContainEqual({ event: "start", index: 0, result: null });
-    expect(events).toContainEqual({
-      event: "exit",
-      index: 0,
-      result: makeScriptExit({
-        exitCode: 1,
-        success: false,
-        metadata: { name: "A" },
-      }),
-    });
-    expect(events).toContainEqual({ event: "skip", index: 1, result: null });
-    expect(events).not.toContainEqual(
-      expect.objectContaining({ event: "start", index: 1 }),
-    );
-    expect(events).not.toContainEqual(
-      expect.objectContaining({ event: "exit", index: 1 }),
-    );
-  }, { retry: DEFAULT_RETRY });
-
-  test("onScriptEvent - all three event types fire across scripts in a single run", async () => {
-    const events: {
-      event: ScriptEventName;
-      index: number;
-      result: RunScriptExit<{ name: string }> | null;
-    }[] = [];
-
-    const result = runScripts({
-      scripts: [
-        {
-          metadata: { name: "A" },
-          scriptCommand: { command: "exit 1", workingDirectory: "" },
-          env: {},
-          shell: "bun",
-        },
-        {
-          metadata: { name: "B" },
-          scriptCommand: { command: "echo B", workingDirectory: "" },
-          env: {},
-          shell: "bun",
-        },
-        {
-          metadata: { name: "C" },
-          scriptCommand: { command: "echo C", workingDirectory: "" },
-          env: {},
-          shell: "bun",
-          dependsOn: [0],
-        },
-      ],
-      parallel: false,
-      onScriptEvent: (event, index, exitResult) => {
-        events.push({ event, index, result: exitResult });
-      },
-    });
-
-    await result.summary;
-
-    // A fails: start (null result) + exit (failed result)
-    expect(events).toContainEqual({ event: "start", index: 0, result: null });
-    expect(events).toContainEqual({
-      event: "exit",
-      index: 0,
-      result: makeScriptExit({
-        exitCode: 1,
-        success: false,
-        metadata: { name: "A" },
-      }),
-    });
-    // B succeeds: start (null result) + exit (success result)
-    expect(events).toContainEqual({ event: "start", index: 1, result: null });
-    expect(events).toContainEqual({
-      event: "exit",
-      index: 1,
-      result: makeScriptExit({ metadata: { name: "B" } }),
-    });
-    // C skipped due to A's failure: skip (null result) only
-    expect(events).toContainEqual({ event: "skip", index: 2, result: null });
-    expect(events).not.toContainEqual(
-      expect.objectContaining({ event: "start", index: 2 }),
-    );
-    expect(events).not.toContainEqual(
-      expect.objectContaining({ event: "exit", index: 2 }),
-    );
-  }, { retry: DEFAULT_RETRY });
+      });
+      // C skipped due to A's failure: skip (null result) only
+      expect(events).toContainEqual({ event: "skip", index: 2, result: null });
+      expect(events).not.toContainEqual(
+        expect.objectContaining({ event: "start", index: 2 }),
+      );
+      expect(events).not.toContainEqual(
+        expect.objectContaining({ event: "exit", index: 2 }),
+      );
+    },
+    { retry: DEFAULT_RETRY },
+  );
 
   test("cascading skip on dependency failure", async () => {
     const result = await runScripts({

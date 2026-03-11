@@ -82,6 +82,19 @@ bw run "bun build" --inline # Run an inline command via the Bun shell
 bw run lint --parallel # Run in parallel (default: "auto", the available CPU count)
 bw run lint --parallel=2 # Run in parallel with a max of 2 concurrent scripts
 
+# Use the grouped output style (default when on a TTY)
+bw run my-script --output-style=grouped
+
+# Set the max preview lines for script output in grouped output style
+bw run my-script --output-style=grouped --grouped-lines=all
+bw run my-script --output-style=grouped --grouped-lines=10
+
+# Use simple script output with workspace prefixes (default when not on a TTY)
+bw run my-script --output-style=prefixed
+
+# Use the plain output style (no workspace prefixes)
+bw run my-script --output-style=plain
+
 # Show usage (you can pass --help to any command)
 bw help
 bw --help
@@ -164,11 +177,16 @@ const runManyScripts = async () => {
 
     // Optional. When true, a workspace's script will wait
     // until any workspaces it depends on have completed
-    dependencyOrder: true,
+    dependencyOrder: false,
 
     // Optional. When true and dependencyOrder is true,
     // continue running scripts even if a dependency fails
-    ignoreDependencyFailure: true,
+    ignoreDependencyFailure: false,
+
+    // Optional, callback when script starts, skips, or exits
+    onScriptEvent: (event, { workspace, exitResult }) => {
+      // event: "start", "skip", "exit"
+    },
   });
 
   // Get a stream of script output

@@ -8,11 +8,11 @@ describe("CLI Run Script (dependency order)", () => {
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdout.sanitizedCompactLines,
-      `[a-depends-e:test-script] A
-[b-depends-cd:test-script] B
-[c-depends-e:test-script] C
-[d-depends-e:test-script] D
-[e:test-script] E
+      `[a-depends-e] A
+[b-depends-cd] B
+[c-depends-e] C
+[d-depends-e] D
+[e] E
 ✅ a-depends-e: test-script
 ✅ b-depends-cd: test-script
 ✅ c-depends-e: test-script
@@ -28,11 +28,11 @@ describe("CLI Run Script (dependency order)", () => {
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdout.sanitizedCompactLines,
-      `[e:test-script] E
-[a-depends-e:test-script] A
-[c-depends-e:test-script] C
-[d-depends-e:test-script] D
-[b-depends-cd:test-script] B
+      `[e] E
+[a-depends-e] A
+[c-depends-e] C
+[d-depends-e] D
+[b-depends-cd] B
 ✅ a-depends-e: test-script
 ✅ b-depends-cd: test-script
 ✅ c-depends-e: test-script
@@ -54,9 +54,9 @@ describe("CLI Run Script (dependency order)", () => {
     );
     assertOutputMatches(
       result.stdout.sanitizedCompactLines,
-      `[a-depends-c:test-script] A
-[c-depends-a:test-script] C
-[b-depends-c:test-script] B
+      `[a-depends-c] A
+[c-depends-a] C
+[b-depends-c] B
 ✅ a-depends-c: test-script
 ✅ b-depends-c: test-script
 ✅ c-depends-a: test-script
@@ -72,10 +72,10 @@ describe("CLI Run Script (dependency order)", () => {
     expect(result.exitCode).toBe(1);
     assertOutputMatches(
       result.stdout.sanitizedCompactLines,
-      `[e:test-script] E
-[c-depends-e-fails:test-script] C
-[d-depends-e:test-script] D
-[f-fails:test-script] F
+      `[e] E
+[c-depends-e-fails] C
+[d-depends-e] D
+[f-fails] F
 ➖ a-depends-f: test-script (skipped due to dependency failure)
 ➖ b-depends-cd: test-script (skipped due to dependency failure)
 ❌ c-depends-e-fails: test-script (exited with code 1)
@@ -99,12 +99,12 @@ describe("CLI Run Script (dependency order)", () => {
     expect(result.exitCode).toBe(1);
     assertOutputMatches(
       result.stdout.sanitizedCompactLines,
-      `[e:test-script] E
-[c-depends-e-fails:test-script] C
-[d-depends-e:test-script] D
-[b-depends-cd:test-script] B
-[f-fails:test-script] F
-[a-depends-f:test-script] A
+      `[e] E
+[c-depends-e-fails] C
+[d-depends-e] D
+[b-depends-cd] B
+[f-fails] F
+[a-depends-f] A
 ✅ a-depends-f: test-script
 ✅ b-depends-cd: test-script
 ❌ c-depends-e-fails: test-script (exited with code 1)

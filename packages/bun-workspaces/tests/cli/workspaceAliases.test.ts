@@ -122,7 +122,7 @@ describe("CLI Workspace Aliases", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
-        `[application-1a:all-workspaces] script for all workspaces
+        `[application-1a] script for all workspaces
 ✅ application-1a: all-workspaces
 1 script ran successfully`,
       );
@@ -141,8 +141,8 @@ describe("CLI Workspace Aliases", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
-        `[application-1b:b-workspaces] script for b workspaces
-[library-1b:b-workspaces] script for b workspaces
+        `[application-1b] script for b workspaces
+[library-1b] script for b workspaces
 ✅ application-1b: b-workspaces
 ✅ library-1b: b-workspaces
 2 scripts ran successfully`,
@@ -162,10 +162,10 @@ describe("CLI Workspace Aliases", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
-        `[application-1b:all-workspaces] script for all workspaces
-[application-1a:all-workspaces] script for all workspaces
-[application-1c:all-workspaces] script for all workspaces
-[library-1a:all-workspaces] script for all workspaces
+        `[application-1b] script for all workspaces
+[application-1a] script for all workspaces
+[application-1c] script for all workspaces
+[library-1a] script for all workspaces
 ✅ application-1b: all-workspaces
 ✅ application-1a: all-workspaces
 ✅ application-1c: all-workspaces

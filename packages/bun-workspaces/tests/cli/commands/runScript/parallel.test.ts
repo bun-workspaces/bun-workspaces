@@ -13,11 +13,11 @@ describe("CLI Run Script (parallel)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
-        `[fifth:test-delay] fifth
-[first:test-delay] first
-[fourth:test-delay] fourth
-[second:test-delay] second
-[third:test-delay] third
+        `[fifth] fifth
+[first] first
+[fourth] fourth
+[second] second
+[third] third
 ✅ fifth: test-delay
 ✅ first: test-delay
 ✅ fourth: test-delay
@@ -35,11 +35,11 @@ describe("CLI Run Script (parallel)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
-        `[first:test-delay] first
-[second:test-delay] second
-[third:test-delay] third
-[fourth:test-delay] fourth
-[fifth:test-delay] fifth
+        `[first] first
+[second] second
+[third] third
+[fourth] fourth
+[fifth] fifth
 ✅ fifth: test-delay
 ✅ first: test-delay
 ✅ fourth: test-delay
@@ -57,11 +57,11 @@ describe("CLI Run Script (parallel)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
-        `[first:test-delay] first
-[second:test-delay] second
-[third:test-delay] third
-[fourth:test-delay] fourth
-[fifth:test-delay] fifth
+        `[first] first
+[second] second
+[third] third
+[fourth] fourth
+[fifth] fifth
 ✅ fifth: test-delay
 ✅ first: test-delay
 ✅ fourth: test-delay
@@ -86,7 +86,7 @@ describe("CLI Run Script (parallel)", () => {
           max.toString(),
         );
 
-        const createOutput = (max: number | string) => `[a:test-debug] ${max}`;
+        const createOutput = (max: number | string) => `[a] ${max}`;
 
         if (typeof max === "number") {
           expect(stdout.sanitizedCompactLines).toStartWith(createOutput(max));

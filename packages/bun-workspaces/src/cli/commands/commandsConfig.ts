@@ -1,4 +1,5 @@
 import { SCRIPT_SHELL_OPTIONS } from "../../runScript/scriptShellOption";
+import { OUTPUT_STYLE_VALUES } from "./runScript/output/outputStyle";
 
 export interface CliCommandConfig {
   command: string;
@@ -11,6 +12,7 @@ export interface CliCommandConfig {
       flags: string[] | readonly string[];
       description: string;
       values?: string[];
+      deprecated?: boolean;
     }
   >;
 }
@@ -31,6 +33,8 @@ export type CliProjectCommandName = Exclude<
 >;
 
 export const JSON_FLAGS = ["-j", "--json"] as const;
+
+export const DEFAULT_GROUPED_LINES = 20;
 
 export const CLI_COMMANDS_CONFIG = {
   doctor: {
@@ -153,9 +157,19 @@ export const CLI_COMMANDS_CONFIG = {
         flags: ["-a", "--args <args>"],
         description: "Args to append to the script command",
       },
+      outputStyle: {
+        flags: ["-o", "--output-style <style>"],
+        description: "The output style to use",
+        values: [...OUTPUT_STYLE_VALUES],
+      },
+      groupedLines: {
+        flags: ["-L", "--grouped-lines <count>"],
+        description: `With "grouped" output, the max preview lines (number or "all", default ${DEFAULT_GROUPED_LINES})`,
+      },
       noPrefix: {
         flags: ["-N", "--no-prefix"],
-        description: "Do not prefix the workspace name to the script output",
+        description: "(DEPRECATED) Use --output-style=plain instead",
+        deprecated: true,
       },
       inline: {
         flags: ["-i", "--inline"],

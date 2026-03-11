@@ -1,0 +1,6 @@
+{
+  "name": "has-40-wide-workspace-name-which-is-long",
+  "scripts": {
+    "test-script": "sleep 0.25 && echo long workspace name"
+  }
+}

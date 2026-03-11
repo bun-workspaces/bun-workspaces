@@ -1,0 +1,6 @@
+{
+  "name": "has-100-wide-emoji-output",
+  "scripts": {
+    "test-script": "echo 'this test script has a ⚠️ ⚠️ ⚠️ long output that is exactly one hundred characters long indeed' && sleep 0.25"
+  }
+}

@@ -1,2 +1,2 @@
 export * from "./handleRunScript";
-export * from "./formatRunScriptOutput";
+export * from "./output/renderPlainOutput";

@@ -341,7 +341,7 @@ application-a`,
       assertOutputMatches(
         (await run("--log-level=error", "run-script", "all-workspaces"))
           .stdoutAndErr.sanitized,
-        /^\[application-a:all-workspaces\] script for all workspaces$/,
+        /^\[application-a\] script for all workspaces$/,
       );
     });
 

@@ -94,7 +94,7 @@ describe("Test root selector", () => {
       );
       expect(result.exitCode).toBe(0);
       expect(result.stdout.sanitizedCompactLines).toContain(
-        `[test-root:root-workspace] script for root workspace
+        `[test-root] script for root workspace
 ✅ test-root: root-workspace
 1 script ran successfully`,
       );

@@ -1,5 +1,12 @@
 import { expect, test, describe } from "bun:test";
-import { createFileSystemProject } from "../../../../src/project";
+import {
+  createFileSystemProject,
+  type RunWorkspaceScriptMetadata,
+} from "../../../../src/project";
+import {
+  type RunScriptExit,
+  type ScriptEventName,
+} from "../../../../src/runScript";
 import { getProjectRoot } from "../../../fixtures/testProjects";
 import { makeTestWorkspace } from "../../../util/testData";
 import { makeSummaryResult, makeScriptResult } from "./util";
@@ -392,6 +399,63 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
         ],
       }),
     );
+  });
+
+  test("onScriptEvent fires start, exit, and skip events with workspace metadata", async () => {
+    const project = createFileSystemProject({
+      rootDirectory: getProjectRoot("withDependenciesWithFailures"),
+    });
+
+    const events: {
+      event: ScriptEventName;
+      workspaceName: string;
+      exitResult: RunScriptExit<RunWorkspaceScriptMetadata> | null;
+    }[] = [];
+
+    const { summary } = project.runScriptAcrossWorkspaces({
+      script: "test-script",
+      dependencyOrder: true,
+      onScriptEvent: async (event, { workspace, exitResult }) => {
+        events.push({ event, workspaceName: workspace.name, exitResult });
+      },
+    });
+
+    await summary;
+
+    const namesByEvent = (eventName: ScriptEventName) =>
+      new Set(
+        events
+          .filter(({ event }) => event === eventName)
+          .map(({ workspaceName }) => workspaceName),
+      );
+
+    // e, c-depends-e-fails, d-depends-e, f-fails actually run
+    const runWorkspaces = new Set([
+      "e",
+      "c-depends-e-fails",
+      "d-depends-e",
+      "f-fails",
+    ]);
+    // a-depends-f and b-depends-cd are skipped due to dependency failures
+    const skippedWorkspaces = new Set(["a-depends-f", "b-depends-cd"]);
+
+    expect(namesByEvent("start")).toEqual(runWorkspaces);
+    expect(namesByEvent("exit")).toEqual(runWorkspaces);
+    expect(namesByEvent("skip")).toEqual(skippedWorkspaces);
+
+    // start and skip events receive null exitResult; exit events receive the actual exit result
+    events
+      .filter(({ event }) => event === "start" || event === "skip")
+      .forEach(({ exitResult }) => expect(exitResult).toBeNull());
+    events
+      .filter(({ event }) => event === "exit")
+      .forEach(({ workspaceName, exitResult }) => {
+        expect(exitResult).not.toBeNull();
+        expect(exitResult?.success).toBe(
+          workspaceName.includes("fails") ? false : true,
+        );
+        expect(exitResult?.metadata.workspace.name).toBe(workspaceName);
+      });
   });
 
   test("with args", async () => {

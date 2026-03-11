@@ -17,6 +17,7 @@ import {
   type RunScriptExit,
   type OutputChunk,
   type OutputStreamName,
+  type ScriptEventName,
 } from "../../runScript";
 import type { MultiProcessOutput } from "../../runScript/output/multiProcessOutput";
 import { checkIsRecursiveScript } from "../../runScript/recursion";
@@ -100,6 +101,16 @@ export type RunWorkspaceScriptResult = {
 
 export type ParallelOption = boolean | RunScriptsParallelOptions;
 
+export type ScriptEventMetadata = {
+  workspace: Workspace;
+  exitResult: RunScriptExit<RunWorkspaceScriptMetadata> | null;
+};
+
+export type OnScriptEventCallback = (
+  event: ScriptEventName,
+  metadata: ScriptEventMetadata,
+) => unknown;
+
 /** Arguments for `FileSystemProject.runScriptAcrossWorkspaces` */
 export type RunScriptAcrossWorkspacesOptions = {
   /**
@@ -122,6 +133,8 @@ export type RunScriptAcrossWorkspacesOptions = {
   ignoreDependencyFailure?: boolean;
   /** Set to `true` to ignore all output from the scripts. This saves memory when you don't need script output. */
   ignoreOutput?: boolean;
+  /** Callback to invoke when a script event occurs (start, skip, exit) */
+  onScriptEvent?: OnScriptEventCallback;
 };
 
 export type RunScriptAcrossWorkspacesOutput = Simplify<
@@ -443,6 +456,11 @@ class _FileSystemProject extends ProjectBase implements Project {
           ? { max: this.config.root.defaults.parallelMax }
           : (options.parallel ?? false),
       ignoreOutput: options.ignoreOutput ?? false,
+      onScriptEvent: (event, index, exitResult) =>
+        options.onScriptEvent?.(event, {
+          workspace: workspaces[index],
+          exitResult,
+        }),
     });
 
     const output =

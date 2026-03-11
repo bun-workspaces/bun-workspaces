@@ -28,6 +28,7 @@ if (RUNTIME_MODE !== _RUNTIME_MODE) {
   );
 }
 
+export const IS_INTERNAL_TEST = process.env._BW_IS_INTERNAL_TEST === "true";
 export const IS_TEST = RUNTIME_MODE === "test";
 export const IS_PRODUCTION = RUNTIME_MODE === "production";
 export const IS_DEVELOPMENT = RUNTIME_MODE === "development";

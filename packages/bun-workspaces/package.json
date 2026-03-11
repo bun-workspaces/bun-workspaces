@@ -1,6 +1,6 @@
 {
   "name": "bun-workspaces",
-  "version": "1.0.0-alpha.38",
+  "version": "1.0.0-alpha.39",
   "main": "src/index.ts",
   "private": true,
   "description": "A monorepo management tool for Bun, with a CLI and API to enhance Bun's native workspaces.",
@@ -34,7 +34,7 @@
     "ajv": "bun --silent run scripts/ajv.ts",
     "lint": "eslint src",
     "test": "rm -rf dist.test && bun test --timeout 10000",
-    "test:clean": "rm -rf tests/fixtures/testProjects/**/node_modules tests/fixtures/testProjects/**/bun.lock && bun run test",
+    "test:clean": "rm -rf packages/bun-workspaces/tests/fixtures/testProjects/**/node_modules packages/bun-workspaces/tests/fixtures/testProjects/**/bun.lock && bun run test",
     "test:concurrent": "rm -rf dist.test && bun test --concurrent --timeout 10000",
     "build": "bun run scripts/build.ts",
     "build:test": "BUILD_INCLUDE_TESTS=true bun run scripts/build.ts && chmod +x dist.test/bin/cli.js && cd dist.test && bun install && IS_BUILD=true bun run test",
@@ -43,9 +43,10 @@
     "prepare": "bun run ajv"
   },
   "devDependencies": {
+    "@rslib/core": "^0.15.1",
+    "@xterm/headless": "^6.0.0",
     "ajv": "^8.17.1",
     "ajv-cli": "^5.0.0",
-    "@rslib/core": "^0.15.1",
     "bun-workspaces": "file:."
   },
   "dependencies": {

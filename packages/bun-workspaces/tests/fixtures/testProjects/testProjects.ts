@@ -39,6 +39,7 @@ const TEST_PROJECTS = {
   runScriptWithDebugParallelMax: "forRunScript/withDebugParallelMax",
   runScriptWithSequenceConfig: "forRunScript/withSequenceConfig",
   runScriptWithSequenceConfigPartial: "forRunScript/withSequenceConfigPartial",
+  runScriptForGroupedOutput: "forRunScript/forGroupedOutput",
   workspaceConfigPackageOnly: "workspaceConfig/packageOnly",
   workspaceConfigPackageFileMix: "workspaceConfig/packageFileMix",
   workspaceConfigFileOnly: "workspaceConfig/fileOnly",

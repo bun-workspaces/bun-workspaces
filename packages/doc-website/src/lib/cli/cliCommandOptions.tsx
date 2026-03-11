@@ -25,6 +25,7 @@ const defineCommandContent = (
 
   for (const option of Object.values(config.options)) {
     if (
+      !option.deprecated &&
       !exampleLines.find((line) => line.includes(getMainFlag(option.flags)))
     ) {
       throw new Error(
@@ -171,8 +172,18 @@ const CLI_PROJECT_COMMANDS_CONTENT = {
       "# Run a scripts in parallel with no concurrency limit (use with caution)",
       `bw run my-script --parallel=unbounded`,
       "",
-      "# Disable the workspace name prefix in the script output",
-      `bw run my-script --no-prefix`,
+      "# Use the grouped output style (default when on a TTY)",
+      `bw run my-script --output-style=grouped`,
+      "",
+      "# Set the max preview lines for script output in grouped output style",
+      `bw run my-script --output-style=grouped --grouped-lines=all`,
+      `bw run my-script --output-style=grouped --grouped-lines=10`,
+      "",
+      "# Use simple script output with workspace prefixes (default when not on a TTY)",
+      `bw run my-script --output-style=prefixed`,
+      "",
+      "# Use the plain output style (no workspace prefixes)",
+      `bw run my-script --output-style=plain`,
       "",
       "# Run an inline command from each workspace's directory",
       `bw run "echo 'this is my inline script for <workspaceName>'" --inline`,

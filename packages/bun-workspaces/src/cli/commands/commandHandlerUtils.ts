@@ -1,5 +1,5 @@
 import { Option, type Command } from "commander";
-import { BunWorkspacesError } from "../../internal/core";
+import { BunWorkspacesError } from "../../internal/core/error";
 import { createLogger, logger } from "../../internal/logger";
 import type { FileSystemProject } from "../../project/implementations/fileSystemProject";
 import type { Workspace } from "../../workspaces";

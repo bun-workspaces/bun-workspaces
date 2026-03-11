@@ -1,0 +1,6 @@
+{
+  "name": "b-fails",
+  "scripts": {
+    "test-script": "sleep 0.25 && echo 'test-script b' && exit 1"
+  }
+}

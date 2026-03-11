@@ -2,10 +2,10 @@ import { test, expect, describe } from "bun:test";
 import { assertOutputMatches, setupCliTest } from "../../../util/cliTestUtils";
 
 describe("CLI Run Script (output format)", () => {
-  test("--no-prefix strips prefix from script output", async () => {
+  test("--output-style=plain omits prefix from script output", async () => {
     const result = await setupCliTest({
       testProject: "simple1",
-    }).run("run-script", "all-workspaces", "--no-prefix");
+    }).run("run-script", "all-workspaces", "--output-style=plain");
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,
@@ -21,10 +21,10 @@ script for all workspaces
     );
   });
 
-  test("-N strips prefix from script output", async () => {
+  test("--output-style=plain omits prefix from script output (short arg)", async () => {
     const result = await setupCliTest({
       testProject: "simple1",
-    }).run("run-script", "all-workspaces", "-N");
+    }).run("run-script", "all-workspaces", "-o", "plain");
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,
@@ -40,10 +40,29 @@ script for all workspaces
     );
   });
 
-  test("--no-prefix with failures shows failure output", async () => {
+  test("--output-style=prefixed", async () => {
+    const result = await setupCliTest({
+      testProject: "simple1",
+    }).run("run-script", "all-workspaces", "--output-style=prefixed");
+    expect(result.exitCode).toBe(0);
+    assertOutputMatches(
+      result.stdoutAndErr.sanitizedCompactLines,
+      `[application-1a] script for all workspaces
+[application-1b] script for all workspaces
+[library-1a] script for all workspaces
+[library-1b] script for all workspaces
+✅ application-1a: all-workspaces
+✅ application-1b: all-workspaces
+✅ library-1a: all-workspaces
+✅ library-1b: all-workspaces
+4 scripts ran successfully`,
+    );
+  });
+
+  test("--output-style=plain with failures shows failure output", async () => {
     const result = await setupCliTest({
       testProject: "runScriptWithFailures",
-    }).run("run-script", "test-exit", "--no-prefix");
+    }).run("run-script", "test-exit", "--output-style=plain");
     expect(result.exitCode).toBe(1);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,
@@ -56,6 +75,17 @@ success2
 ✅ success1: test-exit
 ✅ success2: test-exit
 2 of 4 scripts failed`,
+    );
+  });
+
+  test("--no-prefix deprecation warning", async () => {
+    const result = await setupCliTest({
+      testProject: "simple1",
+    }).run("run-script", "all-workspaces", "--no-prefix");
+    expect(result.exitCode).toBe(0);
+    assertOutputMatches(
+      result.stderr.sanitizedCompactLines,
+      `[bun-workspaces WARN]: --no-prefix is deprecated and will be removed in a future version. Use --output-style=plain instead.`,
     );
   });
 });

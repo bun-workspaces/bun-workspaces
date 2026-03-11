@@ -6,7 +6,18 @@ import {
   handleProjectCommand,
   splitWorkspacePatterns,
 } from "../commandHandlerUtils";
-import { formatRunScriptOutput } from "./formatRunScriptOutput";
+import { DEFAULT_GROUPED_LINES } from "../commandsConfig";
+import {
+  getDefaultOutputStyle,
+  validateOutputStyle,
+  type OutputStyleName,
+} from "./output/outputStyle";
+import {
+  createScriptEvent,
+  createScriptEventTarget,
+  renderGroupedOutput,
+} from "./output/renderGroupedOutput";
+import { renderPlainOutput } from "./output/renderPlainOutput";
 
 export const runScript = handleProjectCommand(
   "runScript",
@@ -19,6 +30,7 @@ export const runScript = handleProjectCommand(
       workspacePatterns: string | undefined;
       parallel: boolean | string;
       args: string;
+      /** @deprecated by --output-style=plain instead */
       prefix: boolean;
       inline: boolean;
       inlineName: string | undefined;
@@ -26,6 +38,8 @@ export const runScript = handleProjectCommand(
       depOrder: boolean;
       ignoreDepFailure: boolean;
       jsonOutfile: string | undefined;
+      outputStyle: string | undefined;
+      groupedLines: string | undefined;
     },
   ) => {
     options.inlineName = options.inlineName?.trim();
@@ -73,9 +87,13 @@ export const runScript = handleProjectCommand(
       } (parallel: ${!!options.parallel}, args: ${JSON.stringify(scriptArgs)})`,
     );
 
-    const workspaceCount = project.findWorkspacesByPattern(
-      ...workspacePatterns,
-    ).length;
+    const workspaces = workspacePatterns.length
+      ? project.findWorkspacesByPattern(...workspacePatterns)
+      : options.inline
+        ? project.workspaces
+        : project.listWorkspacesWithScript(script);
+
+    const scriptEventTarget = createScriptEventTarget();
 
     const { output, summary } = project.runScriptAcrossWorkspaces({
       workspacePatterns: workspacePatterns.length
@@ -94,6 +112,14 @@ export const runScript = handleProjectCommand(
       dependencyOrder: options.depOrder,
       ignoreDependencyFailure: options.ignoreDepFailure,
       ignoreOutput: logger.printLevel === "silent",
+      onScriptEvent: (event, { workspace, exitResult }) => {
+        scriptEventTarget.dispatchEvent(
+          createScriptEvent[event]({
+            workspace,
+            exitResult,
+          }),
+        );
+      },
       parallel:
         typeof options.parallel === "boolean" ||
         typeof options.parallel === "undefined"
@@ -109,17 +135,55 @@ export const runScript = handleProjectCommand(
       ? options.inlineName || "(inline)"
       : script;
 
-    const handleOutput = async () => {
-      for await (const { line, metadata } of formatRunScriptOutput(output, {
-        prefix: options.prefix,
-        scriptName,
-        stripDisruptiveControls: workspaceCount > 1 || !!options.parallel,
-      })) {
-        process[metadata.streamName].write(line);
+    const stripDisruptiveControls = workspaces.length > 1 || !!options.parallel;
+
+    let groupedLines: number | "all" = DEFAULT_GROUPED_LINES;
+    if (options.groupedLines) {
+      if (options.groupedLines === "all") {
+        groupedLines = "all";
+      } else {
+        const parsedGroupedLines = parseInt(options.groupedLines as string);
+
+        if (parsedGroupedLines <= 0 || isNaN(parsedGroupedLines)) {
+          logger.error(
+            `Invalid max grouped lines value: ${options.groupedLines}. Must be a positive number or "all".`,
+          );
+          process.exit(1);
+        }
+
+        groupedLines = parsedGroupedLines;
       }
+    }
+
+    if (!options.prefix) {
+      logger.warn(
+        "--no-prefix is deprecated and will be removed in a future version. Use --output-style=plain instead.",
+      );
+    }
+
+    const outputStyleHandlers: Record<OutputStyleName, () => Promise<void>> = {
+      grouped: () =>
+        renderGroupedOutput(
+          workspaces,
+          output,
+          summary,
+          scriptEventTarget,
+          groupedLines,
+        ),
+      prefixed: () =>
+        renderPlainOutput(output, { prefix: true, stripDisruptiveControls }),
+      plain: () =>
+        renderPlainOutput(output, {
+          prefix: false,
+          stripDisruptiveControls,
+        }),
     };
 
-    handleOutput();
+    const outputStyle = options.outputStyle
+      ? validateOutputStyle(options.outputStyle)
+      : getDefaultOutputStyle();
+
+    await outputStyleHandlers[outputStyle]();
 
     const exitResults = await summary;
 
@@ -200,6 +264,8 @@ export const runScript = handleProjectCommand(
 
     if (exitResults.failureCount) {
       process.exit(1);
+    } else {
+      process.exit(0);
     }
   },
 );

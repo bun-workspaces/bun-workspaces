@@ -21,8 +21,11 @@ export {
   type RunScriptAcrossWorkspacesResult,
   type ParallelOption,
   type ShellOption,
+  type ScriptEventMetadata,
+  type OnScriptEventCallback,
 } from "./project";
 export {
+  type ScriptEventName,
   type OutputChunk,
   type OutputStreamName,
   type DecodeOptions,

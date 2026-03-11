@@ -1,4 +1,4 @@
-import { ResolvedRootConfig } from "bun-workspaces/src/config";
+import { type ResolvedRootConfig } from "bun-workspaces/src/config";
 import {
   getUserEnvVarName,
   type UserEnvVarName,

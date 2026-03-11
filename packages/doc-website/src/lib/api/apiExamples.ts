@@ -189,6 +189,11 @@ const { output, summary } = project.runScriptAcrossWorkspaces({
   // Optional. Whether to ignore all output from the scripts. 
   // This saves memory when you don't need script output.
   ignoreOutput: false,
+
+  // Optional, callback when script starts, skips, or exits
+  onScriptEvent: (event, { workspace, exitResult }) => {
+    // event: "start", "skip", "exit"
+  }
 });
 
 // Get a stream of script output 

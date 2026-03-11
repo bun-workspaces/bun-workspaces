@@ -47,6 +47,15 @@ export type RunScriptOptions<ScriptMetadata extends object = object> = {
   ignoreOutput?: boolean;
 };
 
+const SIGNAL_MAP = {
+  130: "SIGINT",
+  143: "SIGTERM",
+  129: "SIGHUP",
+  131: "SIGQUIT",
+  138: "SIGUSR1",
+  140: "SIGUSR2",
+} as const;
+
 /**
  * Run some script and get an async output stream of
  * stdout and stderr chunks and a result object
@@ -110,7 +119,10 @@ export const runScript = <ScriptMetadata extends object = object>({
     const endTime = new Date();
     return {
       exitCode,
-      signal: proc.signalCode,
+      signal:
+        proc.signalCode ??
+        SIGNAL_MAP[exitCode as keyof typeof SIGNAL_MAP] ??
+        null,
       success: exitCode === 0,
       startTimeISO: startTime.toISOString(),
       endTimeISO: endTime.toISOString(),

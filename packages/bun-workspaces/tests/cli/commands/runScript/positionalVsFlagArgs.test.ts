@@ -9,8 +9,8 @@ describe("CLI Run Script (positional vs flag args)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
-        `[application-1a:a-workspaces] script for a workspaces
-[library-1a:a-workspaces] script for a workspaces
+        `[application-1a] script for a workspaces
+[library-1a] script for a workspaces
 ✅ application-1a: a-workspaces
 ✅ library-1a: a-workspaces
 2 scripts ran successfully`,
@@ -23,8 +23,8 @@ describe("CLI Run Script (positional vs flag args)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
-        `[application-1a:a-workspaces] script for a workspaces
-[library-1a:a-workspaces] script for a workspaces
+        `[application-1a] script for a workspaces
+[library-1a] script for a workspaces
 ✅ application-1a: a-workspaces
 ✅ library-1a: a-workspaces
 2 scripts ran successfully`,
@@ -37,8 +37,8 @@ describe("CLI Run Script (positional vs flag args)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
-        `[application-1a:a-workspaces] script for a workspaces
-[library-1a:a-workspaces] script for a workspaces
+        `[application-1a] script for a workspaces
+[library-1a] script for a workspaces
 ✅ application-1a: a-workspaces
 ✅ library-1a: a-workspaces
 2 scripts ran successfully`,
@@ -57,7 +57,7 @@ describe("CLI Run Script (positional vs flag args)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
-        `[application-1a:a-workspaces] script for a workspaces
+        `[application-1a] script for a workspaces
 ✅ application-1a: a-workspaces
 1 script ran successfully`,
       );
@@ -74,8 +74,8 @@ describe("CLI Run Script (positional vs flag args)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
-        `[library-1a:all-workspaces] script for all workspaces
-[library-1b:all-workspaces] script for all workspaces
+        `[library-1a] script for all workspaces
+[library-1b] script for all workspaces
 ✅ library-1a: all-workspaces
 ✅ library-1b: all-workspaces
 2 scripts ran successfully`,
@@ -92,8 +92,8 @@ describe("CLI Run Script (positional vs flag args)", () => {
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
-        `[library-1a:all-workspaces] script for all workspaces
-[library-1b:all-workspaces] script for all workspaces
+        `[library-1a] script for all workspaces
+[library-1b] script for all workspaces
 ✅ library-1a: all-workspaces
 ✅ library-1b: all-workspaces
 2 scripts ran successfully`,

@@ -101,7 +101,7 @@ describe("Test run script shell option", () => {
       );
       expect(defaultResult.exitCode).toBe(0);
       expect(defaultResult.stdout.sanitizedCompactLines).toInclude(
-        "[application-a:test] bun",
+        "[application-a] bun",
       );
     });
 
@@ -120,7 +120,7 @@ describe("Test run script shell option", () => {
       );
       expect(osEnvResult.exitCode).toBe(0);
       expect(osEnvResult.stdout.sanitizedCompactLines).toInclude(
-        "[application-a:test] system",
+        "[application-a] system",
       );
     });
 
@@ -141,7 +141,7 @@ describe("Test run script shell option", () => {
       );
       expect(explicitDefaultResult.exitCode).toBe(0);
       expect(explicitDefaultResult.stdout.sanitizedCompactLines).toInclude(
-        "[application-a:test] system",
+        "[application-a] system",
       );
     });
 
@@ -158,7 +158,7 @@ describe("Test run script shell option", () => {
       );
       expect(bunEnvResult.exitCode).toBe(0);
       expect(bunEnvResult.stdout.sanitizedCompactLines).toInclude(
-        "[application-a:test] bun",
+        "[application-a] bun",
       );
     });
 
@@ -175,7 +175,7 @@ describe("Test run script shell option", () => {
       );
       expect(explicitBunResult.exitCode).toBe(0);
       expect(explicitBunResult.stdout.sanitizedCompactLines).toInclude(
-        "[application-a:test] bun",
+        "[application-a] bun",
       );
     });
 
@@ -208,7 +208,7 @@ describe("Test run script shell option", () => {
       );
       expect(explicitOsResult.exitCode).toBe(0);
       expect(explicitOsResult.stdout.sanitizedCompactLines).toInclude(
-        "[application-a:test] system",
+        "[application-a] system",
       );
     });
 

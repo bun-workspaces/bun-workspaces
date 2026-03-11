@@ -77,4 +77,15 @@ success2
 2 of 4 scripts failed`,
     );
   });
+
+  test("--no-prefix deprecation warning", async () => {
+    const result = await setupCliTest({
+      testProject: "simple1",
+    }).run("run-script", "all-workspaces", "--no-prefix");
+    expect(result.exitCode).toBe(0);
+    assertOutputMatches(
+      result.stderr.sanitizedCompactLines,
+      `[bun-workspaces WARN]: --no-prefix is deprecated and will be removed in a future version. Use --output-style=plain instead.`,
+    );
+  });
 });

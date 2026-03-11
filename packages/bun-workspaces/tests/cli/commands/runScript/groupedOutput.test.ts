@@ -40,7 +40,7 @@ const runSnapshotTest = async ({
   const dataQueue = createAsyncIterableQueue<Uint8Array<ArrayBufferLike>>();
 
   createCliSubprocess({
-    argv: ["run", "--output-style=grouped", ...runScriptArgv],
+    argv: ["run", ...runScriptArgv],
     testProject,
     terminal: {
       cols,

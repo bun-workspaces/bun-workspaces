@@ -87,6 +87,11 @@ describe("grouped output", () => {
     return;
   }
 
+  if (Bun.semver.satisfies(Bun.version, "<1.3.5")) {
+    // Bun 1.3.5 introduced pty support
+    return;
+  }
+
   test(
     "series success",
     async () => {

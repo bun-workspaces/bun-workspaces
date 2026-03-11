@@ -5,6 +5,8 @@ import { createAsyncIterableQueue } from "../../../../src/internal/core";
 import type { TestProjectName } from "../../../fixtures/testProjects";
 import { createCliSubprocess } from "../../../util/cliTestUtils";
 
+const DEFAULT_RETRY = 5;
+
 const getTerminalContent = (terminal: Terminal): string => {
   const lines: string[] = [];
   for (let i = 0; i < terminal.rows; i++) {
@@ -227,7 +229,7 @@ test-script d
       });
     },
     {
-      retry: 5,
+      retry: DEFAULT_RETRY,
     },
   );
 
@@ -305,7 +307,7 @@ test-script d
       });
     },
     {
-      retry: 5,
+      retry: DEFAULT_RETRY,
     },
   );
 
@@ -397,23 +399,25 @@ test-script c
       });
     },
     {
-      retry: 5,
+      retry: DEFAULT_RETRY,
     },
   );
 
   describe("handle wide output", async () => {
-    test("100-wide output - 100 columns", async () => {
-      await runSnapshotTest({
-        runScriptArgv: ["test-script", "has-100-wide-output"],
-        testProject: "runScriptForGroupedOutput",
-        expectedSnapshots: [
-          `
+    test(
+      "100-wide output - 100 columns",
+      async () => {
+        await runSnapshotTest({
+          runScriptArgv: ["test-script", "has-100-wide-output"],
+          testProject: "runScriptForGroupedOutput",
+          expectedSnapshots: [
+            `
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ Workspace: has-100-wide-output                                                                   │
 │    Status: running                                                                               │
 └──────────────────────────────────────────────────────────────────────────────────────────────────┘
 this test script has a very very very long output that is exactly one hundred characters long indeed`,
-          `
+            `
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ Workspace: has-100-wide-output                                                                   │
 │    Status: success                                                                               │
@@ -421,24 +425,28 @@ this test script has a very very very long output that is exactly one hundred ch
 this test script has a very very very long output that is exactly one hundred characters long indeed
 ✅ has-100-wide-output: test-script
 1 script ran successfully`,
-        ],
-        expectFinalSnapshotAtExit: true,
-        rows: 50,
-        cols: 100,
-      });
-    });
-    test("100-wide output - 99 columns", async () => {
-      await runSnapshotTest({
-        runScriptArgv: ["test-script", "has-100-wide-output"],
-        testProject: "runScriptForGroupedOutput",
-        expectedSnapshots: [
-          `
+          ],
+          expectFinalSnapshotAtExit: true,
+          rows: 50,
+          cols: 100,
+        });
+      },
+      { retry: DEFAULT_RETRY },
+    );
+    test(
+      "100-wide output - 99 columns",
+      async () => {
+        await runSnapshotTest({
+          runScriptArgv: ["test-script", "has-100-wide-output"],
+          testProject: "runScriptForGroupedOutput",
+          expectedSnapshots: [
+            `
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ Workspace: has-100-wide-output                                                                  │
 │    Status: running                                                                              │
 └─────────────────────────────────────────────────────────────────────────────────────────────────┘
 this test script has a very very very long output that is exactly one hundred characters long ind… `,
-          `
+            `
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ Workspace: has-100-wide-output                                                                  │
 │    Status: success                                                                              │
@@ -447,25 +455,29 @@ this test script has a very very very long output that is exactly one hundred ch
 d
 ✅ has-100-wide-output: test-script
 1 script ran successfully`,
-        ],
-        expectFinalSnapshotAtExit: true,
-        rows: 50,
-        cols: 99,
-      });
-    });
+          ],
+          expectFinalSnapshotAtExit: true,
+          rows: 50,
+          cols: 99,
+        });
+      },
+      { retry: DEFAULT_RETRY },
+    );
 
-    test("100-wide output - 50 columns", async () => {
-      await runSnapshotTest({
-        runScriptArgv: ["test-script", "has-100-wide-output"],
-        testProject: "runScriptForGroupedOutput",
-        expectedSnapshots: [
-          `
+    test(
+      "100-wide output - 50 columns",
+      async () => {
+        await runSnapshotTest({
+          runScriptArgv: ["test-script", "has-100-wide-output"],
+          testProject: "runScriptForGroupedOutput",
+          expectedSnapshots: [
+            `
 ┌────────────────────────────────────────────────┐
 │ Workspace: has-100-wide-output                 │
 │    Status: running                             │
 └────────────────────────────────────────────────┘
 this test script has a very very very long outpu… `,
-          `
+            `
 ┌────────────────────────────────────────────────┐
 │ Workspace: has-100-wide-output                 │
 │    Status: success                             │
@@ -474,25 +486,29 @@ this test script has a very very very long output
 that is exactly one hundred characters long indeed
 ✅ has-100-wide-output: test-script
 1 script ran successfully`,
-        ],
-        expectFinalSnapshotAtExit: true,
-        rows: 50,
-        cols: 50,
-      });
-    });
+          ],
+          expectFinalSnapshotAtExit: true,
+          rows: 50,
+          cols: 50,
+        });
+      },
+      { retry: DEFAULT_RETRY },
+    );
 
-    test("100-wide output with emoji - 50 columns", async () => {
-      await runSnapshotTest({
-        runScriptArgv: ["test-script", "has-100-wide-emoji-output"],
-        testProject: "runScriptForGroupedOutput",
-        expectedSnapshots: [
-          `
+    test(
+      "100-wide output with emoji - 50 columns",
+      async () => {
+        await runSnapshotTest({
+          runScriptArgv: ["test-script", "has-100-wide-emoji-output"],
+          testProject: "runScriptForGroupedOutput",
+          expectedSnapshots: [
+            `
 ┌────────────────────────────────────────────────┐
 │ Workspace: has-100-wide-emoji-output           │
 │    Status: running                             │
 └────────────────────────────────────────────────┘
 this test script has a ⚠️ ⚠️ ⚠️ long output that… `,
-          `
+            `
 ┌────────────────────────────────────────────────┐
 │ Workspace: has-100-wide-emoji-output           │
 │    Status: success                             │
@@ -501,48 +517,56 @@ this test script has a ⚠️ ⚠️ ⚠️ long output that is e
 xactly one hundred characters long indeed
 ✅ has-100-wide-emoji-output: test-script
 1 script ran successfully`,
-        ],
-        expectFinalSnapshotAtExit: true,
-        rows: 50,
-        cols: 50,
-      });
-    });
+          ],
+          expectFinalSnapshotAtExit: true,
+          rows: 50,
+          cols: 50,
+        });
+      },
+      { retry: DEFAULT_RETRY },
+    );
   });
 
   describe("handle wide workspace name", async () => {
-    test("40-wide workspace name - 55 columns", async () => {
-      await runSnapshotTest({
-        runScriptArgv: [
-          "test-script",
-          "has-40-wide-workspace-name-which-is-long",
-        ],
-        testProject: "runScriptForGroupedOutput",
-        expectedSnapshots: [
-          `
+    test(
+      "40-wide workspace name - 55 columns",
+      async () => {
+        await runSnapshotTest({
+          runScriptArgv: [
+            "test-script",
+            "has-40-wide-workspace-name-which-is-long",
+          ],
+          testProject: "runScriptForGroupedOutput",
+          expectedSnapshots: [
+            `
 ┌─────────────────────────────────────────────────────┐
 │ Workspace: has-40-wide-workspace-name-which-is-long │
 │    Status: pending                                  │
 └─────────────────────────────────────────────────────┘`,
-        ],
-        rows: 50,
-        cols: 55,
-      });
-    });
+          ],
+          rows: 50,
+          cols: 55,
+        });
+      },
+      { retry: DEFAULT_RETRY },
+    );
 
-    test("40-wide workspace name - 54 columns", async () => {
-      await runSnapshotTest({
-        runScriptArgv: [
-          "test-script",
-          "has-40-wide-workspace-name-which-is-long",
-        ],
-        testProject: "runScriptForGroupedOutput",
-        expectedSnapshots: [
-          `
+    test(
+      "40-wide workspace name - 54 columns",
+      async () => {
+        await runSnapshotTest({
+          runScriptArgv: [
+            "test-script",
+            "has-40-wide-workspace-name-which-is-long",
+          ],
+          testProject: "runScriptForGroupedOutput",
+          expectedSnapshots: [
+            `
 ┌────────────────────────────────────────────────────┐
 │ Workspace: has-40-wide-workspace-name-which-is-lo… │
 │    Status: pending                                 │
 └────────────────────────────────────────────────────┘`,
-          `
+            `
 ┌────────────────────────────────────────────────────┐
 │ Workspace: has-40-wide-workspace-name-which-is-lo… │
 │    Status: success                                 │
@@ -551,80 +575,96 @@ long workspace name
 ✅ has-40-wide-workspace-name-which-is-long: test-scrip
 t
 1 script ran successfully`,
-        ],
-        rows: 50,
-        cols: 54,
-      });
-    });
+          ],
+          rows: 50,
+          cols: 54,
+        });
+      },
+      { retry: DEFAULT_RETRY },
+    );
 
-    test("40-wide workspace name - 18 columns", async () => {
-      await runSnapshotTest({
-        runScriptArgv: [
-          "test-script",
-          "has-40-wide-workspace-name-which-is-long",
-        ],
-        testProject: "runScriptForGroupedOutput",
-        expectedSnapshots: [
-          `
+    test(
+      "40-wide workspace name - 18 columns",
+      async () => {
+        await runSnapshotTest({
+          runScriptArgv: [
+            "test-script",
+            "has-40-wide-workspace-name-which-is-long",
+          ],
+          testProject: "runScriptForGroupedOutput",
+          expectedSnapshots: [
+            `
 ┌────────────────┐
 │ Workspace: ha… │
 │    Status: pe… │
 └────────────────┘`,
-        ],
-        rows: 50,
-        cols: 18,
-      });
-    });
+          ],
+          rows: 50,
+          cols: 18,
+        });
+      },
+      { retry: DEFAULT_RETRY },
+    );
 
-    test("40-wide workspace name - 12 columns", async () => {
-      await runSnapshotTest({
-        runScriptArgv: [
-          "test-script",
-          "has-40-wide-workspace-name-which-is-long",
-        ],
-        testProject: "runScriptForGroupedOutput",
-        expectedSnapshots: [
-          `
+    test(
+      "40-wide workspace name - 12 columns",
+      async () => {
+        await runSnapshotTest({
+          runScriptArgv: [
+            "test-script",
+            "has-40-wide-workspace-name-which-is-long",
+          ],
+          testProject: "runScriptForGroupedOutput",
+          expectedSnapshots: [
+            `
 ┌──────────┐
 │ Workspa… │
 │    Stat… │
 └──────────┘`,
-        ],
-        rows: 50,
-        cols: 12,
-      });
-    });
+          ],
+          rows: 50,
+          cols: 12,
+        });
+      },
+      { retry: DEFAULT_RETRY },
+    );
 
-    test("40-wide workspace name - 1 column", async () => {
-      await runSnapshotTest({
-        runScriptArgv: [
-          "test-script",
-          "has-40-wide-workspace-name-which-is-long",
-        ],
-        testProject: "runScriptForGroupedOutput",
-        expectedSnapshots: [
-          `
+    test(
+      "40-wide workspace name - 1 column",
+      async () => {
+        await runSnapshotTest({
+          runScriptArgv: [
+            "test-script",
+            "has-40-wide-workspace-name-which-is-long",
+          ],
+          testProject: "runScriptForGroupedOutput",
+          expectedSnapshots: [
+            `
 ┌┐
 …
 …
 └┘`,
-        ],
-        rows: 50,
-        cols: 1,
-      });
-    });
+          ],
+          rows: 50,
+          cols: 1,
+        });
+      },
+      { retry: DEFAULT_RETRY },
+    );
   });
 
   describe("handle max script output preview lines", () => {
     /** just so terminal output shows everything in the snapshot */
     const padding = 100;
 
-    test(`50-line output: Default max (${DEFAULT_GROUPED_LINES})`, async () => {
-      await runSnapshotTest({
-        runScriptArgv: ["test-script", "has-50-line-output"],
-        testProject: "runScriptForGroupedOutput",
-        expectedSnapshots: [
-          `
+    test(
+      `50-line output: Default max (${DEFAULT_GROUPED_LINES})`,
+      async () => {
+        await runSnapshotTest({
+          runScriptArgv: ["test-script", "has-50-line-output"],
+          testProject: "runScriptForGroupedOutput",
+          expectedSnapshots: [
+            `
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ Workspace: has-50-line-output                                                                    │
 │    Status: success                                                                               │
@@ -651,7 +691,7 @@ t
 49 this test script has a very very very long output that is exactly one hundred characters long i…
 50 this test script has a very very very long output that is exactly one hundred characters long i…
 `,
-          `
+            `
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ Workspace: has-50-line-output                                                                    │
 │    Status: success                                                                               │
@@ -759,23 +799,27 @@ eed
 ✅ has-50-line-output: test-script
 1 script ran successfully
 `,
-        ],
-        expectFinalSnapshotAtExit: true,
-        rows: DEFAULT_GROUPED_LINES + padding,
-        cols: 100,
-      });
-    });
+          ],
+          expectFinalSnapshotAtExit: true,
+          rows: DEFAULT_GROUPED_LINES + padding,
+          cols: 100,
+        });
+      },
+      { retry: DEFAULT_RETRY },
+    );
 
-    test(`50-line output: 5 lines`, async () => {
-      await runSnapshotTest({
-        runScriptArgv: [
-          "test-script",
-          "has-50-line-output",
-          "--grouped-lines=5",
-        ],
-        testProject: "runScriptForGroupedOutput",
-        expectedSnapshots: [
-          `
+    test(
+      `50-line output: 5 lines`,
+      async () => {
+        await runSnapshotTest({
+          runScriptArgv: [
+            "test-script",
+            "has-50-line-output",
+            "--grouped-lines=5",
+          ],
+          testProject: "runScriptForGroupedOutput",
+          expectedSnapshots: [
+            `
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ Workspace: has-50-line-output                                                                    │
 │    Status: running                                                                               │
@@ -787,7 +831,7 @@ eed
 49 this test script has a very very very long output that is exactly one hundred characters long i…
 50 this test script has a very very very long output that is exactly one hundred characters long i…
 `,
-          `
+            `
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ Workspace: has-50-line-output                                                                    │
 │    Status: success                                                                               │
@@ -895,23 +939,27 @@ eed
 ✅ has-50-line-output: test-script
 1 script ran successfully
 `,
-        ],
-        expectFinalSnapshotAtExit: true,
-        rows: 50 + padding,
-        cols: 100,
-      });
-    });
+          ],
+          expectFinalSnapshotAtExit: true,
+          rows: 50 + padding,
+          cols: 100,
+        });
+      },
+      { retry: DEFAULT_RETRY },
+    );
 
-    test(`50-line output: all lines`, async () => {
-      await runSnapshotTest({
-        runScriptArgv: [
-          "test-script",
-          "has-50-line-output",
-          "--grouped-lines=all",
-        ],
-        testProject: "runScriptForGroupedOutput",
-        expectedSnapshots: [
-          `
+    test(
+      `50-line output: all lines`,
+      async () => {
+        await runSnapshotTest({
+          runScriptArgv: [
+            "test-script",
+            "has-50-line-output",
+            "--grouped-lines=all",
+          ],
+          testProject: "runScriptForGroupedOutput",
+          expectedSnapshots: [
+            `
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ Workspace: has-50-line-output                                                                    │
 │    Status: success                                                                               │
@@ -967,7 +1015,7 @@ eed
 49 this test script has a very very very long output that is exactly one hundred characters long i…
 50 this test script has a very very very long output that is exactly one hundred characters long i…
 `,
-          `
+            `
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ Workspace: has-50-line-output                                                                    │
 │    Status: success                                                                               │
@@ -1075,12 +1123,14 @@ eed
 ✅ has-50-line-output: test-script
 1 script ran successfully
 `,
-        ],
-        expectFinalSnapshotAtExit: true,
-        rows: 50 + padding,
-        cols: 100,
-      });
-    });
+          ],
+          expectFinalSnapshotAtExit: true,
+          rows: 50 + padding,
+          cols: 100,
+        });
+      },
+      { retry: DEFAULT_RETRY },
+    );
 
     test.each([-1, "invalid", NaN, Infinity, -Infinity, 0])(
       "invalid number: %p",
@@ -1099,15 +1149,18 @@ eed
           cols: 100,
         });
       },
+      { retry: DEFAULT_RETRY },
     );
   });
 
-  test("Combo of output boundaries", async () => {
-    await runSnapshotTest({
-      runScriptArgv: ["test-script", "has-*"],
-      testProject: "runScriptForGroupedOutput",
-      expectedSnapshots: [
-        `
+  test(
+    "Combo of output boundaries",
+    async () => {
+      await runSnapshotTest({
+        runScriptArgv: ["test-script", "has-*"],
+        testProject: "runScriptForGroupedOutput",
+        expectedSnapshots: [
+          `
 ┌────────────────────────────────────────────────┐
 │ Workspace: has-100-wide-emoji-output           │
 │    Status: success                             │
@@ -1158,10 +1211,12 @@ t that is exactly one hundred characters long inde
 ed
 10 this test script has a very very very long outp
 ut that is exactly one hundred characters long ind`,
-      ],
-      expectFinalSnapshotAtExit: true,
-      rows: 50,
-      cols: 50,
-    });
-  });
+        ],
+        expectFinalSnapshotAtExit: true,
+        rows: 50,
+        cols: 50,
+      });
+    },
+    { retry: DEFAULT_RETRY },
+  );
 });

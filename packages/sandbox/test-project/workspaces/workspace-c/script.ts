@@ -8,5 +8,3 @@ console.log(
   process.env.BW_WORKSPACE_RELATIVE_PATH,
 );
 console.log("BW_SCRIPT_NAME:", process.env.BW_SCRIPT_NAME);
-
-await Bun.sleep(1000);

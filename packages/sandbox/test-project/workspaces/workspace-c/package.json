@@ -1,0 +1,13 @@
+{
+  "name": "workspace-c",
+  "bw": {
+    "scripts": {
+      "workspace-script": {
+        "order": -1
+      }
+    }
+  },
+  "scripts": {
+    "workspace-script": "bun run script.ts"
+  }
+}

@@ -26,6 +26,9 @@
     "workspaces/workspace-b": {
       "name": "workspace-b",
     },
+    "workspaces/workspace-c": {
+      "name": "workspace-c",
+    },
   },
   "packages": {
     "parallel-max-a": ["parallel-max-a@workspace:workspaces/parallel-max-a"],
@@ -41,5 +44,7 @@
     "workspace-a": ["workspace-a@workspace:workspaces/workspace-a"],
 
     "workspace-b": ["workspace-b@workspace:workspaces/workspace-b"],
+
+    "workspace-c": ["workspace-c@workspace:workspaces/workspace-c"],
   }
 }

@@ -1,21 +1,16 @@
 import { createFileSystemProject } from "bun-workspaces_release";
-import { createCli } from "bun-workspaces_release/src/cli";
 
-if (import.meta.main && process.env.CLI === "true") {
-  createCli({ defaultCwd: "test-project" }).run();
-} else {
-  const project = createFileSystemProject({
-    rootDirectory: "test-project",
-  });
+const project = createFileSystemProject({
+  rootDirectory: "test-project",
+});
 
-  const { output } = project.runScriptAcrossWorkspaces({
-    workspacePatterns: ["p*"],
-    script: "echo <workspaceName>: <scriptName> && set -o pipefail",
-    parallel: { max: "100%" },
-    inline: { scriptName: "test", shell: "system" },
-  });
+const { output } = project.runScriptAcrossWorkspaces({
+  workspacePatterns: ["p*"],
+  script: "echo <workspaceName>: <scriptName> && set -o pipefail",
+  parallel: { max: "100%" },
+  inline: { scriptName: "test", shell: "system" },
+});
 
-  for await (const { outputChunk } of output) {
-    console.log(outputChunk.decode({ stripAnsi: false }).trim());
-  }
+for await (const { outputChunk } of output) {
+  console.log(outputChunk.decode({ stripAnsi: false }).trim());
 }

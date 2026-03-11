@@ -8,6 +8,7 @@ import {
   calculateVisibleLength,
   truncateTerminalString,
 } from "../../../../internal/core/language/string/utf/visibleLength";
+import { logger } from "../../../../internal/logger";
 import type {
   RunScriptAcrossWorkspacesProcessOutput,
   RunWorkspaceScriptMetadata,
@@ -127,12 +128,24 @@ export const renderGroupedOutput = async (
     {} as Record<string, WorkspaceState>,
   );
 
+  let isInitialized = false;
   const initializeTuiTerminal = () => {
+    if (isInitialized) {
+      return;
+    }
+    isInitialized = true;
+    logger.debug("Initializing TUI state");
     process.stdout.write(cursorOps.hide());
     process.stdin.setRawMode?.(true);
   };
 
-  const resetTerminal = () => {
+  let isReset = false;
+  const resetTuiTerminal = () => {
+    if (isReset) {
+      return;
+    }
+    isReset = true;
+    logger.debug("Resetting TUI state");
     process.stdout.write(cursorOps.show());
     process.stdin.unref();
     process.stdin.setRawMode?.(false);
@@ -274,7 +287,7 @@ export const renderGroupedOutput = async (
     previousHeight = linesToWrite.length;
 
     if (isFinal) {
-      resetTerminal();
+      resetTuiTerminal();
     }
   };
 
@@ -330,22 +343,26 @@ export const renderGroupedOutput = async (
   });
 
   runOnExit((reason) => {
-    if (typeof reason === "string" && reason.startsWith("SIG")) {
-      process.stdout.write("\r" + lineOps.clearFull());
+    try {
+      if (typeof reason === "string" && reason.startsWith("SIG")) {
+        process.stdout.write("\r" + lineOps.clearFull());
+      }
+
+      Object.keys(workspaceState).forEach((workspaceName) => {
+        handleExitResult({
+          metadata: { workspace: { name: workspaceName } as Workspace },
+          skipped: false,
+          success: false,
+          exitCode:
+            typeof process.exitCode === "number" ? process.exitCode : -1,
+          signal:
+            typeof reason === "string" ? (reason as NodeJS.Signals) : null,
+        } as RunScriptExit<RunWorkspaceScriptMetadata>);
+      });
+      render(true);
+    } finally {
+      resetTuiTerminal();
     }
-
-    Object.keys(workspaceState).forEach((workspaceName) => {
-      handleExitResult({
-        metadata: { workspace: { name: workspaceName } as Workspace },
-        skipped: false,
-        success: false,
-        exitCode: typeof process.exitCode === "number" ? process.exitCode : -1,
-        signal: typeof reason === "string" ? (reason as NodeJS.Signals) : null,
-      } as RunScriptExit<RunWorkspaceScriptMetadata>);
-    });
-
-    render(true);
-    resetTerminal();
   });
 
   initializeTuiTerminal();

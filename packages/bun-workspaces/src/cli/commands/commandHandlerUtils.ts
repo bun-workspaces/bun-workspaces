@@ -79,6 +79,7 @@ const handleCommand =
 
     program = program.action(async (...actionArgs) => {
       try {
+        logger.debug(`Handling command: ${commandName}`);
         await handler(context, ...(actionArgs as ActionArgs));
       } catch (error) {
         if (error instanceof BunWorkspacesError) {

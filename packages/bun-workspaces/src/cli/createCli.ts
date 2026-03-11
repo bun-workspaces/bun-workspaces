@@ -28,6 +28,8 @@ export const createCli = ({
   postInit,
   defaultCwd = process.cwd(),
 }: CreateCliOptions = {}): CLI => {
+  logger.debug(`Creating CLI with default cwd: ${defaultCwd}`);
+
   const run = async ({
     argv = process.argv,
     programmatic,
@@ -78,6 +80,12 @@ export const createCli = ({
         defaultCwd,
       );
 
+      if (postTerminatorArgs.length) {
+        logger.debug("Has post terminator args");
+      }
+
+      logger.debug(`Bun version: ${Bun.version}`);
+
       defineProjectCommands({
         program,
         project,
@@ -86,6 +94,8 @@ export const createCli = ({
       });
 
       defineGlobalCommands({ program, postTerminatorArgs });
+
+      logger.debug(`Commands initialized. Parsing args...`);
 
       await program.parseAsync(args, {
         from: programmatic ? "user" : "node",

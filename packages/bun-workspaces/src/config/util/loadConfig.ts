@@ -136,5 +136,12 @@ export const loadConfig = <ProcessContent extends AnyFunction>(
   if (!location) {
     return null;
   }
+  logger.debug(
+    `Config loaded for ${name} at ${
+      location.type === "packageJson"
+        ? `${path.join(directory, "package.json")}["${packageJsonKey}"]`
+        : location.path
+    }`,
+  );
   return processContent(location.content);
 };

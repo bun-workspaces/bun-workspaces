@@ -1,6 +1,6 @@
 {
   "name": "d-succeeds",
   "scripts": {
-    "test-script": "sleep 0.1 && echo 'test-script d'"
+    "test-script": "sleep 0.25 && echo 'test-script d'"
   }
 }

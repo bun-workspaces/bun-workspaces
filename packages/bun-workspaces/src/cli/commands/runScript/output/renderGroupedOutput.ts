@@ -127,13 +127,13 @@ export const renderGroupedOutput = async (
 
   const initializeTuiTerminal = () => {
     process.stdout.write(cursorOps.hide());
-    process.stdin.setRawMode(true);
+    process.stdin.setRawMode?.(true);
   };
 
   const resetTerminal = () => {
     process.stdout.write(cursorOps.show());
     process.stdin.unref();
-    process.stdin.setRawMode(false);
+    process.stdin.setRawMode?.(false);
   };
 
   let previousHeight = 0;

@@ -68,6 +68,44 @@ const blankOutputText: OutputText = {
   sanitizedCompactLines: "",
 };
 
+export type CreateCliSubprocessOptions = {
+  env?: Record<string, string>;
+  argv: string[];
+  testProject?: TestProjectName;
+  /** Takes precedence over testProject if passed */
+  workingDirectoryOverride?: string;
+  terminal?: Bun.Spawn.SpawnOptions<"pipe", "pipe", "pipe">["terminal"];
+};
+
+export const SOURCE_BIN_PATH = path.resolve(
+  __dirname,
+  "../../",
+  packageJson.bin["bun-workspaces"],
+);
+
+export const createCliSubprocess = ({
+  env,
+  argv,
+  testProject,
+  workingDirectoryOverride: workingDirectory,
+  terminal,
+}: CreateCliSubprocessOptions) => {
+  const testProjectRoot =
+    workingDirectory ?? getProjectRoot(testProject ?? "default");
+
+  return createSubprocess(["bun", SOURCE_BIN_PATH, ...argv], {
+    cwd: testProjectRoot,
+    env: {
+      ...process.env,
+      ...env,
+      FORCE_COLOR: "1",
+    },
+    stdout: "pipe",
+    stderr: "pipe",
+    terminal,
+  });
+};
+
 export const setupCliTest = (
   { testProject, workingDirectory, env }: SetupTestOptions = {
     testProject: "default",
@@ -77,27 +115,17 @@ export const setupCliTest = (
     throw new Error("Cannot specify both testProject and workingDirectory");
   }
 
-  const testProjectRoot =
-    workingDirectory ?? getProjectRoot(testProject || "default");
-
   const sanitizeText = (text: string) =>
     // eslint-disable-next-line no-control-regex
     text.replace(/\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g, "");
 
   const run = async (...argv: string[]) => {
-    const subprocess = createSubprocess(
-      [
-        "bun",
-        path.resolve(__dirname, "../../", packageJson.bin["bun-workspaces"]),
-        ...argv,
-      ],
-      {
-        cwd: testProjectRoot,
-        env: { ...process.env, ...env, FORCE_COLOR: "1" },
-        stdout: "pipe",
-        stderr: "pipe",
-      },
-    );
+    const subprocess = createCliSubprocess({
+      env,
+      argv,
+      testProject,
+      workingDirectoryOverride: workingDirectory,
+    });
 
     const outputLines: OutputLine[] = [];
     const stdout: OutputText = { ...blankOutputText };

@@ -1,7 +1,10 @@
 import { Terminal } from "@xterm/headless";
 import { describe, expect, test } from "bun:test";
 import { DEFAULT_GROUPED_LINES } from "../../../../src/cli";
-import { createAsyncIterableQueue } from "../../../../src/internal/core";
+import {
+  createAsyncIterableQueue,
+  IS_WINDOWS,
+} from "../../../../src/internal/core";
 import type { TestProjectName } from "../../../fixtures/testProjects";
 import { createCliSubprocess } from "../../../util/cliTestUtils";
 
@@ -79,6 +82,11 @@ const runSnapshotTest = async ({
 };
 
 describe("grouped output", () => {
+  if (IS_WINDOWS) {
+    // TODO Bun does not support pty at the time of this comment
+    return;
+  }
+
   test(
     "series success",
     async () => {

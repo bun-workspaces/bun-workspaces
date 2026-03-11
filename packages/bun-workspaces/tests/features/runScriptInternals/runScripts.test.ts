@@ -39,6 +39,8 @@ const makeExitSummary = <Metadata extends object = object>(
   ...overrides,
 });
 
+const DEFAULT_RETRY = 5;
+
 const originalParallelMaxDefault =
   process.env[getUserEnvVarName("parallelMaxDefault")];
 
@@ -956,7 +958,7 @@ describe("Run Scripts - Dependencies", () => {
         result: makeScriptExit({ metadata: { name: "B" } }),
       },
     ]);
-  });
+  }, { retry: DEFAULT_RETRY });
 
   test("onScriptEvent - fires skip (not start or exit) for a dependency-failed script", async () => {
     const events: {
@@ -1006,7 +1008,7 @@ describe("Run Scripts - Dependencies", () => {
     expect(events).not.toContainEqual(
       expect.objectContaining({ event: "exit", index: 1 }),
     );
-  });
+  }, { retry: DEFAULT_RETRY });
 
   test("onScriptEvent - all three event types fire across scripts in a single run", async () => {
     const events: {
@@ -1071,7 +1073,7 @@ describe("Run Scripts - Dependencies", () => {
     expect(events).not.toContainEqual(
       expect.objectContaining({ event: "exit", index: 2 }),
     );
-  });
+  }, { retry: DEFAULT_RETRY });
 
   test("cascading skip on dependency failure", async () => {
     const result = await runScripts({

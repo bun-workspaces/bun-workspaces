@@ -2,9 +2,44 @@ import path from "path";
 import { expect, test, describe } from "bun:test";
 import { getUserEnvVarName } from "../../../src/config/userEnvVars";
 import { BUN_LOCK_ERRORS } from "../../../src/internal/bun";
+import { InvalidJSTypeError } from "../../../src/internal/core";
 import { createFileSystemProject } from "../../../src/project";
 import { getProjectRoot } from "../../fixtures/testProjects";
 import { withWindowsPath } from "../../util/windows";
+
+describe("createFileSystemProject - type validation", () => {
+  test("throws for non-string rootDirectory", () => {
+    expect(() =>
+      createFileSystemProject({
+        rootDirectory: 123 as unknown as string,
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for non-string name", () => {
+    expect(() =>
+      createFileSystemProject({
+        rootDirectory: getProjectRoot("default"),
+        name: 123 as unknown as string,
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for non-boolean includeRootWorkspace", () => {
+    expect(() =>
+      createFileSystemProject({
+        rootDirectory: getProjectRoot("default"),
+        includeRootWorkspace: "true" as unknown as boolean,
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("does not throw for valid options", () => {
+    expect(() =>
+      createFileSystemProject({ rootDirectory: getProjectRoot("default") }),
+    ).not.toThrow(InvalidJSTypeError);
+  });
+});
 
 describe("Test FileSystemProject", () => {
   test("createFileSystemProject: root directory defaults to process.cwd()", async () => {

@@ -4,6 +4,7 @@ import {
   PROJECT_ERRORS,
   type RunWorkspaceScriptExit,
 } from "../../../src/project";
+import { InvalidJSTypeError } from "../../../src/internal/core";
 import { getProjectRoot } from "../../fixtures/testProjects";
 import { makeTestWorkspace } from "../../util/testData";
 import { withWindowsPath } from "../../util/windows";
@@ -26,6 +27,74 @@ const makeExitResult = (
     }),
   },
   ...overrides,
+});
+
+const makeProject = () =>
+  createFileSystemProject({ rootDirectory: getProjectRoot("default") });
+
+describe("FileSystemProject runWorkspaceScript - type validation", () => {
+  test("throws for non-string workspaceNameOrAlias", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runWorkspaceScript({
+        workspaceNameOrAlias: 123 as unknown as string,
+        script: "a-workspaces",
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for non-string script", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runWorkspaceScript({
+        workspaceNameOrAlias: "application-a",
+        script: 123 as unknown as string,
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for non-string args", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runWorkspaceScript({
+        workspaceNameOrAlias: "application-a",
+        script: "a-workspaces",
+        args: 123 as unknown as string,
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for non-boolean ignoreOutput", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runWorkspaceScript({
+        workspaceNameOrAlias: "application-a",
+        script: "a-workspaces",
+        ignoreOutput: "yes" as unknown as boolean,
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for invalid inline type", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runWorkspaceScript({
+        workspaceNameOrAlias: "application-a",
+        script: "a-workspaces",
+        inline: "true" as unknown as boolean,
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("does not throw for valid optional args omitted", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runWorkspaceScript({
+        workspaceNameOrAlias: "application-a",
+        script: "a-workspaces",
+      }),
+    ).not.toThrow(InvalidJSTypeError);
+  });
 });
 
 describe("FileSystemProject runWorkspaceScript", () => {

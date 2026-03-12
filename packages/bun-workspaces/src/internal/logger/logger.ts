@@ -9,13 +9,13 @@ export type LogLevel = (typeof LOG_LEVELS)[number];
 
 export type LogLevelSetting = LogLevel | "silent";
 
-const ERRORS = defineErrors("InvalidLogLevel");
+export const LOGGER_ERRORS = defineErrors("InvalidLogLevel");
 
 export const validateLogLevel = (level: LogLevelSetting) => {
   if (level === "silent") return;
   if (!LOG_LEVELS.includes(level)) {
-    throw new ERRORS.InvalidLogLevel(
-      `Invalid log level: "${level}". Accepted values: ${LOG_LEVELS.join(", ")}`,
+    throw new LOGGER_ERRORS.InvalidLogLevel(
+      `Invalid log level: ${JSON.stringify(level)}. Accepted values: ${LOG_LEVELS.join(", ") + ", silent"}`,
     );
   }
 };
@@ -138,6 +138,7 @@ class _Logger implements Logger {
   }
 
   set printLevel(level: LogLevelSetting) {
+    validateLogLevel(level);
     this._printLevel = level;
   }
 

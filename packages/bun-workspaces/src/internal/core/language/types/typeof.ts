@@ -75,11 +75,17 @@ export type ValidateJSTypeOptions = {
   optional?: boolean;
 };
 
-export type ValidateJSTypesTypeEntry = Omit<ValidateJSTypeOptions, "valueLabel"> & {
+export type ValidateJSTypesTypeEntry = Omit<
+  ValidateJSTypeOptions,
+  "valueLabel"
+> & {
   array?: false;
 };
 
-export type ValidateJSTypesArrayEntry = Omit<ValidateJSArrayOptions, "valueLabel"> & {
+export type ValidateJSTypesArrayEntry = Omit<
+  ValidateJSArrayOptions,
+  "valueLabel"
+> & {
   array: true;
 };
 
@@ -178,21 +184,30 @@ export const validateJSArray = ({
   return null;
 };
 
+export type ValidateJSTypesOptions = {
+  throw?: boolean;
+};
+
 export const validateJSTypes = (
   config: ValidateJSTypesConfig,
+  options?: ValidateJSTypesOptions,
 ): InstanceType<typeof InvalidJSTypeError> | null => {
   const errors: string[] = [];
-  for (const [valueLabel, options] of Object.entries(config)) {
-    const error = options.array
-      ? validateJSArray({ ...options, valueLabel })
-      : validateJSType({ ...options, valueLabel });
+  for (const [valueLabel, entry] of Object.entries(config)) {
+    const error = entry.array
+      ? validateJSArray({ ...entry, valueLabel })
+      : validateJSType({ ...entry, valueLabel });
     if (error) {
       errors.push(error.message);
     }
   }
   if (errors.length === 0) return null;
-  if (errors.length === 1) return new InvalidJSTypeError(errors[0]);
-  return new InvalidJSTypeError(
-    `Type errors:\n${errors.map((e) => ` - ${e}`).join("\n")}`,
-  );
+  const result =
+    errors.length === 1
+      ? new InvalidJSTypeError(errors[0])
+      : new InvalidJSTypeError(
+          `Type errors:\n${errors.map((e) => ` - ${e}`).join("\n")}`,
+        );
+  if (options?.throw) throw result;
+  return result;
 };

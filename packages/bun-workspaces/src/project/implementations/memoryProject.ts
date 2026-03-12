@@ -37,34 +37,36 @@ class _MemoryProject extends ProjectBase implements Project {
   constructor(options: CreateMemoryProjectOptions) {
     super(true);
 
-    const typeError = validateJSTypes({
-      "workspaces option": {
-        value: options.workspaces,
-        itemOptions: { typeofName: "object" },
-        array: true,
+    validateJSTypes(
+      {
+        "workspaces option": {
+          value: options.workspaces,
+          itemOptions: { typeofName: "object" },
+          array: true,
+        },
+        "name option": {
+          value: options.name,
+          typeofName: "string",
+          optional: true,
+        },
+        "rootDirectory option": {
+          value: options.rootDirectory,
+          typeofName: "string",
+          optional: true,
+        },
+        "rootWorkspace option": {
+          value: options.rootWorkspace,
+          typeofName: "object",
+          optional: true,
+        },
+        "includeRootWorkspace option": {
+          value: options.includeRootWorkspace,
+          typeofName: "boolean",
+          optional: true,
+        },
       },
-      "name option": {
-        value: options.name,
-        typeofName: "string",
-        optional: true,
-      },
-      "rootDirectory option": {
-        value: options.rootDirectory,
-        typeofName: "string",
-        optional: true,
-      },
-      "rootWorkspace option": {
-        value: options.rootWorkspace,
-        typeofName: "object",
-        optional: true,
-      },
-      "includeRootWorkspace option": {
-        value: options.includeRootWorkspace,
-        typeofName: "boolean",
-        optional: true,
-      },
-    });
-    if (typeError) throw typeError;
+      { throw: true },
+    );
 
     this.name = options.name ?? "";
     this.rootDirectory = options.rootDirectory ?? "";

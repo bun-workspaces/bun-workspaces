@@ -430,6 +430,31 @@ describe("validateJSTypes", () => {
     });
     expect(error).toBeInstanceOf(InvalidJSTypeError);
   });
+
+  test("{ throw: true } throws the error instead of returning it", () => {
+    expect(() =>
+      validateJSTypes(
+        { myParam: { value: 42, typeofName: "string" } },
+        { throw: true },
+      ),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("{ throw: true } returns null when there are no errors", () => {
+    expect(
+      validateJSTypes(
+        { myParam: { value: "hello", typeofName: "string" } },
+        { throw: true },
+      ),
+    ).toBeNull();
+  });
+
+  test("without throw option returns the error as before", () => {
+    const error = validateJSTypes({
+      myParam: { value: 42, typeofName: "string" },
+    });
+    expect(error).toBeInstanceOf(InvalidJSTypeError);
+  });
 });
 
 describe("validateJSArray", () => {
@@ -470,9 +495,7 @@ describe("validateJSArray", () => {
   });
 
   test("optional: true returns null for undefined", () => {
-    expect(
-      validateJSArray({ value: undefined, optional: true }),
-    ).toBeNull();
+    expect(validateJSArray({ value: undefined, optional: true })).toBeNull();
   });
 
   test("optional: true returns null for null", () => {
@@ -480,9 +503,9 @@ describe("validateJSArray", () => {
   });
 
   test("optional: true still validates non-null non-array values", () => {
-    expect(
-      validateJSArray({ value: "hello", optional: true }),
-    ).toBeInstanceOf(InvalidJSTypeError);
+    expect(validateJSArray({ value: "hello", optional: true })).toBeInstanceOf(
+      InvalidJSTypeError,
+    );
   });
 
   test("validates item types when itemOptions provided", () => {

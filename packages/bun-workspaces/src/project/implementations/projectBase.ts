@@ -1,6 +1,6 @@
 import path from "path";
 import { validateCurrentBunVersion } from "../../internal/bun";
-import { validateJSType } from "../../internal/core";
+import { validateJSTypes } from "../../internal/core";
 import { logger } from "../../internal/logger";
 import { createWorkspaceScriptCommand } from "../../runScript";
 import { sortWorkspaces, type Workspace } from "../../workspaces";
@@ -45,13 +45,10 @@ export abstract class ProjectBase implements Project {
   }
 
   listWorkspacesWithScript(scriptName: string): Workspace[] {
-    const typeError = validateJSType({
-      value: scriptName,
-      typeofName: "string",
-      valueLabel: "scriptName",
-    });
-    if (typeError) throw typeError;
-
+    validateJSTypes(
+      { scriptName: { value: scriptName, typeofName: "string" } },
+      { throw: true },
+    );
     return this.workspaces.filter((workspace) =>
       workspace.scripts.includes(scriptName),
     );
@@ -78,13 +75,10 @@ export abstract class ProjectBase implements Project {
   }
 
   findWorkspaceByName(workspaceName: string): Workspace | null {
-    const typeError = validateJSType({
-      value: workspaceName,
-      typeofName: "string",
-      valueLabel: "workspaceName",
-    });
-    if (typeError) throw typeError;
-
+    validateJSTypes(
+      { workspaceName: { value: workspaceName, typeofName: "string" } },
+      { throw: true },
+    );
     return (
       this.workspaces.find((workspace) => workspace.name === workspaceName) ??
       null
@@ -92,13 +86,10 @@ export abstract class ProjectBase implements Project {
   }
 
   findWorkspaceByAlias(alias: string): Workspace | null {
-    const typeError = validateJSType({
-      value: alias,
-      typeofName: "string",
-      valueLabel: "alias",
-    });
-    if (typeError) throw typeError;
-
+    validateJSTypes(
+      { alias: { value: alias, typeofName: "string" } },
+      { throw: true },
+    );
     return (
       this.workspaces.find((workspace) => workspace.aliases.includes(alias)) ??
       null
@@ -106,13 +97,10 @@ export abstract class ProjectBase implements Project {
   }
 
   findWorkspaceByNameOrAlias(nameOrAlias: string): Workspace | null {
-    const typeError = validateJSType({
-      value: nameOrAlias,
-      typeofName: "string",
-      valueLabel: "nameOrAlias",
-    });
-    if (typeError) throw typeError;
-
+    validateJSTypes(
+      { nameOrAlias: { value: nameOrAlias, typeofName: "string" } },
+      { throw: true },
+    );
     return (
       this.findWorkspaceByName(nameOrAlias) ||
       this.findWorkspaceByAlias(nameOrAlias)
@@ -140,30 +128,29 @@ export abstract class ProjectBase implements Project {
   createScriptCommand(
     options: CreateProjectScriptCommandOptions,
   ): CreateProjectScriptCommandResult {
-    const typeError =
-      validateJSType({
-        value: options.workspaceNameOrAlias,
-        typeofName: "string",
-        valueLabel: "workspaceNameOrAlias option",
-      }) ??
-      validateJSType({
-        value: options.scriptName,
-        typeofName: "string",
-        valueLabel: "scriptName option",
-      }) ??
-      validateJSType({
-        value: options.method,
-        typeofName: "string",
-        valueLabel: "method option",
-        optional: true,
-      }) ??
-      validateJSType({
-        value: options.args,
-        typeofName: "string",
-        valueLabel: "args option",
-        optional: true,
-      });
-    if (typeError) throw typeError;
+    validateJSTypes(
+      {
+        "workspaceNameOrAlias option": {
+          value: options.workspaceNameOrAlias,
+          typeofName: "string",
+        },
+        "scriptName option": {
+          value: options.scriptName,
+          typeofName: "string",
+        },
+        "method option": {
+          value: options.method,
+          typeofName: "string",
+          optional: true,
+        },
+        "args option": {
+          value: options.args,
+          typeofName: "string",
+          optional: true,
+        },
+      },
+      { throw: true },
+    );
 
     const workspace = resolveRootWorkspaceSelector(
       options.workspaceNameOrAlias,

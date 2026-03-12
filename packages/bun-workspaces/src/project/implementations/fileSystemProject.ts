@@ -179,25 +179,26 @@ class _FileSystemProject extends ProjectBase implements Project {
   ) {
     super();
 
-    const typeError = validateJSTypes({
-      "rootDirectory option": {
-        value: options.rootDirectory,
-        typeofName: "string",
-        optional: true,
+    validateJSTypes(
+      {
+        "rootDirectory option": {
+          value: options.rootDirectory,
+          typeofName: "string",
+          optional: true,
+        },
+        "name option": {
+          value: options.name,
+          typeofName: "string",
+          optional: true,
+        },
+        "includeRootWorkspace option": {
+          value: options.includeRootWorkspace,
+          typeofName: "boolean",
+          optional: true,
+        },
       },
-      "name option": {
-        value: options.name,
-        typeofName: "string",
-        optional: true,
-      },
-      "includeRootWorkspace option": {
-        value: options.includeRootWorkspace,
-        typeofName: "boolean",
-        optional: true,
-      },
-    });
-
-    if (typeError) throw typeError;
+      { throw: true },
+    );
 
     if (!_FileSystemProject.#initialized) {
       DEFAULT_TEMP_DIR.initialize(true);
@@ -246,29 +247,31 @@ class _FileSystemProject extends ProjectBase implements Project {
   runWorkspaceScript(
     options: RunWorkspaceScriptOptions,
   ): RunWorkspaceScriptResult {
-    const typeError = validateJSTypes({
-      "workspaceNameOrAlias option": {
-        value: options.workspaceNameOrAlias,
-        typeofName: "string",
+    validateJSTypes(
+      {
+        "workspaceNameOrAlias option": {
+          value: options.workspaceNameOrAlias,
+          typeofName: "string",
+        },
+        "script option": { value: options.script, typeofName: "string" },
+        "inline option": {
+          value: options.inline,
+          typeofName: ["boolean", "object"],
+          optional: true,
+        },
+        "args option": {
+          value: options.args,
+          typeofName: "string",
+          optional: true,
+        },
+        "ignoreOutput option": {
+          value: options.ignoreOutput,
+          typeofName: "boolean",
+          optional: true,
+        },
       },
-      "script option": { value: options.script, typeofName: "string" },
-      "inline option": {
-        value: options.inline,
-        typeofName: ["boolean", "object"],
-        optional: true,
-      },
-      "args option": {
-        value: options.args,
-        typeofName: "string",
-        optional: true,
-      },
-      "ignoreOutput option": {
-        value: options.ignoreOutput,
-        typeofName: "boolean",
-        optional: true,
-      },
-    });
-    if (typeError) throw typeError;
+      { throw: true },
+    );
 
     const workspace = resolveRootWorkspaceSelector(
       options.workspaceNameOrAlias,
@@ -367,66 +370,70 @@ class _FileSystemProject extends ProjectBase implements Project {
   runScriptAcrossWorkspaces(
     options: RunScriptAcrossWorkspacesOptions,
   ): RunScriptAcrossWorkspacesResult {
-    const typeError = validateJSTypes({
-      "script option": { value: options.script, typeofName: "string" },
-      "workspacePatterns option": {
-        value: options.workspacePatterns,
-        optional: true,
-        itemOptions: { typeofName: "string" },
-        array: true,
+    validateJSTypes(
+      {
+        "script option": { value: options.script, typeofName: "string" },
+        "workspacePatterns option": {
+          value: options.workspacePatterns,
+          optional: true,
+          itemOptions: { typeofName: "string" },
+          array: true,
+        },
+        "inline option": {
+          value: options.inline,
+          typeofName: ["boolean", "object"],
+          optional: true,
+        },
+        "args option": {
+          value: options.args,
+          typeofName: "string",
+          optional: true,
+        },
+        "parallel option": {
+          value: options.parallel,
+          typeofName: ["boolean", "object"],
+          optional: true,
+        },
+        "dependencyOrder option": {
+          value: options.dependencyOrder,
+          typeofName: "boolean",
+          optional: true,
+        },
+        "ignoreDependencyFailure option": {
+          value: options.ignoreDependencyFailure,
+          typeofName: "boolean",
+          optional: true,
+        },
+        "ignoreOutput option": {
+          value: options.ignoreOutput,
+          typeofName: "boolean",
+          optional: true,
+        },
+        "onScriptEvent option": {
+          value: options.onScriptEvent,
+          typeofName: "function",
+          optional: true,
+        },
       },
-      "inline option": {
-        value: options.inline,
-        typeofName: ["boolean", "object"],
-        optional: true,
-      },
-      "args option": {
-        value: options.args,
-        typeofName: "string",
-        optional: true,
-      },
-      "parallel option": {
-        value: options.parallel,
-        typeofName: ["boolean", "object"],
-        optional: true,
-      },
-      "dependencyOrder option": {
-        value: options.dependencyOrder,
-        typeofName: "boolean",
-        optional: true,
-      },
-      "ignoreDependencyFailure option": {
-        value: options.ignoreDependencyFailure,
-        typeofName: "boolean",
-        optional: true,
-      },
-      "ignoreOutput option": {
-        value: options.ignoreOutput,
-        typeofName: "boolean",
-        optional: true,
-      },
-      "onScriptEvent option": {
-        value: options.onScriptEvent,
-        typeofName: "function",
-        optional: true,
-      },
-    });
-    if (typeError) throw typeError;
+      { throw: true },
+    );
 
     if (isPlainObject(options.inline)) {
-      const inlineError = validateJSTypes({
-        "inline.scriptName option": {
-          value: options.inline.scriptName,
-          typeofName: "string",
-          optional: true,
+      validateJSTypes(
+        {
+          "inline.scriptName option": {
+            value: options.inline.scriptName,
+            typeofName: "string",
+            optional: true,
+          },
+          "inline.shell option": {
+            value: options.inline.shell,
+            typeofName: "string",
+            optional: true,
+          },
         },
-        "inline.shell option": {
-          value: options.inline.shell,
-          typeofName: "string",
-          optional: true,
-        },
-      });
-      if (inlineError) throw inlineError;
+        { throw: true },
+      );
     }
 
     if (isPlainObject(options.parallel)) {

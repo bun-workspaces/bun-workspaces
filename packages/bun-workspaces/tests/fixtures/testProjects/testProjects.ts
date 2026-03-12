@@ -11,7 +11,6 @@ const TEST_PROJECTS = {
   simple2: "simple2",
   emptyWorkspaces: "emptyWorkspaces",
   emptyScripts: "emptyScripts",
-  oneWorkspace: "oneWorkspace",
   withNodeModuleWorkspace: "withNodeModuleWorkspace",
   negationGlobs: "negationGlobs",
   invalidBadJson: "invalid/badJson",

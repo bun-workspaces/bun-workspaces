@@ -16,7 +16,7 @@ export const resolvePackageJsonPath = (directoryItem: string) => {
 
 export type BunCatalog = Record<string, string>;
 
-export type BunCatalogs = {
+export type BunCatalogSet = {
   defaultCatalog: BunCatalog;
   namedCatalogs: Record<string, BunCatalog>;
 };
@@ -177,7 +177,7 @@ const validateScripts = (json: UnknownPackageJson) => {
 export const resolveCatalogDependencyVersion = (
   packageName: string,
   catalogRef: string,
-  catalogs: BunCatalogs,
+  catalogs: BunCatalogSet,
 ): string | null => {
   if (!catalogRef.startsWith("catalog:")) return null;
 

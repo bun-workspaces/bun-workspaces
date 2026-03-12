@@ -1,7 +1,7 @@
 import type { ResolvedWorkspaceConfig } from "../../config";
 import {
   resolveCatalogDependencyVersion,
-  type BunCatalogs,
+  type BunCatalogSet,
   type ResolvedPackageJsonContent,
 } from "../packageJson";
 import type { Workspace } from "../workspace";
@@ -17,7 +17,7 @@ export type WorkspaceMap = {
 export const resolveWorkspaceDependencies = (
   workspaceMap: WorkspaceMap,
   includeRootWorkspace: boolean,
-  catalogs?: BunCatalogs,
+  catalogs?: BunCatalogSet,
 ): Workspace[] => {
   const workspacePackages = Object.values(workspaceMap).filter(
     ({ workspace }) => includeRootWorkspace || !workspace.isRoot,

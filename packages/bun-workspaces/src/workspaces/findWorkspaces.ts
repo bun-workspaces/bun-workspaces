@@ -17,7 +17,7 @@ import { WORKSPACE_ERRORS } from "./errors";
 import {
   resolvePackageJsonContent,
   resolvePackageJsonPath,
-  type BunCatalogs,
+  type BunCatalogSet,
 } from "./packageJson";
 import type { Workspace } from "./workspace";
 
@@ -111,7 +111,7 @@ export const findWorkspaces = ({
     ? { workspaceGlobs: _workspaceGlobs, catalog: {}, catalogs: {} }
     : getRootPackageJsonWorkspaceData({ rootDirectory });
 
-  const bunCatalogs: BunCatalogs = {
+  const bunCatalogs: BunCatalogSet = {
     defaultCatalog: catalog,
     namedCatalogs: catalogs,
   };

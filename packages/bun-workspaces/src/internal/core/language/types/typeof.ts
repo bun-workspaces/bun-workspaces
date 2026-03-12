@@ -67,7 +67,6 @@ export type ValidateJSTypeConfig = {
   /** For use in error message */
   valueLabel?: string;
   numberRules?: ValidateNumberRules;
-  allowNull?: boolean;
 };
 
 export type ValidateObjectJSTypesConfig = {
@@ -94,12 +93,8 @@ export const validateNumber = (
 export const validateJSType = <T = unknown>(
   value: T,
   typeofName: OptionalArray<JSDataTypeofName>,
-  { allowNull, numberRules, valueLabel }: ValidateJSTypeConfig = {},
+  { numberRules, valueLabel }: ValidateJSTypeConfig = {},
 ): InstanceType<typeof InvalidJSTypeError> | null => {
-  if (allowNull && value === null) {
-    return new InvalidJSTypeError(`${valueLabel ?? "Value"} cannot be null`);
-  }
-
   const typeofNames = resolveOptionalArray(typeofName);
 
   const isValid = isTypeof(value, ...typeofNames);

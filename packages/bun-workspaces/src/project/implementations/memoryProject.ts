@@ -68,6 +68,39 @@ class _MemoryProject extends ProjectBase implements Project {
       { throw: true },
     );
 
+    const validateWorkspace = (workspace: Workspace) =>
+      validateJSTypes(
+        {
+          "workspace name": { value: workspace.name, typeofName: "string" },
+          "workspace path": { value: workspace.path, typeofName: "string" },
+          "workspace scripts": {
+            value: workspace.scripts,
+            array: true,
+            itemOptions: { typeofName: "string" },
+          },
+          "workspace aliases": {
+            value: workspace.aliases,
+            array: true,
+            itemOptions: { typeofName: "string" },
+          },
+          "workspace dependencies": {
+            value: workspace.dependencies,
+            array: true,
+            itemOptions: { typeofName: "string" },
+          },
+          "workspace dependents": {
+            value: workspace.dependents,
+            array: true,
+            itemOptions: { typeofName: "string" },
+          },
+        },
+        { throw: true },
+      );
+
+    for (const workspace of options.workspaces) {
+      validateWorkspace(workspace);
+    }
+
     this.name = options.name ?? "";
     this.rootDirectory = options.rootDirectory ?? "";
     this.workspaces = options.workspaces;
@@ -83,6 +116,8 @@ class _MemoryProject extends ProjectBase implements Project {
         dependencies: [],
         dependents: [],
       } as Workspace);
+
+    validateWorkspace(this.rootWorkspace);
 
     for (const workspace of this.workspaces) {
       if (

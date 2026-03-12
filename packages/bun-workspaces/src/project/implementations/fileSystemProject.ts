@@ -6,7 +6,6 @@ import type { SimpleAsyncIterable, Simplify } from "../../internal/core";
 import {
   DEFAULT_TEMP_DIR,
   isPlainObject,
-  validateJSType,
   validateJSTypes,
 } from "../../internal/core";
 import { logger } from "../../internal/logger";
@@ -273,6 +272,19 @@ class _FileSystemProject extends ProjectBase implements Project {
       { throw: true },
     );
 
+    if (isPlainObject(options.inline)) {
+      validateJSTypes(
+        {
+          "inline.scriptName option": {
+            value: options.inline.scriptName,
+            typeofName: "string",
+            optional: true,
+          },
+        },
+        { throw: true },
+      );
+    }
+
     const workspace = resolveRootWorkspaceSelector(
       options.workspaceNameOrAlias,
       this,
@@ -437,12 +449,15 @@ class _FileSystemProject extends ProjectBase implements Project {
     }
 
     if (isPlainObject(options.parallel)) {
-      const parallelError = validateJSType({
-        value: options.parallel.max,
-        typeofName: ["number", "string"],
-        valueLabel: "parallel.max option",
-      });
-      if (parallelError) throw parallelError;
+      validateJSTypes(
+        {
+          "parallel.max option": {
+            value: options.parallel.max,
+            typeofName: ["number", "string"],
+          },
+        },
+        { throw: true },
+      );
     }
 
     const matchedWorkspaces = sortWorkspaces(

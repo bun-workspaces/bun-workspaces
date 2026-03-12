@@ -86,6 +86,28 @@ describe("FileSystemProject runWorkspaceScript - type validation", () => {
     ).toThrow(InvalidJSTypeError);
   });
 
+  test("throws for invalid inline object scriptName", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runWorkspaceScript({
+        workspaceNameOrAlias: "application-a",
+        script: "a-workspaces",
+        inline: { scriptName: 123 as unknown as string },
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for invalid inline object shell", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runWorkspaceScript({
+        workspaceNameOrAlias: "application-a",
+        script: "a-workspaces",
+        inline: { shell: 123 as unknown as string },
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
   test("does not throw for valid optional args omitted", () => {
     const project = makeProject();
     expect(() =>

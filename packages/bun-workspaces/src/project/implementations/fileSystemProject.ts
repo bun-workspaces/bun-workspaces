@@ -280,6 +280,11 @@ class _FileSystemProject extends ProjectBase implements Project {
             typeofName: "string",
             optional: true,
           },
+          "inline.shell option": {
+            value: options.inline.shell,
+            typeofName: "string",
+            optional: true,
+          },
         },
         { throw: true },
       );

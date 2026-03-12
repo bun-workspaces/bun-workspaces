@@ -46,6 +46,25 @@ describe("createMemoryProject - type validation", () => {
     ).toThrow(InvalidJSTypeError);
   });
 
+  test("throws for workspaces item with invalid member", () => {
+    expect(() =>
+      createMemoryProject({
+        workspaces: [
+          makeTestWorkspace({ name: 123 as unknown as string }),
+        ],
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for rootWorkspace with invalid member", () => {
+    expect(() =>
+      createMemoryProject({
+        workspaces: [],
+        rootWorkspace: makeTestWorkspace({ name: 123 as unknown as string }),
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
   test("throws for non-boolean includeRootWorkspace", () => {
     expect(() =>
       createMemoryProject({

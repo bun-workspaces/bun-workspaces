@@ -1,6 +1,0 @@
-{
-  "workspaceAliases": {
-    "deprecated_appA": "application-a",
-    "application-b": "library-a"
-  }
-}

@@ -5,50 +5,60 @@ import { getProjectRoot } from "../../fixtures/testProjects";
 import { makeTestWorkspace } from "../../util/testData";
 
 describe("findWorkspaces with dependencies", () => {
+  const expectedSimpleGraph = [
+    makeTestWorkspace({
+      name: "a-depends-e",
+      path: "packages/a-depends-e",
+      matchPattern: "packages/*",
+      scripts: ["test-script"],
+      dependencies: ["e"],
+    }),
+    makeTestWorkspace({
+      name: "b-depends-cd",
+      path: "packages/b-depends-cd",
+      matchPattern: "packages/*",
+      scripts: ["test-script"],
+      dependencies: ["c-depends-e", "d-depends-e"],
+    }),
+    makeTestWorkspace({
+      name: "c-depends-e",
+      path: "packages/c-depends-e",
+      matchPattern: "packages/*",
+      scripts: ["test-script"],
+      dependencies: ["e"],
+      dependents: ["b-depends-cd"],
+    }),
+    makeTestWorkspace({
+      name: "d-depends-e",
+      path: "packages/d-depends-e",
+      matchPattern: "packages/*",
+      scripts: ["test-script"],
+      dependencies: ["e"],
+      dependents: ["b-depends-cd"],
+    }),
+    makeTestWorkspace({
+      name: "e",
+      path: "packages/e",
+      matchPattern: "packages/*",
+      scripts: ["test-script"],
+      dependents: ["a-depends-e", "c-depends-e", "d-depends-e"],
+    }),
+  ];
+
   test("findWorkspaces has expected dependencies and dependents", () => {
     const { workspaces } = findWorkspaces({
       rootDirectory: getProjectRoot("withDependenciesSimple"),
     });
 
-    expect(workspaces).toEqual([
-      makeTestWorkspace({
-        name: "a-depends-e",
-        path: "packages/a-depends-e",
-        matchPattern: "packages/*",
-        scripts: ["test-script"],
-        dependencies: ["e"],
-      }),
-      makeTestWorkspace({
-        name: "b-depends-cd",
-        path: "packages/b-depends-cd",
-        matchPattern: "packages/*",
-        scripts: ["test-script"],
-        dependencies: ["c-depends-e", "d-depends-e"],
-      }),
-      makeTestWorkspace({
-        name: "c-depends-e",
-        path: "packages/c-depends-e",
-        matchPattern: "packages/*",
-        scripts: ["test-script"],
-        dependencies: ["e"],
-        dependents: ["b-depends-cd"],
-      }),
-      makeTestWorkspace({
-        name: "d-depends-e",
-        path: "packages/d-depends-e",
-        matchPattern: "packages/*",
-        scripts: ["test-script"],
-        dependencies: ["e"],
-        dependents: ["b-depends-cd"],
-      }),
-      makeTestWorkspace({
-        name: "e",
-        path: "packages/e",
-        matchPattern: "packages/*",
-        scripts: ["test-script"],
-        dependents: ["a-depends-e", "c-depends-e", "d-depends-e"],
-      }),
-    ]);
+    expect(workspaces).toEqual(expectedSimpleGraph);
+  });
+
+  test("findWorkspaces resolves catalog: and catalog:name dependencies to the same graph as direct workspace: references", () => {
+    const { workspaces } = findWorkspaces({
+      rootDirectory: getProjectRoot("withDependenciesCatalogDependencies"),
+    });
+
+    expect(workspaces).toEqual(expectedSimpleGraph);
   });
 });
 

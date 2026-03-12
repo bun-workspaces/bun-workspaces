@@ -1,0 +1,12 @@
+{
+  "name": "b-depends-cd",
+  "dependencies": {
+    "d-depends-e": "catalog:"
+  },
+  "optionalDependencies": {
+    "c-depends-e": "catalog:test-named-catalog"
+  },
+  "scripts": {
+    "test-script": "echo B"
+  }
+}

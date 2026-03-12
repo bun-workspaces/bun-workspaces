@@ -207,7 +207,7 @@ test-script b
 test-script c
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ Workspace: d-succeeds                                                                            │
-│    Status: pending                                                                               │
+│    Status: running                                                                               │
 └──────────────────────────────────────────────────────────────────────────────────────────────────┘`,
           `
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -680,7 +680,7 @@ t
             `
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ Workspace: has-50-line-output                                                                    │
-│    Status: success                                                                               │
+│    Status: running                                                                               │
 └──────────────────────────────────────────────────────────────────────────────────────────────────┘
 (30 lines hidden until exit)
 31 this test script has a very very very long output that is exactly one hundred characters long i…
@@ -975,7 +975,7 @@ eed
             `
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ Workspace: has-50-line-output                                                                    │
-│    Status: success                                                                               │
+│    Status: running                                                                               │
 └──────────────────────────────────────────────────────────────────────────────────────────────────┘
 1 this test script has a very very very long output that is exactly one hundred characters long in…
 2 this test script has a very very very long output that is exactly one hundred characters long in…

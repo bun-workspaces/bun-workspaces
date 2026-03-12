@@ -405,9 +405,6 @@ export const runScripts = <ScriptMetadata extends object = object>({
 
     const endTime = new Date();
 
-    // place end of call stack so script events fire before summary
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
     return {
       totalCount: scriptExitResults.length,
       successCount: scriptExitResults.filter((exit) => exit.success).length,

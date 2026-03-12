@@ -1,8 +1,152 @@
 import { expect, test, describe } from "bun:test";
+import { InvalidJSTypeError } from "../../../../src/internal/core";
 import { createFileSystemProject } from "../../../../src/project";
 import { getProjectRoot } from "../../../fixtures/testProjects";
 import { makeTestWorkspace } from "../../../util/testData";
 import { makeScriptResult, makeSummaryResult } from "./util";
+
+const makeProject = () =>
+  createFileSystemProject({
+    rootDirectory: getProjectRoot("default"),
+  });
+
+describe("FileSystemProject runScriptAcrossWorkspaces - type validation", () => {
+  test("throws for non-string script", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runScriptAcrossWorkspaces({
+        script: 123 as unknown as string,
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for non-array workspacePatterns", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runScriptAcrossWorkspaces({
+        script: "all-workspaces",
+        workspacePatterns: "application-a" as unknown as string[],
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for workspacePatterns with non-string items", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runScriptAcrossWorkspaces({
+        script: "all-workspaces",
+        workspacePatterns: [123] as unknown as string[],
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for non-string inline.scriptName", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runScriptAcrossWorkspaces({
+        script: "all-workspaces",
+        inline: { scriptName: 123 as unknown as string },
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for non-string inline.shell", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runScriptAcrossWorkspaces({
+        script: "all-workspaces",
+        inline: { shell: 123 as unknown as "bun" },
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for invalid parallel.max type", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runScriptAcrossWorkspaces({
+        script: "all-workspaces",
+        parallel: { max: true as unknown as number },
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for non-string args", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runScriptAcrossWorkspaces({
+        script: "all-workspaces",
+        args: 123 as unknown as string,
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for invalid inline type", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runScriptAcrossWorkspaces({
+        script: "all-workspaces",
+        inline: "true" as unknown as boolean,
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for invalid parallel type", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runScriptAcrossWorkspaces({
+        script: "all-workspaces",
+        parallel: "yes" as unknown as boolean,
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for non-boolean dependencyOrder", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runScriptAcrossWorkspaces({
+        script: "all-workspaces",
+        dependencyOrder: "yes" as unknown as boolean,
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for non-boolean ignoreDependencyFailure", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runScriptAcrossWorkspaces({
+        script: "all-workspaces",
+        ignoreDependencyFailure: "yes" as unknown as boolean,
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for non-boolean ignoreOutput", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runScriptAcrossWorkspaces({
+        script: "all-workspaces",
+        ignoreOutput: "yes" as unknown as boolean,
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for non-function onScriptEvent", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runScriptAcrossWorkspaces({
+        script: "all-workspaces",
+        onScriptEvent: "callback" as unknown as () => void,
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("does not throw for valid options with all optionals omitted", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runScriptAcrossWorkspaces({ script: "all-workspaces" }),
+    ).not.toThrow(InvalidJSTypeError);
+  });
+});
 
 describe("FileSystemProject runScriptAcrossWorkspaces - failures", () => {
   test("with failures - deprecated output", async () => {

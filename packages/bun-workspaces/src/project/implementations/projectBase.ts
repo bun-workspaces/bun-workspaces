@@ -1,5 +1,6 @@
 import path from "path";
 import { validateCurrentBunVersion } from "../../internal/bun";
+import { validateJSTypes } from "../../internal/core";
 import { logger } from "../../internal/logger";
 import { createWorkspaceScriptCommand } from "../../runScript";
 import { sortWorkspaces, type Workspace } from "../../workspaces";
@@ -44,6 +45,10 @@ export abstract class ProjectBase implements Project {
   }
 
   listWorkspacesWithScript(scriptName: string): Workspace[] {
+    validateJSTypes(
+      { scriptName: { value: scriptName, typeofName: "string" } },
+      { throw: true },
+    );
     return this.workspaces.filter((workspace) =>
       workspace.scripts.includes(scriptName),
     );
@@ -70,6 +75,10 @@ export abstract class ProjectBase implements Project {
   }
 
   findWorkspaceByName(workspaceName: string): Workspace | null {
+    validateJSTypes(
+      { workspaceName: { value: workspaceName, typeofName: "string" } },
+      { throw: true },
+    );
     return (
       this.workspaces.find((workspace) => workspace.name === workspaceName) ??
       null
@@ -77,6 +86,10 @@ export abstract class ProjectBase implements Project {
   }
 
   findWorkspaceByAlias(alias: string): Workspace | null {
+    validateJSTypes(
+      { alias: { value: alias, typeofName: "string" } },
+      { throw: true },
+    );
     return (
       this.workspaces.find((workspace) => workspace.aliases.includes(alias)) ??
       null
@@ -84,6 +97,10 @@ export abstract class ProjectBase implements Project {
   }
 
   findWorkspaceByNameOrAlias(nameOrAlias: string): Workspace | null {
+    validateJSTypes(
+      { nameOrAlias: { value: nameOrAlias, typeofName: "string" } },
+      { throw: true },
+    );
     return (
       this.findWorkspaceByName(nameOrAlias) ||
       this.findWorkspaceByAlias(nameOrAlias)
@@ -111,6 +128,30 @@ export abstract class ProjectBase implements Project {
   createScriptCommand(
     options: CreateProjectScriptCommandOptions,
   ): CreateProjectScriptCommandResult {
+    validateJSTypes(
+      {
+        "workspaceNameOrAlias option": {
+          value: options.workspaceNameOrAlias,
+          typeofName: "string",
+        },
+        "scriptName option": {
+          value: options.scriptName,
+          typeofName: "string",
+        },
+        "method option": {
+          value: options.method,
+          typeofName: "string",
+          optional: true,
+        },
+        "args option": {
+          value: options.args,
+          typeofName: "string",
+          optional: true,
+        },
+      },
+      { throw: true },
+    );
+
     const workspace = resolveRootWorkspaceSelector(
       options.workspaceNameOrAlias,
       this,

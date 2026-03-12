@@ -3,7 +3,11 @@ import path from "path";
 import { loadRootConfig } from "../../config";
 import { getUserEnvVar } from "../../config/userEnvVars";
 import type { SimpleAsyncIterable, Simplify } from "../../internal/core";
-import { DEFAULT_TEMP_DIR } from "../../internal/core";
+import {
+  DEFAULT_TEMP_DIR,
+  isPlainObject,
+  validateJSTypes,
+} from "../../internal/core";
 import { logger } from "../../internal/logger";
 import {
   runScript,
@@ -174,6 +178,27 @@ class _FileSystemProject extends ProjectBase implements Project {
   ) {
     super();
 
+    validateJSTypes(
+      {
+        "rootDirectory option": {
+          value: options.rootDirectory,
+          typeofName: "string",
+          optional: true,
+        },
+        "name option": {
+          value: options.name,
+          typeofName: "string",
+          optional: true,
+        },
+        "includeRootWorkspace option": {
+          value: options.includeRootWorkspace,
+          typeofName: "boolean",
+          optional: true,
+        },
+      },
+      { throw: true },
+    );
+
     if (!_FileSystemProject.#initialized) {
       DEFAULT_TEMP_DIR.initialize(true);
       _FileSystemProject.#initialized = true;
@@ -221,6 +246,50 @@ class _FileSystemProject extends ProjectBase implements Project {
   runWorkspaceScript(
     options: RunWorkspaceScriptOptions,
   ): RunWorkspaceScriptResult {
+    validateJSTypes(
+      {
+        "workspaceNameOrAlias option": {
+          value: options.workspaceNameOrAlias,
+          typeofName: "string",
+        },
+        "script option": { value: options.script, typeofName: "string" },
+        "inline option": {
+          value: options.inline,
+          typeofName: ["boolean", "object"],
+          optional: true,
+        },
+        "args option": {
+          value: options.args,
+          typeofName: "string",
+          optional: true,
+        },
+        "ignoreOutput option": {
+          value: options.ignoreOutput,
+          typeofName: "boolean",
+          optional: true,
+        },
+      },
+      { throw: true },
+    );
+
+    if (isPlainObject(options.inline)) {
+      validateJSTypes(
+        {
+          "inline.scriptName option": {
+            value: options.inline.scriptName,
+            typeofName: "string",
+            optional: true,
+          },
+          "inline.shell option": {
+            value: options.inline.shell,
+            typeofName: "string",
+            optional: true,
+          },
+        },
+        { throw: true },
+      );
+    }
+
     const workspace = resolveRootWorkspaceSelector(
       options.workspaceNameOrAlias,
       this,
@@ -318,6 +387,84 @@ class _FileSystemProject extends ProjectBase implements Project {
   runScriptAcrossWorkspaces(
     options: RunScriptAcrossWorkspacesOptions,
   ): RunScriptAcrossWorkspacesResult {
+    validateJSTypes(
+      {
+        "script option": { value: options.script, typeofName: "string" },
+        "workspacePatterns option": {
+          value: options.workspacePatterns,
+          optional: true,
+          itemOptions: { typeofName: "string" },
+          array: true,
+        },
+        "inline option": {
+          value: options.inline,
+          typeofName: ["boolean", "object"],
+          optional: true,
+        },
+        "args option": {
+          value: options.args,
+          typeofName: "string",
+          optional: true,
+        },
+        "parallel option": {
+          value: options.parallel,
+          typeofName: ["boolean", "object"],
+          optional: true,
+        },
+        "dependencyOrder option": {
+          value: options.dependencyOrder,
+          typeofName: "boolean",
+          optional: true,
+        },
+        "ignoreDependencyFailure option": {
+          value: options.ignoreDependencyFailure,
+          typeofName: "boolean",
+          optional: true,
+        },
+        "ignoreOutput option": {
+          value: options.ignoreOutput,
+          typeofName: "boolean",
+          optional: true,
+        },
+        "onScriptEvent option": {
+          value: options.onScriptEvent,
+          typeofName: "function",
+          optional: true,
+        },
+      },
+      { throw: true },
+    );
+
+    if (isPlainObject(options.inline)) {
+      validateJSTypes(
+        {
+          "inline.scriptName option": {
+            value: options.inline.scriptName,
+            typeofName: "string",
+            optional: true,
+          },
+          "inline.shell option": {
+            value: options.inline.shell,
+            typeofName: "string",
+            optional: true,
+          },
+        },
+        { throw: true },
+      );
+    }
+
+    if (isPlainObject(options.parallel)) {
+      validateJSTypes(
+        {
+          "parallel.max option": {
+            value: options.parallel.max,
+            typeofName: ["number", "string"],
+          },
+        },
+        { throw: true },
+      );
+    }
+
     const matchedWorkspaces = sortWorkspaces(
       (
         options.workspacePatterns ??

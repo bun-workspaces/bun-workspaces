@@ -2,9 +2,44 @@ import path from "path";
 import { expect, test, describe } from "bun:test";
 import { getUserEnvVarName } from "../../../src/config/userEnvVars";
 import { BUN_LOCK_ERRORS } from "../../../src/internal/bun";
+import { InvalidJSTypeError } from "../../../src/internal/core";
 import { createFileSystemProject } from "../../../src/project";
 import { getProjectRoot } from "../../fixtures/testProjects";
 import { withWindowsPath } from "../../util/windows";
+
+describe("createFileSystemProject - type validation", () => {
+  test("throws for non-string rootDirectory", () => {
+    expect(() =>
+      createFileSystemProject({
+        rootDirectory: 123 as unknown as string,
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for non-string name", () => {
+    expect(() =>
+      createFileSystemProject({
+        rootDirectory: getProjectRoot("default"),
+        name: 123 as unknown as string,
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for non-boolean includeRootWorkspace", () => {
+    expect(() =>
+      createFileSystemProject({
+        rootDirectory: getProjectRoot("default"),
+        includeRootWorkspace: "true" as unknown as boolean,
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("does not throw for valid options", () => {
+    expect(() =>
+      createFileSystemProject({ rootDirectory: getProjectRoot("default") }),
+    ).not.toThrow(InvalidJSTypeError);
+  });
+});
 
 describe("Test FileSystemProject", () => {
   test("createFileSystemProject: root directory defaults to process.cwd()", async () => {
@@ -166,5 +201,80 @@ test-script-metadata-env-b
     ).toBeFalsy();
 
     delete process.env[getUserEnvVarName("includeRootWorkspaceDefault")];
+  });
+});
+
+const makeDefaultProject = () =>
+  createFileSystemProject({ rootDirectory: getProjectRoot("default") });
+
+describe("ProjectBase methods - type validation", () => {
+  test("listWorkspacesWithScript throws for non-string scriptName", () => {
+    const project = makeDefaultProject();
+    expect(() =>
+      project.listWorkspacesWithScript(123 as unknown as string),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("findWorkspaceByName throws for non-string workspaceName", () => {
+    const project = makeDefaultProject();
+    expect(() => project.findWorkspaceByName(123 as unknown as string)).toThrow(
+      InvalidJSTypeError,
+    );
+  });
+
+  test("findWorkspaceByAlias throws for non-string alias", () => {
+    const project = makeDefaultProject();
+    expect(() =>
+      project.findWorkspaceByAlias(123 as unknown as string),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("findWorkspaceByNameOrAlias throws for non-string nameOrAlias", () => {
+    const project = makeDefaultProject();
+    expect(() =>
+      project.findWorkspaceByNameOrAlias(123 as unknown as string),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("createScriptCommand throws for non-string workspaceNameOrAlias", () => {
+    const project = makeDefaultProject();
+    expect(() =>
+      project.createScriptCommand({
+        workspaceNameOrAlias: 123 as unknown as string,
+        scriptName: "all-workspaces",
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("createScriptCommand throws for non-string scriptName", () => {
+    const project = makeDefaultProject();
+    expect(() =>
+      project.createScriptCommand({
+        workspaceNameOrAlias: "application-a",
+        scriptName: 123 as unknown as string,
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("createScriptCommand throws for non-string method", () => {
+    const project = makeDefaultProject();
+    expect(() =>
+      project.createScriptCommand({
+        workspaceNameOrAlias: "application-a",
+        scriptName: "all-workspaces",
+        method: 123 as unknown as "cd",
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("createScriptCommand throws for non-string args", () => {
+    const project = makeDefaultProject();
+    expect(() =>
+      project.createScriptCommand({
+        workspaceNameOrAlias: "application-a",
+        scriptName: "all-workspaces",
+        args: 123 as unknown as string,
+      }),
+    ).toThrow(InvalidJSTypeError);
   });
 });

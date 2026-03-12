@@ -1,6 +1,11 @@
 import { stripANSI } from "bun";
 import { test, describe, expect, spyOn, beforeAll, afterAll } from "bun:test";
-import { logger, setLogLevel } from "../../src/internal/logger";
+import {
+  logger,
+  LOGGER_ERRORS,
+  setLogLevel,
+  type LogLevelSetting,
+} from "../../src/internal/logger";
 
 describe("setLogLevel", () => {
   /* eslint-disable */
@@ -87,5 +92,17 @@ describe("setLogLevel", () => {
     expect(infoSpy).toHaveBeenCalledTimes(2);
     expect(warnSpy).toHaveBeenCalledTimes(3);
     expect(errorSpy).toHaveBeenCalledWith("test error 4");
+  });
+
+  test("should throw an error for an invalid log level", () => {
+    expect(() => setLogLevel("oops" as unknown as LogLevelSetting)).toThrow(
+      LOGGER_ERRORS.InvalidLogLevel,
+    );
+    expect(() => setLogLevel("oops" as unknown as LogLevelSetting)).toThrow(
+      'Invalid log level: "oops". Accepted values: debug, info, warn, error, silent',
+    );
+    expect(() => setLogLevel(null as unknown as LogLevelSetting)).toThrow(
+      LOGGER_ERRORS.InvalidLogLevel,
+    );
   });
 });

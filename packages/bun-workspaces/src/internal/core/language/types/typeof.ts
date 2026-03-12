@@ -56,6 +56,9 @@ export const isTypeof = <T, D extends JSDataTypeofName>(
 ): value is Extract<T, JSTypeofNameToType<D>> =>
   types.includes(typeof value as D);
 
+export const isPlainObject = (value: unknown): value is object =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
 export type ValidateNumberRules = {
   noNaN?: boolean;
   noNonFinite?: boolean;
@@ -63,14 +66,35 @@ export type ValidateNumberRules = {
   noNegInfinity?: boolean;
 };
 
-export type ValidateJSTypeConfig = {
+export type ValidateJSTypeOptions = {
+  value: unknown;
+  typeofName: OptionalArray<JSDataTypeofName>;
   /** For use in error message */
   valueLabel?: string;
   numberRules?: ValidateNumberRules;
+  optional?: boolean;
 };
 
-export type ValidateObjectJSTypesConfig = {
-  [key: string]: ValidateJSTypeConfig & { value: unknown };
+export type ValidateJSTypesTypeEntry = Omit<
+  ValidateJSTypeOptions,
+  "valueLabel"
+> & {
+  array?: false;
+};
+
+export type ValidateJSTypesArrayEntry = Omit<
+  ValidateJSArrayOptions,
+  "valueLabel"
+> & {
+  array: true;
+};
+
+export type ValidateJSTypesConfigEntry =
+  | ValidateJSTypesTypeEntry
+  | ValidateJSTypesArrayEntry;
+
+export type ValidateJSTypesConfig = {
+  [valueLabel: string]: ValidateJSTypesConfigEntry;
 };
 
 export const validateNumber = (
@@ -79,36 +103,111 @@ export const validateNumber = (
   valueLabel = "Number",
 ): InstanceType<typeof InvalidJSNumberError> | null => {
   if (Number.isNaN(value) && rules?.noNaN) {
-    return new InvalidJSNumberError(`${valueLabel} cannot be NaN`);
+    return new InvalidJSNumberError(
+      `Invalid number: ${valueLabel} cannot be NaN`,
+    );
   } else if (!Number.isFinite(value) && rules?.noNonFinite) {
-    return new InvalidJSNumberError(`${valueLabel} cannot be non-finite`);
+    return new InvalidJSNumberError(
+      `Invalid number: ${valueLabel} cannot be non-finite`,
+    );
   } else if (value === Infinity && rules?.noInfinity) {
-    return new InvalidJSNumberError(`${valueLabel} cannot be Infinity`);
+    return new InvalidJSNumberError(
+      `Invalid number: ${valueLabel} cannot be Infinity`,
+    );
   } else if (value === -Infinity && rules?.noNegInfinity) {
-    return new InvalidJSNumberError(`${valueLabel} cannot be -Infinity`);
+    return new InvalidJSNumberError(
+      `Invalid number: ${valueLabel} cannot be -Infinity`,
+    );
   }
   return null;
 };
 
-export const validateJSType = <T = unknown>(
-  value: T,
-  typeofName: OptionalArray<JSDataTypeofName>,
-  { numberRules, valueLabel }: ValidateJSTypeConfig = {},
-): InstanceType<typeof InvalidJSTypeError> | null => {
+export const validateJSType = ({
+  value,
+  typeofName,
+  numberRules,
+  valueLabel,
+  optional,
+}: ValidateJSTypeOptions): InstanceType<typeof InvalidJSTypeError> | null => {
+  if (optional && (value === null || value === undefined)) return null;
   const typeofNames = resolveOptionalArray(typeofName);
 
   const isValid = isTypeof(value, ...typeofNames);
   if (isValid && typeof value === "number" && numberRules) {
     return validateNumber(value, numberRules, valueLabel);
   } else if (isValid && typeof value === "object" && value === null) {
-    return new InvalidJSTypeError(`${valueLabel ?? "Value"} cannot be null`);
+    return new InvalidJSTypeError(
+      `Type error: ${valueLabel ?? "Value"} cannot be null`,
+    );
   } else if (!isValid) {
     return new InvalidJSTypeError(
-      `Invalid type: ${valueLabel ?? "Value"} expects type ${typeofNames.join(" | ")}, received ${
+      `Type error: ${valueLabel ?? "Value"} expects type ${typeofNames.join(" | ")}, received ${
         value === null ? "null" : typeof value
       }`,
     );
   }
 
   return null;
+};
+
+export type ValidateJSArrayOptions = {
+  value: unknown;
+  /** For use in error messages */
+  valueLabel?: string;
+  optional?: boolean;
+  /** Options to validate each item in the array */
+  itemOptions?: Omit<ValidateJSTypeOptions, "value" | "valueLabel">;
+};
+
+export const validateJSArray = ({
+  value,
+  valueLabel,
+  optional,
+  itemOptions,
+}: ValidateJSArrayOptions): InstanceType<typeof InvalidJSTypeError> | null => {
+  if (optional && (value === null || value === undefined)) return null;
+  if (!Array.isArray(value)) {
+    return new InvalidJSTypeError(
+      `Type error: ${valueLabel ?? "Value"} expects an array, received ${value === null ? "null" : typeof value}`,
+    );
+  }
+  if (itemOptions) {
+    for (let i = 0; i < value.length; i++) {
+      const itemError = validateJSType({
+        ...itemOptions,
+        value: value[i],
+        valueLabel: `${valueLabel ?? "Value"}[${i}]`,
+      });
+      if (itemError) return itemError;
+    }
+  }
+  return null;
+};
+
+export type ValidateJSTypesOptions = {
+  throw?: boolean;
+};
+
+export const validateJSTypes = (
+  config: ValidateJSTypesConfig,
+  options?: ValidateJSTypesOptions,
+): InstanceType<typeof InvalidJSTypeError> | null => {
+  const errors: string[] = [];
+  for (const [valueLabel, entry] of Object.entries(config)) {
+    const error = entry.array
+      ? validateJSArray({ ...entry, valueLabel })
+      : validateJSType({ ...entry, valueLabel });
+    if (error) {
+      errors.push(error.message);
+    }
+  }
+  if (errors.length === 0) return null;
+  const result =
+    errors.length === 1
+      ? new InvalidJSTypeError(errors[0])
+      : new InvalidJSTypeError(
+          `Type errors:\n${errors.map((e) => ` - ${e}`).join("\n")}`,
+        );
+  if (options?.throw) throw result;
+  return result;
 };

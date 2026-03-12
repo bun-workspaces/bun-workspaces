@@ -114,11 +114,14 @@ export const runScript = handleProjectCommand(
       ignoreDependencyFailure: options.ignoreDepFailure,
       ignoreOutput: logger.printLevel === "silent",
       onScriptEvent: (event, { workspace, exitResult }) => {
-        scriptEventTarget.dispatchEvent(
-          createScriptEvent[event]({
-            workspace,
-            exitResult,
-          }),
+        setTimeout(() =>
+          // place at end of call stack so listeners in render func receive event
+          scriptEventTarget.dispatchEvent(
+            createScriptEvent[event]({
+              workspace,
+              exitResult,
+            }),
+          ),
         );
       },
       parallel:

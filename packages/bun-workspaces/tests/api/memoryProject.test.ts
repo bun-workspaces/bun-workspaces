@@ -49,9 +49,7 @@ describe("createMemoryProject - type validation", () => {
   test("throws for workspaces item with invalid member", () => {
     expect(() =>
       createMemoryProject({
-        workspaces: [
-          makeTestWorkspace({ name: 123 as unknown as string }),
-        ],
+        workspaces: [makeTestWorkspace({ name: 123 as unknown as string })],
       }),
     ).toThrow(InvalidJSTypeError);
   });

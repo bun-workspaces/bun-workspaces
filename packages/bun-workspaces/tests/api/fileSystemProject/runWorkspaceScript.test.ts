@@ -1,10 +1,11 @@
 import { expect, test, describe } from "bun:test";
+import { InvalidJSTypeError } from "../../../src/internal/core";
 import {
   createFileSystemProject,
   PROJECT_ERRORS,
   type RunWorkspaceScriptExit,
+  type ShellOption,
 } from "../../../src/project";
-import { InvalidJSTypeError } from "../../../src/internal/core";
 import { getProjectRoot } from "../../fixtures/testProjects";
 import { makeTestWorkspace } from "../../util/testData";
 import { withWindowsPath } from "../../util/windows";
@@ -103,7 +104,7 @@ describe("FileSystemProject runWorkspaceScript - type validation", () => {
       project.runWorkspaceScript({
         workspaceNameOrAlias: "application-a",
         script: "a-workspaces",
-        inline: { shell: 123 as unknown as string },
+        inline: { shell: 123 as unknown as ShellOption },
       }),
     ).toThrow(InvalidJSTypeError);
   });

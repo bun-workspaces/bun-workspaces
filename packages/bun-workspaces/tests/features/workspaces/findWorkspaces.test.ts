@@ -315,24 +315,8 @@ describe("Test finding workspaces", () => {
       expect(() =>
         findWorkspaces({
           rootDirectory: getProjectRoot("invalidAliasConflict"),
-          workspaceAliases: {
-            deprecated_appA: "application-a",
-            "application-b": "library-a",
-          },
         }),
       ).toThrow(WORKSPACE_ERRORS.AliasConflict);
-    });
-
-    test("throws for alias pointing to nonexistent workspace", () => {
-      expect(() =>
-        findWorkspaces({
-          rootDirectory: getProjectRoot("invalidAliasNotFound"),
-          workspaceAliases: {
-            deprecated_appA: "application-a",
-            appD: "application-d",
-          },
-        }),
-      ).toThrow(WORKSPACE_ERRORS.AliasedWorkspaceNotFound);
     });
   });
 

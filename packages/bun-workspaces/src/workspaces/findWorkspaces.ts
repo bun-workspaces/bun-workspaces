@@ -193,7 +193,11 @@ export const findWorkspaces = ({
   }
 
   workspaces = sortWorkspaces(
-    resolveWorkspaceDependencies(workspaceMap, includeRootWorkspace, bunCatalogs),
+    resolveWorkspaceDependencies(
+      workspaceMap,
+      includeRootWorkspace,
+      bunCatalogs,
+    ),
   );
 
   validateWorkspaceAliases(workspaces, workspaceAliases, rootWorkspace.name);

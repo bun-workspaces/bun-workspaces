@@ -311,7 +311,7 @@ export const runScripts = <ScriptMetadata extends object = object>({
 
         scriptResults[index] = scriptResult;
         scriptProcessBytes[index] = scriptResult.result.processOutput.bytes();
-        setTimeout(() => onScriptEvent?.("start", index, null)); // put to end of call stack
+        onScriptEvent?.("start", index, null);
         scriptTriggers[index].trigger();
 
         scriptResult.result.exit.then((exit) => {
@@ -404,6 +404,9 @@ export const runScripts = <ScriptMetadata extends object = object>({
     );
 
     const endTime = new Date();
+
+    // place end of call stack so script events fire before summary
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     return {
       totalCount: scriptExitResults.length,

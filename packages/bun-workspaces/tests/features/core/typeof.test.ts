@@ -239,6 +239,46 @@ describe("validateJSType", () => {
       "InvalidJSType",
     );
   });
+
+  test("optional: true returns null for undefined", () => {
+    expect(
+      validateJSType({ value: undefined, typeofName: "string", optional: true }),
+    ).toBeNull();
+  });
+
+  test("optional: true returns null for null", () => {
+    expect(
+      validateJSType({ value: null, typeofName: "string", optional: true }),
+    ).toBeNull();
+  });
+
+  test("optional: true still validates present valid values", () => {
+    expect(
+      validateJSType({ value: "hello", typeofName: "string", optional: true }),
+    ).toBeNull();
+  });
+
+  test("optional: true still validates present invalid values", () => {
+    const error = validateJSType({
+      value: 42,
+      typeofName: "string",
+      optional: true,
+    });
+    expect(error).toBeInstanceOf(InvalidJSTypeError);
+    expect(error?.message).toBe(
+      "Type error: Value expects type string, received number",
+    );
+  });
+
+  test("optional absent returns error for undefined", () => {
+    const error = validateJSType({ value: undefined, typeofName: "string" });
+    expect(error).toBeInstanceOf(InvalidJSTypeError);
+  });
+
+  test("optional absent returns error for null", () => {
+    const error = validateJSType({ value: null, typeofName: "object" });
+    expect(error).toBeInstanceOf(InvalidJSTypeError);
+  });
 });
 
 describe("validateJSTypes", () => {
@@ -319,5 +359,17 @@ describe("validateJSTypes", () => {
     expect(error?.message).toBe(
       "Type error: myParam expects type string | number, received boolean",
     );
+  });
+
+  test("passes optional through to validateJSType", () => {
+    expect(
+      validateJSTypes({
+        myParam: { value: undefined, typeofName: "string", optional: true },
+      }),
+    ).toBeNull();
+    const error = validateJSTypes({
+      myParam: { value: undefined, typeofName: "string" },
+    });
+    expect(error).toBeInstanceOf(InvalidJSTypeError);
   });
 });

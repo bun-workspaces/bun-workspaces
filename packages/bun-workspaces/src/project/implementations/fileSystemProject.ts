@@ -3,7 +3,7 @@ import path from "path";
 import { loadRootConfig } from "../../config";
 import { getUserEnvVar } from "../../config/userEnvVars";
 import type { SimpleAsyncIterable, Simplify } from "../../internal/core";
-import { DEFAULT_TEMP_DIR } from "../../internal/core";
+import { DEFAULT_TEMP_DIR, validateJSTypes } from "../../internal/core";
 import { logger } from "../../internal/logger";
 import {
   runScript,

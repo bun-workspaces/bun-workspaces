@@ -69,6 +69,7 @@ export type ValidateJSTypeOptions = {
   /** For use in error message */
   valueLabel?: string;
   numberRules?: ValidateNumberRules;
+  optional?: boolean;
 };
 
 export type ValidateJSTypesConfig = {
@@ -105,7 +106,9 @@ export const validateJSType = ({
   typeofName,
   numberRules,
   valueLabel,
+  optional,
 }: ValidateJSTypeOptions): InstanceType<typeof InvalidJSTypeError> | null => {
+  if (optional && (value === null || value === undefined)) return null;
   const typeofNames = resolveOptionalArray(typeofName);
 
   const isValid = isTypeof(value, ...typeofNames);

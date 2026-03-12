@@ -690,5 +690,4 @@ describe("Test Project utilities", () => {
       });
     });
   });
-
 });

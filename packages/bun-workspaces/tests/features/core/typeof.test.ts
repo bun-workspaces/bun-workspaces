@@ -242,7 +242,11 @@ describe("validateJSType", () => {
 
   test("optional: true returns null for undefined", () => {
     expect(
-      validateJSType({ value: undefined, typeofName: "string", optional: true }),
+      validateJSType({
+        value: undefined,
+        typeofName: "string",
+        optional: true,
+      }),
     ).toBeNull();
   });
 

@@ -14,9 +14,18 @@ export const resolvePackageJsonPath = (directoryItem: string) => {
   return "";
 };
 
+export type BunCatalog = Record<string, string>;
+
+export type BunCatalogs = {
+  defaultCatalog: BunCatalog;
+  namedCatalogs: Record<string, BunCatalog>;
+};
+
 export type ResolvedPackageJsonContent = {
   name: string;
   workspaces: string[];
+  catalog: BunCatalog;
+  catalogs: Record<string, BunCatalog>;
   scripts: Record<string, string>;
   dependencies: Record<string, string>;
   devDependencies: Record<string, string>;
@@ -82,17 +91,37 @@ const validateWorkspacePattern = (
   return true;
 };
 
+const parseCatalogMap = (raw: unknown): BunCatalog => {
+  if (!isJSONObject(raw)) return {};
+  return Object.fromEntries(
+    Object.entries(raw).filter(([, value]) => typeof value === "string"),
+  ) as BunCatalog;
+};
+
 const validateWorkspacePatterns = (
   json: UnknownPackageJson,
   rootDirectory: string,
-) => {
+): {
+  workspaces: string[];
+  catalog: BunCatalog;
+  catalogs: Record<string, BunCatalog>;
+} => {
   const workspaces: string[] = [];
+  let catalog: BunCatalog = {};
+  const catalogs: Record<string, BunCatalog> = {};
+
   if (json.workspaces) {
     let source: "array" | "catalogObject" = "array";
     let rawWorkspaces: string[] = [];
     if (isJSONObject(json.workspaces)) {
       source = "catalogObject";
       rawWorkspaces = json.workspaces?.packages as string[];
+      catalog = parseCatalogMap(json.workspaces.catalog);
+      if (isJSONObject(json.workspaces.catalogs)) {
+        for (const [name, value] of Object.entries(json.workspaces.catalogs)) {
+          catalogs[name] = parseCatalogMap(value);
+        }
+      }
     } else {
       source = "array";
       rawWorkspaces = json.workspaces as string[];
@@ -111,7 +140,7 @@ const validateWorkspacePatterns = (
     }
   }
 
-  return workspaces;
+  return { workspaces, catalog, catalogs };
 };
 
 const validateScripts = (json: UnknownPackageJson) => {
@@ -141,6 +170,26 @@ const validateScripts = (json: UnknownPackageJson) => {
   };
 };
 
+/**
+ * Resolve a `catalog:` or `catalog:name` version reference for a given package name.
+ * Returns the resolved version string, or null if the catalog or package is not found.
+ */
+export const resolveCatalogDependencyVersion = (
+  packageName: string,
+  catalogRef: string,
+  catalogs: BunCatalogs,
+): string | null => {
+  if (!catalogRef.startsWith("catalog:")) return null;
+
+  const catalogName = catalogRef.slice("catalog:".length);
+
+  if (!catalogName) {
+    return catalogs.defaultCatalog[packageName] ?? null;
+  }
+
+  return catalogs.namedCatalogs[catalogName]?.[packageName] ?? null;
+};
+
 export const resolvePackageJsonContent = (
   packageJsonPath: string,
   rootDirectory: string,
@@ -162,6 +211,14 @@ export const resolvePackageJsonContent = (
 
   validateJsonRoot(json);
 
+  const { workspaces, catalog, catalogs } = validations.includes("workspaces")
+    ? validateWorkspacePatterns(json, rootDirectory)
+    : {
+        workspaces: (json?.workspaces ?? []) as string[],
+        catalog: {},
+        catalogs: {},
+      };
+
   return {
     ...json,
     // Dependency data types are validated by bun install
@@ -174,9 +231,9 @@ export const resolvePackageJsonContent = (
     name: validations.includes("name")
       ? validateName(json)
       : ((json.name as string) ?? ""),
-    workspaces: validations.includes("workspaces")
-      ? validateWorkspacePatterns(json, rootDirectory)
-      : ((json?.workspaces ?? []) as string[]),
+    workspaces,
+    catalog,
+    catalogs,
     scripts: validations.includes("scripts")
       ? validateScripts(json)
       : ((json.scripts ?? {}) as Record<string, string>),

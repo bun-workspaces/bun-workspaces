@@ -1,0 +1,9 @@
+{
+  "name": "d-depends-e",
+  "peerDependencies": {
+    "e": "catalog:"
+  },
+  "scripts": {
+    "test-script": "echo D"
+  }
+}

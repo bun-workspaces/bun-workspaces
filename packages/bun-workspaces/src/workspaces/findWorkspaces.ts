@@ -17,6 +17,7 @@ import { WORKSPACE_ERRORS } from "./errors";
 import {
   resolvePackageJsonContent,
   resolvePackageJsonPath,
+  type BunCatalogs,
 } from "./packageJson";
 import type { Workspace } from "./workspace";
 
@@ -45,7 +46,7 @@ export const sortWorkspaces = (workspaces: Workspace[]) =>
       return [...acc, workspace];
     }, []);
 
-const getWorkspaceGlobsFromRoot = ({
+const getRootPackageJsonWorkspaceData = ({
   rootDirectory,
 }: {
   rootDirectory: string;
@@ -57,13 +58,13 @@ const getWorkspaceGlobsFromRoot = ({
     );
   }
 
-  const packageJson = resolvePackageJsonContent(
+  const { workspaces, catalog, catalogs } = resolvePackageJsonContent(
     packageJsonPath,
     rootDirectory,
     ["workspaces"],
   );
 
-  return packageJson.workspaces ?? [];
+  return { workspaceGlobs: workspaces ?? [], catalog, catalogs };
 };
 
 const validateWorkspace = (workspace: Workspace, workspaces: Workspace[]) => {
@@ -106,8 +107,14 @@ export const findWorkspaces = ({
     throw bunLock;
   }
 
-  const workspaceGlobs =
-    _workspaceGlobs ?? getWorkspaceGlobsFromRoot({ rootDirectory });
+  const { workspaceGlobs, catalog, catalogs } = _workspaceGlobs
+    ? { workspaceGlobs: _workspaceGlobs, catalog: {}, catalogs: {} }
+    : getRootPackageJsonWorkspaceData({ rootDirectory });
+
+  const bunCatalogs: BunCatalogs = {
+    defaultCatalog: catalog,
+    namedCatalogs: catalogs,
+  };
 
   let rootWorkspace: Workspace | undefined;
 
@@ -186,7 +193,7 @@ export const findWorkspaces = ({
   }
 
   workspaces = sortWorkspaces(
-    resolveWorkspaceDependencies(workspaceMap, includeRootWorkspace),
+    resolveWorkspaceDependencies(workspaceMap, includeRootWorkspace, bunCatalogs),
   );
 
   validateWorkspaceAliases(workspaces, workspaceAliases, rootWorkspace.name);

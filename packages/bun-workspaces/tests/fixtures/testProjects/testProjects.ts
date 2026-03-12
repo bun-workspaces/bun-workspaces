@@ -62,6 +62,8 @@ const TEST_PROJECTS = {
   withDependenciesDirectCycle: "withDependencies/withDirectCycle",
   withDependenciesIndirectCycle: "withDependencies/withIndirectCycle",
   withDependenciesIndirectCycleMixed: "withDependencies/withIndirectCycleMixed",
+  withDependenciesCatalogDependencies:
+    "withDependencies/withCatalogDependencies",
   recursiveScript: "recursiveScript",
 };
 

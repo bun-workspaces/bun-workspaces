@@ -1,0 +1,9 @@
+{
+  "name": "a-depends-e",
+  "devDependencies": {
+    "e": "catalog:"
+  },
+  "scripts": {
+    "test-script": "echo A"
+  }
+}

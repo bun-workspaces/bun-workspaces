@@ -1,0 +1,17 @@
+{
+  "name": "test-root",
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "catalog": {
+      "e": "workspace:*",
+      "d-depends-e": "workspace:*"
+    },
+    "catalogs": {
+      "test-named-catalog": {
+        "c-depends-e": "workspace:*"
+      }
+    }
+  }
+}

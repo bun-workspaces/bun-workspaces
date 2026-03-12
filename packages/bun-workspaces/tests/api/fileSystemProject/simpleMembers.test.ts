@@ -203,3 +203,78 @@ test-script-metadata-env-b
     delete process.env[getUserEnvVarName("includeRootWorkspaceDefault")];
   });
 });
+
+const makeDefaultProject = () =>
+  createFileSystemProject({ rootDirectory: getProjectRoot("default") });
+
+describe("ProjectBase methods - type validation", () => {
+  test("listWorkspacesWithScript throws for non-string scriptName", () => {
+    const project = makeDefaultProject();
+    expect(() =>
+      project.listWorkspacesWithScript(123 as unknown as string),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("findWorkspaceByName throws for non-string workspaceName", () => {
+    const project = makeDefaultProject();
+    expect(() => project.findWorkspaceByName(123 as unknown as string)).toThrow(
+      InvalidJSTypeError,
+    );
+  });
+
+  test("findWorkspaceByAlias throws for non-string alias", () => {
+    const project = makeDefaultProject();
+    expect(() =>
+      project.findWorkspaceByAlias(123 as unknown as string),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("findWorkspaceByNameOrAlias throws for non-string nameOrAlias", () => {
+    const project = makeDefaultProject();
+    expect(() =>
+      project.findWorkspaceByNameOrAlias(123 as unknown as string),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("createScriptCommand throws for non-string workspaceNameOrAlias", () => {
+    const project = makeDefaultProject();
+    expect(() =>
+      project.createScriptCommand({
+        workspaceNameOrAlias: 123 as unknown as string,
+        scriptName: "all-workspaces",
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("createScriptCommand throws for non-string scriptName", () => {
+    const project = makeDefaultProject();
+    expect(() =>
+      project.createScriptCommand({
+        workspaceNameOrAlias: "application-a",
+        scriptName: 123 as unknown as string,
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("createScriptCommand throws for non-string method", () => {
+    const project = makeDefaultProject();
+    expect(() =>
+      project.createScriptCommand({
+        workspaceNameOrAlias: "application-a",
+        scriptName: "all-workspaces",
+        method: 123 as unknown as "cd",
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("createScriptCommand throws for non-string args", () => {
+    const project = makeDefaultProject();
+    expect(() =>
+      project.createScriptCommand({
+        workspaceNameOrAlias: "application-a",
+        scriptName: "all-workspaces",
+        args: 123 as unknown as string,
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+});

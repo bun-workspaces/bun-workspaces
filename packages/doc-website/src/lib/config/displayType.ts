@@ -74,6 +74,7 @@ const _formatSimpleTypeToDisplay = <V extends ValueToDisplay<any>>(
   return result;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const formatSimpleTypeToDisplay = <V extends ValueToDisplay<any>>(
   value: V,
 ) => _formatSimpleTypeToDisplay(value);

@@ -39,12 +39,12 @@ type EventFromName<
 export interface TypedEventTarget<Config extends EventConfig = EventConfig> {
   addEventListener<EventName extends keyof Config>(
     event: EventName,
-    listener: (event: EventFromName<EventName, Config>) => any,
+    listener: (event: EventFromName<EventName, Config>) => unknown,
   ): void;
 
   removeEventListener<EventName extends keyof Config>(
     event: EventName,
-    listener: (event: EventFromName<EventName, Config>) => any,
+    listener: (event: EventFromName<EventName, Config>) => unknown,
   ): void;
 
   dispatchEvent<EventName extends keyof Config>(

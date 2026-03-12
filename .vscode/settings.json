@@ -3,7 +3,7 @@
     "source.fixAll.eslint": "explicit"
   },
   "eslint.codeActionsOnSave.rules": ["import/order"],
-  "eslint.validate": ["javascript", "typescript"],
+  "eslint.validate": ["javascript", "typescript", "typescriptreact"],
   "[mdx]": {
     "editor.formatOnSave": false,
     "editor.defaultFormatter": "esbenp.prettier-vscode"

@@ -32,15 +32,15 @@ export interface Spritesheet {
 }
 
 export const loadSpritesheetMetadata = async (
-  fileName: string,
+  fileName: string
 ): Promise<SpritesheetMetadata> => {
   const response = await fetch(
-    `/images/spritesheets/metadata/${fileName}.json`,
+    `/images/spritesheets/metadata/${fileName}.json`
   );
   const data = (await response.json()) as RawSpritesheetMetadata;
   return {
     frames: Object.values<{ frame: SpritesheetFrame }>(data.frames).map(
-      (rawFrame) => rawFrame.frame,
+      (rawFrame) => rawFrame.frame
     ),
     width: data.meta.size.w,
     height: data.meta.size.h,
@@ -48,7 +48,7 @@ export const loadSpritesheetMetadata = async (
 };
 
 export const loadSpritesheet = async (
-  fileName: string,
+  fileName: string
 ): Promise<Spritesheet> => {
   let metadata: SpritesheetMetadata;
   let imageBlob: Blob;
@@ -57,6 +57,7 @@ export const loadSpritesheet = async (
     const imageData = await fetch(`/images/spritesheets/${fileName}.png`);
     imageBlob = await imageData.blob();
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(`Failed to load spritesheet data for ${fileName}`, error);
     return Promise.reject(error);
   }
@@ -71,7 +72,7 @@ export const loadSpritesheet = async (
     frameBitmaps.push(
       await createImageBitmap(imageBitmap, frame.x, frame.y, frame.w, frame.h, {
         resizeQuality: "pixelated",
-      }),
+      })
     );
   }
 

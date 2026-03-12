@@ -1,6 +1,6 @@
 import { type WorkspacePatternTarget } from "bun-workspaces/src/workspaces/workspacePattern";
-import { SyntaxHighlighter } from "../util/highlight";
 import { Link } from "rspress/theme";
+import { SyntaxHighlighter } from "../util/highlight";
 
 export const WORKSPACE_PATTERN_CONTENT: Record<
   WorkspacePatternTarget,

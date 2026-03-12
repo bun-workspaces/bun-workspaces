@@ -6,7 +6,7 @@ const sanitize = (s: string) =>
   s
     .toLowerCase()
     .trim()
-    .replace(/[^\.-_0-9A-Za-z\/]/g, "");
+    .replace(/[^.-_0-9A-Za-z/]/g, "");
 
 const matches = (s: string, query: string) =>
   sanitize(s).includes(sanitize(query)) ||
@@ -24,7 +24,7 @@ const onSearch: OnSearch = async (query, defaultResult) => {
       Object.values(command.options).some(
         (option) =>
           matches(option.flags[option.flags.length - 1], query) ||
-          matches(option.description, query),
+          matches(option.description, query)
       )
     ) {
       defaultResult[0].result?.push({

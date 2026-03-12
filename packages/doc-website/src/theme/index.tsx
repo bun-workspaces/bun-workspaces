@@ -1,12 +1,11 @@
 import { useEffect, useRef } from "react";
-import { Link } from "rspress/theme";
 import { useLocation } from "rspress/runtime";
+import Theme, { Link } from "rspress/theme";
 import "@fontsource/unifontex";
 import packageJson from "../../../bun-workspaces/package.json";
-import Theme from "rspress/theme";
+import { Footer } from "../lib/components/Footer";
 import { PixelArtImage } from "../lib/util/pixelArt";
 import { useLayout } from "../lib/util/useLayout";
-import { Footer } from "../lib/components/Footer";
 
 const OnPageChange = () => {
   const location = useLocation();
@@ -87,5 +86,7 @@ export default {
 
 export * from "rspress/theme";
 
+// eslint-disable-next-line no-console
 console.log("\n" + process.env.BWUNSTER_ASCII);
+// eslint-disable-next-line no-console
 console.log("bun-workspaces Documentation:", process.env.BUILD_ID);

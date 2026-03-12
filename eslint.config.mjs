@@ -10,7 +10,7 @@ export default defineConfig([
   globalIgnores(["**/*.js", "**/*.d.ts", "**/*.mjs", "**/dist/**/*"]),
   {
     name: "rootJs",
-    files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
+    files: ["**/*.{js,mjs,cjs,ts,mts,cts,tsx}"],
     plugins: { js },
     extends: ["js/recommended"],
     languageOptions: { globals: { ...globals.browser, ...globals.node } },
@@ -22,10 +22,11 @@ export default defineConfig([
   importPlugin.flatConfigs.recommended,
   {
     name: "baseConfig",
+    files: ["**/*.{js,mjs,cjs,ts,mts,cts,tsx}"],
     languageOptions: {
       parserOptions: {
         projectService: true,
-        allowDefaultProject: ["*.js", "*.mjs"],
+        allowDefaultProject: ["*.js", "*.mjs", "*.ts", "*.tsx"],
         tsconfigRootDir: process.cwd(),
       },
     },
@@ -74,14 +75,14 @@ export default defineConfig([
   },
   {
     name: "bunWorkspacesPackageConfig",
-    files: ["packages/bun-workspaces/**/*.{js,mjs,cjs,ts,mts,cts}"],
+    files: ["packages/bun-workspaces/**/*.{js,mjs,cjs,ts,mts,cts,tsx}"],
     rules: {
       "no-console": "error",
     },
   },
   {
     name: "packageScripts",
-    files: ["packages/*/scripts/**/*.{js,mjs,cjs,ts,mts,cts}"],
+    files: ["packages/*/scripts/**/*.{js,mjs,cjs,ts,mts,cts,tsx}"],
     rules: {
       "no-console": "off",
     },
@@ -89,8 +90,8 @@ export default defineConfig([
   {
     name: "testConfig",
     files: [
-      "**/tests/**/*.{js,mjs,cjs,ts,mts,cts}",
-      "**/*.test.{js,mjs,cjs,ts,mts,cts}",
+      "**/tests/**/*.{js,mjs,cjs,ts,mts,cts,tsx}",
+      "**/*.test.{js,mjs,cjs,ts,mts,cts,tsx}",
     ],
     rules: {
       "no-console": "warn",

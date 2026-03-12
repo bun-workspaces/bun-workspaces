@@ -1,5 +1,6 @@
 import { createDefaultRootConfig } from "../../config";
 import type { Simplify } from "../../internal/core";
+import { validateJSTypes } from "../../internal/core";
 import {
   validateWorkspaceAliases,
   WORKSPACE_ERRORS,
@@ -35,6 +36,32 @@ class _MemoryProject extends ProjectBase implements Project {
 
   constructor(options: CreateMemoryProjectOptions) {
     super(true);
+
+    const typeError = validateJSTypes({
+      "workspaces option": { value: options.workspaces, typeofName: "object" },
+      "name option": {
+        value: options.name,
+        typeofName: "string",
+        optional: true,
+      },
+      "rootDirectory option": {
+        value: options.rootDirectory,
+        typeofName: "string",
+        optional: true,
+      },
+      "rootWorkspace option": {
+        value: options.rootWorkspace,
+        typeofName: "object",
+        optional: true,
+      },
+      "includeRootWorkspace option": {
+        value: options.includeRootWorkspace,
+        typeofName: "boolean",
+        optional: true,
+      },
+    });
+    if (typeError) throw typeError;
+
     this.name = options.name ?? "";
     this.rootDirectory = options.rootDirectory ?? "";
     this.workspaces = options.workspaces;

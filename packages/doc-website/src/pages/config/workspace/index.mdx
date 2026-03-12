@@ -9,7 +9,7 @@ footer: false
 ---
 
 import { ROOT_CONFIG_FILE_NAME, ROOT_CONFIG_PACKAGE_JSON_KEY, WORKSPACE_CONFIG_FILE_NAME, WORKSPACE_CONFIG_PACKAGE_JSON_KEY } from "bun-workspaces/src/config";
-import { exampleDeprecatedConfig, exampleWorkspaceConfigArray, exampleWorkspaceConfigSimple, createPackageJsonExample } from "../../../lib/config/exampleConfig";
+import {  exampleWorkspaceConfigArray, exampleWorkspaceConfigSimple, createPackageJsonExample } from "../../../lib/config/exampleConfig";
 import { SyntaxHighlighter } from "../../../lib/util/highlight";
 import { CONFIG_LOCATION_TYPES, createConfigLocationPath } from 'bun-workspaces/src/config/util'
 import { ROOT_CONFIG_TYPE, WORKSPACE_CONFIG_TYPE } from "../../../lib/config/configTypes";
@@ -48,28 +48,4 @@ or
 
 <SyntaxHighlighter language="json">
   {JSON.stringify(createPackageJsonExample(exampleWorkspaceConfigSimple, "workspace"), null, 2)}
-</SyntaxHighlighter>
-
-## Config File (bw.json)
-
-<div className="config-deprecation-text">
-DEPRECATED: Use the new workspace configuration above instead to configure workspace aliases. 
-
-For the meantime, this
-configuration file will still take effect and merge aliases with the new configuration if present.
-</div>
-
-You can create a config file at `bw.json` in your project root,
-or you can pass a config file to the CLI with the `--config-file` (or `-c`) [option](/cli#cli-global-option-configFile).
-
-#### Example config
-
-In this config, "app-a" is an alias for package "@my-org/application-a"
-and "app-b" is an alias for package "@my-org/application-b".
-
-The default
-[log level](/cli#cli-global-option-logLevel) can be set for the CLI as well.
-
-<SyntaxHighlighter language="json">
-  {JSON.stringify(exampleDeprecatedConfig, null, 2)}
 </SyntaxHighlighter>

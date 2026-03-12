@@ -8,8 +8,8 @@ import type { CliGlobalOptionContent, CliGlobalOptionInfo } from "./cliOption";
 const defineOptionContent = (
   optionName: CliGlobalOptionName,
   factory: (
-    optionConfig: CliGlobalOptionConfig,
-  ) => Omit<CliGlobalOptionInfo, "optionName">,
+    optionConfig: CliGlobalOptionConfig
+  ) => Omit<CliGlobalOptionInfo, "optionName">
 ): CliGlobalOptionContent => {
   const config = getCliGlobalOptionConfig(optionName);
   const content = factory(config);
@@ -21,18 +21,6 @@ const defineOptionContent = (
 };
 
 const CLI_GLOBAL_OPTIONS_CONTENT = {
-  configFile: defineOptionContent(
-    "configFile",
-    ({ mainOption, shortOption }) => ({
-      title: "Config File",
-      description:
-        "Use this option to point to a config file. Otherwise, ./bw.json is used by default.",
-      examples: [
-        `bw ${mainOption}=/path/to/your/config.json list-workspaces`,
-        `bw ${shortOption} /path/to/your/config.json list-workspaces`,
-      ],
-    }),
-  ),
   cwd: defineOptionContent("cwd", ({ mainOption, shortOption }) => ({
     title: "Working Directory",
     description:
@@ -54,7 +42,7 @@ const CLI_GLOBAL_OPTIONS_CONTENT = {
         "",
         `bw ${mainOption.replace("--", "--no-")} list-workspaces # disable (to override config/env)`,
       ],
-    }),
+    })
   ),
   logLevel: defineOptionContent("logLevel", ({ mainOption, shortOption }) => ({
     title: "Log Level",

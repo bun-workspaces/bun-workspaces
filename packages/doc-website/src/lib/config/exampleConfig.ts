@@ -1,5 +1,4 @@
 import {
-  type BunWorkspacesConfig,
   type WorkspaceConfig,
   type RootConfig,
   WORKSPACE_CONFIG_PACKAGE_JSON_KEY,
@@ -55,16 +54,4 @@ export const createPackageJsonExample = (
       ? WORKSPACE_CONFIG_PACKAGE_JSON_KEY
       : ROOT_CONFIG_PACKAGE_JSON_KEY]: config,
   };
-};
-
-export const exampleDeprecatedConfig: BunWorkspacesConfig = {
-  project: {
-    workspaceAliases: {
-      appA: "@my-org/application-a",
-      appB: "@my-org/application-b",
-    },
-  },
-  cli: {
-    logLevel: "error",
-  },
 };

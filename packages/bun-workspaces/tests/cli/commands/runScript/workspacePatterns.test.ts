@@ -86,12 +86,7 @@ describe("CLI Run Script (workspace patterns)", () => {
 
     test("aliases match workspaces", async () => {
       const { run } = setupCliTest({ testProject: "simple1" });
-      const result = await run(
-        "run-script",
-        "all-workspaces",
-        "deprecated_appB",
-        "deprecated_libA",
-      );
+      const result = await run("run-script", "all-workspaces", "appB", "libA");
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,

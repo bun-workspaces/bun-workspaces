@@ -7,7 +7,7 @@ import {
 import { withWindowsPath } from "../../util/windows";
 
 const APPLICATION_1A_PLAIN_OUTPUT = `Workspace: application-1a
- - Aliases: deprecated_appA
+ - Aliases: appA
  - Path: ${withWindowsPath("applications/applicationA")}
  - Glob Match: applications/*
  - Scripts: a-workspaces, all-workspaces, application-a
@@ -20,7 +20,7 @@ const EXPECTED_APPLICATION_1A_JSON = {
   matchPattern: "applications/*",
   path: withWindowsPath("applications/applicationA"),
   scripts: ["a-workspaces", "all-workspaces", "application-a"],
-  aliases: ["deprecated_appA"],
+  aliases: ["appA"],
   dependencies: [],
   dependents: [],
 };

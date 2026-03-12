@@ -152,6 +152,118 @@ describe("FileSystemProject runWorkspaceScript", () => {
     );
   });
 
+  test("runs inline script with args", async () => {
+    const project = createFileSystemProject({
+      rootDirectory: getProjectRoot("runScriptWithEchoArgs"),
+    });
+
+    const inline = project.runWorkspaceScript({
+      workspaceNameOrAlias: "application-1a",
+      script: `echo inline passed args: `,
+      inline: true,
+      args: "--arg1=value1 --arg2=value2",
+    });
+
+    for await (const { chunk, metadata } of inline.output.text()) {
+      expect(metadata.streamName).toBe("stdout");
+      expect(chunk.trim()).toBe(
+        "inline passed args: --arg1=value1 --arg2=value2",
+      );
+    }
+
+    const inlineExitResult = await inline.exit;
+    expect(inlineExitResult).toEqual({
+      exitCode: 0,
+      success: true,
+      startTimeISO: expect.any(String),
+      endTimeISO: expect.any(String),
+      durationMs: expect.any(Number),
+      signal: null,
+      metadata: {
+        workspace: makeTestWorkspace({
+          name: "application-1a",
+          aliases: ["appA"],
+          path: "applications/applicationA",
+          matchPattern: "applications/*",
+          scripts: ["test-echo"],
+        }),
+      },
+    });
+  });
+
+  test("runs package script with args", async () => {
+    const project = createFileSystemProject({
+      rootDirectory: getProjectRoot("runScriptWithEchoArgs"),
+    });
+
+    const packageScript = project.runWorkspaceScript({
+      workspaceNameOrAlias: "application-1a",
+      script: "test-echo",
+      args: "--arg1=value1 --arg2=value2",
+    });
+
+    for await (const { chunk, metadata } of packageScript.output.text()) {
+      expect(metadata.streamName).toBe("stdout");
+      expect(chunk.trim()).toBe("passed args: --arg1=value1 --arg2=value2");
+    }
+
+    const exitResult = await packageScript.exit;
+    expect(exitResult).toEqual({
+      exitCode: 0,
+      success: true,
+      startTimeISO: expect.any(String),
+      endTimeISO: expect.any(String),
+      durationMs: expect.any(Number),
+      signal: null,
+      metadata: {
+        workspace: makeTestWorkspace({
+          name: "application-1a",
+          aliases: ["appA"],
+          path: "applications/applicationA",
+          matchPattern: "applications/*",
+          scripts: ["test-echo"],
+        }),
+      },
+    });
+  });
+
+  test("runs inline script", async () => {
+    const project = createFileSystemProject({
+      rootDirectory: getProjectRoot("default"),
+    });
+
+    const echo = `this is my inline script ${Math.round(Math.random() * 1000000)}`;
+
+    const { output, exit } = project.runWorkspaceScript({
+      workspaceNameOrAlias: "application-a",
+      script: `echo ${echo}`,
+      inline: true,
+    });
+
+    for await (const { chunk, metadata } of output.text()) {
+      expect(chunk.trim()).toBe(`${echo}`);
+      expect(metadata.streamName).toBe("stdout");
+    }
+
+    const exitResult = await exit;
+    expect(exitResult).toEqual({
+      exitCode: 0,
+      success: true,
+      startTimeISO: expect.any(String),
+      endTimeISO: expect.any(String),
+      durationMs: expect.any(Number),
+      signal: null,
+      metadata: {
+        workspace: makeTestWorkspace({
+          name: "application-a",
+          path: "applications/applicationA",
+          matchPattern: "applications/*",
+          scripts: ["a-workspaces", "all-workspaces", "application-a"],
+        }),
+      },
+    });
+  });
+
   test("ignore output", async () => {
     const project = createFileSystemProject({
       rootDirectory: getProjectRoot("default"),
@@ -262,13 +374,10 @@ describe("FileSystemProject runWorkspaceScript", () => {
     ] as const;
 
     let i = 0;
-    for await (const chunk of output) {
+    for await (const { chunk, metadata } of output.text()) {
       const expected = expectedOutput[i];
-      expect(chunk.decode().trim()).toMatch(expected.text);
-      expect(chunk.decode({ stripAnsi: true }).trim()).toMatch(
-        expected.textNoAnsi,
-      );
-      expect(chunk.streamName).toBe(expected.streamName);
+      expect(chunk.trim()).toMatch(expected.text);
+      expect(metadata.streamName).toBe(expected.streamName);
       i++;
     }
 

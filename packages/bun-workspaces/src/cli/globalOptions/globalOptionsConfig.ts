@@ -4,7 +4,6 @@ export interface CliGlobalOptions {
   logLevel: LogLevelSetting;
   cwd: string;
   includeRoot: boolean;
-  configFile?: string;
 }
 
 export interface CliGlobalOptionConfig {
@@ -40,14 +39,6 @@ const CLI_GLOBAL_OPTIONS_CONFIG = {
     defaultValue: "",
     values: null,
     param: "",
-  },
-  configFile: {
-    mainOption: "--config-file",
-    shortOption: "-c",
-    description: "(DEPRECATED) Config file",
-    defaultValue: "",
-    values: null,
-    param: "path",
   },
 } as const satisfies Record<keyof CliGlobalOptions, CliGlobalOptionConfig>;
 

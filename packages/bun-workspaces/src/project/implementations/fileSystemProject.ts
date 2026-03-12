@@ -643,11 +643,3 @@ export type FileSystemProject = Simplify<_FileSystemProject>;
 export const createFileSystemProject = (
   options: CreateFileSystemProjectOptions = {},
 ): FileSystemProject => new _FileSystemProject(options);
-
-/** @deprecated temporarily supports workspaceAliases from deprecated config file */
-export const _internalCreateFileSystemProject = (
-  options: CreateFileSystemProjectOptions & {
-    /** @deprecated  */
-    workspaceAliases?: Record<string, string>;
-  },
-): FileSystemProject => new _FileSystemProject(options);

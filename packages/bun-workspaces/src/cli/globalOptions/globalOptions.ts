@@ -1,15 +1,10 @@
 import fs from "fs";
 import path from "path";
 import { type Command, Option } from "commander";
-import {
-  DEFAULT_CONFIG_FILE_PATH,
-  loadConfigFile,
-  type BunWorkspacesConfig,
-} from "../../config";
 import { defineErrors } from "../../internal/core";
 import { logger } from "../../internal/logger";
 import {
-  _internalCreateFileSystemProject,
+  createFileSystemProject,
   createMemoryProject,
   type FileSystemProject,
 } from "../../project";
@@ -66,12 +61,6 @@ const getWorkingDirectoryFromArgs = (
   return program.opts().cwd;
 };
 
-const getConfigFileFromArgs = (program: Command, args: string[]) => {
-  addGlobalOption(program, "configFile");
-  program.parseOptions(args);
-  return program.opts().configFile as string | undefined;
-};
-
 const defineGlobalOptions = (
   program: Command,
   args: string[],
@@ -91,36 +80,21 @@ const defineGlobalOptions = (
     );
   }
 
-  const configFilePath = getConfigFileFromArgs(program, args);
-
-  const config = loadConfigFile(configFilePath, cwd);
-
-  if (config) {
-    logger.warn(
-      // TODO link to docs
-      `Using the config file at ${configFilePath || DEFAULT_CONFIG_FILE_PATH} is deprecated. Migrate to the new workspace config file.`,
-    );
-  }
-
   addGlobalOption(program, "logLevel");
   addGlobalOption(program, "includeRoot");
 
-  return { cwd, config };
+  return { cwd };
 };
 
-const applyGlobalOptions = (
-  options: CliGlobalOptions,
-  config: BunWorkspacesConfig | null,
-) => {
+const applyGlobalOptions = (options: CliGlobalOptions) => {
   logger.printLevel = options.logLevel;
   logger.debug("Log level: " + options.logLevel);
 
   let project: FileSystemProject;
   let error: Error | null = null;
   try {
-    project = _internalCreateFileSystemProject({
+    project = createFileSystemProject({
       rootDirectory: options.cwd,
-      workspaceAliases: config?.project?.workspaceAliases ?? {},
       includeRootWorkspace: options.includeRoot,
     });
 
@@ -147,18 +121,15 @@ export const initializeWithGlobalOptions = (
 ) => {
   program.allowUnknownOption(true);
 
-  const { cwd, config } = defineGlobalOptions(program, args, defaultCwd);
+  const { cwd } = defineGlobalOptions(program, args, defaultCwd);
 
   program.parseOptions(args);
   program.allowUnknownOption(false);
 
   const options = program.opts() as CliGlobalOptions;
 
-  return applyGlobalOptions(
-    {
-      ...options,
-      cwd,
-    },
-    config,
-  );
+  return applyGlobalOptions({
+    ...options,
+    cwd,
+  });
 };

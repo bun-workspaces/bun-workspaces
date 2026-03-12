@@ -170,12 +170,7 @@ class _FileSystemProject extends ProjectBase implements Project {
   public readonly config: ProjectConfig;
   public readonly rootWorkspace: Workspace;
 
-  constructor(
-    options: CreateFileSystemProjectOptions & {
-      /** @deprecated  */
-      workspaceAliases?: Record<string, string>;
-    },
-  ) {
+  constructor(options: CreateFileSystemProjectOptions) {
     super();
 
     validateJSTypes(
@@ -213,7 +208,6 @@ class _FileSystemProject extends ProjectBase implements Project {
 
     const { workspaces, workspaceMap, rootWorkspace } = findWorkspaces({
       rootDirectory: this.rootDirectory,
-      workspaceAliases: options.workspaceAliases,
       includeRootWorkspace:
         options.includeRootWorkspace ??
         rootConfig.defaults.includeRootWorkspace ??

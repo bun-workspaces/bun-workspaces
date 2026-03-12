@@ -25,7 +25,7 @@ export const AnimatedSprite = ({
   reducedMotionFrame,
 }: AnimatedSpriteProps) => {
   const [spritesheetData, setSpritesheetData] = useState<Spritesheet | null>(
-    null
+    null,
   );
   const [canvasHeight, setCanvasHeight] = useState(height ?? width);
 
@@ -37,7 +37,7 @@ export const AnimatedSprite = ({
           ? (spritesheet.metadata.frames[0].h /
               spritesheet.metadata.frames[0].w) *
               width
-          : width
+          : width,
       );
     });
   }, [spritesheetFileName]);
@@ -59,7 +59,7 @@ export const AnimatedSprite = ({
     ctx.imageSmoothingEnabled = false;
 
     const isReducedMotion = window.matchMedia(
-      `(prefers-reduced-motion: reduce)`
+      `(prefers-reduced-motion: reduce)`,
     ).matches;
 
     if (isReducedMotion) {
@@ -72,7 +72,7 @@ export const AnimatedSprite = ({
         0,
         0,
         width,
-        canvasHeight
+        canvasHeight,
       );
       return;
     }
@@ -103,7 +103,7 @@ export const AnimatedSprite = ({
           0,
           0,
           width,
-          canvasHeight
+          canvasHeight,
         );
 
         lastFrameTime = time;

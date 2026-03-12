@@ -3,7 +3,12 @@ import path from "path";
 import { loadRootConfig } from "../../config";
 import { getUserEnvVar } from "../../config/userEnvVars";
 import type { SimpleAsyncIterable, Simplify } from "../../internal/core";
-import { DEFAULT_TEMP_DIR, validateJSTypes } from "../../internal/core";
+import {
+  DEFAULT_TEMP_DIR,
+  isPlainObject,
+  validateJSType,
+  validateJSTypes,
+} from "../../internal/core";
 import { logger } from "../../internal/logger";
 import {
   runScript,
@@ -366,8 +371,9 @@ class _FileSystemProject extends ProjectBase implements Project {
       "script option": { value: options.script, typeofName: "string" },
       "workspacePatterns option": {
         value: options.workspacePatterns,
-        typeofName: "object",
         optional: true,
+        itemOptions: { typeofName: "string" },
+        array: true,
       },
       "inline option": {
         value: options.inline,
@@ -406,6 +412,31 @@ class _FileSystemProject extends ProjectBase implements Project {
       },
     });
     if (typeError) throw typeError;
+
+    if (isPlainObject(options.inline)) {
+      const inlineError = validateJSTypes({
+        "inline.scriptName option": {
+          value: options.inline.scriptName,
+          typeofName: "string",
+          optional: true,
+        },
+        "inline.shell option": {
+          value: options.inline.shell,
+          typeofName: "string",
+          optional: true,
+        },
+      });
+      if (inlineError) throw inlineError;
+    }
+
+    if (isPlainObject(options.parallel)) {
+      const parallelError = validateJSType({
+        value: options.parallel.max,
+        typeofName: ["number", "string"],
+        valueLabel: "parallel.max option",
+      });
+      if (parallelError) throw parallelError;
+    }
 
     const matchedWorkspaces = sortWorkspaces(
       (

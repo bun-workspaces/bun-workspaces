@@ -4,6 +4,7 @@ import {
   validateNumber,
   validateJSType,
   validateJSTypes,
+  validateJSArray,
   InvalidJSTypeError,
   InvalidJSNumberError,
 } from "../../../src/internal/core/language/types/typeof";
@@ -332,6 +333,59 @@ describe("validateJSTypes", () => {
     expect(error?.name).toBe("InvalidJSType");
   });
 
+  test("dispatches to validateJSArray when array: true", () => {
+    expect(
+      validateJSTypes({
+        myList: { value: ["a", "b"], array: true },
+      }),
+    ).toBeNull();
+
+    const error = validateJSTypes({
+      myList: { value: "oops", array: true },
+    });
+    expect(error).toBeInstanceOf(InvalidJSTypeError);
+    expect(error?.message).toBe(
+      "Type error: myList expects an array, received string",
+    );
+  });
+
+  test("array: true with itemOptions validates each item", () => {
+    const error = validateJSTypes({
+      myList: {
+        value: ["a", 2],
+        array: true,
+        itemOptions: { typeofName: "string" },
+      },
+    });
+    expect(error).toBeInstanceOf(InvalidJSTypeError);
+    expect(error?.message).toBe(
+      "Type error: myList[1] expects type string, received number",
+    );
+  });
+
+  test("collects array and type errors into combined message", () => {
+    const error = validateJSTypes({
+      myString: { value: 42, typeofName: "string" },
+      myList: { value: "oops", array: true },
+    });
+    expect(error?.message).toBe(
+      "Type errors:\n - Type error: myString expects type string, received number\n - Type error: myList expects an array, received string",
+    );
+  });
+
+  test("array: true with optional skips null/undefined", () => {
+    expect(
+      validateJSTypes({
+        myList: { value: undefined, array: true, optional: true },
+      }),
+    ).toBeNull();
+    expect(
+      validateJSTypes({
+        myList: { value: null, array: true, optional: true },
+      }),
+    ).toBeNull();
+  });
+
   test("passes numberRules through to validateJSType", () => {
     const error = validateJSTypes({
       count: { value: NaN, typeofName: "number", numberRules: { noNaN: true } },
@@ -375,5 +429,106 @@ describe("validateJSTypes", () => {
       myParam: { value: undefined, typeofName: "string" },
     });
     expect(error).toBeInstanceOf(InvalidJSTypeError);
+  });
+});
+
+describe("validateJSArray", () => {
+  test("returns null for a valid array", () => {
+    expect(validateJSArray({ value: ["a", "b"] })).toBeNull();
+    expect(validateJSArray({ value: [] })).toBeNull();
+    expect(validateJSArray({ value: [1, 2, 3] })).toBeNull();
+  });
+
+  test("returns error for non-array values", () => {
+    expect(validateJSArray({ value: "hello" })).toBeInstanceOf(
+      InvalidJSTypeError,
+    );
+    expect(validateJSArray({ value: 42 })).toBeInstanceOf(InvalidJSTypeError);
+    expect(validateJSArray({ value: {} })).toBeInstanceOf(InvalidJSTypeError);
+    expect(validateJSArray({ value: null })).toBeInstanceOf(InvalidJSTypeError);
+    expect(validateJSArray({ value: undefined })).toBeInstanceOf(
+      InvalidJSTypeError,
+    );
+  });
+
+  test("error message includes received type", () => {
+    expect(validateJSArray({ value: "hello" })?.message).toBe(
+      "Type error: Value expects an array, received string",
+    );
+    expect(validateJSArray({ value: null })?.message).toBe(
+      "Type error: Value expects an array, received null",
+    );
+    expect(validateJSArray({ value: 42 })?.message).toBe(
+      "Type error: Value expects an array, received number",
+    );
+  });
+
+  test("valueLabel is used in error message", () => {
+    expect(
+      validateJSArray({ value: "oops", valueLabel: "myParam" })?.message,
+    ).toBe("Type error: myParam expects an array, received string");
+  });
+
+  test("optional: true returns null for undefined", () => {
+    expect(
+      validateJSArray({ value: undefined, optional: true }),
+    ).toBeNull();
+  });
+
+  test("optional: true returns null for null", () => {
+    expect(validateJSArray({ value: null, optional: true })).toBeNull();
+  });
+
+  test("optional: true still validates non-null non-array values", () => {
+    expect(
+      validateJSArray({ value: "hello", optional: true }),
+    ).toBeInstanceOf(InvalidJSTypeError);
+  });
+
+  test("validates item types when itemOptions provided", () => {
+    expect(
+      validateJSArray({
+        value: ["a", "b", "c"],
+        itemOptions: { typeofName: "string" },
+      }),
+    ).toBeNull();
+    expect(
+      validateJSArray({
+        value: [1, 2, 3],
+        itemOptions: { typeofName: "number" },
+      }),
+    ).toBeNull();
+  });
+
+  test("returns error for item type mismatch", () => {
+    const error = validateJSArray({
+      value: ["a", 2, "c"],
+      itemOptions: { typeofName: "string" },
+    });
+    expect(error).toBeInstanceOf(InvalidJSTypeError);
+    expect(error?.message).toBe(
+      "Type error: Value[1] expects type string, received number",
+    );
+  });
+
+  test("item error message uses valueLabel with index", () => {
+    const error = validateJSArray({
+      value: ["a", 2],
+      valueLabel: "myList",
+      itemOptions: { typeofName: "string" },
+    });
+    expect(error?.message).toBe(
+      "Type error: myList[1] expects type string, received number",
+    );
+  });
+
+  test("no itemOptions skips item validation", () => {
+    expect(validateJSArray({ value: ["a", 2, true, null] })).toBeNull();
+  });
+
+  test("returns null for empty array regardless of itemOptions", () => {
+    expect(
+      validateJSArray({ value: [], itemOptions: { typeofName: "string" } }),
+    ).toBeNull();
   });
 });

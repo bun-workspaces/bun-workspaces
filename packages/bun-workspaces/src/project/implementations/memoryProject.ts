@@ -38,7 +38,11 @@ class _MemoryProject extends ProjectBase implements Project {
     super(true);
 
     const typeError = validateJSTypes({
-      "workspaces option": { value: options.workspaces, typeofName: "object" },
+      "workspaces option": {
+        value: options.workspaces,
+        itemOptions: { typeofName: "object" },
+        array: true,
+      },
       "name option": {
         value: options.name,
         typeofName: "string",

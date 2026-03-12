@@ -20,12 +20,52 @@ describe("FileSystemProject runScriptAcrossWorkspaces - type validation", () => 
     ).toThrow(InvalidJSTypeError);
   });
 
-  test("throws for non-object workspacePatterns", () => {
+  test("throws for non-array workspacePatterns", () => {
     const project = makeProject();
     expect(() =>
       project.runScriptAcrossWorkspaces({
         script: "all-workspaces",
         workspacePatterns: "application-a" as unknown as string[],
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for workspacePatterns with non-string items", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runScriptAcrossWorkspaces({
+        script: "all-workspaces",
+        workspacePatterns: [123] as unknown as string[],
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for non-string inline.scriptName", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runScriptAcrossWorkspaces({
+        script: "all-workspaces",
+        inline: { scriptName: 123 as unknown as string },
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for non-string inline.shell", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runScriptAcrossWorkspaces({
+        script: "all-workspaces",
+        inline: { shell: 123 as unknown as "bun" },
+      }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for invalid parallel.max type", () => {
+    const project = makeProject();
+    expect(() =>
+      project.runScriptAcrossWorkspaces({
+        script: "all-workspaces",
+        parallel: { max: true as unknown as number },
       }),
     ).toThrow(InvalidJSTypeError);
   });

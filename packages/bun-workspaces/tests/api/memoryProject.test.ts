@@ -7,9 +7,15 @@ import { makeTestWorkspace } from "../util/testData";
 import { withWindowsPath } from "../util/windows";
 
 describe("createMemoryProject - type validation", () => {
-  test("throws for non-object workspaces", () => {
+  test("throws for non-array workspaces", () => {
     expect(() =>
       createMemoryProject({ workspaces: "oops" as unknown as [] }),
+    ).toThrow(InvalidJSTypeError);
+  });
+
+  test("throws for workspaces with non-object items", () => {
+    expect(() =>
+      createMemoryProject({ workspaces: ["oops"] as unknown as [] }),
     ).toThrow(InvalidJSTypeError);
   });
 

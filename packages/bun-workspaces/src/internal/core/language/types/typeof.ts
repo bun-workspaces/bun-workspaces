@@ -56,6 +56,9 @@ export const isTypeof = <T, D extends JSDataTypeofName>(
 ): value is Extract<T, JSTypeofNameToType<D>> =>
   types.includes(typeof value as D);
 
+export const isPlainObject = (value: unknown): value is object =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
 export type ValidateNumberRules = {
   noNaN?: boolean;
   noNonFinite?: boolean;
@@ -72,8 +75,20 @@ export type ValidateJSTypeOptions = {
   optional?: boolean;
 };
 
+export type ValidateJSTypesTypeEntry = Omit<ValidateJSTypeOptions, "valueLabel"> & {
+  array?: false;
+};
+
+export type ValidateJSTypesArrayEntry = Omit<ValidateJSArrayOptions, "valueLabel"> & {
+  array: true;
+};
+
+export type ValidateJSTypesConfigEntry =
+  | ValidateJSTypesTypeEntry
+  | ValidateJSTypesArrayEntry;
+
 export type ValidateJSTypesConfig = {
-  [valueLabel: string]: Omit<ValidateJSTypeOptions, "valueLabel">;
+  [valueLabel: string]: ValidateJSTypesConfigEntry;
 };
 
 export const validateNumber = (
@@ -129,12 +144,48 @@ export const validateJSType = ({
   return null;
 };
 
+export type ValidateJSArrayOptions = {
+  value: unknown;
+  /** For use in error messages */
+  valueLabel?: string;
+  optional?: boolean;
+  /** Options to validate each item in the array */
+  itemOptions?: Omit<ValidateJSTypeOptions, "value" | "valueLabel">;
+};
+
+export const validateJSArray = ({
+  value,
+  valueLabel,
+  optional,
+  itemOptions,
+}: ValidateJSArrayOptions): InstanceType<typeof InvalidJSTypeError> | null => {
+  if (optional && (value === null || value === undefined)) return null;
+  if (!Array.isArray(value)) {
+    return new InvalidJSTypeError(
+      `Type error: ${valueLabel ?? "Value"} expects an array, received ${value === null ? "null" : typeof value}`,
+    );
+  }
+  if (itemOptions) {
+    for (let i = 0; i < value.length; i++) {
+      const itemError = validateJSType({
+        ...itemOptions,
+        value: value[i],
+        valueLabel: `${valueLabel ?? "Value"}[${i}]`,
+      });
+      if (itemError) return itemError;
+    }
+  }
+  return null;
+};
+
 export const validateJSTypes = (
   config: ValidateJSTypesConfig,
 ): InstanceType<typeof InvalidJSTypeError> | null => {
   const errors: string[] = [];
   for (const [valueLabel, options] of Object.entries(config)) {
-    const error = validateJSType({ ...options, valueLabel });
+    const error = options.array
+      ? validateJSArray({ ...options, valueLabel })
+      : validateJSType({ ...options, valueLabel });
     if (error) {
       errors.push(error.message);
     }

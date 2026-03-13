@@ -82,9 +82,12 @@ bw run lint --dep-order --ignore-dep-failure
 # special root workspace selector (works even if root workspace is not included)
 bw run lint @root
 
+# Scripts run in parallel by default
+bw run lint --parallel=false # Run in series
+
 # Default can be overridden by config or env var BW_PARALLEL_MAX_DEFAULT
 bw run lint --parallel # default "auto", os.availableParallelism()
-bw run lint --parallel=2
+bw run lint --parallel=2 # Run in parallel with a max of 2 concurrent scripts
 bw run lint --parallel=50% # 50% of os.availableParallelism()
 bw run lint --parallel=unbounded # run all in one batch
 

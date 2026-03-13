@@ -5,7 +5,12 @@ describe("CLI Run Script (workspace patterns)", () => {
   describe("inline workspace patterns", () => {
     test("pattern * matches all workspaces", async () => {
       const { run } = setupCliTest({ testProject: "simple1" });
-      const result = await run("run-script", "all-workspaces", "*");
+      const result = await run(
+        "run-script",
+        "all-workspaces",
+        "*",
+        "--parallel=false",
+      );
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
@@ -23,7 +28,12 @@ describe("CLI Run Script (workspace patterns)", () => {
 
     test("pattern application* matches application workspaces", async () => {
       const { run } = setupCliTest({ testProject: "simple1" });
-      const result = await run("run-script", "all-workspaces", "application*");
+      const result = await run(
+        "run-script",
+        "all-workspaces",
+        "application*",
+        "--parallel=false",
+      );
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
@@ -42,6 +52,7 @@ describe("CLI Run Script (workspace patterns)", () => {
         "all-workspaces",
         "application*",
         "library-1a",
+        "--parallel=false",
       );
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
@@ -58,7 +69,12 @@ describe("CLI Run Script (workspace patterns)", () => {
 
     test("pattern *1a matches by name suffix", async () => {
       const { run } = setupCliTest({ testProject: "simple1" });
-      const result = await run("run-script", "all-workspaces", "*1a");
+      const result = await run(
+        "run-script",
+        "all-workspaces",
+        "*1a",
+        "--parallel=false",
+      );
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
@@ -76,6 +92,7 @@ describe("CLI Run Script (workspace patterns)", () => {
         "run-script",
         "all-workspaces",
         "does-not-exist*",
+        "--parallel=false",
       );
       expect(result.exitCode).toBe(1);
       assertOutputMatches(
@@ -86,7 +103,13 @@ describe("CLI Run Script (workspace patterns)", () => {
 
     test("aliases match workspaces", async () => {
       const { run } = setupCliTest({ testProject: "simple1" });
-      const result = await run("run-script", "all-workspaces", "appB", "libA");
+      const result = await run(
+        "run-script",
+        "all-workspaces",
+        "appB",
+        "libA",
+        "--parallel=false",
+      );
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
@@ -106,6 +129,7 @@ describe("CLI Run Script (workspace patterns)", () => {
         "run-script",
         "all-workspaces",
         "--workspace-patterns=path:applications/* library-1b",
+        "--parallel=false",
       );
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
@@ -127,6 +151,7 @@ describe("CLI Run Script (workspace patterns)", () => {
         "all-workspaces",
         "-W",
         "path:applications/* library-1b",
+        "--parallel=false",
       );
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
@@ -150,6 +175,7 @@ describe("CLI Run Script (workspace patterns)", () => {
       "--workspace-patterns=path:applications/* library-1b",
       "application-*",
       "library-1b",
+      "--parallel=false",
     );
     expect(result.exitCode).toBe(1);
     assertOutputMatches(

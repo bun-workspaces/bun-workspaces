@@ -15,7 +15,6 @@ describe("FileSystemProject runScriptAcrossWorkspaces - parallel", () => {
     const { output, summary } = project.runScriptAcrossWorkspaces({
       workspacePatterns: ["*"],
       script: "test-delay",
-      parallel: true,
     });
 
     const expectedOutput = [

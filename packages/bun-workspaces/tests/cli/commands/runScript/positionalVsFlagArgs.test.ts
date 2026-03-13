@@ -5,7 +5,11 @@ describe("CLI Run Script (positional vs flag args)", () => {
   describe("script name: option vs positional", () => {
     test("--script runs script by name", async () => {
       const { run } = setupCliTest({ testProject: "simple1" });
-      const result = await run("run-script", "--script=a-workspaces");
+      const result = await run(
+        "run-script",
+        "--script=a-workspaces",
+        "--parallel=false",
+      );
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
@@ -19,7 +23,12 @@ describe("CLI Run Script (positional vs flag args)", () => {
 
     test("-S runs script by name", async () => {
       const { run } = setupCliTest({ testProject: "simple1" });
-      const result = await run("run-script", "-S", "a-workspaces");
+      const result = await run(
+        "run-script",
+        "-S",
+        "a-workspaces",
+        "--parallel=false",
+      );
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
@@ -33,7 +42,11 @@ describe("CLI Run Script (positional vs flag args)", () => {
 
     test("positional script name runs script", async () => {
       const { run } = setupCliTest({ testProject: "simple1" });
-      const result = await run("run-script", "a-workspaces");
+      const result = await run(
+        "run-script",
+        "a-workspaces",
+        "--parallel=false",
+      );
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
@@ -53,6 +66,7 @@ describe("CLI Run Script (positional vs flag args)", () => {
         "run-script",
         "--script=a-workspaces",
         "application-*",
+        "--parallel=false",
       );
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
@@ -70,6 +84,7 @@ describe("CLI Run Script (positional vs flag args)", () => {
         "--script=all-workspaces",
         "library-1a",
         "library-*",
+        "--parallel=false",
       );
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
@@ -88,6 +103,7 @@ describe("CLI Run Script (positional vs flag args)", () => {
         "run-script",
         "--workspace-patterns=library-1a library-*",
         "--script=all-workspaces",
+        "--parallel=false",
       );
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
@@ -108,6 +124,7 @@ describe("CLI Run Script (positional vs flag args)", () => {
       "all-workspaces",
       "--workspace-patterns=library-1a library-*",
       "--script=all-workspaces",
+      "--parallel=false",
     );
     expect(result.exitCode).toBe(1);
     assertOutputMatches(

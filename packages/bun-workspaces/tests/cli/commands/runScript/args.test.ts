@@ -7,7 +7,12 @@ describe("CLI Run Script (args)", () => {
       const { run } = setupCliTest({
         testProject: "runScriptWithEchoArgs",
       });
-      const result = await run("run-script", "test-echo", "--args=test-args");
+      const result = await run(
+        "run-script",
+        "test-echo",
+        "--args=test-args",
+        "--parallel=false",
+      );
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
@@ -27,7 +32,12 @@ describe("CLI Run Script (args)", () => {
       const { run } = setupCliTest({
         testProject: "runScriptWithEchoArgs",
       });
-      const result = await run("run-script", "test-echo", "-a test-args");
+      const result = await run(
+        "run-script",
+        "test-echo",
+        "-a test-args",
+        "--parallel=false",
+      );
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
@@ -51,6 +61,7 @@ describe("CLI Run Script (args)", () => {
         "run-script",
         "test-echo",
         '--args="hello there <workspaceName>"',
+        "--parallel=false",
       );
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
@@ -75,6 +86,7 @@ describe("CLI Run Script (args)", () => {
         "run-script",
         "test-echo",
         "--args=<workspaceName> and <workspaceName> and <workspaceName>",
+        "--parallel=false",
       );
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
@@ -101,6 +113,7 @@ describe("CLI Run Script (args)", () => {
         "appA",
         "libB",
         "--args=for workspace <workspaceName>",
+        "--parallel=false",
       );
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
@@ -124,6 +137,7 @@ describe("CLI Run Script (args)", () => {
         "test-echo",
         "--output-style=plain",
         "--args=test-args",
+        "--parallel=false",
       );
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
@@ -149,6 +163,7 @@ passed args: test-args
         "test-echo",
         "--output-style=plain",
         "--args=<workspaceName>",
+        "--parallel=false",
       );
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
@@ -174,6 +189,7 @@ passed args: library-1b
       const result = await run(
         "run-script",
         "test-echo",
+        "--parallel=false",
         "--",
         "test-args",
         "--another-arg",
@@ -205,6 +221,7 @@ passed args: library-1b
         "test-args",
         "--another-arg",
         "--args=test-args",
+        "--parallel=false",
       );
       expect(result.exitCode).toBe(1);
       assertOutputMatches(

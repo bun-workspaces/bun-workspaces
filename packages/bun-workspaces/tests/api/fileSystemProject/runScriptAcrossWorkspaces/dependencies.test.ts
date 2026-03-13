@@ -22,6 +22,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - dependencies", () => {
 
       const { output, summary } = project.runScriptAcrossWorkspaces({
         script: "test-script",
+        parallel: false,
       });
 
       const outputLetters: string[] = [];
@@ -97,6 +98,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - dependencies", () => {
       const { output, summary } = project.runScriptAcrossWorkspaces({
         script: "test-script",
         dependencyOrder: true,
+        parallel: false,
       });
 
       // e has no deps so it runs first; then a/c/d unblock (in index order);
@@ -167,7 +169,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - dependencies", () => {
       );
     });
 
-    test("runs dependency batches in parallel when parallel is enabled", async () => {
+    test("runs dependency batches in parallel", async () => {
       const project = createFileSystemProject({
         rootDirectory: getProjectRoot("withDependenciesSimpleWithDelays"),
       });
@@ -175,7 +177,6 @@ describe("FileSystemProject runScriptAcrossWorkspaces - dependencies", () => {
       const { summary } = project.runScriptAcrossWorkspaces({
         script: "test-script",
         dependencyOrder: true,
-        parallel: true,
       });
 
       const { scriptResults } = await summary;
@@ -213,6 +214,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - dependencies", () => {
       const { output, summary } = project.runScriptAcrossWorkspaces({
         script: "test-script",
         dependencyOrder: true,
+        parallel: false,
       });
 
       // a-depends-c ↔ c-depends-a forms a cycle; all edges between cycle nodes are stripped.
@@ -278,6 +280,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - dependencies", () => {
       const { output, summary } = project.runScriptAcrossWorkspaces({
         script: "test-script",
         dependencyOrder: true,
+        parallel: false,
       });
 
       // a→b→c→a forms a cycle; all three nodes are cycle participants so all
@@ -338,6 +341,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - dependencies", () => {
       const { output, summary } = project.runScriptAcrossWorkspaces({
         script: "test-script",
         dependencyOrder: true,
+        parallel: false,
       });
 
       // a→b→c→a cycle: all three nodes stripped of mutual edges, run dep-free alphabetically.
@@ -445,6 +449,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - dependencies", () => {
         const { output, summary } = project.runScriptAcrossWorkspaces({
           script: "test-script",
           dependencyOrder: true,
+          parallel: false,
         });
 
         // e runs first; c and d unblock (both dep on e); c fails, d succeeds;
@@ -547,6 +552,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - dependencies", () => {
           script: "test-script",
           dependencyOrder: true,
           ignoreDependencyFailure: true,
+          parallel: false,
         });
 
         // same order as before but nothing is skipped:
@@ -641,6 +647,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - dependencies", () => {
         workspacePatterns: ["b-depends-cd", "d-depends-e", "e"],
         script: "test-script",
         dependencyOrder: true,
+        parallel: false,
       });
 
       // e has no deps; d unblocks after e; b unblocks after d

@@ -10,7 +10,7 @@ describe("CLI Run Script (runtime metadata)", () => {
     const { run } = setupCliTest({
       testProject: "runScriptWithRuntimeMetadataDebug",
     });
-    const result = await run("run-script", "test-echo");
+    const result = await run("run-script", "test-echo", "--parallel=false");
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,
@@ -30,6 +30,7 @@ describe("CLI Run Script (runtime metadata)", () => {
       "run-script",
       "test-echo",
       "--args=--arg1=<projectPath> --arg2=<projectName> --arg3=<workspaceName> --arg4=<workspacePath> --arg5=<workspaceRelativePath> --arg6=<scriptName>",
+      "--parallel=false",
     );
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
@@ -50,6 +51,7 @@ describe("CLI Run Script (runtime metadata)", () => {
       "run-script",
       "echo <projectPath> <projectName> <workspaceName> <workspacePath> <workspaceRelativePath> <scriptName>",
       "--inline",
+      "--parallel=false",
     );
     expect(result.exitCode).toBe(0);
     assertOutputMatches(

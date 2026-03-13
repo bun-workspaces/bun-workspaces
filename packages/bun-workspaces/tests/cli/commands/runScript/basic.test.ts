@@ -5,7 +5,7 @@ describe("CLI Run Script (basic)", () => {
   describe("running script", () => {
     test("runs script in single matching workspace", async () => {
       const { run } = setupCliTest({});
-      const result = await run("run", "application-a");
+      const result = await run("run", "application-a", "--parallel=false");
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
@@ -17,7 +17,7 @@ describe("CLI Run Script (basic)", () => {
 
     test("runs script in multiple workspaces", async () => {
       const { run } = setupCliTest({});
-      const result = await run("run", "a-workspaces");
+      const result = await run("run", "a-workspaces", "--parallel=false");
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
@@ -31,7 +31,12 @@ describe("CLI Run Script (basic)", () => {
 
     test("runs script with workspace patterns filtering workspaces", async () => {
       const { run } = setupCliTest({});
-      const result = await run("run", "a-workspaces", "library-a");
+      const result = await run(
+        "run",
+        "a-workspaces",
+        "library-a",
+        "--parallel=false",
+      );
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
@@ -43,7 +48,7 @@ describe("CLI Run Script (basic)", () => {
 
     test("runs script across all workspaces that have it", async () => {
       const { run } = setupCliTest({});
-      const result = await run("run", "all-workspaces");
+      const result = await run("run", "all-workspaces", "--parallel=false");
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
@@ -65,7 +70,7 @@ describe("CLI Run Script (basic)", () => {
   describe("errors", () => {
     test("errors when no workspaces have script", async () => {
       const { run } = setupCliTest({});
-      const result = await run("run", "no-script");
+      const result = await run("run", "no-script", "--parallel=false");
       assertOutputMatches(
         result.stderr.sanitizedCompactLines,
         `No matching workspaces found with script "no-script"`,
@@ -74,7 +79,12 @@ describe("CLI Run Script (basic)", () => {
 
     test("errors when workspace name or alias not found", async () => {
       const { run } = setupCliTest({});
-      const result = await run("run", "application-a", "does-not-exist");
+      const result = await run(
+        "run",
+        "application-a",
+        "does-not-exist",
+        "--parallel=false",
+      );
       assertOutputMatches(
         result.stderr.sanitizedCompactLines,
         `Workspace name or alias not found: "does-not-exist"`,
@@ -83,7 +93,12 @@ describe("CLI Run Script (basic)", () => {
 
     test("errors when script not found with valid workspace pattern", async () => {
       const { run } = setupCliTest({});
-      const result = await run("run", "does-not-exist", "application-a");
+      const result = await run(
+        "run",
+        "does-not-exist",
+        "application-a",
+        "--parallel=false",
+      );
       assertOutputMatches(
         result.stderr.sanitizedCompactLines,
         `No matching workspaces found with script "does-not-exist"`,

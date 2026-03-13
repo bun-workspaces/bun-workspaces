@@ -4,7 +4,6 @@
     "alias": "appA"
   },
   "scripts": {
-    "test-echo": "echo passed args:",
-    "test-echo-args": "bw --cwd=../../ run test-echo appA"
+    "test-echo": "echo passed args:"
   }
 }

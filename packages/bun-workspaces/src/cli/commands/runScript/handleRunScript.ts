@@ -88,15 +88,9 @@ export const runScript = handleProjectCommand(
     );
     logger.debug(`Options: ${JSON.stringify(options)}`);
 
-    const workspaces = workspacePatterns.length
-      ? project.findWorkspacesByPattern(...workspacePatterns)
-      : options.inline
-        ? project.workspaces
-        : project.listWorkspacesWithScript(script);
-
     const scriptEventTarget = createScriptEventTarget();
 
-    const { output, summary } = project.runScriptAcrossWorkspaces({
+    const { output, summary, workspaces } = project.runScriptAcrossWorkspaces({
       workspacePatterns: workspacePatterns.length
         ? workspacePatterns
         : undefined,

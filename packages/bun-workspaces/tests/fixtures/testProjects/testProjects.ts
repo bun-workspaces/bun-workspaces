@@ -33,6 +33,8 @@ const TEST_PROJECTS = {
   runScriptWithDelaysAndSequenceConfig:
     "forRunScript/withDelaysAndSequenceConfig",
   runScriptWithDebugParallelMax: "forRunScript/withDebugParallelMax",
+  runScriptWithDebugParallelMaxRootDefault:
+    "forRunScript/withDebugParallelMaxRootDefault",
   runScriptWithSequenceConfig: "forRunScript/withSequenceConfig",
   runScriptWithSequenceConfigPartial: "forRunScript/withSequenceConfigPartial",
   runScriptForGroupedOutput: "forRunScript/forGroupedOutput",

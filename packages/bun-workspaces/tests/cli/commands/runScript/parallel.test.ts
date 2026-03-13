@@ -49,6 +49,15 @@ describe("CLI Run Script (parallel)", () => {
       );
     });
 
+    test("--parallel with root default", async () => {
+      const { run } = setupCliTest({
+        testProject: "runScriptWithDebugParallelMaxRootDefault",
+      });
+      const result = await run("run-script", "test-debug");
+      expect(result.exitCode).toBe(0);
+      assertOutputMatches(result.stdout.sanitizedCompactLines, /\[a\] 3/);
+    });
+
     test("-P runs scripts in parallel", async () => {
       const { run } = setupCliTest({
         testProject: "runScriptWithDelays",

@@ -81,6 +81,7 @@ export type RunWorkspaceScriptOptions = {
 
 /** Metadata associated with a workspace script */
 export type RunWorkspaceScriptMetadata = {
+  /** The workspace that the script was run in */
   workspace: Workspace;
 };
 
@@ -93,19 +94,25 @@ export type RunWorkspaceScriptProcessOutput = MultiProcessOutput<
 >;
 /** Result of `FileSystemProject.runWorkspaceScript` */
 export type RunWorkspaceScriptResult = {
+  /** Use to get the output of the script */
   output: RunWorkspaceScriptProcessOutput;
+  /** The exit result of the script */
   exit: Promise<RunWorkspaceScriptExit>;
 };
 
 export type ParallelOption = boolean | RunScriptsParallelOptions;
 
 export type ScriptEventMetadata = {
+  /** The workspace that the script event occurred in */
   workspace: Workspace;
+  /** The exit result of the script */
   exitResult: RunScriptExit<RunWorkspaceScriptMetadata> | null;
 };
 
 export type OnScriptEventCallback = (
+  /** The event that occurred */
   event: ScriptEventName,
+  /** The metadata for the script event */
   metadata: ScriptEventMetadata,
 ) => unknown;
 
@@ -145,8 +152,12 @@ export type RunScriptAcrossWorkspacesOutput = MultiProcessOutput<
 
 /** Result of `FileSystemProject.runScriptAcrossWorkspaces` */
 export type RunScriptAcrossWorkspacesResult = {
+  /** Use to get the output of the scripts */
   output: RunScriptAcrossWorkspacesOutput;
+  /** The summary of the script run with exit details for each workspace */
   summary: Promise<RunScriptAcrossWorkspacesSummary>;
+  /** The workspaces targeted */
+  workspaces: Workspace[];
 };
 
 class _FileSystemProject extends ProjectBase implements Project {
@@ -565,7 +576,7 @@ class _FileSystemProject extends ProjectBase implements Project {
       }),
       ignoreDependencyFailure: options.ignoreDependencyFailure,
       parallel:
-        options.parallel === true
+        options.parallel === true || options.parallel === undefined
           ? { max: this.config.root.defaults.parallelMax }
           : (options.parallel ?? true),
       ignoreOutput: options.ignoreOutput ?? false,
@@ -576,7 +587,10 @@ class _FileSystemProject extends ProjectBase implements Project {
         }),
     });
 
-    return result;
+    return {
+      ...result,
+      workspaces,
+    };
   }
 
   static #initialized = false;

@@ -18,7 +18,7 @@ import { ENV_VARS_METADATA } from '../../../lib/config/envVars';
 
 ## Parallel Max Value
 
-Scripts run in parallel parallel by default, and you have control over how many concurrent scripts can run at the same time.
+Scripts run in parallel by default, and you have control over how many concurrent scripts can run at the same time.
 
 You can pass a number value, a percentage value (e.g. `50%`), or one of the keywords `"auto"`, `"default"`, or `"unbounded"`
 to the parallel max option.
@@ -28,10 +28,11 @@ to the parallel max option.
 * A plain number sets the limit to the exact number of concurrent scripts. Setting the max to `2` then only allows two scripts to run at the same time.
 
 * A value of `"auto"` sets the limit to [`os.availableParallelism()`](https://bun.com/reference/node/os/availableParallelism), which generally corresponds to the number of available logical CPUs.
+This is the default value when [configuration](/config/root) doesn't override a default.
 
 * A value of `"unbounded"` allows all scripts to run in parallel, but use this with caution, as it can overwhelm a machine and cause instability.
 
-* A percentage value sets the limit to the percentage of [`os.availableParallelism()`](https://bun.com/reference/node/os/availableParallelism). Setting the max to `50%` then sets the limit to roughly half of the available logical CPUs. Note that the limit is floored to the nearest integer.
+* A percentage value sets the limit to the percentage of [`os.availableParallelism()`](https://bun.com/reference/node/os/availableParallelism). Setting the max to `50%` then sets the limit to roughly half of the available logical CPUs. Note that the limit is floored to the nearest integer above 0.
 
 #### Default Limit
 

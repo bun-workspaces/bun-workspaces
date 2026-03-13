@@ -11,12 +11,13 @@ A CLI and API to enhance your monorepo development with Bun's [native workspaces
 - Works right away, with no boilerplate required 🍔🍴
 - Get metadata about your monorepo 🤖
 - Run package.json scripts across workspaces 📋
-- Run inline [Bun Shell](https://bun.com/docs/runtime/shell) scripts in workspaces ⌨️
+- Run inline [Bun Shell](https://bun.com/docs/runtime/shell) scripts in workspaces 🐚
 
-This tool lets you decide the complexity of how you use it.
-To get started, all you need is a normal project using [Bun's native workspaces](https://bun.sh/docs/install/workspaces) feature for nested JavaScript/TypeScript packages.
+This is a tool to help manage a Bun monorepo, offering features beyond what [Bun's --filter feature](https://bun.com/docs/pm/filter) can do. It can be used to get a variety of metadata about your project and run scripts across your workspaces with advanced control.
 
-Think of this as a power suit you can snap onto native workspaces, rather than another monorepo framework.
+To get started, all you need is a repo using [Bun's workspaces feature](https://bun.sh/docs/install/workspaces) for nested JavaScript/TypeScript packages.
+
+This package is unopinionated and works with any project structure you want. Think of this as a power suit you can snap onto native workspaces, rather than whole new monorepo framework.
 
 Start running some [CLI commands](https://bunworkspaces.com/cli) right away in your repo, or take full advantage of the [scripting API](https://bunworkspaces.com/api) and its features.
 

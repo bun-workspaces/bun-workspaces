@@ -31,7 +31,7 @@ export const ApiHeader = ({ activeHref, divider }: ApiHeaderProps) => {
       </div>
       <p className="note" style={{ marginTop: "1rem" }}>
         Install the package via <code>bun add --dev bun-workspaces</code> to use
-        the API.
+        the TypeScript/JavaScript API.
       </p>
 
       <p className="note" style={{ marginTop: "1rem" }}>

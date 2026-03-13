@@ -22,11 +22,11 @@ import { CONFIG_DEFAULTS_KEY } from "../../../lib/config/envVars";
 
 ## Project Root Configuration
 
-The root configuration is the general configuration for a [project](/concepts/glossary#project). It is read from a file in the project root directory or the root `package.json` file.
+The optional root configuration is the general configuration for a [project](/concepts/glossary#project) at a file such as <code>{createConfigLocationPath("jsonFile", ROOT_CONFIG_FILE_NAME, ROOT_CONFIG_PACKAGE_JSON_KEY)}</code> or in its `package.json` file.
 
 The values in <code>{CONFIG_DEFAULTS_KEY}</code> can also be set by [environment variables](/config/env-vars). Defaults provided in the configuration take precedence over environment variables.
 
-See the [parallel max value](/concepts/parallel-scripts#parallel-max-value), the [shell option for inline scripts](/concepts/inline-scripts#shell), and the [root workspace](/concepts/root-workspace) for information on the use of the config values.
+You can set defaults for the [parallel max value](/concepts/parallel-scripts#parallel-max-value), the [shell option for inline scripts](/concepts/inline-scripts#shell), and whether to include the [root workspace](/concepts/root-workspace) in the project's workspaces list.
 
 ### Type Definition
 

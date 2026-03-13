@@ -143,13 +143,15 @@ export const findWorkspaces = ({
         workspaceGlobs.find((glob) => new bun.Glob(glob).match(relativePath)) ??
         "";
 
-      if (!matchPattern) {
+      const isRootWorkspace = workspacePath === rootDirectory;
+
+      if (!matchPattern && !isRootWorkspace) {
         logger.debug(`No match pattern found for ${relativePath}`);
       }
 
       const workspace: Workspace = {
         name: packageJsonContent.name ?? "",
-        isRoot: workspacePath === rootDirectory,
+        isRoot: isRootWorkspace,
         matchPattern: workspacePath === rootDirectory ? "" : matchPattern,
         path: path.relative(rootDirectory, path.dirname(packageJsonPath)),
         scripts: Object.keys(packageJsonContent.scripts ?? {}).sort(),

@@ -30,15 +30,15 @@ import { SmorsicBanner } from "../lib/components/SmorsicBanner";
     <li>Works right away, with no boilerplate required 🍔🍴</li>
     <li>Get metadata about your monorepo 🤖</li>
     <li>Run `package.json` scripts across workspaces 📋</li>
-    <li>Run inline [Bun Shell](https://bun.com/docs/runtime/shell) scripts in workspaces ⌨️</li>
+    <li>Run inline [Bun Shell](https://bun.com/docs/runtime/shell) scripts from your workspaces 🐚</li>
   </ul>
 </div>
 
+This is a tool to help manage a Bun monorepo, offering features beyond what Bun's [`--filter` feature](https://bun.com/docs/pm/filter) can do. It can be used to get a variety of metadata about your project and run scripts across your workspaces with advanced control.
 
-This tool lets you decide the complexity of how you use it. 
-To get started, all you need is a normal project using [Bun's native workspaces](https://bun.sh/docs/install/workspaces) feature for nested JavaScript/TypeScript packages.
+To get started, all you need is a repo using [Bun's workspaces feature](https://bun.sh/docs/install/workspaces) for nested JavaScript/TypeScript packages.
 
-Think of this as a power suit you can snap onto native workspaces, rather than another monorepo framework.
+This package is unopinionated and works with any project structure you want. Think of this as a power suit you can snap onto native workspaces, rather than whole new monorepo framework.
 
 Start running some [CLI commands](/cli) right away in your repo, or take full advantage of the [scripting API](/api) and its features.
 <br/>
@@ -48,7 +48,8 @@ Start running some [CLI commands](/cli) right away in your repo, or take full ad
 
 <h2 className="whats-new-subtitle">Notable recent updates 📦</h2>
 <div className="whats-new-list">
-- New CLI [output style](/cli/commands#run-script) for running scripts. `--no-prefix` is now deprecated in favor of `--output-style=plain`.
+- <span style={{ fontWeight: "500", fontSize: "1.05em"}}><span style={{ fontWeight: "800"}}>Version 1.0</span> is now here after the initial alpha! 🍔🍔👁️🍔🍔</span>
+- New CLI [output style](/cli/commands#run-script) for running scripts. `--no-prefix` is now <span className="deprecated">deprecated</span> in favor of `--output-style=plain`.
 - You can now run scripts in dependency order, similar to Bun's [`--filter` behavior](https://bun.com/docs/pm/filter#dependency-order). See more on [workspace dependencies](/concepts/workspace-dependencies).
 - More advanced [workspace patterns](/concepts/workspace-patterns) can be used to select workspaces, such as by path.
 - It's now possible to include or reference a project's [root workspace](/concepts/root-workspace).

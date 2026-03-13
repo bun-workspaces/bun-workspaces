@@ -2,5 +2,11 @@
   "name": "sandbox-test-project",
   "workspaces": [
     "workspaces/*"
-  ]
+  ],
+  "dependencies": {
+    "bun-workspaces": "1.0.0-alpha.43"
+  },
+  "scripts": {
+    "workspace-script": "echo root-workspace-script"
+  }
 }

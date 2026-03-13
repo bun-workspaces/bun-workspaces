@@ -15,7 +15,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - dependencies", () => {
         ...overrides,
       });
 
-    test("runs in alphabetical order without dependencyOrder", async () => {
+    test("runs in alphanumerical order without dependencyOrder", async () => {
       const project = createFileSystemProject({
         rootDirectory: getProjectRoot("withDependenciesSimple"),
       });
@@ -110,7 +110,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - dependencies", () => {
 
       expect(outputLetters).toEqual(["E", "A", "C", "D", "B"]);
 
-      // summary scriptResults are always in workspace index (alphabetical) order
+      // summary scriptResults are always in workspace index (alphanumerical) order
       const summaryResult = await summary;
       expect(summaryResult).toEqual(
         makeSummaryResult({
@@ -284,7 +284,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - dependencies", () => {
       });
 
       // a→b→c→a forms a cycle; all three nodes are cycle participants so all
-      // edges between them are stripped — each runs dep-free in alphabetical order
+      // edges between them are stripped — each runs dep-free in alphanumerical order
       const outputLetters: string[] = [];
       for await (const { chunk } of output.text()) {
         outputLetters.push(chunk.trim());
@@ -344,7 +344,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - dependencies", () => {
         parallel: false,
       });
 
-      // a→b→c→a cycle: all three nodes stripped of mutual edges, run dep-free alphabetically.
+      // a→b→c→a cycle: all three nodes stripped of mutual edges, run dep-free alphanumerically.
       // f depends on b (not a cycle node), e depends on f, d depends on e →
       // after a/b/c finish, f unblocks, then e, then d → A, B, C, F, E, D
       const outputLetters: string[] = [];

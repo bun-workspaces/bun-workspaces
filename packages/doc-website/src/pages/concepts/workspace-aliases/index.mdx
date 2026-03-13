@@ -15,9 +15,10 @@ import { ConceptsHeader } from "../../../lib/concepts/ConceptsHeader";
 
 <ConceptsHeader activeHref="workspaceAliases" />
 
-A workspace alias is a short name for a workspace that can be used instead of the full name in commands such as [run-script](/cli/commands#run-script).
+A workspace alias is an alternative name for a workspace that can be used in commands such as [run-script](/cli/commands#run-script).
 
-Aliases are validated to be unique to each workspace and to not clash with other workspaces' `package.json` names.
+Aliases are validated to be unique to each workspace and to not clash with other workspaces' `package.json` names, so that every
+workspace name or alias is an unambiguous reference.
 
 ### Example Configuration
 

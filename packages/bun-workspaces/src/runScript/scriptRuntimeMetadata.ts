@@ -12,28 +12,27 @@ export interface ScriptRuntimeMetadata {
 
 const SCRIPT_RUNTIME_METADATA_CONFIG = {
   projectPath: {
-    inlineName: ["<projectPath>"],
+    inlineName: "<projectPath>",
     envVarName: "BW_PROJECT_PATH",
   },
   projectName: {
-    inlineName: ["<projectName>"],
+    inlineName: "<projectName>",
     envVarName: "BW_PROJECT_NAME",
   },
   workspacePath: {
-    inlineName: ["<workspacePath>"],
+    inlineName: "<workspacePath>",
     envVarName: "BW_WORKSPACE_PATH",
   },
   workspaceRelativePath: {
-    inlineName: ["<workspaceRelativePath>"],
+    inlineName: "<workspaceRelativePath>",
     envVarName: "BW_WORKSPACE_RELATIVE_PATH",
   },
   scriptName: {
-    inlineName: ["<scriptName>"],
+    inlineName: "<scriptName>",
     envVarName: "BW_SCRIPT_NAME",
   },
   workspaceName: {
-    /** @todo  @deprecated Deprecate <workspace> in favor of <workspaceName> in major release */
-    inlineName: ["<workspaceName>", "<workspace>"],
+    inlineName: "<workspaceName>",
     envVarName: "BW_WORKSPACE_NAME",
   },
 } as const;
@@ -67,7 +66,7 @@ export const interpolateScriptRuntimeMetadata = (
     ),
     (match) => {
       const key = Object.entries(SCRIPT_RUNTIME_METADATA_CONFIG).find(
-        ([_, value]) => (value.inlineName as readonly string[]).includes(match),
+        ([_, value]) => value.inlineName === match,
       )?.[0];
       const value = metadata[key as keyof ScriptRuntimeMetadata];
       if (IS_WINDOWS && shell === "bun") {

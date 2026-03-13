@@ -1,0 +1,6 @@
+{
+  "name": "other-workspace-b",
+  "scripts": {
+    "different-script": "echo different script"
+  }
+}

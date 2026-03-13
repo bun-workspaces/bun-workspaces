@@ -17,7 +17,7 @@ export {
   type RunScriptAcrossWorkspacesOptions,
   type RunScriptAcrossWorkspacesOutput,
   type RunScriptAcrossWorkspacesSummary,
-  type RunScriptAcrossWorkspacesProcessOutput,
+  type RunScriptAcrossWorkspacesOutput as RunScriptAcrossWorkspacesProcessOutput,
   type RunScriptAcrossWorkspacesResult,
   type ParallelOption,
   type ShellOption,

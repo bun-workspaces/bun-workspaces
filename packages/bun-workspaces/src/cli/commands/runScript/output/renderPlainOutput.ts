@@ -1,4 +1,4 @@
-import type { RunScriptAcrossWorkspacesProcessOutput } from "../../../../project";
+import type { RunScriptAcrossWorkspacesOutput } from "../../../../project";
 import { sanitizeChunk } from "./sanitizeChunk";
 
 export type RenderPlainOutputOptions = {
@@ -7,7 +7,7 @@ export type RenderPlainOutputOptions = {
 };
 
 export async function* generatePlainOutputLines(
-  output: RunScriptAcrossWorkspacesProcessOutput,
+  output: RunScriptAcrossWorkspacesOutput,
   { stripDisruptiveControls = true, prefix = false }: RenderPlainOutputOptions,
 ) {
   const workspaceLineBuffers: Record<string, string> = {};
@@ -37,7 +37,7 @@ export async function* generatePlainOutputLines(
 }
 
 export const renderPlainOutput = async (
-  output: RunScriptAcrossWorkspacesProcessOutput,
+  output: RunScriptAcrossWorkspacesOutput,
   { stripDisruptiveControls = true, prefix = false }: RenderPlainOutputOptions,
 ) => {
   for await (const { line, metadata } of generatePlainOutputLines(output, {

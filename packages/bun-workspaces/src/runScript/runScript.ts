@@ -1,14 +1,9 @@
-import { type SimpleAsyncIterable } from "../internal/core";
 import {
+  createProcessOutput,
   createMultiProcessOutput,
   type MultiProcessOutput,
-} from "./output/multiProcessOutput";
-import { createProcessOutput } from "./output/processOutput";
-import {
-  createOutputChunk,
-  type OutputChunk,
   type OutputStreamName,
-} from "./outputChunk";
+} from "./output";
 import type { ScriptCommand } from "./scriptCommand";
 import { createScriptExecutor } from "./scriptExecution";
 import type { ScriptShellOption } from "./scriptShellOption";
@@ -27,11 +22,7 @@ export type RunScriptExit<ScriptMetadata extends object = object> = {
 };
 
 export type RunScriptResult<ScriptMetadata extends object = object> = {
-  /** @deprecated */
-  output: SimpleAsyncIterable<OutputChunk>;
-  processOutput: MultiProcessOutput<
-    ScriptMetadata & { streamName: OutputStreamName }
-  >;
+  output: MultiProcessOutput<ScriptMetadata & { streamName: OutputStreamName }>;
   exit: Promise<RunScriptExit<ScriptMetadata>>;
   metadata: ScriptMetadata;
   kill: (exit?: number | NodeJS.Signals) => void;
@@ -108,13 +99,6 @@ export const runScript = <ScriptMetadata extends object = object>({
     ),
   ]);
 
-  const deprecatedOutput =
-    async function* (): SimpleAsyncIterable<OutputChunk> {
-      for await (const chunk of processOutput.bytes()) {
-        yield createOutputChunk(chunk.metadata.streamName, chunk.chunk);
-      }
-    };
-
   const exit = proc.exited.then<RunScriptExit<ScriptMetadata>>((exitCode) => {
     const endTime = new Date();
     return {
@@ -132,8 +116,7 @@ export const runScript = <ScriptMetadata extends object = object>({
   });
 
   return {
-    output: deprecatedOutput(),
-    processOutput,
+    output: processOutput,
     exit,
     metadata,
     kill: (exit) => proc.kill(exit),

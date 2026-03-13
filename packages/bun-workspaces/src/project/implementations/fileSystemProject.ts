@@ -17,9 +17,7 @@ import {
   type RunScriptsParallelOptions,
   type ScriptRuntimeMetadata,
   type RunScriptsSummary,
-  type RunScriptsOutput,
   type RunScriptExit,
-  type OutputChunk,
   type OutputStreamName,
   type ScriptEventName,
 } from "../../runScript";
@@ -90,13 +88,9 @@ export type RunWorkspaceScriptExit = Simplify<
   RunScriptExit<RunWorkspaceScriptMetadata>
 >;
 
-// TODO Rename after removal of deprecated form of RunWorkspaceScriptOutput
 export type RunWorkspaceScriptProcessOutput = MultiProcessOutput<
   RunWorkspaceScriptMetadata & { streamName: OutputStreamName }
-> &
-  /** @deprecated */
-  SimpleAsyncIterable<OutputChunk>;
-
+>;
 /** Result of `FileSystemProject.runWorkspaceScript` */
 export type RunWorkspaceScriptResult = {
   output: RunWorkspaceScriptProcessOutput;
@@ -141,24 +135,17 @@ export type RunScriptAcrossWorkspacesOptions = {
   onScriptEvent?: OnScriptEventCallback;
 };
 
-export type RunScriptAcrossWorkspacesOutput = Simplify<
-  RunScriptsOutput<RunWorkspaceScriptMetadata>
->;
-
 export type RunScriptAcrossWorkspacesSummary = Simplify<
   RunScriptsSummary<RunWorkspaceScriptMetadata>
 >;
 
-// TODO Rename after removal of deprecated form of RunScriptAcrossWorkspacesOutput
-export type RunScriptAcrossWorkspacesProcessOutput = MultiProcessOutput<
+export type RunScriptAcrossWorkspacesOutput = MultiProcessOutput<
   RunWorkspaceScriptMetadata & { streamName: OutputStreamName }
-> &
-  /** @deprecated */
-  SimpleAsyncIterable<RunScriptAcrossWorkspacesOutput>;
+>;
 
 /** Result of `FileSystemProject.runScriptAcrossWorkspaces` */
 export type RunScriptAcrossWorkspacesResult = {
-  output: RunScriptAcrossWorkspacesProcessOutput;
+  output: RunScriptAcrossWorkspacesOutput;
   summary: Promise<RunScriptAcrossWorkspacesSummary>;
 };
 
@@ -360,22 +347,7 @@ class _FileSystemProject extends ProjectBase implements Project {
       ignoreOutput: options.ignoreOutput ?? false,
     });
 
-    const output = result.processOutput as RunWorkspaceScriptProcessOutput;
-    output[Symbol.asyncIterator] = async function* () {
-      logger.warn(
-        new Error(
-          "Iterating directly over runWorkspaceScript output is deprecated: Use output.bytes() or output.text() instead",
-        ),
-      );
-      for await (const chunk of result.output) {
-        yield chunk;
-      }
-    };
-
-    return {
-      exit: result.exit,
-      output,
-    };
+    return result;
   }
 
   runScriptAcrossWorkspaces(
@@ -604,23 +576,7 @@ class _FileSystemProject extends ProjectBase implements Project {
         }),
     });
 
-    const output =
-      result.processOutput as RunScriptAcrossWorkspacesProcessOutput;
-    output[Symbol.asyncIterator] = async function* () {
-      logger.warn(
-        new Error(
-          "Iterating directly over runScriptAcrossWorkspaces output is deprecated: Use output.bytes() or output.text() instead",
-        ),
-      );
-      for await (const chunk of result.output) {
-        yield chunk;
-      }
-    };
-
-    return {
-      summary: result.summary,
-      output,
-    };
+    return result;
   }
 
   static #initialized = false;

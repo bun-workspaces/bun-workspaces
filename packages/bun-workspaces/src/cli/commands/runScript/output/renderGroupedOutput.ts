@@ -10,7 +10,7 @@ import {
 } from "../../../../internal/core/language/string/utf/visibleLength";
 import { logger } from "../../../../internal/logger";
 import type {
-  RunScriptAcrossWorkspacesProcessOutput,
+  RunScriptAcrossWorkspacesOutput,
   RunWorkspaceScriptMetadata,
 } from "../../../../project";
 import type {
@@ -110,7 +110,7 @@ const BORDER_COLOR = "blue" satisfies keyof typeof textOps;
 
 export const renderGroupedOutput = async (
   workspaces: Workspace[],
-  output: RunScriptAcrossWorkspacesProcessOutput,
+  output: RunScriptAcrossWorkspacesOutput,
   summary: Promise<RunScriptsSummary<RunWorkspaceScriptMetadata>>,
   scriptEventTarget: ScriptEventTarget,
   activeScriptLines: number | "all",

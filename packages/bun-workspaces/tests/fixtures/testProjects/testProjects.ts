@@ -41,7 +41,6 @@ const TEST_PROJECTS = {
   workspaceConfigFileOnly: "workspaceConfig/fileOnly",
   workspaceConfigInvalidConfig: "workspaceConfig/invalidConfig",
   workspaceConfigInvalidJson: "workspaceConfig/invalidJson",
-  workspaceConfigDeprecatedConfigMix: "workspaceConfig/deprecatedConfigMix",
   rootConfigJsoncFile: "rootConfig/jsoncFile",
   rootConfigPackage: "rootConfig/package",
   rootConfigInvalidJson: "rootConfig/invalidJson",

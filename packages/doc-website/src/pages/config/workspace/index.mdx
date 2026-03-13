@@ -21,9 +21,9 @@ import { ConfigHeader } from "../../../lib/config/ConfigHeader";
 
 ## Workspace Configuration
 
-Configuration for a workspace is defined in a file in its directory or in its `package.json` file.
+The optional configuration for a workspace is defined in a file such as <code>{createConfigLocationPath("jsonFile", WORKSPACE_CONFIG_FILE_NAME, WORKSPACE_CONFIG_PACKAGE_JSON_KEY)}</code> in its directory or in its `package.json` file.
 
-See [workspace aliases](/concepts/workspace-aliases) and [script execution order](/concepts/script-execution-order) for more information on the fields available.
+You can set a workspace's [alias(es)](/concepts/workspace-aliases) and the [order sequence](/concepts/script-execution-order) for its scripts.
 
 ### Type Definition
 

@@ -282,8 +282,7 @@ const project = createFileSystemProject();
 // the root ${ENV_VARS_METADATA.parallelMaxDefault.rootConfigDefaultsKey} 
 // or process.env.${ENV_VARS_METADATA.parallelMaxDefault.envVarName}
 project.runScriptAcrossWorkspaces({
-  script: "my-script",
-  parallel: true,
+  script: "my-script"
 });
 
 // Same result as above
@@ -292,10 +291,22 @@ project.runScriptAcrossWorkspaces({
   parallel: { max: "default" },
 });
 
+// Run sequentially by disabling parallel
+project.runScriptAcrossWorkspaces({
+  script: "my-script",
+  parallel: false,
+});
+
 // Run in parallel with the number of available logical CPUs
 project.runScriptAcrossWorkspaces({
   script: "my-script",
   parallel: { max: "auto" },
+});
+
+// Run in parallel with a max of 2 concurrent scripts
+project.runScriptAcrossWorkspaces({
+  script: "my-script",
+  parallel: { max: 2 },
 });
 
 // Run in parallel with a max of 50% of the available logical CPUs
@@ -308,12 +319,6 @@ project.runScriptAcrossWorkspaces({
 project.runScriptAcrossWorkspaces({
   script: "my-script",
   parallel: { max: "unbounded" },
-});
-
-// Run in parallel with a max of 2 concurrent scripts
-project.runScriptAcrossWorkspaces({
-  script: "my-script",
-  parallel: { max: 2 },
 });
 `.trim();
 
@@ -344,6 +349,10 @@ import { createFileSystemProject } from "bun-workspaces";
 
 const project = createFileSystemProject();
 
+// A way to directly get the root workspace object (always available)
+const rootWorkspace = project.rootWorkspace;
+
+// Match the root workspace by the special selector (always available)
 project.runScriptAcrossWorkspaces({
   workspacePatterns: ["@root"],
   script: "lint",

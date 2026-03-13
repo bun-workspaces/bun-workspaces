@@ -2,7 +2,7 @@ import { test, expect, describe } from "bun:test";
 import { setupCliTest, assertOutputMatches } from "../../../util/cliTestUtils";
 
 describe("CLI Run Script (dependency order)", () => {
-  test("withDependenciesSimple - runs in alphabetical order without --dep-order", async () => {
+  test("withDependenciesSimple - runs in alphanumerical order without --dep-order", async () => {
     const { run } = setupCliTest({ testProject: "withDependenciesSimple" });
     const result = await run("run", "test-script", "--parallel=false");
     expect(result.exitCode).toBe(0);

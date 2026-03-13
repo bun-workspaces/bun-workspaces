@@ -17,21 +17,38 @@ import { ConceptsHeader } from "../../../lib/concepts/ConceptsHeader";
 
 [Workspaces](/concepts/glossary#workspace) can depend on other workspaces and import/export code between them. This is a native capability of workspaces in Bun.
 
-For example, this might be some workspace's `package.json` file, where `my-workspace-a` depends on `my-workspace-b`:
+For example, this might be some workspace's `package.json` file, where `my-workspace-b` depends on `my-workspace-a`:
 
+`my-workspace-a/package.json`:
 <SyntaxHighlighter language="json">
   {JSON.stringify({
     "name": "my-workspace-a",
+    "main": "index.ts"
+  }, null, 2)}
+</SyntaxHighlighter>
+
+`my-workspace-b/package.json`:
+<SyntaxHighlighter language="json">
+    {JSON.stringify({
+    "name": "my-workspace-b",
     "dependencies": {
-      "my-workspace-b": "workspace:*"
+      "my-workspace-a": "workspace:*"
     }
   }, null, 2)}
 </SyntaxHighlighter>
 
-Code in `my-workspace-a` can then import code from `my-workspace-b` like any other dependency:
+Code in `my-workspace-a` can then import code from `my-workspace-b` like any other dependency.
 
+`my-workspace-a/index.ts`:
 <SyntaxHighlighter language="typescript">
-  {`import { myFunction } from "my-workspace-b";
+  {`export const myFunction = () => {
+  \ \ console.log("Hello from my-workspace-a");
+}`}
+</SyntaxHighlighter>
+
+`my-workspace-b/index.ts`:
+<SyntaxHighlighter language="typescript">
+  {`import { myFunction } from "my-workspace-a";
 
 myFunction();`}
 </SyntaxHighlighter>

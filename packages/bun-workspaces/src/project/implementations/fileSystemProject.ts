@@ -576,7 +576,7 @@ class _FileSystemProject extends ProjectBase implements Project {
       }),
       ignoreDependencyFailure: options.ignoreDependencyFailure,
       parallel:
-        options.parallel === true
+        options.parallel === true || options.parallel === undefined
           ? { max: this.config.root.defaults.parallelMax }
           : (options.parallel ?? true),
       ignoreOutput: options.ignoreOutput ?? false,

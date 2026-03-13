@@ -1,6 +1,10 @@
 {
   "name": "application-1a",
+  "bw": {
+    "alias": "appA"
+  },
   "scripts": {
-    "test-echo": "echo passed args:"
+    "test-echo": "echo passed args:",
+    "test-echo-args": "bw --cwd=../../ run test-echo appA"
   }
 }

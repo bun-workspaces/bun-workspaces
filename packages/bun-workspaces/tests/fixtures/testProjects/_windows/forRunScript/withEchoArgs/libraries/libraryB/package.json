@@ -1,6 +1,8 @@
 {
   "name": "library-1b",
-  
+  "bw": {
+    "alias": "libB"
+  },
   "scripts": {
     "test-echo": "echo passed args:"
   }

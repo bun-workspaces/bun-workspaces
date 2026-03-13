@@ -169,6 +169,21 @@ describe("FileSystemProject runScriptAcrossWorkspaces - parallel", () => {
     );
   });
 
+  test("parallel with root default", async () => {
+    const project = createFileSystemProject({
+      rootDirectory: getProjectRoot("runScriptWithDebugParallelMaxRootDefault"),
+    });
+
+    const { output } = project.runScriptAcrossWorkspaces({
+      workspacePatterns: ["*"],
+      script: "test-debug",
+    });
+
+    for await (const { chunk } of output.text()) {
+      expect(chunk.trim()).toBe("3");
+    }
+  });
+
   test.each([1, 2, 3, "default", "auto", "unbounded", "100%", "50%"])(
     "parallel with max (%p)",
     async (max) => {

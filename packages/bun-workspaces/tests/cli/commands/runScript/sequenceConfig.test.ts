@@ -7,7 +7,7 @@ describe("CLI Run Script (sequence config)", () => {
       const { run } = setupCliTest({
         testProject: "runScriptWithDelaysAndSequenceConfig",
       });
-      const result = await run("run-script", "test-delay");
+      const result = await run("run-script", "test-delay", "--parallel=false");
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
@@ -29,7 +29,7 @@ describe("CLI Run Script (sequence config)", () => {
       const { run } = setupCliTest({
         testProject: "runScriptWithDelaysAndSequenceConfig",
       });
-      const result = await run("run-script", "test-delay", "--parallel");
+      const result = await run("run-script", "test-delay", "--parallel=false");
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
@@ -53,7 +53,7 @@ describe("CLI Run Script (sequence config)", () => {
       const { run } = setupCliTest({
         testProject: "runScriptWithSequenceConfig",
       });
-      const result = await run("run-script", "test-echo");
+      const result = await run("run-script", "test-echo", "--parallel=false");
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
@@ -75,7 +75,7 @@ describe("CLI Run Script (sequence config)", () => {
       const { run } = setupCliTest({
         testProject: "runScriptWithSequenceConfig",
       });
-      const result = await run("run-script", "test-echo", "--parallel");
+      const result = await run("run-script", "test-echo", "--parallel=false");
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,
@@ -95,7 +95,7 @@ describe("CLI Run Script (sequence config)", () => {
       const { run } = setupCliTest({
         testProject: "runScriptWithSequenceConfigPartial",
       });
-      const result = await run("run-script", "test-echo");
+      const result = await run("run-script", "test-echo", "--parallel=false");
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdoutAndErr.sanitizedCompactLines,

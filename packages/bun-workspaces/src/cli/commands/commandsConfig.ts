@@ -151,7 +151,7 @@ export const CLI_COMMANDS_CONFIG = {
       parallel: {
         flags: ["-P", "--parallel [max]"],
         description:
-          "Run the scripts in parallel. Pass an optional number, percentage, or keyword: default | auto | unbounded",
+          'Run the scripts in parallel. Pass "false" for series, or a concurrency limit as a number, percentage ("50%"), "auto", "default", or"unbounded"',
       },
       args: {
         flags: ["-a", "--args <args>"],

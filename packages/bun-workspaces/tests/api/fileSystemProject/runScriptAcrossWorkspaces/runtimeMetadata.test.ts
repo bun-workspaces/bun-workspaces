@@ -12,6 +12,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - runtime metadata", () =>
     const plainResult = project.runScriptAcrossWorkspaces({
       workspacePatterns: ["application-*"],
       script: "test-echo",
+      parallel: false,
     });
 
     let i = 0;
@@ -28,6 +29,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - runtime metadata", () =>
       workspacePatterns: ["application-*"],
       script: "test-echo",
       args: "--arg1=<projectPath> --arg2=<projectName> --arg3=<workspaceName> --arg4=<workspacePath> --arg5=<workspaceRelativePath> --arg6=<scriptName>",
+      parallel: false,
     });
 
     let j = 0;
@@ -51,6 +53,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - runtime metadata", () =>
       script:
         "echo <projectPath> <workspaceName> <workspacePath> <workspaceRelativePath> <scriptName>",
       inline: true,
+      parallel: false,
     });
 
     let k = 0;
@@ -71,6 +74,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - runtime metadata", () =>
       script:
         "echo <projectPath> <workspaceName> <workspacePath> <workspaceRelativePath> <scriptName>",
       inline: { scriptName: "my-named-script" },
+      parallel: false,
     });
 
     let l = 0;

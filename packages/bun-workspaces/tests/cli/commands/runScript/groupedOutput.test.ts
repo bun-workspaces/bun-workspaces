@@ -96,7 +96,7 @@ describe("grouped output", () => {
     "series success",
     async () => {
       await runSnapshotTest({
-        runScriptArgv: ["test-script", "*-succeeds"],
+        runScriptArgv: ["test-script", "*-succeeds", "--parallel=false"],
         testProject: "runScriptForGroupedOutput",
         expectedSnapshots: [
           `
@@ -402,7 +402,11 @@ test-script c
       "100-wide output - 100 columns",
       async () => {
         await runSnapshotTest({
-          runScriptArgv: ["test-script", "has-100-wide-output"],
+          runScriptArgv: [
+            "test-script",
+            "has-100-wide-output",
+            "--parallel=false",
+          ],
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
@@ -462,7 +466,11 @@ d
       "100-wide output - 50 columns",
       async () => {
         await runSnapshotTest({
-          runScriptArgv: ["test-script", "has-100-wide-output"],
+          runScriptArgv: [
+            "test-script",
+            "has-100-wide-output",
+            "--parallel=false",
+          ],
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
@@ -493,7 +501,11 @@ that is exactly one hundred characters long indeed
       "100-wide output with emoji - 50 columns",
       async () => {
         await runSnapshotTest({
-          runScriptArgv: ["test-script", "has-100-wide-emoji-output"],
+          runScriptArgv: [
+            "test-script",
+            "has-100-wide-emoji-output",
+            "--parallel=false",
+          ],
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
@@ -529,6 +541,7 @@ xactly one hundred characters long indeed
           runScriptArgv: [
             "test-script",
             "has-40-wide-workspace-name-which-is-long",
+            "--parallel=false",
           ],
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
@@ -552,6 +565,7 @@ xactly one hundred characters long indeed
           runScriptArgv: [
             "test-script",
             "has-40-wide-workspace-name-which-is-long",
+            "--parallel=false",
           ],
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
@@ -584,6 +598,7 @@ t
           runScriptArgv: [
             "test-script",
             "has-40-wide-workspace-name-which-is-long",
+            "--parallel=false",
           ],
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
@@ -607,6 +622,7 @@ t
           runScriptArgv: [
             "test-script",
             "has-40-wide-workspace-name-which-is-long",
+            "--parallel=false",
           ],
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
@@ -630,6 +646,7 @@ t
           runScriptArgv: [
             "test-script",
             "has-40-wide-workspace-name-which-is-long",
+            "--parallel=false",
           ],
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
@@ -655,7 +672,11 @@ t
       `50-line output: Default max (${DEFAULT_GROUPED_LINES})`,
       async () => {
         await runSnapshotTest({
-          runScriptArgv: ["test-script", "has-50-line-output"],
+          runScriptArgv: [
+            "test-script",
+            "has-50-line-output",
+            "--parallel=false",
+          ],
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
@@ -810,6 +831,7 @@ eed
             "test-script",
             "has-50-line-output",
             "--grouped-lines=5",
+            "--parallel=false",
           ],
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
@@ -950,6 +972,7 @@ eed
             "test-script",
             "has-50-line-output",
             "--grouped-lines=all",
+            "--parallel=false",
           ],
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
@@ -1134,6 +1157,7 @@ eed
             "test-script",
             "has-50-line-output",
             `--grouped-lines=${value}`,
+            "--parallel=false",
           ],
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
@@ -1151,7 +1175,7 @@ eed
     "Combo of output boundaries",
     async () => {
       await runSnapshotTest({
-        runScriptArgv: ["test-script", "has-*"],
+        runScriptArgv: ["test-script", "has-*", "--parallel=false"],
         testProject: "runScriptForGroupedOutput",
         expectedSnapshots: [
           `

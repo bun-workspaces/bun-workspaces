@@ -22,6 +22,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
     const { output, summary } = project.runScriptAcrossWorkspaces({
       workspacePatterns: ["library-b"],
       script: "b-workspaces",
+      parallel: false,
     });
 
     for await (const { metadata, chunk } of output.text()) {
@@ -65,6 +66,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
       workspacePatterns: ["library-b"],
       script: "b-workspaces",
       ignoreOutput: true,
+      parallel: false,
     });
     let chunkCount = 0;
     for await (const _chunk of output.text()) {
@@ -100,6 +102,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
 
     const { output, summary } = project.runScriptAcrossWorkspaces({
       script: "all-workspaces",
+      parallel: false,
     });
 
     const outputChunk = {
@@ -185,6 +188,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
     const { output, summary } = project.runScriptAcrossWorkspaces({
       workspacePatterns: ["application-1b", "library*"],
       script: "b-workspaces",
+      parallel: false,
     });
 
     const expectedOutput = [
@@ -273,6 +277,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
       project.runScriptAcrossWorkspaces({
         workspacePatterns: [],
         script: "all-workspaces",
+        parallel: false,
       }),
     ).toThrow('No matching workspaces found with script "all-workspaces"');
   });
@@ -285,6 +290,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
     const { output, summary } = project.runScriptAcrossWorkspaces({
       workspacePatterns: ["*"],
       script: "all-workspaces",
+      parallel: false,
     });
 
     const expectedOutput = [
@@ -438,6 +444,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
         onScriptEvent: async (event, { workspace, exitResult }) => {
           events.push({ event, workspaceName: workspace.name, exitResult });
         },
+        parallel: false,
       });
 
       await summary;
@@ -489,6 +496,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
       workspacePatterns: ["application-*"],
       script: "test-echo",
       args: "--arg1=value1 --arg2=value2",
+      parallel: false,
     });
 
     const expectedOutput = [

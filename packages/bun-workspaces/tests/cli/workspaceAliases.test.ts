@@ -103,6 +103,7 @@ describe("CLI Workspace Aliases", () => {
           "all-workspaces",
           "alias:libA_file",
           "application-*",
+          "--parallel=false",
         );
         expect(result.exitCode).toBe(0);
         assertOutputMatches(

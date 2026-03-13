@@ -5,7 +5,12 @@ describe("CLI Run Script (output format)", () => {
   test("--output-style=plain omits prefix from script output", async () => {
     const result = await setupCliTest({
       testProject: "simple1",
-    }).run("run-script", "all-workspaces", "--output-style=plain");
+    }).run(
+      "run-script",
+      "all-workspaces",
+      "--output-style=plain",
+      "--parallel=false",
+    );
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,
@@ -24,7 +29,7 @@ script for all workspaces
   test("--output-style=plain omits prefix from script output (short arg)", async () => {
     const result = await setupCliTest({
       testProject: "simple1",
-    }).run("run-script", "all-workspaces", "-o", "plain");
+    }).run("run-script", "all-workspaces", "-o", "plain", "--parallel=false");
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,
@@ -43,7 +48,12 @@ script for all workspaces
   test("--output-style=prefixed", async () => {
     const result = await setupCliTest({
       testProject: "simple1",
-    }).run("run-script", "all-workspaces", "--output-style=prefixed");
+    }).run(
+      "run-script",
+      "all-workspaces",
+      "--output-style=prefixed",
+      "--parallel=false",
+    );
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,
@@ -62,7 +72,12 @@ script for all workspaces
   test("--output-style=plain with failures shows failure output", async () => {
     const result = await setupCliTest({
       testProject: "runScriptWithFailures",
-    }).run("run-script", "test-exit", "--output-style=plain");
+    }).run(
+      "run-script",
+      "test-exit",
+      "--output-style=plain",
+      "--parallel=false",
+    );
     expect(result.exitCode).toBe(1);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,
@@ -81,7 +96,7 @@ success2
   test("--no-prefix deprecation warning", async () => {
     const result = await setupCliTest({
       testProject: "simple1",
-    }).run("run-script", "all-workspaces", "--no-prefix");
+    }).run("run-script", "all-workspaces", "--no-prefix", "--parallel=false");
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stderr.sanitizedCompactLines,

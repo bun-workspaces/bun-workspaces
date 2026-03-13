@@ -4,7 +4,7 @@ import { setupCliTest, assertOutputMatches } from "../../../util/cliTestUtils";
 describe("CLI Run Script (dependency order)", () => {
   test("withDependenciesSimple - runs in alphabetical order without --dep-order", async () => {
     const { run } = setupCliTest({ testProject: "withDependenciesSimple" });
-    const result = await run("run", "test-script");
+    const result = await run("run", "test-script", "--parallel=false");
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdout.sanitizedCompactLines,
@@ -24,7 +24,12 @@ describe("CLI Run Script (dependency order)", () => {
 
   test("withDependenciesSimple - runs in dependency graph order with --dep-order", async () => {
     const { run } = setupCliTest({ testProject: "withDependenciesSimple" });
-    const result = await run("run", "test-script", "--dep-order");
+    const result = await run(
+      "run",
+      "test-script",
+      "--dep-order",
+      "--parallel=false",
+    );
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stdout.sanitizedCompactLines,
@@ -46,7 +51,12 @@ describe("CLI Run Script (dependency order)", () => {
     const { run } = setupCliTest({
       testProject: "withDependenciesDirectCycle",
     });
-    const result = await run("run", "test-script", "--dep-order");
+    const result = await run(
+      "run",
+      "test-script",
+      "--dep-order",
+      "--parallel=false",
+    );
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
       result.stderr.sanitizedCompactLines,
@@ -68,7 +78,12 @@ describe("CLI Run Script (dependency order)", () => {
     const { run } = setupCliTest({
       testProject: "withDependenciesWithFailures",
     });
-    const result = await run("run", "test-script", "--dep-order");
+    const result = await run(
+      "run",
+      "test-script",
+      "--dep-order",
+      "--parallel=false",
+    );
     expect(result.exitCode).toBe(1);
     assertOutputMatches(
       result.stdout.sanitizedCompactLines,
@@ -95,6 +110,7 @@ describe("CLI Run Script (dependency order)", () => {
       "test-script",
       "--dep-order",
       "--ignore-dep-failure",
+      "--parallel=false",
     );
     expect(result.exitCode).toBe(1);
     assertOutputMatches(

@@ -9,7 +9,7 @@ describe("CLI Run Script (parallel)", () => {
       const { run } = setupCliTest({
         testProject: "runScriptWithDelays",
       });
-      const result = await run("run-script", "test-delay");
+      const result = await run("run-script", "test-delay", "-P", "false");
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
@@ -31,7 +31,7 @@ describe("CLI Run Script (parallel)", () => {
       const { run } = setupCliTest({
         testProject: "runScriptWithDelays",
       });
-      const result = await run("run-script", "test-delay", "--parallel");
+      const result = await run("run-script", "test-delay");
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
@@ -53,7 +53,7 @@ describe("CLI Run Script (parallel)", () => {
       const { run } = setupCliTest({
         testProject: "runScriptWithDelays",
       });
-      const result = await run("run-script", "test-delay", "-P");
+      const result = await run("run-script", "test-delay");
       expect(result.exitCode).toBe(0);
       assertOutputMatches(
         result.stdout.sanitizedCompactLines,
@@ -82,7 +82,7 @@ describe("CLI Run Script (parallel)", () => {
         const { stdout } = await run(
           "run-script",
           "test-debug",
-          "--parallel",
+          "-P",
           max.toString(),
         );
 

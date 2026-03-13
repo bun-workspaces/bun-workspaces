@@ -29,6 +29,7 @@ describe("CLI Run Script", () => {
       "run-script",
       "all-workspaces",
       `--json-outfile=${TEST_OUTPUT_DIR}`,
+      "--parallel=false",
     );
     expect(result.exitCode).toBe(1);
     assertOutputMatches(
@@ -42,6 +43,7 @@ describe("CLI Run Script", () => {
       "all-workspaces",
       "--json-outfile",
       TEST_OUTPUT_DIR + "/test-file.txt/test-file.json",
+      "--parallel=false",
     );
     expect(result2.exitCode).toBe(1);
     assertOutputMatches(
@@ -54,6 +56,7 @@ describe("CLI Run Script", () => {
       "all-workspaces",
       "--json-outfile",
       TEST_OUTPUT_DIR + "/test-file.txt/something/else.json",
+      "--parallel=false",
     );
     expect(result3.exitCode).toBe(1);
     assertOutputMatches(
@@ -268,7 +271,6 @@ describe("CLI Run Script", () => {
       "test-simple3.json",
       "b-workspaces",
       "library*",
-      "--parallel",
     );
     expect(jsonOutput3).toEqual({
       totalCount: 1,
@@ -319,7 +321,6 @@ describe("CLI Run Script", () => {
       "runScriptWithFailures",
       "test-mixed-results.json",
       "test-exit",
-      "--parallel",
     );
 
     expect(json).toEqual({

@@ -157,6 +157,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - failures", () => {
     const { output, summary } = project.runScriptAcrossWorkspaces({
       workspacePatterns: ["*"],
       script: "test-exit",
+      parallel: false,
     });
 
     const expectedOutput = [
@@ -240,6 +241,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - failures", () => {
     const { output, summary } = project.runScriptAcrossWorkspaces({
       workspacePatterns: ["*"],
       script: "test-exit",
+      parallel: false,
     });
 
     const expectedOutput = [

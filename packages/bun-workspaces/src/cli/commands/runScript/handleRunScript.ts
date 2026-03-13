@@ -127,7 +127,7 @@ export const runScript = handleProjectCommand(
       parallel:
         typeof options.parallel === "boolean" ||
         typeof options.parallel === "undefined"
-          ? options.parallel
+          ? undefined
           : options.parallel === "true"
             ? true
             : options.parallel === "false"

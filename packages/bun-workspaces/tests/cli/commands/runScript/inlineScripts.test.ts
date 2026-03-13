@@ -10,6 +10,7 @@ describe("CLI Run Script (inline scripts)", () => {
       "run-script",
       "echo this is my inline script for <workspaceName>",
       "--inline",
+      "--parallel=false",
     );
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
@@ -34,6 +35,7 @@ describe("CLI Run Script (inline scripts)", () => {
       "run-script",
       "echo this is my inline script for <workspaceName>",
       "-i",
+      "--parallel=false",
     );
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
@@ -59,6 +61,7 @@ describe("CLI Run Script (inline scripts)", () => {
       "echo this is my inline script for <workspaceName>",
       "--inline",
       "--args=test-args-<workspaceName>",
+      "--parallel=false",
     );
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
@@ -85,6 +88,7 @@ describe("CLI Run Script (inline scripts)", () => {
       "--inline",
       "--args=test-args-<workspaceName>",
       "--output-style=plain",
+      "--parallel=false",
     );
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
@@ -112,6 +116,7 @@ describe("CLI Run Script (named inline scripts)", () => {
       "echo this is my inline script for <workspaceName>",
       "--inline",
       "--inline-name=test-echo-inline",
+      "--parallel=false",
     );
     expect(result.exitCode).toBe(0);
     assertOutputMatches(
@@ -137,6 +142,7 @@ describe("CLI Run Script (named inline scripts)", () => {
       "echo this is my inline script for <workspaceName>",
       "-i",
       "-I test-echo-inline",
+      "--parallel=false",
     );
     expect(result.exitCode).toBe(0);
     assertOutputMatches(

@@ -123,7 +123,7 @@ export type RunScriptAcrossWorkspacesOptions = {
   inline?: boolean | InlineScriptOptions;
   /** The arguments to append to the script command. `<workspaceName>` will be replaced with the workspace name */
   args?: string;
-  /** Whether to run the scripts in parallel (series by default) */
+  /** Whether to run the scripts in parallel (default: `true`). Pass `false` to run in series. */
   parallel?: ParallelOption;
   /** When `true`, run scripts so that dependent workspaces run only after their dependencies */
   dependencyOrder?: boolean;
@@ -567,7 +567,7 @@ class _FileSystemProject extends ProjectBase implements Project {
       parallel:
         options.parallel === true
           ? { max: this.config.root.defaults.parallelMax }
-          : (options.parallel ?? false),
+          : (options.parallel ?? true),
       ignoreOutput: options.ignoreOutput ?? false,
       onScriptEvent: (event, index, exitResult) =>
         options.onScriptEvent?.(event, {

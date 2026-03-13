@@ -7,7 +7,7 @@ describe("CLI Run Script (stdout vs. stderr)", () => {
       testProject: "runScriptWithFailures",
     });
 
-    const result = await run("run-script", "test-exit");
+    const result = await run("run-script", "test-exit", "--parallel=false");
     expect(result.exitCode).toBe(1);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,
@@ -43,7 +43,7 @@ describe("CLI Run Script (stdout vs. stderr)", () => {
       testProject: "runScriptWithMixedOutput",
     });
 
-    const result = await run("run-script", "test-exit");
+    const result = await run("run-script", "test-exit", "--parallel=false");
     expect(result.exitCode).toBe(1);
     assertOutputMatches(
       result.stdoutAndErr.sanitizedCompactLines,

@@ -63,7 +63,12 @@ describe("CLI Workspace Aliases", () => {
         const { run } = setupCliTest({
           testProject: "workspaceConfigPackageFileMix",
         });
-        const result = await run("run-script", "all-workspaces", "alias:*A");
+        const result = await run(
+          "run-script",
+          "all-workspaces",
+          "alias:*A",
+          "--parallel=false",
+        );
         expect(result.exitCode).toBe(0);
         assertOutputMatches(
           result.stdout.sanitizedCompactLines,
@@ -82,6 +87,7 @@ describe("CLI Workspace Aliases", () => {
           "b-workspaces",
           "appB_file",
           "library-1b",
+          "--parallel=false",
         );
         expect(result.exitCode).toBe(0);
         assertOutputMatches(

@@ -305,6 +305,31 @@ test-script d
     },
   );
 
+  test("confirm other workspaces can be matched for next test", async () => {
+    await runSnapshotTest({
+      runScriptArgv: ["different-script", "other-workspace-*"],
+      testProject: "runScriptForGroupedOutput",
+      expectedSnapshots: [
+        `
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Workspace: other-workspace-a                                                                     │
+│    Status: success                                                                               │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+different script
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Workspace: other-workspace-b                                                                     │
+│    Status: success                                                                               │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+different script
+✅ other-workspace-a: different-script
+✅ other-workspace-b: different-script
+2 scripts ran successfully`,
+      ],
+      rows: 50,
+      cols: 100,
+    });
+  });
+
   test(
     "workspaces without script matched",
     async () => {

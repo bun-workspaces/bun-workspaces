@@ -42,8 +42,10 @@ bw run lint --args="--my-arg=<workspaceName>" # Use the workspace name in args
 
 bw run "bun build" --inline # Run an inline command via the Bun shell
 
-bw run lint --parallel # Run in parallel (default: "auto", the available CPU count)
+# Scripts run in parallel by default
+bw run lint --parallel=false # Run in series
 bw run lint --parallel=2 # Run in parallel with a max of 2 concurrent scripts
+bw run lint --parallel=auto # Default, based on number of available logical CPUs
 
 # Use the grouped output style (default when on a TTY)
 bw run my-script --output-style=grouped
@@ -80,10 +82,18 @@ bw run "bun run build" --inline
 `.trim();
 
 export const CLI_PARALLEL_SCRIPTS_EXAMPLE = `
-# Run in parallel (default is "auto" or value of 
-# the root ${ENV_VARS_METADATA.parallelMaxDefault.rootConfigDefaultsKey} 
-# or process.env.${ENV_VARS_METADATA.parallelMaxDefault.envVarName})
-bw run my-script --parallel
+# Scripts run in parallel by default
+bw run my-script
+
+# Explicitly run in parallel, limiting the max 
+# concurrent scripts to the available logical CPUs.
+#
+# This is the default unless the root ${ENV_VARS_METADATA.parallelMaxDefault.rootConfigDefaultsKey}
+# or process.env.${ENV_VARS_METADATA.parallelMaxDefault.envVarName} is set to a different value.
+bw run my-script --parallel=auto
+
+# Run in series
+bw run my-script --parallel=false
 
 # Same as the above command
 bw run my-script --parallel=default

@@ -8,14 +8,14 @@ import type { CliCommandContent, CliCommandInfo } from "./cliOption";
 const defineCommandContent = (
   commandName: CliCommandName,
   factory: (
-    optionConfig: CliCommandConfig,
-  ) => Omit<CliCommandInfo, "commandName">,
+    optionConfig: CliCommandConfig
+  ) => Omit<CliCommandInfo, "commandName">
 ): CliCommandContent => {
   const config = getCliCommandConfig(commandName);
   const content = factory(config);
 
   const exampleLines = content.examples.filter(
-    (example) => example.trim() && !example.match(/^\s*#/),
+    (example) => example.trim() && !example.match(/^\s*#/)
   );
 
   const getMainFlag = (flags: string[]) => {
@@ -29,7 +29,7 @@ const defineCommandContent = (
       !exampleLines.find((line) => line.includes(getMainFlag(option.flags)))
     ) {
       throw new Error(
-        `Expected an example to include ${getMainFlag(option.flags)}`,
+        `Expected an example to include ${getMainFlag(option.flags)}`
       );
     }
   }
@@ -38,7 +38,7 @@ const defineCommandContent = (
     !exampleLines.find((line) => {
       // line that uses no flags
       return Object.values(config.options).every(
-        (option) => !line.includes(getMainFlag(option.flags)),
+        (option) => !line.includes(getMainFlag(option.flags))
       );
     })
   ) {
@@ -160,8 +160,10 @@ const CLI_PROJECT_COMMANDS_CONTENT = {
       "# Continue running scripts even if a dependency fails",
       `bw run my-script --dep-order --ignore-dep-failure`,
       "",
-      "# Run a scripts in parallel (logs are prefixed with the workspace name by default)",
-      `bw run my-script --parallel`,
+      "# Scripts run in parallel by default",
+      `bw run my-script --parallel=false # Run in series`,
+      "",
+      `bw run my-script --parallel=auto # Default, number of available logical CPUs`,
       "",
       "# Run a scripts in parallel with a max of 2 concurrent scripts",
       `bw run my-script --parallel=2`,

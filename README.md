@@ -79,8 +79,10 @@ bw run lint --args="--my-arg=<workspaceName>" # Use the workspace name in args
 
 bw run "bun build" --inline # Run an inline command via the Bun shell
 
-bw run lint --parallel # Run in parallel (default: "auto", the available CPU count)
+# Scripts run in parallel by default
+bw run lint --parallel=false # Run in series
 bw run lint --parallel=2 # Run in parallel with a max of 2 concurrent scripts
+bw run lint --parallel=auto # Default, based on number of available logical CPUs
 
 # Use the grouped output style (default when on a TTY)
 bw run my-script --output-style=grouped
@@ -172,7 +174,7 @@ const runManyScripts = async () => {
     // Optional. Arguments to add to the command
     args: "--my --appended --args",
 
-    // Optional. Whether to run the scripts in parallel
+    // Optional. Whether to run the scripts in parallel (default: true)
     parallel: true,
 
     // Optional. When true, a workspace's script will wait

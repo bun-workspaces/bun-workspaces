@@ -15,6 +15,9 @@ import { ConceptsHeader } from "../../../lib/concepts/ConceptsHeader";
 
 Using the [workspace configuration](/config/workspace), you can set an `"order"` value to sort the execution order of a script per workspace. 
 
+You may want to run scripts in series (`--parallel=false` in the CLI or option `parallel: false` in the API) instead of the default parallel so that
+each script completes before the next one starts.
+
 #### Default Order
 
 By default, workspaces are sorted in alphabetical order of their relative path from the project root. 

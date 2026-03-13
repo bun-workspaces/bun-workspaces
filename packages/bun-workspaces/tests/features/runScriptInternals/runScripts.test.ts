@@ -98,35 +98,6 @@ describe("Run Scripts", () => {
     );
   });
 
-  test("Run Scripts - stdout and stderr - deprecated output", async () => {
-    const result = await runScripts({
-      scripts: [
-        {
-          metadata: { name: "test-script name 1" },
-          scriptCommand: {
-            command: IS_WINDOWS
-              ? `echo test-script 1 && echo test-script 2 1>&2`
-              : "echo 'test-script 1' && echo 'test-script 2' >&2",
-            workingDirectory: "",
-          },
-          env: {},
-        },
-      ],
-      parallel: false,
-    });
-
-    let outputCount = 0;
-    for await (const { outputChunk, scriptMetadata } of result.output) {
-      expect(scriptMetadata.name).toBe("test-script name 1");
-      expect(outputChunk.streamName).toBe(
-        outputCount === 1 ? "stderr" : "stdout",
-      );
-      expect(outputChunk.decode()).toMatch(`test-script ${outputCount + 1}`);
-      outputCount++;
-    }
-    expect(outputCount).toBe(2);
-  });
-
   test("Run Scripts - stdout and stderr - process output (bytes)", async () => {
     const result = await runScripts({
       scripts: [

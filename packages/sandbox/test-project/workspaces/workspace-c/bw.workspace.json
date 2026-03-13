@@ -1,0 +1,8 @@
+{
+  "alias": "wc",
+  "scripts": {
+    "workspace-script": {
+      "order": -1
+    }
+  }
+}

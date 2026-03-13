@@ -1,6 +1,7 @@
 {
   "name": "workspace-b",
   "bw": {
+    "alias": "wb",
     "scripts": {
       "workspace-script": {
         "order": -1
@@ -9,5 +10,8 @@
   },
   "scripts": {
     "workspace-script": "bun run script.ts"
+  },
+  "dependencies": {
+    "workspace-c": "workspace:*"
   }
 }

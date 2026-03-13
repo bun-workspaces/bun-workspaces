@@ -3,6 +3,12 @@ import type { SimpleAsyncIterable } from "../types";
 export type AsyncQueueItem<T> = { type: "value"; value: T } | { type: "done" };
 
 export const createAsyncIterableQueue = <T>() => {
+  let resolveClose: () => void = () => {
+    void 0;
+  };
+  const closePromise = new Promise<void>((resolve) => {
+    resolveClose = resolve;
+  });
   let pendingResolveIdle: ((value: IteratorResult<T>) => void) | null = null;
   const items: AsyncQueueItem<T>[] = [];
   let isDone = false;
@@ -28,6 +34,7 @@ export const createAsyncIterableQueue = <T>() => {
     } else {
       items.push({ type: "done" });
     }
+    resolveClose();
   };
 
   const asyncIterator: AsyncIterator<T> = {
@@ -60,10 +67,12 @@ export const createAsyncIterableQueue = <T>() => {
   const iterator: SimpleAsyncIterable<T> & {
     push: (value: T) => void;
     close: () => void;
+    closed: Promise<void>;
   } = {
     [Symbol.asyncIterator]: () => asyncIterator,
     push,
     close,
+    closed: closePromise,
   };
 
   return iterator;

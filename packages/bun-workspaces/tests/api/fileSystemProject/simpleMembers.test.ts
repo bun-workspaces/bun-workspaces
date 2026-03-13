@@ -87,8 +87,8 @@ describe("Test FileSystemProject", () => {
     });
 
     let output = "";
-    for await (const chunk of singleResult.output) {
-      output += chunk.decode();
+    for await (const { chunk } of singleResult.output.text()) {
+      output += chunk;
     }
 
     expect(output).toBe(`${project.rootDirectory}
@@ -106,8 +106,8 @@ test-script-metadata-env
     });
 
     output = "";
-    for await (const { outputChunk: chunk } of multiResult.output) {
-      output += chunk.decode();
+    for await (const { chunk } of multiResult.output.text()) {
+      output += chunk;
     }
     expect(output).toBe(`${project.rootDirectory}
 test-root

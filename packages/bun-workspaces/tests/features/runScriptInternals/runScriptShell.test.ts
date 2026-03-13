@@ -33,8 +33,8 @@ describe("Test run script shell option", () => {
         shell: "bun",
       });
 
-      for await (const chunk of bunResult.output) {
-        expect(chunk.decode().trim()).toBe("my test value bun");
+      for await (const { chunk } of bunResult.output.text()) {
+        expect(chunk.trim()).toBe("my test value bun");
       }
 
       expect((await bunResult.exit).exitCode).toBe(0);
@@ -53,8 +53,8 @@ describe("Test run script shell option", () => {
         shell: "system",
       });
 
-      for await (const chunk of osResult.output) {
-        expect(chunk.decode().trim()).toBe("my test value system");
+      for await (const { chunk } of osResult.output.text()) {
+        expect(chunk.trim()).toBe("my test value system");
       }
 
       expect((await osResult.exit).exitCode).toBe(0);

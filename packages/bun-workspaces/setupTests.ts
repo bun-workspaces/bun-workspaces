@@ -49,9 +49,9 @@ for (const file of new Glob("**/*/package.json").scanSync({
           },
         });
         let stderr = "";
-        for await (const outputChunk of output) {
-          if (outputChunk.streamName === "stderr") {
-            stderr += outputChunk.decode();
+        for await (const { metadata, chunk } of output.text()) {
+          if (metadata.streamName === "stderr") {
+            stderr += chunk;
           }
         }
         if (!(await exit).success) {

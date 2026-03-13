@@ -248,6 +248,11 @@ export const runScripts = <ScriptMetadata extends object = object>({
     return deps.every((dep) => completedScripts.has(dep));
   };
 
+  const scriptOutputQueues = scripts.map(() => ({
+    stdout: createAsyncIterableQueue<Uint8Array<ArrayBufferLike>>(),
+    stderr: createAsyncIterableQueue<Uint8Array<ArrayBufferLike>>(),
+  }));
+
   const scheduleReadyScripts = () => {
     let changed = true;
     while (changed) {
@@ -263,6 +268,8 @@ export const runScripts = <ScriptMetadata extends object = object>({
           scriptProcessBytes[index] = (async function* () {
             /* empty */
           })();
+          scriptOutputQueues[index].stdout.close();
+          scriptOutputQueues[index].stderr.close();
           onScriptEvent?.("skip", index, null);
           scriptTriggers[index].trigger();
           changed = true;
@@ -285,7 +292,16 @@ export const runScripts = <ScriptMetadata extends object = object>({
         };
 
         scriptResults[index] = scriptResult;
-        scriptProcessBytes[index] = scriptResult.result.output.bytes();
+        const bytesOutput = scriptResult.result.output.bytes();
+        scriptProcessBytes[index] = bytesOutput;
+        (async () => {
+          for await (const { chunk, metadata } of bytesOutput) {
+            scriptOutputQueues[index][metadata.streamName].push(chunk);
+          }
+          scriptOutputQueues[index].stdout.close();
+          scriptOutputQueues[index].stderr.close();
+        })();
+
         onScriptEvent?.("start", index, null);
         scriptTriggers[index].trigger();
 
@@ -300,16 +316,10 @@ export const runScripts = <ScriptMetadata extends object = object>({
     }
   };
 
-  const scriptOutputQueues = scripts.map(() =>
-    ["stdout", "stderr"].map(() =>
-      createAsyncIterableQueue<Uint8Array<ArrayBufferLike>>(),
-    ),
-  );
-
   const multiProcessOutput = createMultiProcessOutput<
     ScriptMetadata & { streamName: OutputStreamName }
   >(
-    scriptOutputQueues.flatMap(([stdout, stderr], index) => [
+    scriptOutputQueues.flatMap(({ stdout, stderr }, index) => [
       createProcessOutput(stdout, {
         ...scripts[index].metadata,
         streamName: "stdout",
@@ -322,8 +332,6 @@ export const runScripts = <ScriptMetadata extends object = object>({
   );
 
   const handleScriptProcesses = async () => {
-    const scriptExits: Promise<void>[] = [];
-
     let pendingScriptCount = scripts.length;
     while (pendingScriptCount > 0) {
       const { index } = await Promise.race(
@@ -335,13 +343,15 @@ export const runScripts = <ScriptMetadata extends object = object>({
       scriptTriggers[index].promise = new Promise<never>(() => {
         void 0;
       });
-
-      await Promise.all(scriptExits);
-      scriptOutputQueues.forEach(([stdout, stderr]) => {
-        stdout.close();
-        stderr.close();
-      });
     }
+
+    await Promise.all(
+      scriptOutputQueues.flatMap(({ stdout, stderr }) => [
+        stdout.closed,
+        stderr.closed,
+      ]),
+    );
+    await Promise.all(scriptResults.map(({ result }) => result.exit));
   };
 
   const awaitSummary = async () => {

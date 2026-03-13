@@ -61,7 +61,9 @@ const HomeLink = () => {
               alt="bun-workspaces"
             />
           </div>
-          <div className="nav-title-version">{packageJson.version}</div>
+          <div className="nav-title-version">
+            Latest: v{packageJson.version}
+          </div>
         </div>
       </div>
     </Link>

@@ -16,30 +16,6 @@ const makeExitResult = (
 });
 
 describe("Run Script", () => {
-  test("Simple success - deprecated output", async () => {
-    const result = await runScript({
-      scriptCommand: {
-        command: IS_WINDOWS
-          ? `powershell -NoProfile -Command "Write-Output 'test-script 1'"`
-          : "echo 'test-script 1'",
-        workingDirectory: ".",
-      },
-      metadata: {},
-      env: {},
-    });
-
-    let outputCount = 0;
-    for await (const outputChunk of result.output) {
-      expect(outputChunk.raw).toBeInstanceOf(Uint8Array);
-      expect(outputChunk.streamName).toBe("stdout");
-      expect(outputChunk.decode()).toMatch(`test-script ${outputCount + 1}`);
-      expect(outputChunk.decode({ stripAnsi: true })).toMatch(
-        `test-script ${outputCount + 1}`,
-      );
-      outputCount++;
-    }
-  });
-
   test("Simple success - process output (bytes)", async () => {
     const result = await runScript({
       scriptCommand: {
@@ -51,7 +27,7 @@ describe("Run Script", () => {
     });
 
     let outputCount = 0;
-    for await (const chunk of result.processOutput.bytes()) {
+    for await (const chunk of result.output.bytes()) {
       expect(chunk.metadata.streamName).toBe("stdout");
       expect(chunk.chunk).toBeInstanceOf(Uint8Array);
       expect(new TextDecoder().decode(chunk.chunk)).toMatch(
@@ -83,7 +59,7 @@ describe("Run Script", () => {
     });
 
     let outputCount = 0;
-    for await (const chunk of result.processOutput.text()) {
+    for await (const chunk of result.output.text()) {
       expect(chunk.metadata.streamName).toBe("stdout");
       expect(chunk.chunk.trim()).toBe(`test-script ${outputCount + 1}`);
       outputCount++;
@@ -114,7 +90,7 @@ describe("Run Script", () => {
     });
 
     let outputCount = 0;
-    for await (const outputChunk of result.processOutput.bytes()) {
+    for await (const outputChunk of result.output.bytes()) {
       expect(outputChunk.metadata.streamName).toBe("stdout");
       expect(new TextDecoder().decode(outputChunk.chunk)).toMatch(
         `test-script ${outputCount + 1}`,
@@ -157,36 +133,6 @@ describe("Run Script", () => {
     });
   }
 
-  test("With stdout and stderr - deprecated output", async () => {
-    const result = await runScript({
-      scriptCommand: {
-        command: IS_WINDOWS
-          ? `echo test-script 1 ^
-&& ping 127.0.0.1 -n 2 -w 100 >nul ^
-&& echo test-script 2 1>&2 ^
-&& ping 127.0.0.1 -n 2 -w 100 >nul ^
-&& echo test-script 3`
-          : "echo 'test-script 1' && sleep 0.1 && echo 'test-script 2' >&2 && sleep 0.1 && echo 'test-script 3'",
-        workingDirectory: ".",
-      },
-      metadata: {},
-      env: {},
-    });
-
-    let outputCount = 0;
-    for await (const outputChunk of result.output) {
-      expect(outputChunk.raw).toBeInstanceOf(Uint8Array);
-      expect(outputChunk.streamName).toBe(
-        outputCount === 1 ? "stderr" : "stdout",
-      );
-      expect(outputChunk.decode()).toMatch(`test-script ${outputCount + 1}`);
-      expect(outputChunk.decode({ stripAnsi: true })).toMatch(
-        `test-script ${outputCount + 1}`,
-      );
-      outputCount++;
-    }
-  });
-
   test("With stdout and stderr - process output (bytes)", async () => {
     const result = await runScript({
       scriptCommand: {
@@ -198,7 +144,7 @@ describe("Run Script", () => {
     });
 
     let outputCount = 0;
-    for await (const chunk of result.processOutput.bytes()) {
+    for await (const chunk of result.output.bytes()) {
       expect(chunk.metadata.streamName).toBe(
         outputCount === 1 ? "stderr" : "stdout",
       );
@@ -223,7 +169,7 @@ describe("Run Script", () => {
     });
 
     let outputCount = 0;
-    for await (const chunk of result.processOutput.text()) {
+    for await (const chunk of result.output.text()) {
       expect(chunk.metadata.streamName).toBe(
         outputCount === 1 ? "stderr" : "stdout",
       );
@@ -250,7 +196,7 @@ describe("Run Script", () => {
 
     const result = await runScript(options);
 
-    for await (const outputChunk of result.processOutput.text()) {
+    for await (const outputChunk of result.output.text()) {
       expect(outputChunk.metadata.streamName).toBe("stdout");
       expect(outputChunk.chunk.trim()).toBe(`test ${testValue}`);
     }
@@ -269,7 +215,7 @@ describe("Run Script", () => {
       env: {},
     });
 
-    for await (const outputChunk of result.processOutput.text()) {
+    for await (const outputChunk of result.output.text()) {
       expect(outputChunk.metadata.streamName).toBe("stdout");
       expect(outputChunk.chunk.trim()).toMatch(/node_modules\/.bin\/eslint$/);
     }

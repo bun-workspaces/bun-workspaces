@@ -1,6 +1,5 @@
 import path from "path";
 import { expect, test, describe, spyOn } from "bun:test";
-import { loadConfigFile } from "../../src/config";
 import { InvalidJSONError } from "../../src/config/util/loadConfig";
 import {
   loadWorkspaceConfig,
@@ -8,7 +7,6 @@ import {
   WORKSPACE_CONFIG_ERRORS,
 } from "../../src/config/workspaceConfig";
 import { logger } from "../../src/internal/logger";
-import { _internalCreateFileSystemProject } from "../../src/project";
 import { findWorkspaces } from "../../src/workspaces";
 import { getProjectRoot } from "../fixtures/testProjects";
 import { makeTestWorkspace, makeWorkspaceMapEntry } from "../util/testData";
@@ -485,74 +483,6 @@ describe("workspace config", () => {
           "library-1c": makeWorkspaceMapEntry({ alias: [] }),
         },
       });
-    });
-  });
-
-  describe("deprecated and new config mix", () => {
-    test("warns on multiple configs and merges workspace config", () => {
-      const warnSpy = spyOn(logger, "warn");
-
-      const project = _internalCreateFileSystemProject({
-        rootDirectory: getProjectRoot("workspaceConfigDeprecatedConfigMix"),
-        workspaceAliases:
-          loadConfigFile(
-            path.join(
-              getProjectRoot("workspaceConfigDeprecatedConfigMix"),
-              "bw.json",
-            ),
-          )?.project?.workspaceAliases ?? undefined,
-      });
-
-      expect(warnSpy).toHaveBeenCalledWith(
-        `Found multiple workspace configs:
-  ${withWindowsPath(path.relative(process.cwd(), path.join(getProjectRoot("workspaceConfigDeprecatedConfigMix"), "libraries/library-a") + "/bw.workspace.jsonc"))}
-  ${withWindowsPath(path.relative(process.cwd(), path.join(getProjectRoot("workspaceConfigDeprecatedConfigMix"), "libraries/library-a") + "/bw.workspace.json"))}
-  ${withWindowsPath(path.relative(process.cwd(), path.join(getProjectRoot("workspaceConfigDeprecatedConfigMix"), "libraries/library-a", "package.json") + '["bw"]'))}
-  Using config at ${withWindowsPath(path.relative(process.cwd(), path.join(getProjectRoot("workspaceConfigDeprecatedConfigMix"), "libraries/library-a", "bw.workspace.jsonc")))}`,
-      );
-
-      expect(project.workspaces).toEqual([
-        makeTestWorkspace({
-          name: "application-1a",
-          path: "applications/application-a",
-          matchPattern: "applications/*",
-          scripts: ["a-workspaces", "all-workspaces", "application-a"],
-          aliases: ["deprecated_appA", "appA"],
-        }),
-        makeTestWorkspace({
-          name: "application-1b",
-          path: "applications/application-b",
-          matchPattern: "applications/*",
-          scripts: ["all-workspaces", "application-b", "b-workspaces"],
-          aliases: ["deprecated_appB", "appB_file"],
-        }),
-        makeTestWorkspace({
-          name: "application-1c",
-          path: "applications/application-c",
-          matchPattern: "applications/*",
-          scripts: ["all-workspaces", "application-c", "c-workspaces"],
-        }),
-        makeTestWorkspace({
-          name: "library-1a",
-          path: "libraries/library-a",
-          matchPattern: "libraries/*",
-          scripts: ["a-workspaces", "all-workspaces", "library-a"],
-          aliases: ["deprecated_libA", "libA_file"],
-        }),
-        makeTestWorkspace({
-          name: "library-1b",
-          path: "libraries/library-b",
-          matchPattern: "libraries/*",
-          scripts: ["all-workspaces", "b-workspaces", "library-b"],
-          aliases: ["deprecated_libB", "libB", "libB2"],
-        }),
-        makeTestWorkspace({
-          name: "library-1c",
-          path: "libraries/library-c",
-          matchPattern: "libraries/*",
-          scripts: ["all-workspaces", "c-workspaces", "library-c"],
-        }),
-      ]);
     });
   });
 });

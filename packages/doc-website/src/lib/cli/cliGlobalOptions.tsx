@@ -21,18 +21,6 @@ const defineOptionContent = (
 };
 
 const CLI_GLOBAL_OPTIONS_CONTENT = {
-  configFile: defineOptionContent(
-    "configFile",
-    ({ mainOption, shortOption }) => ({
-      title: "Config File",
-      description:
-        "Use this option to point to a config file. Otherwise, ./bw.json is used by default.",
-      examples: [
-        `bw ${mainOption}=/path/to/your/config.json list-workspaces`,
-        `bw ${shortOption} /path/to/your/config.json list-workspaces`,
-      ],
-    }),
-  ),
   cwd: defineOptionContent("cwd", ({ mainOption, shortOption }) => ({
     title: "Working Directory",
     description:

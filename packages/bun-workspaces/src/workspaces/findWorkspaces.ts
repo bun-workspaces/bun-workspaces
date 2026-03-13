@@ -1,11 +1,7 @@
 import fs from "fs";
 import path from "path";
 import bun from "bun";
-import {
-  createDefaultWorkspaceConfig,
-  loadWorkspaceConfig,
-  type ProjectConfig,
-} from "../config";
+import { createDefaultWorkspaceConfig, loadWorkspaceConfig } from "../config";
 import { BUN_LOCK_ERRORS, readBunLockfile } from "../internal/bun";
 import { BunWorkspacesError } from "../internal/core";
 import { logger } from "../internal/logger/logger";
@@ -25,8 +21,6 @@ export interface FindWorkspacesOptions {
   rootDirectory: string;
   /** If provided, will override the workspaces found in the package.json. Mainly for testing purposes */
   workspaceGlobs?: string[];
-  /** @deprecated due to config file changes */
-  workspaceAliases?: ProjectConfig["workspaceAliases"];
   /** Whether to include the root workspace as a normal workspace.*/
   includeRootWorkspace?: boolean;
 }
@@ -84,7 +78,6 @@ const validateWorkspace = (workspace: Workspace, workspaces: Workspace[]) => {
 export const findWorkspaces = ({
   rootDirectory,
   workspaceGlobs: _workspaceGlobs,
-  workspaceAliases = {},
   includeRootWorkspace = false,
 }: FindWorkspacesOptions) => {
   rootDirectory = path.resolve(rootDirectory);
@@ -117,6 +110,8 @@ export const findWorkspaces = ({
   };
 
   let rootWorkspace: Workspace | undefined;
+
+  const workspaceAliases: Record<string, string> = {};
 
   for (const workspacePath of Object.keys(bunLock.workspaces).map((p) =>
     path.join(rootDirectory, p),
@@ -211,7 +206,7 @@ export const findWorkspaces = ({
 
 export const validateWorkspaceAliases = (
   workspaces: Workspace[],
-  workspaceAliases: ProjectConfig["workspaceAliases"],
+  workspaceAliases: Record<string, string>,
   rootWorkspaceName: string,
 ) => {
   for (const [alias, name] of Object.entries(workspaceAliases ?? {})) {

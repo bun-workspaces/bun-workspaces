@@ -98,8 +98,8 @@ describe("CLI Run Script (args)", () => {
       const result = await run(
         "run-script",
         "test-echo",
-        "deprecated_appA",
-        "deprecated_libB",
+        "appA",
+        "libB",
         "--args=for workspace <workspaceName>",
       );
       expect(result.exitCode).toBe(0);

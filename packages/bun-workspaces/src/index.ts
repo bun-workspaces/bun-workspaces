@@ -17,7 +17,7 @@ export {
   type RunScriptAcrossWorkspacesOptions,
   type RunScriptAcrossWorkspacesOutput,
   type RunScriptAcrossWorkspacesSummary,
-  type RunScriptAcrossWorkspacesProcessOutput,
+  type RunScriptAcrossWorkspacesOutput as RunScriptAcrossWorkspacesProcessOutput,
   type RunScriptAcrossWorkspacesResult,
   type ParallelOption,
   type ShellOption,
@@ -26,9 +26,7 @@ export {
 } from "./project";
 export {
   type ScriptEventName,
-  type OutputChunk,
   type OutputStreamName,
-  type DecodeOptions,
   type PercentageValue,
   type ParallelMaxValue,
   type WorkspaceScriptCommandMethod,

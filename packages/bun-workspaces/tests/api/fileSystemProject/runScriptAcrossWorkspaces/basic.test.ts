@@ -132,6 +132,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
             metadata: {
               workspace: makeTestWorkspace({
                 name: "application-1a",
+                aliases: ["appA"],
                 matchPattern: "applications/*",
                 path: "applications/applicationA",
                 scripts: ["a-workspaces", "all-workspaces", "application-a"],
@@ -142,6 +143,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
             metadata: {
               workspace: makeTestWorkspace({
                 name: "application-1b",
+                aliases: ["appB"],
                 matchPattern: "applications/*",
                 path: "applications/applicationB",
                 scripts: ["all-workspaces", "application-b", "b-workspaces"],
@@ -152,6 +154,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
             metadata: {
               workspace: makeTestWorkspace({
                 name: "library-1a",
+                aliases: ["libA"],
                 matchPattern: "libraries/*",
                 path: "libraries/libraryA",
                 scripts: ["a-workspaces", "all-workspaces", "library-a"],
@@ -162,6 +165,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
             metadata: {
               workspace: makeTestWorkspace({
                 name: "library-1b",
+                aliases: ["libB"],
                 matchPattern: "libraries/*",
                 path: "libraries/libraryB",
                 scripts: ["all-workspaces", "b-workspaces", "library-b"],
@@ -193,6 +197,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
         scriptMetadata: {
           workspace: makeTestWorkspace({
             name: "application-1b",
+            aliases: ["appB"],
             matchPattern: "applications/*",
             path: "applications/applicationB",
             scripts: ["all-workspaces", "application-b", "b-workspaces"],
@@ -208,6 +213,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
         scriptMetadata: {
           workspace: makeTestWorkspace({
             name: "library-1b",
+            aliases: ["libB"],
             matchPattern: "libraries/*",
             path: "libraries/libraryB",
             scripts: ["all-workspaces", "b-workspaces", "library-b"],
@@ -235,6 +241,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
             metadata: {
               workspace: makeTestWorkspace({
                 name: "application-1b",
+                aliases: ["appB"],
                 matchPattern: "applications/*",
                 path: "applications/applicationB",
                 scripts: ["all-workspaces", "application-b", "b-workspaces"],
@@ -245,6 +252,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
             metadata: {
               workspace: makeTestWorkspace({
                 name: "library-1b",
+                aliases: ["libB"],
                 matchPattern: "libraries/*",
                 path: "libraries/libraryB",
                 scripts: ["all-workspaces", "b-workspaces", "library-b"],
@@ -289,6 +297,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
         scriptMetadata: {
           workspace: makeTestWorkspace({
             name: "application-1a",
+            aliases: ["appA"],
             matchPattern: "applications/*",
             path: "applications/applicationA",
             scripts: ["a-workspaces", "all-workspaces", "application-a"],
@@ -304,6 +313,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
         scriptMetadata: {
           workspace: makeTestWorkspace({
             name: "application-1b",
+            aliases: ["appB"],
             matchPattern: "applications/*",
             path: "applications/applicationB",
             scripts: ["all-workspaces", "application-b", "b-workspaces"],
@@ -319,6 +329,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
         scriptMetadata: {
           workspace: makeTestWorkspace({
             name: "library-1a",
+            aliases: ["libA"],
             matchPattern: "libraries/*",
             path: "libraries/libraryA",
             scripts: ["a-workspaces", "all-workspaces", "library-a"],
@@ -334,6 +345,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
         scriptMetadata: {
           workspace: makeTestWorkspace({
             name: "library-1b",
+            aliases: ["libB"],
             matchPattern: "libraries/*",
             path: "libraries/libraryB",
             scripts: ["all-workspaces", "b-workspaces", "library-b"],
@@ -362,6 +374,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
             metadata: {
               workspace: makeTestWorkspace({
                 name: "application-1a",
+                aliases: ["appA"],
                 matchPattern: "applications/*",
                 path: "applications/applicationA",
                 scripts: ["a-workspaces", "all-workspaces", "application-a"],
@@ -372,6 +385,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
             metadata: {
               workspace: makeTestWorkspace({
                 name: "application-1b",
+                aliases: ["appB"],
                 matchPattern: "applications/*",
                 path: "applications/applicationB",
                 scripts: ["all-workspaces", "application-b", "b-workspaces"],
@@ -382,6 +396,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
             metadata: {
               workspace: makeTestWorkspace({
                 name: "library-1a",
+                aliases: ["libA"],
                 matchPattern: "libraries/*",
                 path: "libraries/libraryA",
                 scripts: ["a-workspaces", "all-workspaces", "library-a"],
@@ -392,6 +407,7 @@ describe("FileSystemProject runScriptAcrossWorkspaces - basic", () => {
             metadata: {
               workspace: makeTestWorkspace({
                 name: "library-1b",
+                aliases: ["libB"],
                 matchPattern: "libraries/*",
                 path: "libraries/libraryB",
                 scripts: ["all-workspaces", "b-workspaces", "library-b"],

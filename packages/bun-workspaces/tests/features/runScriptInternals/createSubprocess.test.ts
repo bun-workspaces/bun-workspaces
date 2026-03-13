@@ -38,8 +38,11 @@ describe("createSubprocess", () => {
         fixtureProcess.stdout,
         {},
       ).text()) {
-        pids.push(parseInt(Bun.stripANSI(chunk).trim(), 10));
-        if (pids.length === 4) break;
+        for (const line of Bun.stripANSI(chunk).split("\n")) {
+          const pid = parseInt(line.trim(), 10);
+          if (Number.isFinite(pid) && pid > 0) pids.push(pid);
+        }
+        if (pids.length >= 4) break;
       }
 
       expect(pids).toHaveLength(4);

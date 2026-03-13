@@ -118,8 +118,8 @@ describe("Test project root config", () => {
         parallel: true,
       });
 
-      for await (const { outputChunk } of output) {
-        outputText += outputChunk.decode();
+      for await (const { chunk } of output.text()) {
+        outputText += chunk;
       }
 
       await summary;
@@ -139,8 +139,8 @@ describe("Test project root config", () => {
         parallel: true,
       });
 
-      for await (const { outputChunk } of output) {
-        outputText += outputChunk.decode();
+      for await (const { chunk } of output.text()) {
+        outputText += chunk;
       }
 
       await summary;

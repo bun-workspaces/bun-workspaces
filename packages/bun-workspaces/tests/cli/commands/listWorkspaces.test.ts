@@ -8,28 +8,28 @@ import {
 import { withWindowsPath } from "../../util/windows";
 
 const PLAIN_OUTPUT_SIMPLE1 = `Workspace: application-1a
- - Aliases: deprecated_appA
+ - Aliases: appA
  - Path: ${withWindowsPath("applications/applicationA")}
  - Glob Match: applications/*
  - Scripts: a-workspaces, all-workspaces, application-a
  - Dependencies: 
  - Dependents: 
 Workspace: application-1b
- - Aliases: deprecated_appB
+ - Aliases: appB
  - Path: ${withWindowsPath("applications/applicationB")}
  - Glob Match: applications/*
  - Scripts: all-workspaces, application-b, b-workspaces
  - Dependencies: 
  - Dependents: 
 Workspace: library-1a
- - Aliases: deprecated_libA
+ - Aliases: libA
  - Path: ${withWindowsPath("libraries/libraryA")}
  - Glob Match: libraries/*
  - Scripts: a-workspaces, all-workspaces, library-a
  - Dependencies: 
  - Dependents: 
 Workspace: library-1b
- - Aliases: deprecated_libB
+ - Aliases: libB
  - Path: ${withWindowsPath("libraries/libraryB")}
  - Glob Match: libraries/*
  - Scripts: all-workspaces, b-workspaces, library-b
@@ -48,7 +48,7 @@ const EXPECTED_WORKSPACES_JSON_SIMPLE1 = [
     matchPattern: "applications/*",
     path: withWindowsPath("applications/applicationA"),
     scripts: ["a-workspaces", "all-workspaces", "application-a"],
-    aliases: ["deprecated_appA"],
+    aliases: ["appA"],
     dependencies: [],
     dependents: [],
   },
@@ -58,7 +58,7 @@ const EXPECTED_WORKSPACES_JSON_SIMPLE1 = [
     matchPattern: "applications/*",
     path: withWindowsPath("applications/applicationB"),
     scripts: ["all-workspaces", "application-b", "b-workspaces"],
-    aliases: ["deprecated_appB"],
+    aliases: ["appB"],
     dependencies: [],
     dependents: [],
   },
@@ -68,7 +68,7 @@ const EXPECTED_WORKSPACES_JSON_SIMPLE1 = [
     matchPattern: "libraries/*",
     path: withWindowsPath("libraries/libraryA"),
     scripts: ["a-workspaces", "all-workspaces", "library-a"],
-    aliases: ["deprecated_libA"],
+    aliases: ["libA"],
     dependencies: [],
     dependents: [],
   },
@@ -78,28 +78,28 @@ const EXPECTED_WORKSPACES_JSON_SIMPLE1 = [
     matchPattern: "libraries/*",
     path: withWindowsPath("libraries/libraryB"),
     scripts: ["all-workspaces", "b-workspaces", "library-b"],
-    aliases: ["deprecated_libB"],
+    aliases: ["libB"],
     dependencies: [],
     dependents: [],
   },
 ];
 
 const PATTERN_OUTPUT_APPLICATION_AND_LIBRARY_1B = `Workspace: application-1a
- - Aliases: deprecated_appA
+ - Aliases: appA
  - Path: ${withWindowsPath("applications/applicationA")}
  - Glob Match: applications/*
  - Scripts: a-workspaces, all-workspaces, application-a
  - Dependencies: 
  - Dependents: 
 Workspace: application-1b
- - Aliases: deprecated_appB
+ - Aliases: appB
  - Path: ${withWindowsPath("applications/applicationB")}
  - Glob Match: applications/*
  - Scripts: all-workspaces, application-b, b-workspaces
  - Dependencies: 
  - Dependents: 
 Workspace: library-1b
- - Aliases: deprecated_libB
+ - Aliases: libB
  - Path: ${withWindowsPath("libraries/libraryB")}
  - Glob Match: libraries/*
  - Scripts: all-workspaces, b-workspaces, library-b

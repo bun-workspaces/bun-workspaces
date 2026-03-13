@@ -1,18 +1,12 @@
-import {
-  createAsyncIterableQueue,
-  type SimpleAsyncIterable,
-} from "../internal/core";
+import { createAsyncIterableQueue } from "../internal/core";
 import { logger } from "../internal/logger";
 import {
+  createProcessOutput,
   createMultiProcessOutput,
   type MultiProcessOutput,
-} from "./output/multiProcessOutput";
-import { createProcessOutput, type BytesOutput } from "./output/processOutput";
-import {
-  createOutputChunk,
-  type OutputChunk,
+  type BytesOutput,
   type OutputStreamName,
-} from "./outputChunk";
+} from "./output";
 import { determineParallelMax, type ParallelMaxValue } from "./parallel";
 import {
   runScript,
@@ -50,22 +44,10 @@ export type RunScriptsSummary<ScriptMetadata extends object = object> = {
   scriptResults: RunScriptExit<ScriptMetadata>[];
 };
 
-/** @deprecated */
-export type RunScriptsOutput<ScriptMetadata extends object = object> = {
-  /** The output chunk from a script execution */
-  outputChunk: OutputChunk;
-  /** The metadata for the script that produced the output chunk */
-  scriptMetadata: ScriptMetadata & { streamName: OutputStreamName };
-};
-
 export type ScriptEventName = "start" | "skip" | "exit";
 
 export type RunScriptsResult<ScriptMetadata extends object = object> = {
-  /** @deprecated Allows async iteration of output chunks from all script executions */
-  output: SimpleAsyncIterable<RunScriptsOutput<ScriptMetadata>>;
-  processOutput: MultiProcessOutput<
-    ScriptMetadata & { streamName: OutputStreamName }
-  >;
+  output: MultiProcessOutput<ScriptMetadata & { streamName: OutputStreamName }>;
   /** Resolves with a results summary after all scripts have exited */
   summary: Promise<RunScriptsSummary<ScriptMetadata>>;
 };
@@ -181,10 +163,6 @@ export const runScripts = <ScriptMetadata extends object = object>({
     return result;
   });
 
-  /** @deprecated */
-  const outputQueue =
-    createAsyncIterableQueue<RunScriptsOutput<ScriptMetadata>>();
-
   const scriptResults: RunScriptsScriptResult<ScriptMetadata>[] = scripts.map(
     () => null as never as RunScriptsScriptResult<ScriptMetadata>,
   );
@@ -246,10 +224,7 @@ export const runScripts = <ScriptMetadata extends object = object>({
     exitResults[index] = skippedExit;
     return {
       result: {
-        output: (async function* () {
-          /* empty */
-        })(),
-        processOutput: createMultiProcessOutput([]),
+        output: createMultiProcessOutput([]),
         exit: Promise.resolve(skippedExit),
         metadata: scripts[index].metadata,
         kill: () => {
@@ -273,6 +248,11 @@ export const runScripts = <ScriptMetadata extends object = object>({
     return deps.every((dep) => completedScripts.has(dep));
   };
 
+  const scriptOutputQueues = scripts.map(() => ({
+    stdout: createAsyncIterableQueue<Uint8Array<ArrayBufferLike>>(),
+    stderr: createAsyncIterableQueue<Uint8Array<ArrayBufferLike>>(),
+  }));
+
   const scheduleReadyScripts = () => {
     let changed = true;
     while (changed) {
@@ -288,6 +268,8 @@ export const runScripts = <ScriptMetadata extends object = object>({
           scriptProcessBytes[index] = (async function* () {
             /* empty */
           })();
+          scriptOutputQueues[index].stdout.close();
+          scriptOutputQueues[index].stderr.close();
           onScriptEvent?.("skip", index, null);
           scriptTriggers[index].trigger();
           changed = true;
@@ -310,7 +292,16 @@ export const runScripts = <ScriptMetadata extends object = object>({
         };
 
         scriptResults[index] = scriptResult;
-        scriptProcessBytes[index] = scriptResult.result.processOutput.bytes();
+        const bytesOutput = scriptResult.result.output.bytes();
+        scriptProcessBytes[index] = bytesOutput;
+        (async () => {
+          for await (const { chunk, metadata } of bytesOutput) {
+            scriptOutputQueues[index][metadata.streamName].push(chunk);
+          }
+          scriptOutputQueues[index].stdout.close();
+          scriptOutputQueues[index].stderr.close();
+        })();
+
         onScriptEvent?.("start", index, null);
         scriptTriggers[index].trigger();
 
@@ -325,16 +316,10 @@ export const runScripts = <ScriptMetadata extends object = object>({
     }
   };
 
-  const scriptOutputQueues = scripts.map(() =>
-    ["stdout", "stderr"].map(() =>
-      createAsyncIterableQueue<Uint8Array<ArrayBufferLike>>(),
-    ),
-  );
-
   const multiProcessOutput = createMultiProcessOutput<
     ScriptMetadata & { streamName: OutputStreamName }
   >(
-    scriptOutputQueues.flatMap(([stdout, stderr], index) => [
+    scriptOutputQueues.flatMap(({ stdout, stderr }, index) => [
       createProcessOutput(stdout, {
         ...scripts[index].metadata,
         streamName: "stdout",
@@ -347,10 +332,6 @@ export const runScripts = <ScriptMetadata extends object = object>({
   );
 
   const handleScriptProcesses = async () => {
-    /** @deprecated */
-    const outputReaders: Promise<void>[] = [];
-    const scriptExits: Promise<void>[] = [];
-
     let pendingScriptCount = scripts.length;
     while (pendingScriptCount > 0) {
       const { index } = await Promise.race(
@@ -362,36 +343,15 @@ export const runScripts = <ScriptMetadata extends object = object>({
       scriptTriggers[index].promise = new Promise<never>(() => {
         void 0;
       });
-
-      outputReaders.push(
-        (async () => {
-          for await (const chunk of scriptProcessBytes[index]!) {
-            outputQueue.push({
-              outputChunk: createOutputChunk(
-                chunk.metadata.streamName,
-                chunk.chunk,
-              ),
-              scriptMetadata: {
-                ...scripts[index].metadata,
-                streamName: chunk.metadata.streamName,
-              },
-            });
-
-            scriptOutputQueues[index][
-              chunk.metadata.streamName === "stdout" ? 0 : 1
-            ].push(chunk.chunk);
-          }
-        })(),
-      );
     }
 
-    await Promise.all(outputReaders);
-    await Promise.all(scriptExits);
-    outputQueue.close();
-    scriptOutputQueues.forEach(([stdout, stderr]) => {
-      stdout.close();
-      stderr.close();
-    });
+    await Promise.all(
+      scriptOutputQueues.flatMap(({ stdout, stderr }) => [
+        stdout.closed,
+        stderr.closed,
+      ]),
+    );
+    await Promise.all(scriptResults.map(({ result }) => result.exit));
   };
 
   const awaitSummary = async () => {
@@ -418,8 +378,7 @@ export const runScripts = <ScriptMetadata extends object = object>({
   };
 
   return {
-    output: outputQueue,
-    processOutput: multiProcessOutput,
+    output: multiProcessOutput,
     summary: awaitSummary(),
   };
 };

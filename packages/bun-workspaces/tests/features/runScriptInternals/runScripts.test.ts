@@ -78,7 +78,7 @@ describe("Run Scripts", () => {
     });
 
     let i = 0;
-    for await (const { metadata, chunk } of result.processOutput.text()) {
+    for await (const { metadata, chunk } of result.output.text()) {
       expect(metadata.name).toBe(`test-script name ${i + 1}`);
       expect(metadata.streamName).toBe("stdout");
       expect(chunk.trim()).toMatch(`test-script ${i + 1}`);
@@ -96,35 +96,6 @@ describe("Run Scripts", () => {
         ],
       }),
     );
-  });
-
-  test("Run Scripts - stdout and stderr - deprecated output", async () => {
-    const result = await runScripts({
-      scripts: [
-        {
-          metadata: { name: "test-script name 1" },
-          scriptCommand: {
-            command: IS_WINDOWS
-              ? `echo test-script 1 && echo test-script 2 1>&2`
-              : "echo 'test-script 1' && echo 'test-script 2' >&2",
-            workingDirectory: "",
-          },
-          env: {},
-        },
-      ],
-      parallel: false,
-    });
-
-    let outputCount = 0;
-    for await (const { outputChunk, scriptMetadata } of result.output) {
-      expect(scriptMetadata.name).toBe("test-script name 1");
-      expect(outputChunk.streamName).toBe(
-        outputCount === 1 ? "stderr" : "stdout",
-      );
-      expect(outputChunk.decode()).toMatch(`test-script ${outputCount + 1}`);
-      outputCount++;
-    }
-    expect(outputCount).toBe(2);
   });
 
   test("Run Scripts - stdout and stderr - process output (bytes)", async () => {
@@ -145,7 +116,7 @@ describe("Run Scripts", () => {
     });
 
     let outputCount = 0;
-    for await (const { metadata, chunk } of result.processOutput.bytes()) {
+    for await (const { metadata, chunk } of result.output.bytes()) {
       expect(metadata.name).toBe("test-script name 1");
       expect(metadata.streamName).toBe(outputCount === 1 ? "stderr" : "stdout");
       expect(new TextDecoder().decode(chunk)).toMatch(
@@ -183,7 +154,7 @@ describe("Run Scripts", () => {
     });
 
     let outputCount = 0;
-    for await (const { metadata, chunk } of result.processOutput.text()) {
+    for await (const { metadata, chunk } of result.output.text()) {
       expect(metadata.name).toBe("test-script name 1");
       expect(metadata.streamName).toBe(outputCount === 1 ? "stderr" : "stdout");
       expect(chunk.trim()).toBe(`test-script ${outputCount + 1}`);
@@ -231,7 +202,7 @@ describe("Run Scripts", () => {
     });
 
     let i = 0;
-    for await (const { metadata, chunk } of result.processOutput.text()) {
+    for await (const { metadata, chunk } of result.output.text()) {
       expect(metadata.name).toBe(`test-script name ${i + 1}`);
       expect(metadata.streamName).toBe("stdout");
       expect(chunk.trim()).toMatch(`test-script ${i + 1}`);
@@ -303,7 +274,7 @@ describe("Run Scripts", () => {
     });
 
     let i = 0;
-    for await (const { metadata, chunk } of result.processOutput.text()) {
+    for await (const { metadata, chunk } of result.output.text()) {
       expect(metadata.streamName).toBe("stdout");
       const scriptNum = i === 0 ? 2 : i === 1 ? 3 : 1;
       expect(metadata.name).toBe(`test-script name ${scriptNum}`);
@@ -383,7 +354,7 @@ describe("Run Scripts", () => {
       });
 
       let didMaxRun = false;
-      for await (const { chunk } of result.processOutput.text()) {
+      for await (const { chunk } of result.output.text()) {
         const count = parseInt(chunk.trim());
         if (count === max) {
           didMaxRun = true;
@@ -433,7 +404,7 @@ describe("Run Scripts", () => {
         ],
       });
 
-      for await (const { chunk } of result.processOutput.text()) {
+      for await (const { chunk } of result.output.text()) {
         const envMax = chunk.trim();
         if (typeof max === "number") {
           expect(envMax).toBe(max.toString());
@@ -478,7 +449,7 @@ describe("Run Scripts", () => {
         ],
       });
 
-      for await (const { chunk } of defaultResult.processOutput.text()) {
+      for await (const { chunk } of defaultResult.output.text()) {
         expect(chunk.trim()).toBe(max.toString());
       }
 
@@ -500,7 +471,7 @@ describe("Run Scripts", () => {
         ],
       });
 
-      for await (const { chunk } of explicitResult.processOutput.text()) {
+      for await (const { chunk } of explicitResult.output.text()) {
         expect(chunk.trim()).toBe(max.toString());
       }
     },
@@ -525,7 +496,7 @@ describe("Run Scripts", () => {
       ],
     });
 
-    for await (const { chunk } of result.processOutput.text()) {
+    for await (const { chunk } of result.output.text()) {
       expect(chunk.trim()).toBe(availableParallelism().toString());
     }
   });
@@ -551,7 +522,7 @@ describe("Run Scripts", () => {
       parallel: false,
     });
 
-    for await (const outputChunk of result.processOutput.text()) {
+    for await (const outputChunk of result.output.text()) {
       expect(outputChunk.metadata.streamName).toBe("stdout");
       expect(outputChunk.chunk.trim()).toBe(`test ${testValue}`);
     }
@@ -583,7 +554,7 @@ describe("Run Scripts - Dependencies", () => {
       parallel: false,
     });
 
-    for await (const { metadata } of result.processOutput.text()) {
+    for await (const { metadata } of result.output.text()) {
       executionOrder.push(metadata.name);
     }
 
@@ -633,7 +604,7 @@ describe("Run Scripts - Dependencies", () => {
       parallel: true,
     });
 
-    for await (const { metadata } of result.processOutput.text()) {
+    for await (const { metadata } of result.output.text()) {
       executionOrder.push(metadata.name);
     }
 
@@ -712,7 +683,7 @@ describe("Run Scripts - Dependencies", () => {
     });
 
     const outputTexts: string[] = [];
-    for await (const { chunk } of result.processOutput.text()) {
+    for await (const { chunk } of result.output.text()) {
       outputTexts.push(chunk.trim());
     }
 
@@ -832,7 +803,7 @@ describe("Run Scripts - Dependencies", () => {
       parallel: true,
     });
 
-    for await (const { metadata } of result.processOutput.text()) {
+    for await (const { metadata } of result.output.text()) {
       executionOrder.push(metadata.name);
     }
 
@@ -891,7 +862,7 @@ describe("Run Scripts - Dependencies", () => {
       parallel: true,
     });
 
-    for await (const { metadata } of result.processOutput.text()) {
+    for await (const { metadata } of result.output.text()) {
       executionOrder.push(metadata.name);
     }
 

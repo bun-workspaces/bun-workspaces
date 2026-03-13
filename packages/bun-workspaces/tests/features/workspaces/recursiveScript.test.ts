@@ -24,9 +24,9 @@ describe("Recursive Script", () => {
 
     const errorMessage = `Script "test-script" recursively calls itself in workspace "package-a"`;
 
-    for await (const chunk of runPackageA.output) {
-      expect(chunk.streamName).toBe("stderr");
-      expect(chunk.decode().trim()).toMatch(errorMessage);
+    for await (const { chunk, metadata } of runPackageA.output.text()) {
+      expect(metadata.streamName).toBe("stderr");
+      expect(Bun.stripANSI(chunk.trim())).toMatch(errorMessage);
     }
 
     expect((await runPackageA.exit).exitCode).toBe(1);
@@ -35,13 +35,13 @@ describe("Recursive Script", () => {
       script: "test-script",
     });
 
-    for await (const { outputChunk, scriptMetadata } of runPackages.output) {
-      if (scriptMetadata.workspace.name === "package-a") {
-        expect(outputChunk.streamName).toBe("stderr");
-        expect(outputChunk.decode().trim()).toMatch(errorMessage);
+    for await (const { chunk, metadata } of runPackages.output.text()) {
+      if (metadata.workspace.name === "package-a") {
+        expect(metadata.streamName).toBe("stderr");
+        expect(Bun.stripANSI(chunk.trim())).toMatch(errorMessage);
       } else {
-        expect(outputChunk.streamName).toBe("stdout");
-        expect(outputChunk.decode().trim()).toMatch("hello from package-b");
+        expect(metadata.streamName).toBe("stdout");
+        expect(Bun.stripANSI(chunk.trim())).toMatch("hello from package-b");
       }
     }
 

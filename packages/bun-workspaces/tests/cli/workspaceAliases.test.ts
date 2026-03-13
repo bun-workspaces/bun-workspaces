@@ -58,111 +58,56 @@ describe("CLI Workspace Aliases", () => {
       );
     });
 
-    test("finds workspace by deprecated alias", async () => {
-      const { run } = setupCliTest({
-        testProject: "workspaceConfigDeprecatedConfigMix",
-      });
-      const result = await run("workspace-info", "deprecated_appA");
-      expect(result.exitCode).toBe(0);
-      assertOutputMatches(
-        result.stdout.raw,
-        `Workspace: application-1a
- - Aliases: deprecated_appA, appA
- - Path: ${withWindowsPath("applications/application-a")}
- - Glob Match: applications/*
- - Scripts: a-workspaces, all-workspaces, application-a
- - Dependencies: 
- - Dependents: `,
-      );
-    });
-
-    test("finds workspace by file-based alias with deprecated config", async () => {
-      const { run } = setupCliTest({
-        testProject: "workspaceConfigDeprecatedConfigMix",
-      });
-      const result = await run("workspace-info", "appB_file");
-      expect(result.exitCode).toBe(0);
-      assertOutputMatches(
-        result.stdout.raw,
-        `Workspace: application-1b
- - Aliases: deprecated_appB, appB_file
- - Path: ${withWindowsPath("applications/application-b")}
- - Glob Match: applications/*
- - Scripts: all-workspaces, application-b, b-workspaces
- - Dependencies: 
- - Dependents: `,
-      );
-    });
-
-    test("finds workspace by name with deprecated config", async () => {
-      const { run } = setupCliTest({
-        testProject: "workspaceConfigDeprecatedConfigMix",
-      });
-      const result = await run("workspace-info", "application-1a");
-      expect(result.exitCode).toBe(0);
-      assertOutputMatches(
-        result.stdout.raw,
-        `Workspace: application-1a
- - Aliases: deprecated_appA, appA
- - Path: ${withWindowsPath("applications/application-a")}
- - Glob Match: applications/*
- - Scripts: a-workspaces, all-workspaces, application-a
- - Dependencies: 
- - Dependents: `,
-      );
-    });
-  });
-
-  describe("run-script", () => {
-    test("runs script for alias pattern match", async () => {
-      const { run } = setupCliTest({
-        testProject: "workspaceConfigPackageFileMix",
-      });
-      const result = await run("run-script", "all-workspaces", "alias:*A");
-      expect(result.exitCode).toBe(0);
-      assertOutputMatches(
-        result.stdout.sanitizedCompactLines,
-        `[application-1a] script for all workspaces
+    describe("run-script", () => {
+      test("runs script for alias pattern match", async () => {
+        const { run } = setupCliTest({
+          testProject: "workspaceConfigPackageFileMix",
+        });
+        const result = await run("run-script", "all-workspaces", "alias:*A");
+        expect(result.exitCode).toBe(0);
+        assertOutputMatches(
+          result.stdout.sanitizedCompactLines,
+          `[application-1a] script for all workspaces
 ✅ application-1a: all-workspaces
 1 script ran successfully`,
-      );
-    });
-
-    test("runs script for mixed alias and name targets", async () => {
-      const { run } = setupCliTest({
-        testProject: "workspaceConfigPackageFileMix",
+        );
       });
-      const result = await run(
-        "run-script",
-        "b-workspaces",
-        "appB_file",
-        "library-1b",
-      );
-      expect(result.exitCode).toBe(0);
-      assertOutputMatches(
-        result.stdout.sanitizedCompactLines,
-        `[application-1b] script for b workspaces
+
+      test("runs script for mixed alias and name targets", async () => {
+        const { run } = setupCliTest({
+          testProject: "workspaceConfigPackageFileMix",
+        });
+        const result = await run(
+          "run-script",
+          "b-workspaces",
+          "appB_file",
+          "library-1b",
+        );
+        expect(result.exitCode).toBe(0);
+        assertOutputMatches(
+          result.stdout.sanitizedCompactLines,
+          `[application-1b] script for b workspaces
 [library-1b] script for b workspaces
 ✅ application-1b: b-workspaces
 ✅ library-1b: b-workspaces
 2 scripts ran successfully`,
-      );
-    });
-
-    test("runs script for alias and name glob targets", async () => {
-      const { run } = setupCliTest({
-        testProject: "workspaceConfigPackageFileMix",
+        );
       });
-      const result = await run(
-        "run-script",
-        "all-workspaces",
-        "alias:libA_file",
-        "application-*",
-      );
-      expect(result.exitCode).toBe(0);
-      assertOutputMatches(
-        result.stdout.sanitizedCompactLines,
-        `[application-1b] script for all workspaces
+
+      test("runs script for alias and name glob targets", async () => {
+        const { run } = setupCliTest({
+          testProject: "workspaceConfigPackageFileMix",
+        });
+        const result = await run(
+          "run-script",
+          "all-workspaces",
+          "alias:libA_file",
+          "application-*",
+        );
+        expect(result.exitCode).toBe(0);
+        assertOutputMatches(
+          result.stdout.sanitizedCompactLines,
+          `[application-1b] script for all workspaces
 [application-1a] script for all workspaces
 [application-1c] script for all workspaces
 [library-1a] script for all workspaces
@@ -171,7 +116,8 @@ describe("CLI Workspace Aliases", () => {
 ✅ application-1c: all-workspaces
 ✅ library-1a: all-workspaces
 4 scripts ran successfully`,
-      );
+        );
+      });
     });
   });
 });

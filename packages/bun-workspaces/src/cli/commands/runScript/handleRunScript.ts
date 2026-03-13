@@ -169,6 +169,9 @@ export const runScript = handleProjectCommand(
       logger.warn(
         "--no-prefix is deprecated and will be removed in a future version. Use --output-style=plain instead.",
       );
+      if (!options.outputStyle) {
+        options.outputStyle = "plain";
+      }
     }
 
     const outputStyleHandlers: Record<OutputStyleName, () => Promise<void>> = {

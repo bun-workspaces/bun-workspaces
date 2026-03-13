@@ -50,8 +50,8 @@ describe("Temp file utils", () => {
     });
 
     let filePath = "";
-    for await (const chunk of output) {
-      filePath = chunk.decode().trim();
+    for await (const { chunk } of output.text()) {
+      filePath = chunk.trim();
       expect(fs.readFileSync(filePath, "utf8")).toBe("from createTempFile.ts");
     }
 
@@ -71,8 +71,8 @@ describe("Temp file utils", () => {
     });
 
     let filePath = "";
-    for await (const chunk of output) {
-      filePath = chunk.decode().trim();
+    for await (const { chunk } of output.text()) {
+      filePath = chunk.trim();
       expect(fs.readFileSync(filePath, "utf8")).toBe("from createTempFile.ts");
       kill("SIGINT");
     }
@@ -96,13 +96,13 @@ describe("Temp file utils", () => {
 
     let filePath = "";
     let stderr = "";
-    for await (const chunk of output) {
-      if (chunk.streamName === "stderr") {
-        stderr += chunk.decode({ stripAnsi: true }).trim();
+    for await (const { chunk, metadata } of output.text()) {
+      if (metadata.streamName === "stderr") {
+        stderr += Bun.stripANSI(chunk.trim());
         continue;
       }
 
-      filePath = chunk.decode().trim();
+      filePath = chunk.trim();
       expect(fs.readFileSync(filePath, "utf8")).toBe("from createTempFile.ts");
     }
 

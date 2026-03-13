@@ -26,6 +26,7 @@ const testProject = createMemoryProject({
   workspaces: [
     {
       name: "my-test-workspace",
+      isRoot: false,
       path: "my/test/workspace/path",
       matchPattern: "my/test/workspace/pattern/*",
       scripts: ["my-test-script"],

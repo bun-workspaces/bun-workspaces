@@ -88,15 +88,13 @@ export const runScript = handleProjectCommand(
     );
     logger.debug(`Options: ${JSON.stringify(options)}`);
 
-    const workspaces = workspacePatterns.length
-      ? project.findWorkspacesByPattern(...workspacePatterns)
-      : options.inline
-        ? project.workspaces
-        : project.listWorkspacesWithScript(script);
-
     const scriptEventTarget = createScriptEventTarget();
 
-    const { output, summary } = project.runScriptAcrossWorkspaces({
+    const {
+      output,
+      summary,
+      workspaces: workspacesToRun,
+    } = project.runScriptAcrossWorkspaces({
       workspacePatterns: workspacePatterns.length
         ? workspacePatterns
         : undefined,
@@ -141,7 +139,8 @@ export const runScript = handleProjectCommand(
 
     logger.debug(`Script name: ${scriptName}`);
 
-    const stripDisruptiveControls = workspaces.length > 1 || !!options.parallel;
+    const stripDisruptiveControls =
+      workspacesToRun.length > 1 || !!options.parallel;
 
     logger.debug(`Strip disruptive controls: ${stripDisruptiveControls}`);
 
@@ -177,7 +176,7 @@ export const runScript = handleProjectCommand(
     const outputStyleHandlers: Record<OutputStyleName, () => Promise<void>> = {
       grouped: () =>
         renderGroupedOutput(
-          workspaces,
+          workspacesToRun,
           output,
           summary,
           scriptEventTarget,

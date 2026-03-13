@@ -8,8 +8,8 @@ import type { CliGlobalOptionContent, CliGlobalOptionInfo } from "./cliOption";
 const defineOptionContent = (
   optionName: CliGlobalOptionName,
   factory: (
-    optionConfig: CliGlobalOptionConfig
-  ) => Omit<CliGlobalOptionInfo, "optionName">
+    optionConfig: CliGlobalOptionConfig,
+  ) => Omit<CliGlobalOptionInfo, "optionName">,
 ): CliGlobalOptionContent => {
   const config = getCliGlobalOptionConfig(optionName);
   const content = factory(config);
@@ -42,7 +42,7 @@ const CLI_GLOBAL_OPTIONS_CONTENT = {
         "",
         `bw ${mainOption.replace("--", "--no-")} list-workspaces # disable (to override config/env)`,
       ],
-    })
+    }),
   ),
   logLevel: defineOptionContent("logLevel", ({ mainOption, shortOption }) => ({
     title: "Log Level",

@@ -1,4 +1,4 @@
-import { createCommand, type Command } from "commander";
+import { createCommand } from "commander";
 import packageJson from "../../package.json";
 import { validateCurrentBunVersion } from "../internal/bun";
 import { BunWorkspacesError } from "../internal/core";
@@ -6,11 +6,17 @@ import { logger } from "../internal/logger";
 import { defineGlobalCommands, defineProjectCommands } from "./commands";
 import { fatalErrorLogger } from "./fatalErrorLogger";
 import { initializeWithGlobalOptions } from "./globalOptions";
+import {
+  resolveMiddleware,
+  type CliMiddleware,
+  type CliMiddlewareOptions,
+} from "./middleware";
 
 export interface RunCliOptions {
-  argv?: string | string[];
+  argv?: string[];
   /** Should be `true` if args do not include the binary name (e.g. `bunx bun-workspaces`) */
   programmatic?: true;
+  middleware?: CliMiddlewareOptions;
 }
 
 export interface CLI {
@@ -18,28 +24,32 @@ export interface CLI {
 }
 
 export interface CreateCliOptions {
-  handleError?: (error: Error) => void;
-  postInit?: (program: Command) => unknown;
   defaultCwd?: string;
+  /** Always handled when the result `.run()` is called */
+  defaultMiddleware?: CliMiddlewareOptions;
 }
 
 export const createCli = ({
-  handleError,
-  postInit,
   defaultCwd = process.cwd(),
+  defaultMiddleware,
 }: CreateCliOptions = {}): CLI => {
   logger.debug(`Creating CLI with default cwd: ${defaultCwd}`);
 
   const run = async ({
     argv = process.argv,
     programmatic,
+    middleware: _runMiddleware,
   }: RunCliOptions = {}) => {
-    const errorListener =
-      handleError ??
-      ((error) => {
-        fatalErrorLogger.error(error);
-        process.exit(1);
-      });
+    const middleware: CliMiddleware = resolveMiddleware(
+      defaultMiddleware ?? {},
+      _runMiddleware ?? {},
+    );
+
+    const errorListener = (error: Error) => {
+      middleware.catchError(error);
+      fatalErrorLogger.error(error);
+      process.exit(1);
+    };
 
     process.on("unhandledRejection", errorListener);
 
@@ -49,21 +59,22 @@ export const createCli = ({
         .version(packageJson.version)
         .showHelpAfterError(true);
 
-      postInit?.(program);
+      const defaultContext = {
+        commanderProgram: program,
+      };
 
-      const rawArgs = typeof argv === "string" ? argv.split(/s+/) : argv;
+      middleware.initProgram({ ...defaultContext, argv });
 
       const { args, postTerminatorArgs } = (() => {
-        const terminatorIndex = rawArgs.findIndex((arg) => arg === "--");
+        const terminatorIndex = argv.findIndex((arg) => arg === "--");
         return {
-          args:
-            terminatorIndex !== -1
-              ? rawArgs.slice(0, terminatorIndex)
-              : rawArgs,
+          args: terminatorIndex !== -1 ? argv.slice(0, terminatorIndex) : argv,
           postTerminatorArgs:
-            terminatorIndex !== -1 ? rawArgs.slice(terminatorIndex + 1) : [],
+            terminatorIndex !== -1 ? argv.slice(terminatorIndex + 1) : [],
         };
       })();
+
+      middleware.processArgv({ ...defaultContext, args, postTerminatorArgs });
 
       const bunVersionError = validateCurrentBunVersion();
 
@@ -78,6 +89,8 @@ export const createCli = ({
         defaultCwd,
       );
 
+      middleware.findProject({ ...defaultContext, project, projectError });
+
       if (postTerminatorArgs.length) {
         logger.debug("Has post-terminator args");
       }
@@ -89,11 +102,14 @@ export const createCli = ({
         project,
         projectError,
         postTerminatorArgs,
+        middleware,
       });
 
-      defineGlobalCommands({ program, postTerminatorArgs });
+      defineGlobalCommands({ program, postTerminatorArgs, middleware });
 
       logger.debug(`Commands initialized. Parsing args...`);
+
+      middleware.preParse({ ...defaultContext, args, project, projectError });
 
       await program.parseAsync(args, {
         from: programmatic ? "user" : "node",
@@ -108,6 +124,7 @@ export const createCli = ({
       }
     } finally {
       process.off("unhandledRejection", errorListener);
+      middleware.postParse({ ...defaultContext, args, project, projectError });
     }
   };
 

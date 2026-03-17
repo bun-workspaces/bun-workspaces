@@ -45,6 +45,14 @@ export type Logger = {
   ): Log<Message, Metadata>;
 
   printLevel: LogLevelSetting;
+
+  setPrintStdout: (
+    stdout: (...args: Parameters<typeof process.stdout.write>) => void,
+  ) => void;
+
+  setPrintStderr: (
+    stderr: (...args: Parameters<typeof process.stderr.write>) => void,
+  ) => void;
 } & {
   [Level in LogLevel]: <
     Message extends string | Error = string,
@@ -59,6 +67,14 @@ export const createLogger = (name: string): Logger => new _Logger(name);
 
 const YELLOW = "\x1b[0;33m";
 const NC = "\x1b[0m";
+const RED = "\x1b[0;31m";
+
+const LEVEL_OUTPUT_TARGETS: Record<LogLevel, "stdout" | "stderr"> = {
+  debug: "stderr",
+  info: "stdout",
+  warn: "stderr",
+  error: "stderr",
+};
 
 class _Logger implements Logger {
   constructor(public name: string) {}
@@ -85,21 +101,20 @@ class _Logger implements Logger {
       }
       const mainMessage = message instanceof Error ? message : formattedMessage;
       const metadataMessages = metadata ? [{ metadata }] : [];
-      if (level === "debug") {
-        // debug goes to stderr (console.debug goes to stdout which messes with machine-readable output etc.)
-        process.stderr.write(
-          (typeof mainMessage === "string"
-            ? mainMessage
-            : Bun.inspect(mainMessage, { colors: true })) +
-            metadataMessages
-              .map((m) => Bun.inspect(m, { colors: true }))
-              .join("\n") +
-            "\n",
-        );
-      } else {
-        // eslint-disable-next-line no-console
-        console[level](mainMessage, ...metadataMessages);
-      }
+
+      this[
+        LEVEL_OUTPUT_TARGETS[level] === "stderr"
+          ? "_printStderr"
+          : "_printStdout"
+      ](
+        (typeof mainMessage === "string"
+          ? mainMessage
+          : Bun.inspect(mainMessage, { colors: true })) +
+          metadataMessages
+            .map((m) => Bun.inspect(m, { colors: true }))
+            .join("\n") +
+          "\n",
+      );
     }
 
     return log;
@@ -149,7 +164,11 @@ class _Logger implements Logger {
       level === "debug" || level === "warn"
         ? `[${this.name} ${level.toUpperCase()}]: ${content}`
         : content;
-    return level === "warn" ? `${YELLOW}${prefixed}${NC}` : prefixed;
+    return level === "warn"
+      ? `${YELLOW}${prefixed}${NC}`
+      : level === "error"
+        ? `${RED}${prefixed}${NC}`
+        : prefixed;
   }
 
   private _printLevel: LogLevelSetting = IS_TEST ? "error" : "info";
@@ -157,6 +176,25 @@ class _Logger implements Logger {
   private shouldPrint(level: LogLevel): boolean {
     if (this.printLevel === "silent") return false;
     return getLevelNumber(level) >= getLevelNumber(this.printLevel);
+  }
+
+  private _printStdout: (
+    ...args: Parameters<typeof process.stdout.write>
+  ) => void = (...args) => process.stdout.write(...args);
+  private _printStderr: (
+    ...args: Parameters<typeof process.stderr.write>
+  ) => void = (...args) => process.stderr.write(...args);
+
+  setPrintStdout(
+    stdout: (...args: Parameters<typeof process.stdout.write>) => void,
+  ) {
+    this._printStdout = stdout;
+  }
+
+  setPrintStderr(
+    stderr: (...args: Parameters<typeof process.stderr.write>) => void,
+  ) {
+    this._printStderr = stderr;
   }
 }
 

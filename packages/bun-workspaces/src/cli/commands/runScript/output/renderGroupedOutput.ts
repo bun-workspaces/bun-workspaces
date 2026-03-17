@@ -19,6 +19,7 @@ import type {
   ScriptEventName,
 } from "../../../../runScript";
 import type { Workspace } from "../../../../workspaces";
+import type { WriteOutputOptions } from "../../../createCli";
 import { generatePlainOutputLines } from "./renderPlainOutput";
 
 type ScriptEvent = TypedEvent<
@@ -114,6 +115,7 @@ export const renderGroupedOutput = async (
   summary: Promise<RunScriptsSummary<RunWorkspaceScriptMetadata>>,
   scriptEventTarget: ScriptEventTarget,
   activeScriptLines: number | "all",
+  outputWriters: Required<WriteOutputOptions>,
 ) => {
   const workspaceState: Record<string, WorkspaceState> = workspaces.reduce(
     (acc, workspace) => {
@@ -135,7 +137,7 @@ export const renderGroupedOutput = async (
     }
     isInitialized = true;
     logger.debug("Initializing TUI state");
-    process.stdout.write(cursorOps.hide());
+    outputWriters.stdout(cursorOps.hide());
     process.stdin.setRawMode?.(true);
   };
 
@@ -146,7 +148,7 @@ export const renderGroupedOutput = async (
     }
     isReset = true;
     logger.debug("Resetting TUI state");
-    process.stdout.write(cursorOps.show());
+    outputWriters.stdout(cursorOps.show());
     process.stdin.unref();
     process.stdin.setRawMode?.(false);
   };
@@ -260,18 +262,18 @@ export const renderGroupedOutput = async (
 
     if (previousHeight > 0) {
       // clear previous frame
-      process.stdout.write(cursorOps.up(previousHeight));
+      outputWriters.stdout(cursorOps.up(previousHeight));
       for (let i = 0; i < previousHeight; i++) {
-        process.stdout.write(cursorOps.toColumn(1));
-        process.stdout.write(lineOps.clearFull());
-        process.stdout.write("\n");
+        outputWriters.stdout(cursorOps.toColumn(1));
+        outputWriters.stdout(lineOps.clearFull());
+        outputWriters.stdout("\n");
       }
-      process.stdout.write(cursorOps.up(previousHeight));
+      outputWriters.stdout(cursorOps.up(previousHeight));
     }
 
     for (const line of linesToWrite) {
       if (isFinal && line.type === "scriptOutput") {
-        process.stdout.write(line.text.replace(/\n?$/, "\n"));
+        outputWriters.stdout(line.text.replace(/\n?$/, "\n"));
       } else {
         const visibleLength = calculateVisibleLength(line.text);
 
@@ -280,7 +282,7 @@ export const renderGroupedOutput = async (
             ? truncateTerminalString(line.text, width - 2) + "\x1b[0m…"
             : line.text;
 
-        process.stdout.write(truncated.replace(/\n?$/, "\n"));
+        outputWriters.stdout(truncated.replace(/\n?$/, "\n"));
       }
     }
 
@@ -345,7 +347,7 @@ export const renderGroupedOutput = async (
   runOnExit((reason) => {
     try {
       if (typeof reason === "string" && reason.startsWith("SIG")) {
-        process.stdout.write("\r" + lineOps.clearFull());
+        outputWriters.stdout("\r" + lineOps.clearFull());
       }
 
       Object.keys(workspaceState).forEach((workspaceName) => {

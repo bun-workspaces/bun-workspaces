@@ -3,6 +3,8 @@ import { BunWorkspacesError } from "../../internal/core/error";
 import { createLogger, logger } from "../../internal/logger";
 import type { FileSystemProject } from "../../project/implementations/fileSystemProject";
 import type { Workspace } from "../../workspaces";
+import type { WriteOutputOptions } from "../createCli";
+import type { CliMiddleware, CommandMiddlewareContext } from "../middleware";
 import {
   getCliCommandConfig,
   type CliCommandName,
@@ -12,10 +14,12 @@ import {
 
 /** @todo DRY use of output text in cases such as having no workspaces/scripts */
 
-export interface GlobalCommandContext {
+export type GlobalCommandContext = {
   program: Command;
   postTerminatorArgs: string[];
-}
+  middleware: CliMiddleware;
+  outputWriters: Required<WriteOutputOptions>;
+};
 
 export type ProjectCommandContext = GlobalCommandContext & {
   project: FileSystemProject;
@@ -80,8 +84,21 @@ const handleCommand =
     program = program.action(async (...actionArgs) => {
       try {
         logger.debug(`Handling command: ${commandName}`);
+
+        const middlewareContext: CommandMiddlewareContext<CliCommandName> = {
+          commanderProgram: program,
+          commandName,
+          commandContext: context,
+          commanderActionArgs: actionArgs,
+        };
+
+        program = context.middleware.preHandleCommand(middlewareContext);
+
         await handler(context, ...(actionArgs as ActionArgs));
+
+        program = context.middleware.postHandleCommand(middlewareContext);
       } catch (error) {
+        context.middleware.catchError(error as Error);
         if (error instanceof BunWorkspacesError) {
           logger.error(error.message);
           process.exit(1);
@@ -115,6 +132,7 @@ export const handleProjectCommand =
       async (context, ...actionArgs) => {
         const { projectError } = context;
         if (projectError) {
+          context.middleware.catchError(projectError);
           logger.error(projectError.message);
           process.exit(1);
         }

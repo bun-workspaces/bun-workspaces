@@ -22,7 +22,7 @@ import { renderPlainOutput } from "./output/renderPlainOutput";
 export const runScript = handleProjectCommand(
   "runScript",
   async (
-    { project, postTerminatorArgs },
+    { project, postTerminatorArgs, outputWriters },
     positionalScript: string,
     positionalWorkspacePatterns: string[],
     options: {
@@ -176,11 +176,15 @@ export const runScript = handleProjectCommand(
           summary,
           scriptEventTarget,
           groupedLines,
+          outputWriters,
         ),
       prefixed: () =>
-        renderPlainOutput(output, { prefix: true, stripDisruptiveControls }),
+        renderPlainOutput(output, outputWriters, {
+          prefix: true,
+          stripDisruptiveControls,
+        }),
       plain: () =>
-        renderPlainOutput(output, {
+        renderPlainOutput(output, outputWriters, {
           prefix: false,
           stripDisruptiveControls,
         }),
@@ -277,8 +281,6 @@ export const runScript = handleProjectCommand(
 
     if (exitResults.failureCount) {
       process.exit(1);
-    } else {
-      process.exit(0);
     }
   },
 );

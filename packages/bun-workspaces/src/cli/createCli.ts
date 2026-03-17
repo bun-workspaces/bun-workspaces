@@ -4,6 +4,7 @@ import { validateCurrentBunVersion } from "../internal/bun";
 import { BunWorkspacesError } from "../internal/core";
 import { logger } from "../internal/logger";
 import { defineGlobalCommands, defineProjectCommands } from "./commands";
+import { commandOutputLogger } from "./commands/commandHandlerUtils";
 import { fatalErrorLogger } from "./fatalErrorLogger";
 import { initializeWithGlobalOptions } from "./globalOptions";
 import {
@@ -12,11 +13,18 @@ import {
   type CliMiddlewareOptions,
 } from "./middleware";
 
+export interface WriteOutputOptions {
+  stdout?: (...args: Parameters<typeof process.stdout.write>) => void;
+  stderr?: (...args: Parameters<typeof process.stderr.write>) => void;
+}
+
 export interface RunCliOptions {
   argv?: string[];
   /** Should be `true` if args do not include the binary name (e.g. `bunx bun-workspaces`) */
   programmatic?: true;
   middleware?: CliMiddlewareOptions;
+  writeOutput?: WriteOutputOptions;
+  terminalWidth?: number;
 }
 
 export interface CLI {
@@ -39,11 +47,24 @@ export const createCli = ({
     argv = process.argv,
     programmatic,
     middleware: _runMiddleware,
+    writeOutput,
+    terminalWidth,
   }: RunCliOptions = {}) => {
     const middleware: CliMiddleware = resolveMiddleware(
       defaultMiddleware ?? {},
       _runMiddleware ?? {},
     );
+
+    const outputWriters: Required<WriteOutputOptions> = {
+      stdout: (...args) => process.stdout.write(...args),
+      stderr: (...args) => process.stderr.write(...args),
+      ...writeOutput,
+    };
+
+    logger.setPrintStdout(outputWriters.stdout);
+    logger.setPrintStderr(outputWriters.stderr);
+    commandOutputLogger.setPrintStdout(outputWriters.stdout);
+    commandOutputLogger.setPrintStderr(outputWriters.stderr);
 
     const errorListener = (error: Error) => {
       middleware.catchError(error);
@@ -57,7 +78,17 @@ export const createCli = ({
       const program = createCommand("bun-workspaces")
         .description("A CLI on top of native Bun workspaces")
         .version(packageJson.version)
-        .showHelpAfterError(true);
+        .showHelpAfterError(true)
+        .configureOutput({
+          writeOut: outputWriters.stdout,
+          writeErr: outputWriters.stderr,
+          ...(terminalWidth
+            ? {
+                getOutHelpWidth: () => terminalWidth,
+                getErrHelpWidth: () => terminalWidth,
+              }
+            : {}),
+        });
 
       const defaultContext = {
         commanderProgram: program,
@@ -103,9 +134,15 @@ export const createCli = ({
         projectError,
         postTerminatorArgs,
         middleware,
+        outputWriters,
       });
 
-      defineGlobalCommands({ program, postTerminatorArgs, middleware });
+      defineGlobalCommands({
+        program,
+        postTerminatorArgs,
+        middleware,
+        outputWriters,
+      });
 
       logger.debug(`Commands initialized. Parsing args...`);
 
@@ -114,6 +151,8 @@ export const createCli = ({
       await program.parseAsync(args, {
         from: programmatic ? "user" : "node",
       });
+
+      middleware.postParse({ ...defaultContext, args, project, projectError });
     } catch (error) {
       if (error instanceof BunWorkspacesError) {
         logger.debug(error);
@@ -124,7 +163,6 @@ export const createCli = ({
       }
     } finally {
       process.off("unhandledRejection", errorListener);
-      middleware.postParse({ ...defaultContext, args, project, projectError });
     }
   };
 

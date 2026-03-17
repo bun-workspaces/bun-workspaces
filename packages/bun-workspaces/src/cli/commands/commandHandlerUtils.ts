@@ -3,6 +3,7 @@ import { BunWorkspacesError } from "../../internal/core/error";
 import { createLogger, logger } from "../../internal/logger";
 import type { FileSystemProject } from "../../project/implementations/fileSystemProject";
 import type { Workspace } from "../../workspaces";
+import type { WriteOutputOptions } from "../createCli";
 import type { CliMiddleware, CommandMiddlewareContext } from "../middleware";
 import {
   getCliCommandConfig,
@@ -17,6 +18,7 @@ export type GlobalCommandContext = {
   program: Command;
   postTerminatorArgs: string[];
   middleware: CliMiddleware;
+  outputWriters: Required<WriteOutputOptions>;
 };
 
 export type ProjectCommandContext = GlobalCommandContext & {

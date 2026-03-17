@@ -51,6 +51,13 @@ export type CommandMiddleware = <C extends CliCommandName>(
   context: CommandMiddlewareContext<C>,
 ) => CommanderProgram;
 
+export type PostCleanupContext = {
+  commanderProgram: CommanderProgram;
+  args: string[];
+  project: FileSystemProject;
+  projectError: Error | null;
+};
+
 export type CliMiddleware = {
   /** The first callback when the Commander program is created */
   initProgram: (context: InitProgramContext) => CommanderProgram;
@@ -100,7 +107,7 @@ export const resolveMiddleware = (
         } catch (error) {
           logger.error(
             new MIDDLEWARE_ERRORS.MiddlewareHandlerFailed(
-              `Failed to handle ${key} middleware`,
+              `Error in middleware handler "${key}"`,
             ),
           );
           throw error;

@@ -48,7 +48,7 @@ export const createCli = ({
     programmatic,
     middleware: _runMiddleware,
     writeOutput,
-    terminalWidth,
+    terminalWidth = process.stdout.columns,
   }: RunCliOptions = {}) => {
     const middleware: CliMiddleware = resolveMiddleware(
       defaultMiddleware ?? {},
@@ -135,6 +135,7 @@ export const createCli = ({
         postTerminatorArgs,
         middleware,
         outputWriters,
+        terminalWidth,
       });
 
       defineGlobalCommands({
@@ -142,6 +143,7 @@ export const createCli = ({
         postTerminatorArgs,
         middleware,
         outputWriters,
+        terminalWidth,
       });
 
       logger.debug(`Commands initialized. Parsing args...`);

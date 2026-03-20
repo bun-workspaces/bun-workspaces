@@ -1,8 +1,9 @@
 import { FitAddon } from "@xterm/addon-fit";
 import { Terminal as XTermTerminal, type ITheme } from "@xterm/xterm";
 import { useEffect, useRef } from "react";
+import { useThemeState } from "rspress/theme";
 import "@xterm/xterm/css/xterm.css";
-import { useWebCliResult } from "../invokeWebCli";
+import { useWebCliResult } from "../util/invokeWebCli";
 import { WEB_CLI_INPUT_ID } from "./TerminalInput";
 
 export type TerminalSize = {
@@ -14,31 +15,35 @@ export type TerminalScreenProps = {
   onTerminalResize?: (size: TerminalSize) => void;
 };
 
-const getCssVariable = (name: string): string =>
-  getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const getTerminalTheme = (): ITheme => {
+  const computedStyle = getComputedStyle(document.documentElement);
 
-const getTerminalTheme = (): ITheme => ({
-  background: getCssVariable("--rp-c-code-block-bg"),
-  foreground: getCssVariable("--rp-c-text-1"),
-  cursor: "transparent",
-  selectionBackground: getCssVariable("--rp-c-bg-soft"),
-  black: "#1e1e1e",
-  red: "#d65151",
-  green: "#6a9f58",
-  yellow: "#d6b35f",
-  blue: "#5b7dd1",
-  magenta: "#8f69c5",
-  cyan: "#58a7b4",
-  white: getCssVariable("--rp-c-text-1"),
-  brightBlack: "#6b6b6b",
-  brightRed: "#ff6a6a",
-  brightGreen: "#8bcf71",
-  brightYellow: "#ffd27a",
-  brightBlue: "#86a7ff",
-  brightMagenta: "#b38eff",
-  brightCyan: "#84d9e8",
-  brightWhite: "#f2f2f2",
-});
+  const getCssVariable = (name: string) =>
+    computedStyle.getPropertyValue(name).trim();
+
+  return {
+    background: getCssVariable("--rp-c-code-block-bg"),
+    foreground: getCssVariable("--rp-c-text-1"),
+    cursor: "transparent",
+    selectionBackground: getCssVariable("--rp-c-bg-soft"),
+    black: getCssVariable("--web-cli-black"),
+    red: getCssVariable("--web-cli-red"),
+    green: getCssVariable("--web-cli-green"),
+    yellow: getCssVariable("--web-cli-yellow"),
+    blue: getCssVariable("--web-cli-blue"),
+    magenta: getCssVariable("--web-cli-magenta"),
+    cyan: getCssVariable("--web-cli-cyan"),
+    white: getCssVariable("--rp-c-text-1"),
+    brightBlack: getCssVariable("--web-cli-bright-black"),
+    brightRed: getCssVariable("--web-cli-red"),
+    brightGreen: getCssVariable("--web-cli-green"),
+    brightYellow: getCssVariable("--web-cli-yellow"),
+    brightBlue: getCssVariable("--web-cli-blue"),
+    brightMagenta: getCssVariable("--web-cli-magenta"),
+    brightCyan: getCssVariable("--web-cli-cyan"),
+    brightWhite: getCssVariable("--rp-c-text-1"),
+  };
+};
 
 export const TerminalScreen = ({ onTerminalResize }: TerminalScreenProps) => {
   const terminalDivRef = useRef<HTMLDivElement>(null);
@@ -47,6 +52,14 @@ export const TerminalScreen = ({ onTerminalResize }: TerminalScreenProps) => {
 
   const cliResult = useWebCliResult();
   const writtenChunksRef = useRef(0);
+
+  const [theme] = useThemeState();
+
+  useEffect(() => {
+    if (terminalRef.current) {
+      terminalRef.current.options.theme = getTerminalTheme();
+    }
+  }, [theme]);
 
   useEffect(() => {
     if (!terminalDivRef.current) return;

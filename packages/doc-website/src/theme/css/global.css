@@ -17,9 +17,48 @@
   --code-built-in-color: rgb(192, 105, 23);
   --code-comment-color: rgb(130, 130, 130);
 
+  --web-cli-green: #2e7e14;
+  --web-cli-blue: #407ca8;
+  --web-cli-magenta: #8f69c5;
+  --web-cli-cyan: #3b93a0;
+  --web-cli-yellow: #a58029;
+  --web-cli-red: #d25151;
+  --web-cli-black: #3d3d3d;
+  --web-cli-bright-black: #6b6b6b;
   --web-cli-divider: rgb(232, 232, 232);
 
   --nav-color: #f5f5f5aa;
+}
+
+.dark {
+  --rp-c-bg: #16151c;
+  --rp-c-bg-soft: rgb(31, 31, 40);
+  --rp-c-bg-mute: rgb(32, 32, 43);
+  --rp-c-link: rgb(128, 162, 255);
+  --rp-c-text-code-bg: rgb(31, 31, 40);
+  --rp-c-text-code: #efefef;
+  --rp-c-code-block-bg: #101014;
+  --rp-c-text-1: #eee;
+  --rp-c-text-2: #a0a0a0;
+
+  --code-base-color: var(--rp-c-text-1);
+  --code-string-color: rgb(254, 247, 143);
+  --code-keyword-color: rgb(213, 198, 250);
+  --code-attr-color: rgb(162, 185, 247);
+  --code-built-in-color: rgb(253, 178, 64);
+  --code-comment-color: rgb(145, 145, 145);
+
+  --web-cli-green: #6a9f58;
+  --web-cli-blue: #2ba1f6;
+  --web-cli-magenta: #8f69c5;
+  --web-cli-cyan: #58a7b4;
+  --web-cli-yellow: #d6b35f;
+  --web-cli-red: #e05a5a;
+  --web-cli-black: #696969;
+  --web-cli-bright-black: #828282;
+  --web-cli-divider: transparent;
+
+  --nav-color: #121117aa;
 }
 
 .rspress-nav::before {
@@ -42,29 +81,6 @@
 .rspress-nav-menu-item {
   letter-spacing: 0.03em !important;
   font-weight: 600 !important;
-}
-
-.dark {
-  --rp-c-bg: #16151c;
-  --rp-c-bg-soft: rgb(31, 31, 40);
-  --rp-c-bg-mute: rgb(32, 32, 43);
-  --rp-c-link: rgb(128, 162, 255);
-  --rp-c-text-code-bg: rgb(31, 31, 40);
-  --rp-c-text-code: #efefef;
-  --rp-c-code-block-bg: #101014;
-  --rp-c-text-1: #eee;
-  --rp-c-text-2: #a0a0a0;
-
-  --code-base-color: var(--rp-c-text-1);
-  --code-string-color: rgb(254, 247, 143);
-  --code-keyword-color: rgb(213, 198, 250);
-  --code-attr-color: rgb(162, 185, 247);
-  --code-built-in-color: rgb(253, 178, 64);
-  --code-comment-color: rgb(145, 145, 145);
-
-  --web-cli-divider: transparent;
-
-  --nav-color: #121117aa;
 }
 
 .rspress-nav-menu-group-content > * {
@@ -742,7 +758,6 @@ hr {
   border: none;
   outline: none;
   flex: 1;
-  margin-left: 0.25rem;
   caret-shape: block;
   font-size: 1.3rem;
   font-weight: 600;

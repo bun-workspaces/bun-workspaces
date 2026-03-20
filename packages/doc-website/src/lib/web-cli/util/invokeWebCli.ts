@@ -4,7 +4,7 @@ import type {
 } from "bw-web-service-shared";
 import { useCallback } from "react";
 import { create } from "zustand";
-import { useApiHealth, serviceClient } from "../service";
+import { useApiHealth, serviceClient } from "../../service";
 
 export const DEFAULT_TERMINAL_WIDTH = 80;
 

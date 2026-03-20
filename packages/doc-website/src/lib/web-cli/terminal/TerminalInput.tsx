@@ -5,7 +5,7 @@ import {
   useInvokeWebCli,
   useSetWebCliInput,
   useWebCliInput,
-} from "../invokeWebCli";
+} from "../util/invokeWebCli";
 import { EXAMPLE_COMMANDS, type ExampleCommand } from "./exampleCommands";
 
 export const WEB_CLI_INPUT_ID = "web-cli-input";
@@ -35,6 +35,16 @@ export const TerminalInput = () => {
 
   const isError = !!error || (!isLoading && !isHealthy);
   const disabled = !isHealthy || isError || isInvoking;
+
+  const didTestRef = useRef(false);
+  useEffect(() => {
+    if (!disabled && !didTestRef.current) {
+      didTestRef.current = true;
+      invokeWebCli({
+        argv: ["ls"],
+      });
+    }
+  }, [disabled]);
 
   return (
     <form

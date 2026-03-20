@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useLoadApiHealth } from "../service/apiHealth";
-import { useSetWebCliTerminalWidth } from "./invokeWebCli";
 import { Terminal, type TerminalProps } from "./terminal/Terminal";
+import { useSetWebCliTerminalWidth } from "./util/invokeWebCli";
 
 export const WebCliPage = () => {
   useLoadApiHealth();

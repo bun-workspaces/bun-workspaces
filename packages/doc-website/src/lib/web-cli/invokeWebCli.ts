@@ -13,6 +13,8 @@ const useInvokeWebCliStore = create<{
   result: InvokeCliResponseChunk[];
   input: string;
   terminalWidth: number;
+  lastCommand: string[];
+  setLastCommand: (lastCommand: string[]) => void;
   setTerminalWidth: (terminalWidth: number) => void;
   setInput: (input: string) => void;
   setIsLoading: (isLoading: boolean) => void;
@@ -23,6 +25,8 @@ const useInvokeWebCliStore = create<{
   result: [],
   input: "",
   terminalWidth: DEFAULT_TERMINAL_WIDTH,
+  lastCommand: [],
+  setLastCommand: (lastCommand) => set({ lastCommand }),
   setTerminalWidth: (terminalWidth) => set({ terminalWidth }),
   setInput: (input) => set({ input }),
   setIsLoading: (isLoading) => set({ isLoading }),
@@ -38,6 +42,7 @@ export const useInvokeWebCli = () => {
   const setResult = useInvokeWebCliStore((state) => state.setResult);
   const addResultChunk = useInvokeWebCliStore((state) => state.addResultChunk);
   const terminalWidth = useInvokeWebCliStore((state) => state.terminalWidth);
+  const setLastCommand = useInvokeWebCliStore((state) => state.setLastCommand);
   const { isHealthy } = useApiHealth();
 
   const invokeWebCli = useCallback(
@@ -46,6 +51,7 @@ export const useInvokeWebCli = () => {
 
       setIsLoading(true);
       setResult([]);
+      setLastCommand([]);
 
       for await (const chunk of serviceClient.invokeWebCli({
         ...request,
@@ -54,9 +60,19 @@ export const useInvokeWebCli = () => {
         addResultChunk(chunk);
       }
 
+      setLastCommand(request.argv);
+
       setIsLoading(false);
     },
-    [addResultChunk, isHealthy, isLoading, setIsLoading, setResult],
+    [
+      addResultChunk,
+      isHealthy,
+      isLoading,
+      setIsLoading,
+      setLastCommand,
+      setResult,
+      terminalWidth,
+    ],
   );
 
   return { invokeWebCli, isLoading, result };

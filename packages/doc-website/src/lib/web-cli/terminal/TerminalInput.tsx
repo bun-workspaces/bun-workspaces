@@ -41,10 +41,12 @@ export const TerminalInput = () => {
       onSubmit={(e) => {
         e.preventDefault();
         if (disabled) return;
+        if (!input.trim()) return;
         invokeWebCli({
-          argv: input.split(" ").filter(Boolean),
+          argv: input.split(/\s+/).filter(Boolean),
         });
         setInput("");
+        inputRef.current?.focus();
       }}
       className="web-cli-input-form"
       onClick={(e) => {
@@ -76,16 +78,15 @@ export const TerminalInput = () => {
           className="web-cli-input"
           id={WEB_CLI_INPUT_ID}
           type="text"
-          disabled={disabled}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           maxLength={1000}
-          placeholder={` Type a command (like: ${placeholderExample?.command.replace("bw ", "")})`}
+          placeholder={` Enter a command (like: ${placeholderExample?.command.replace("bw ", "")})`}
           autoFocus
         />
       )}
       <button
-        disabled={disabled}
+        disabled={disabled || !input.trim()}
         type="submit"
         className="web-cli-input-submit"
         ref={submitRef}

@@ -54,6 +54,7 @@ export const TerminalScreen = ({ onTerminalResize }: TerminalScreenProps) => {
     const terminal = new XTermTerminal({
       disableStdin: true,
       cursorBlink: false,
+      cursorWidth: 1,
       allowTransparency: true,
       fontFamily: "var(--rp-font-family-mono)",
       fontSize: 16,
@@ -116,7 +117,10 @@ export const TerminalScreen = ({ onTerminalResize }: TerminalScreenProps) => {
     const newChunks = cliResult.slice(writtenChunksRef.current);
     if (newChunks.length === 0) return;
 
-    const payload = newChunks.map((chunk) => chunk.terminalOutput).join("");
+    const payload = newChunks
+      .map((chunk) => chunk.terminalOutput)
+      .join("")
+      .replaceAll("\n", "\r\n");
     terminal.write(payload);
     writtenChunksRef.current = cliResult.length;
   }, [cliResult]);

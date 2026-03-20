@@ -742,6 +742,7 @@ hr {
   border: none;
   outline: none;
   flex: 1;
+  margin-left: 0.25rem;
   caret-shape: block;
   font-size: 1.3rem;
   font-weight: 600;
@@ -780,6 +781,15 @@ hr {
   padding: 0.75rem 1.75rem;
   box-sizing: content-box;
   border-radius: 0.25rem;
+  transition:
+    opacity 0.25s,
+    background-color 0.25s;
+}
+
+.web-cli-input-submit:disabled {
+  opacity: 0.5;
+  background-color: var(--rp-c-text-3) !important;
+  cursor: not-allowed;
 }
 
 .xterm {

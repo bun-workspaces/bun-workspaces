@@ -40,3 +40,6 @@ export const useDecrementCommandHistoryIndex = () =>
 
 export const useResetHistoryIndex = () =>
   useCommandHistory((state) => state.resetHistoryIndex);
+
+export const useHistoryIndex = () =>
+  useCommandHistory((state) => state.historyIndex);

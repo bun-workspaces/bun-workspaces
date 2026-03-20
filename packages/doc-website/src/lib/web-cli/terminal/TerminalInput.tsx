@@ -4,6 +4,7 @@ import { useApiHealth } from "../../service";
 import {
   useDecrementCommandHistoryIndex,
   useHistoryCommand,
+  useHistoryIndex,
   useIncrementCommandHistoryIndex,
   useResetHistoryIndex,
 } from "../util/commandHistory";
@@ -27,6 +28,7 @@ export const TerminalInput = () => {
   const historyCommand = useHistoryCommand();
   const incrementHistoryIndex = useIncrementCommandHistoryIndex();
   const decrementHistoryIndex = useDecrementCommandHistoryIndex();
+  const historyIndex = useHistoryIndex();
 
   const [placeholderExample, setPlaceholderExample] = useState<ExampleCommand>(
     EXAMPLE_COMMANDS[0]
@@ -48,7 +50,14 @@ export const TerminalInput = () => {
   const disabled = !isHealthy || isError || isInvoking;
 
   useEffect(() => {
-    setInput(historyCommand?.join(" ") ?? "");
+    if (historyCommand) {
+      setInput(historyCommand.join(" "));
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.selectionStart = inputRef.current?.value.length ?? 0;
+        }
+      });
+    }
   }, [historyCommand, setInput]);
 
   const handleInput = useCallback(
@@ -61,13 +70,21 @@ export const TerminalInput = () => {
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) {
+        return;
+      }
+
       if (e.key === "ArrowUp") {
+        e.preventDefault();
         incrementHistoryIndex();
       } else if (e.key === "ArrowDown") {
         decrementHistoryIndex();
+        if (historyIndex <= 0) {
+          setInput("");
+        }
       }
     },
-    [incrementHistoryIndex, decrementHistoryIndex]
+    [incrementHistoryIndex, decrementHistoryIndex, historyIndex, setInput]
   );
 
   return (
@@ -115,7 +132,7 @@ export const TerminalInput = () => {
           value={input}
           onChange={handleInput}
           onKeyDown={handleKeyDown}
-          maxLength={1000}
+          maxLength={200}
           placeholder={` Enter a command (like: ${placeholderExample?.command.replace("bw ", "")})`}
           autoFocus
         />

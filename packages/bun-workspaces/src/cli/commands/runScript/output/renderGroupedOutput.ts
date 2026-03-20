@@ -150,7 +150,7 @@ export const renderGroupedOutput = async (
     isReset = true;
     logger.debug("Resetting TUI state");
     outputWriters.stdout(cursorOps.show());
-    process.stdin.unref();
+    process.stdin.unref?.();
     process.stdin.setRawMode?.(false);
   };
 

@@ -136,6 +136,14 @@ export const TerminalScreen = ({ onTerminalResize }: TerminalScreenProps) => {
       .replaceAll("\n", "\r\n");
     terminal.write(payload);
     writtenChunksRef.current = cliResult.length;
+
+    const lastChunk = newChunks[newChunks.length - 1];
+    lastChunk.warnings.forEach((warning) => {
+      terminal.write(`\x1b[33m${warning.message}\x1b[0m`);
+    });
+    lastChunk.errors.forEach((error) => {
+      terminal.write(`\x1b[31m${error.message}\x1b[0m`);
+    });
   }, [cliResult]);
 
   return (

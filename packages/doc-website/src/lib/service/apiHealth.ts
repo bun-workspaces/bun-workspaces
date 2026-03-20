@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { create } from "zustand";
+import { useOnMount } from "../util/useOnMount";
 import { serviceClient } from "./client";
 
 const useHealthStore = create<{
@@ -31,7 +32,7 @@ export const useLoadApiHealth = () => {
   const setError = useHealthStore((state) => state.setError);
   const setIsLoading = useHealthStore((state) => state.setIsLoading);
 
-  useEffect(() => {
+  useOnMount(() => {
     if (isLoading || isHealthy || error) return;
     (async () => {
       try {
@@ -54,7 +55,7 @@ export const useLoadApiHealth = () => {
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 };
 
 export const useApiHealth = () => {

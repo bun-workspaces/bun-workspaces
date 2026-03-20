@@ -17,6 +17,8 @@
   --code-built-in-color: rgb(192, 105, 23);
   --code-comment-color: rgb(130, 130, 130);
 
+  --web-cli-divider: rgb(232, 232, 232);
+
   --nav-color: #f5f5f5aa;
 }
 
@@ -59,6 +61,8 @@
   --code-attr-color: rgb(162, 185, 247);
   --code-built-in-color: rgb(253, 178, 64);
   --code-comment-color: rgb(145, 145, 145);
+
+  --web-cli-divider: transparent;
 
   --nav-color: #121117aa;
 }
@@ -674,4 +678,110 @@ hr {
   opacity: 0.75;
   margin-top: 0.35rem;
   line-height: 1.15 !important;
+}
+
+.web-cli-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.web-cli-terminal-screen-container {
+  padding: 0.65rem;
+  padding-bottom: 0;
+  background-color: var(--rp-c-code-block-bg);
+  border-radius: 0.45rem;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.web-cli-terminal-screen {
+  width: calc(min(90vw, 56rem) - 1.3rem);
+  height: clamp(18rem, 48vh, 30rem);
+  border-radius: 0.5rem;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  background: var(--rp-c-code-block-bg);
+  overflow: hidden;
+}
+
+.web-cli-terminal .xterm,
+.web-cli-terminal .xterm-viewport {
+  height: 100%;
+}
+
+.web-cli-terminal .xterm-cursor,
+.web-cli-terminal .xterm-cursor-layer {
+  display: none !important;
+}
+
+.web-cli-input-form {
+  display: flex;
+  align-items: center;
+  max-width: min(90vw, 56rem);
+  gap: 0.5rem;
+  background-color: var(--rp-c-bg-mute);
+  padding: 0.75rem;
+  border-bottom-right-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
+  border-top: 1px solid var(--web-cli-divider);
+}
+
+.web-cli-input-label {
+  color: var(--rp-c-text-1);
+  font-size: 1.3rem;
+  font-weight: 600;
+  font-family: var(--rp-font-family-mono);
+  color: var(--rp-c-link);
+  white-space: nowrap;
+}
+
+.web-cli-input {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  flex: 1;
+  caret-shape: block;
+  font-size: 1.3rem;
+  font-weight: 600;
+  font-family: var(--rp-font-family-mono);
+}
+
+.web-cli-input::placeholder {
+  color: var(--rp-c-text-3);
+  opacity: 0.75;
+  padding-left: 0.25rem;
+  font-size: 1.3rem;
+}
+
+.web-cli-input-error {
+  flex: 1;
+  color: var(--rp-container-danger-text);
+  caret-color: transparent;
+  text-align: center;
+  font-size: 0.9em;
+  padding: 0 4rem;
+}
+
+.web-cli-input-error a {
+  color: var(--rp-container-danger-text);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.xterm-viewport {
+  background-color: var(--rp-c-code-block-bg) !important;
+}
+
+.web-cli-input-submit {
+  color: var(--rp-c-bg);
+  background-color: var(--rp-c-link);
+  padding: 0.75rem 1.75rem;
+  box-sizing: content-box;
+  border-radius: 0.25rem;
+}
+
+.xterm {
+  background-color: var(--rp-c-code-block-bg) !important;
 }

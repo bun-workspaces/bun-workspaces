@@ -1,33 +1,25 @@
-import { demoProject } from "bw-web-service-shared";
-import { useEffect } from "react";
-import { useApiHealth, useLoadApiHealth } from "../service/apiHealth";
-import {
-  useInvokeWebCli,
-  useInvokeWebCliResult,
-} from "../service/invokeWebCli";
+import { useCallback } from "react";
+import { useLoadApiHealth } from "../service/apiHealth";
+import { useSetWebCliTerminalWidth } from "./invokeWebCli";
+import { Terminal, type TerminalProps } from "./terminal/Terminal";
 
 export const WebCliPage = () => {
   useLoadApiHealth();
 
-  const { isLoading, isHealthy, error } = useApiHealth();
+  const setTerminalWidth = useSetWebCliTerminalWidth();
 
-  const { invokeWebCli } = useInvokeWebCli();
-
-  const result = useInvokeWebCliResult();
-
-  useEffect(() => {
-    if (isHealthy) {
-      invokeWebCli({
-        argv: ["list-workspaces", "--json"],
-        terminalWidth: 80,
-      });
-    }
-  }, [isHealthy]);
-
-  useEffect(() => {
-    console.log(result);
-    console.log(demoProject);
-  }, [result]);
-
-  return <div>WebCliPage</div>;
+  return (
+    <div className="web-cli-container">
+      <Terminal
+        onTerminalResize={useCallback<
+          NonNullable<TerminalProps["onTerminalResize"]>
+        >(
+          ({ cols }) => {
+            setTerminalWidth(cols);
+          },
+          [setTerminalWidth]
+        )}
+      />
+    </div>
+  );
 };

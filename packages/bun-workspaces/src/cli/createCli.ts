@@ -82,12 +82,6 @@ export const createCli = ({
         .configureOutput({
           writeOut: outputWriters.stdout,
           writeErr: outputWriters.stderr,
-          ...(terminalWidth
-            ? {
-                getOutHelpWidth: () => terminalWidth,
-                getErrHelpWidth: () => terminalWidth,
-              }
-            : {}),
         });
 
       const defaultContext = {

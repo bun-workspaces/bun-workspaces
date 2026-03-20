@@ -634,3 +634,44 @@ hr {
   font-size: 1.5rem !important;
   margin-bottom: 0.25rem;
 }
+
+.web-cli-button-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.web-cli-button {
+  font-family: "Jersey 10", sans-serif;
+  background-color: #4f5dcd;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  text-align: center;
+  line-height: 0.75;
+  font-size: 2.1rem;
+  border-radius: 0.5rem;
+  transition:
+    transform 0.2s,
+    filter 0.2s;
+}
+
+.web-cli-button:hover,
+.web-cli-button:focus,
+.web-cli-button:active {
+  transform: scale(1.04);
+  filter: brightness(1.1);
+  background-color: #4f5dcd !important;
+  color: white !important;
+  animation: none !important;
+  opacity: 1 !important;
+}
+
+.web-cli-button-note {
+  font-size: 0.85rem;
+  text-align: center;
+  opacity: 0.75;
+  margin-top: 0.35rem;
+  line-height: 1.15 !important;
+}

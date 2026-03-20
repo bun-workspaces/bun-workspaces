@@ -201,7 +201,7 @@ export default defineConfig({
           tag: "link",
           attrs: {
             rel: "stylesheet",
-            href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@300;400;500;600;700&family=Lexend:wght@100..900&display=swap",
+            href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@300;400;500;600;700&family=Jersey+10&family=Lexend:wght@100..900&display=swap",
           },
         },
         {
@@ -258,6 +258,11 @@ export default defineConfig({
         position: "left",
         activeMatch: "/cli",
         items: [
+          {
+            text: "Web CLI (Demo)",
+            link: "/web-cli",
+            activeMatch: "/web-cli$",
+          },
           {
             text: "Quick Start",
             link: "/cli",

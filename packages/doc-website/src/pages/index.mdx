@@ -13,6 +13,7 @@ import { Footer } from "../lib/components/Footer";
 import { AnimatedSprite, PixelArtImage } from "../lib/util/pixelArt";
 import { RequiredBunVersion } from "../lib/components/RequiredBunVersion";
 import { SmorsicBanner } from "../lib/components/SmorsicBanner";
+import { WebCliButton } from "../lib/web-cli/WebCliButton";
 
 <Bwunster/>
 
@@ -33,6 +34,8 @@ import { SmorsicBanner } from "../lib/components/SmorsicBanner";
     <li>Run inline [Bun Shell](https://bun.com/docs/runtime/shell) scripts from your workspaces 🐚</li>
   </ul>
 </div>
+
+<WebCliButton />
 
 This is a tool to help manage a Bun monorepo, offering features beyond what Bun's [`--filter` feature](https://bun.com/docs/pm/filter) can do. It can be used to get a variety of metadata about your project and run scripts across your workspaces with advanced control.
 

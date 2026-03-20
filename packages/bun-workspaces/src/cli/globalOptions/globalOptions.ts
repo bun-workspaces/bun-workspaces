@@ -8,6 +8,7 @@ import {
   createMemoryProject,
   type FileSystemProject,
 } from "../../project";
+import type { CliMiddleware } from "../middleware";
 import {
   type CliGlobalOptionName,
   type CliGlobalOptions,
@@ -65,16 +66,26 @@ const defineGlobalOptions = (
   program: Command,
   args: string[],
   defaultCwd: string,
+  middleware: CliMiddleware,
 ) => {
   const cwd = getWorkingDirectoryFromArgs(program, args, defaultCwd);
 
-  if (!fs.existsSync(cwd)) {
+  const exists = fs.existsSync(cwd);
+  const isDirectory = exists ? fs.statSync(cwd).isDirectory() : false;
+
+  middleware.processWorkingDirectory({
+    commanderProgram: program,
+    workingDirectory: cwd,
+    exists,
+    isDirectory,
+  });
+
+  if (!exists) {
     throw new ERRORS.WorkingDirectoryNotFound(
       `Working directory not found at path "${cwd}"`,
     );
   }
-
-  if (!fs.statSync(cwd).isDirectory()) {
+  if (!isDirectory) {
     throw new ERRORS.WorkingDirectoryNotADirectory(
       `Working directory is not a directory at path "${cwd}"`,
     );
@@ -118,10 +129,11 @@ export const initializeWithGlobalOptions = (
   program: Command,
   args: string[],
   defaultCwd: string,
+  middleware: CliMiddleware,
 ) => {
   program.allowUnknownOption(true);
 
-  const { cwd } = defineGlobalOptions(program, args, defaultCwd);
+  const { cwd } = defineGlobalOptions(program, args, defaultCwd, middleware);
 
   program.parseOptions(args);
   program.allowUnknownOption(false);

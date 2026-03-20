@@ -116,6 +116,7 @@ export const renderGroupedOutput = async (
   scriptEventTarget: ScriptEventTarget,
   activeScriptLines: number | "all",
   outputWriters: Required<WriteOutputOptions>,
+  terminalWidth: number,
 ) => {
   const workspaceState: Record<string, WorkspaceState> = workspaces.reduce(
     (acc, workspace) => {
@@ -149,7 +150,7 @@ export const renderGroupedOutput = async (
     isReset = true;
     logger.debug("Resetting TUI state");
     outputWriters.stdout(cursorOps.show());
-    process.stdin.unref();
+    process.stdin.unref?.();
     process.stdin.setRawMode?.(false);
   };
 
@@ -164,7 +165,7 @@ export const renderGroupedOutput = async (
       didFinalRender = true;
     }
 
-    const width = Math.max(2, process.stdout.columns);
+    const width = Math.max(2, terminalWidth || process.stdout.columns);
 
     const linesToWrite: Line[] = [];
 

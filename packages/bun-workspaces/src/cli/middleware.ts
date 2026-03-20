@@ -14,8 +14,16 @@ export type InitProgramContext = {
 };
 
 export type ProcessArgvContext = {
+  commanderProgram: CommanderProgram;
   args: string[];
   postTerminatorArgs: string[];
+};
+
+export type ProcessWorkingDirectoryContext = {
+  commanderProgram: CommanderProgram;
+  workingDirectory: string;
+  exists: boolean;
+  isDirectory: boolean;
 };
 
 export type FindProjectContext = {
@@ -63,6 +71,10 @@ export type CliMiddleware = {
   initProgram: (context: InitProgramContext) => CommanderProgram;
   /** Before the true parsing, just splitting the argv into args and post-terminator args */
   processArgv: (context: ProcessArgvContext) => CommanderProgram;
+  /** Before the working directory is changed */
+  processWorkingDirectory: (
+    context: ProcessWorkingDirectoryContext,
+  ) => CommanderProgram;
   /** After the project has been initialized from global options */
   findProject: (context: FindProjectContext) => CommanderProgram;
   /** Before the Commander program parses the args */
@@ -89,6 +101,7 @@ export const resolveMiddleware = (
     catchError: null,
     initProgram: null,
     processArgv: null,
+    processWorkingDirectory: null,
     findProject: null,
     preParse: null,
     postParse: null,

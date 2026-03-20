@@ -1,0 +1,42 @@
+import { create } from "zustand";
+
+export const useCommandHistory = create<{
+  history: string[][];
+  historyIndex: number;
+  addCommand: (command: string[]) => void;
+  incrementHistoryIndex: () => void;
+  decrementHistoryIndex: () => void;
+  resetHistoryIndex: () => void;
+}>((set) => ({
+  history: [],
+  historyIndex: -1,
+  addCommand: (command) =>
+    set((state) => ({
+      history: [command, ...state.history.slice(0, 99)],
+      historyIndex: -1,
+    })),
+  incrementHistoryIndex: () =>
+    set((state) => ({
+      historyIndex: Math.min(state.historyIndex + 1, state.history.length - 1),
+    })),
+  decrementHistoryIndex: () =>
+    set((state) => ({
+      historyIndex: Math.max(state.historyIndex - 1, -1),
+    })),
+  resetHistoryIndex: () => set({ historyIndex: -1 }),
+}));
+
+export const useAddCommandToHistory = () =>
+  useCommandHistory((state) => state.addCommand);
+
+export const useHistoryCommand = (): string[] | null =>
+  useCommandHistory((state) => state.history[state.historyIndex] ?? null);
+
+export const useIncrementCommandHistoryIndex = () =>
+  useCommandHistory((state) => state.incrementHistoryIndex);
+
+export const useDecrementCommandHistoryIndex = () =>
+  useCommandHistory((state) => state.decrementHistoryIndex);
+
+export const useResetHistoryIndex = () =>
+  useCommandHistory((state) => state.resetHistoryIndex);

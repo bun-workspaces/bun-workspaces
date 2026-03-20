@@ -5,6 +5,7 @@ import type {
 import { useCallback } from "react";
 import { create } from "zustand";
 import { useApiHealth, serviceClient } from "../../service";
+import { useAddCommandToHistory } from "./commandHistory";
 
 export const DEFAULT_TERMINAL_WIDTH = 80;
 
@@ -42,7 +43,7 @@ export const useInvokeWebCli = () => {
   const setResult = useInvokeWebCliStore((state) => state.setResult);
   const addResultChunk = useInvokeWebCliStore((state) => state.addResultChunk);
   const terminalWidth = useInvokeWebCliStore((state) => state.terminalWidth);
-  const setLastCommand = useInvokeWebCliStore((state) => state.setLastCommand);
+  const addCommandToHistory = useAddCommandToHistory();
   const { isHealthy } = useApiHealth();
 
   const invokeWebCli = useCallback(
@@ -51,7 +52,8 @@ export const useInvokeWebCli = () => {
 
       setIsLoading(true);
       setResult([]);
-      setLastCommand([]);
+
+      addCommandToHistory(request.argv);
 
       for await (const chunk of serviceClient.invokeWebCli({
         ...request,
@@ -60,8 +62,6 @@ export const useInvokeWebCli = () => {
         addResultChunk(chunk);
       }
 
-      setLastCommand(request.argv);
-
       setIsLoading(false);
     },
     [
@@ -69,9 +69,9 @@ export const useInvokeWebCli = () => {
       isHealthy,
       isLoading,
       setIsLoading,
-      setLastCommand,
       setResult,
       terminalWidth,
+      addCommandToHistory,
     ],
   );
 

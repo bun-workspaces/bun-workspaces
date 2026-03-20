@@ -1,6 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FaTerminal } from "react-icons/fa";
 import { useApiHealth } from "../../service";
+import {
+  useDecrementCommandHistoryIndex,
+  useHistoryCommand,
+  useIncrementCommandHistoryIndex,
+  useResetHistoryIndex,
+} from "../util/commandHistory";
 import {
   useInvokeWebCli,
   useSetWebCliInput,
@@ -16,6 +22,11 @@ export const TerminalInput = () => {
 
   const inputRef = useRef<HTMLInputElement>(null);
   const submitRef = useRef<HTMLButtonElement>(null);
+
+  const resetHistoryIndex = useResetHistoryIndex();
+  const historyCommand = useHistoryCommand();
+  const incrementHistoryIndex = useIncrementCommandHistoryIndex();
+  const decrementHistoryIndex = useDecrementCommandHistoryIndex();
 
   const [placeholderExample, setPlaceholderExample] = useState<ExampleCommand>(
     EXAMPLE_COMMANDS[0]
@@ -36,15 +47,28 @@ export const TerminalInput = () => {
   const isError = !!error || (!isLoading && !isHealthy);
   const disabled = !isHealthy || isError || isInvoking;
 
-  const didTestRef = useRef(false);
   useEffect(() => {
-    if (!disabled && !didTestRef.current) {
-      didTestRef.current = true;
-      invokeWebCli({
-        argv: ["ls"],
-      });
-    }
-  }, [disabled]);
+    setInput(historyCommand?.join(" ") ?? "");
+  }, [historyCommand, setInput]);
+
+  const handleInput = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setInput(e.target.value);
+      resetHistoryIndex();
+    },
+    [resetHistoryIndex, setInput]
+  );
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "ArrowUp") {
+        incrementHistoryIndex();
+      } else if (e.key === "ArrowDown") {
+        decrementHistoryIndex();
+      }
+    },
+    [incrementHistoryIndex, decrementHistoryIndex]
+  );
 
   return (
     <form
@@ -89,7 +113,8 @@ export const TerminalInput = () => {
           id={WEB_CLI_INPUT_ID}
           type="text"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={handleInput}
+          onKeyDown={handleKeyDown}
           maxLength={1000}
           placeholder={` Enter a command (like: ${placeholderExample?.command.replace("bw ", "")})`}
           autoFocus

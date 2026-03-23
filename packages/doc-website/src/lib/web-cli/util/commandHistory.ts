@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 export const useCommandHistory = create<{
   history: string[][];
@@ -7,24 +8,35 @@ export const useCommandHistory = create<{
   incrementHistoryIndex: () => void;
   decrementHistoryIndex: () => void;
   resetHistoryIndex: () => void;
-}>((set) => ({
-  history: [],
-  historyIndex: -1,
-  addCommand: (command) =>
-    set((state) => ({
-      history: [command, ...state.history.slice(0, 99)],
+}>()(
+  persist(
+    (set) => ({
+      history: [],
       historyIndex: -1,
-    })),
-  incrementHistoryIndex: () =>
-    set((state) => ({
-      historyIndex: Math.min(state.historyIndex + 1, state.history.length - 1),
-    })),
-  decrementHistoryIndex: () =>
-    set((state) => ({
-      historyIndex: Math.max(state.historyIndex - 1, -1),
-    })),
-  resetHistoryIndex: () => set({ historyIndex: -1 }),
-}));
+      addCommand: (command) =>
+        set((state) => ({
+          history: [command, ...state.history.slice(0, 99)],
+          historyIndex: -1,
+        })),
+      incrementHistoryIndex: () =>
+        set((state) => ({
+          historyIndex: Math.min(
+            state.historyIndex + 1,
+            state.history.length - 1,
+          ),
+        })),
+      decrementHistoryIndex: () =>
+        set((state) => ({
+          historyIndex: Math.max(state.historyIndex - 1, -1),
+        })),
+      resetHistoryIndex: () => set({ historyIndex: -1 }),
+    }),
+    {
+      name: "command-history",
+      storage: createJSONStorage(() => sessionStorage),
+    },
+  ),
+);
 
 export const useAddCommandToHistory = () =>
   useCommandHistory((state) => state.addCommand);

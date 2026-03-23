@@ -575,16 +575,16 @@ test-script c
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Workspace: has-100-wide-output                                                                   │
-│    Status: running                                                                               │
-└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────┐
+│ Workspace: has-100-wide-output │
+│    Status: running             │
+└────────────────────────────────┘
 this test script has a very very very long output that is exactly one hundred characters long indeed`,
             `
-┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Workspace: has-100-wide-output                                                                   │
-│    Status: success                                                                               │
-└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────┐
+│ Workspace: has-100-wide-output │
+│    Status: success             │
+└────────────────────────────────┘
 this test script has a very very very long output that is exactly one hundred characters long indeed
 ✅ has-100-wide-output: test-script
 1 script ran successfully`,
@@ -604,16 +604,16 @@ this test script has a very very very long output that is exactly one hundred ch
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Workspace: has-100-wide-output                                                                  │
-│    Status: running                                                                              │
-└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────┐
+│ Workspace: has-100-wide-output │
+│    Status: running             │
+└────────────────────────────────┘
 this test script has a very very very long output that is exactly one hundred characters long ind… `,
             `
-┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Workspace: has-100-wide-output                                                                  │
-│    Status: success                                                                              │
-└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────┐
+│ Workspace: has-100-wide-output │
+│    Status: success             │
+└────────────────────────────────┘
 this test script has a very very very long output that is exactly one hundred characters long indee
 d
 ✅ has-100-wide-output: test-script
@@ -639,16 +639,16 @@ d
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌────────────────────────────────────────────────┐
-│ Workspace: has-100-wide-output                 │
-│    Status: running                             │
-└────────────────────────────────────────────────┘
+┌────────────────────────────────┐
+│ Workspace: has-100-wide-output │
+│    Status: running             │
+└────────────────────────────────┘
 this test script has a very very very long outpu… `,
             `
-┌────────────────────────────────────────────────┐
-│ Workspace: has-100-wide-output                 │
-│    Status: success                             │
-└────────────────────────────────────────────────┘
+┌────────────────────────────────┐
+│ Workspace: has-100-wide-output │
+│    Status: success             │
+└────────────────────────────────┘
 this test script has a very very very long output 
 that is exactly one hundred characters long indeed
 ✅ has-100-wide-output: test-script
@@ -674,16 +674,16 @@ that is exactly one hundred characters long indeed
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌────────────────────────────────────────────────┐
-│ Workspace: has-100-wide-emoji-output           │
-│    Status: running                             │
-└────────────────────────────────────────────────┘
+┌──────────────────────────────────────┐
+│ Workspace: has-100-wide-emoji-output │
+│    Status: running                   │
+└──────────────────────────────────────┘
 this test script has a ⚠️ ⚠️ ⚠️ long output that… `,
             `
-┌────────────────────────────────────────────────┐
-│ Workspace: has-100-wide-emoji-output           │
-│    Status: success                             │
-└────────────────────────────────────────────────┘
+┌──────────────────────────────────────┐
+│ Workspace: has-100-wide-emoji-output │
+│    Status: success                   │
+└──────────────────────────────────────┘
 this test script has a ⚠️ ⚠️ ⚠️ long output that is e
 xactly one hundred characters long indeed
 ✅ has-100-wide-emoji-output: test-script
@@ -845,10 +845,10 @@ t
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Workspace: has-50-line-output                                                                    │
-│    Status: running                                                                               │
-└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────┐
+│ Workspace: has-50-line-output │
+│    Status: running            │
+└───────────────────────────────┘
 (30 lines hidden until exit)
 31 this test script has a very very very long output that is exactly one hundred characters long i…
 32 this test script has a very very very long output that is exactly one hundred characters long i…
@@ -872,10 +872,10 @@ t
 50 this test script has a very very very long output that is exactly one hundred characters long i…
 `,
             `
-┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Workspace: has-50-line-output                                                                    │
-│    Status: success                                                                               │
-└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────┐
+│ Workspace: has-50-line-output │
+│    Status: success            │
+└───────────────────────────────┘
 1 this test script has a very very very long output that is exactly one hundred characters long inde
 ed
 2 this test script has a very very very long output that is exactly one hundred characters long inde
@@ -1001,10 +1001,10 @@ eed
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Workspace: has-50-line-output                                                                    │
-│    Status: running                                                                               │
-└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────┐
+│ Workspace: has-50-line-output │
+│    Status: running            │
+└───────────────────────────────┘
 (45 lines hidden until exit)
 46 this test script has a very very very long output that is exactly one hundred characters long i…
 47 this test script has a very very very long output that is exactly one hundred characters long i…
@@ -1013,10 +1013,10 @@ eed
 50 this test script has a very very very long output that is exactly one hundred characters long i…
 `,
             `
-┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Workspace: has-50-line-output                                                                    │
-│    Status: success                                                                               │
-└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────┐
+│ Workspace: has-50-line-output │
+│    Status: success            │
+└───────────────────────────────┘
 1 this test script has a very very very long output that is exactly one hundred characters long inde
 ed
 2 this test script has a very very very long output that is exactly one hundred characters long inde
@@ -1142,10 +1142,10 @@ eed
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Workspace: has-50-line-output                                                                    │
-│    Status: running                                                                               │
-└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────┐
+│ Workspace: has-50-line-output │
+│    Status: running            │
+└───────────────────────────────┘
 1 this test script has a very very very long output that is exactly one hundred characters long in…
 2 this test script has a very very very long output that is exactly one hundred characters long in…
 3 this test script has a very very very long output that is exactly one hundred characters long in…
@@ -1198,10 +1198,10 @@ eed
 50 this test script has a very very very long output that is exactly one hundred characters long i…
 `,
             `
-┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Workspace: has-50-line-output                                                                    │
-│    Status: success                                                                               │
-└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────┐
+│ Workspace: has-50-line-output │
+│    Status: success            │
+└───────────────────────────────┘
 1 this test script has a very very very long output that is exactly one hundred characters long inde
 ed
 2 this test script has a very very very long output that is exactly one hundred characters long inde

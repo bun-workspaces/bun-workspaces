@@ -73,7 +73,7 @@ export const TerminalScreen = ({ onTerminalResize }: TerminalScreenProps) => {
       allowTransparency: true,
       fontFamily: "var(--rp-font-family-terminal)",
       fontSize: 16,
-      lineHeight: 1.15,
+      lineHeight: 1.35,
       theme: getTerminalTheme(),
     });
 

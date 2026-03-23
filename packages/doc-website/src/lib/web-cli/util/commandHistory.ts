@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { BUILD_ID } from "../../util/env";
 
 export const useCommandHistory = create<{
   history: string[][];
@@ -34,6 +35,9 @@ export const useCommandHistory = create<{
     {
       name: "command-history",
       storage: createJSONStorage(() => sessionStorage),
+      version: BUILD_ID
+        ? parseInt(BUILD_ID, 36)
+        : Math.floor(Math.random() * 10000),
     },
   ),
 );

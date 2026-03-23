@@ -59,6 +59,10 @@ export const useInvokeWebCli = () => {
         ...request,
         terminalWidth,
       })) {
+        if (process.env.BW_DOC_ENV === "development") {
+          // eslint-disable-next-line no-console
+          console.debug("Chunk received:", { chunk });
+        }
         addResultChunk(chunk);
       }
 

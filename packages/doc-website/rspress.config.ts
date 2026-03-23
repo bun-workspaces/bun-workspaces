@@ -119,6 +119,7 @@ export default defineConfig({
             REQUIRED_BUN_VERSION: ${JSON.stringify(REQUIRED_BUN_VERSION)},
             BWUNSTER_ASCII: ${JSON.stringify(BWUNSTER_ASCII)},
             BW_WEB_SERVICE_BASE_URL: ${JSON.stringify(process.env.BW_WEB_SERVICE_BASE_URL ?? "http://localhost:8080")},
+            BW_DOC_ENV: ${JSON.stringify(process.env.BW_DOC_ENV ?? "production")},
           },
           on: function(){}
         })`,

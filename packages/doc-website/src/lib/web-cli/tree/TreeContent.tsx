@@ -1,0 +1,22 @@
+import { demoProject } from "bw-web-service-shared";
+import { SyntaxHighlighter } from "../../util/highlight";
+import { useSelectedFile } from "./selection";
+
+export const TreeContent = () => {
+  const selectedFile = useSelectedFile();
+  const fileData = demoProject.files.find(
+    (file) => file.relativePath === selectedFile
+  );
+
+  return (
+    <div className="web-cli-tree-content">
+      <SyntaxHighlighter
+        language={
+          fileData?.relativePath.endsWith(".ts") ? "typescript" : "json"
+        }
+      >
+        {fileData?.content ?? ""}
+      </SyntaxHighlighter>
+    </div>
+  );
+};

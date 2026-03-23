@@ -1,14 +1,10 @@
-import { useCallback } from "react";
 import { Link } from "rspress/theme";
 import { useLoadApiHealth } from "../service/apiHealth";
-import { Terminal, type TerminalProps } from "./terminal/Terminal";
-import { useSetWebCliTerminalWidth } from "./util/invokeWebCli";
+import { WebCliMain } from "./main/WebCliMain";
 import { WebCliNotes } from "./WebCliNotes";
 
 export const WebCliPage = () => {
   useLoadApiHealth();
-
-  const setTerminalWidth = useSetWebCliTerminalWidth();
 
   return (
     <div className="web-cli-page">
@@ -27,18 +23,7 @@ export const WebCliPage = () => {
           Note: You may have a better experience with the Web CLI on desktop.
         </div>
       </div>
-      <div className="web-cli-container">
-        <Terminal
-          onTerminalResize={useCallback<
-            NonNullable<TerminalProps["onTerminalResize"]>
-          >(
-            ({ cols }) => {
-              setTerminalWidth(cols);
-            },
-            [setTerminalWidth]
-          )}
-        />
-      </div>
+      <WebCliMain />
       <WebCliNotes />
     </div>
   );

@@ -136,7 +136,7 @@ export const TerminalInput = () => {
       invokeWebCli({
         argv,
       });
-      addCommandToHistory(input);
+      addCommandToHistory(input.trim());
       setInput("");
       inputRef.current?.focus();
     },

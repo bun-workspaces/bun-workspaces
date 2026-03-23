@@ -3,9 +3,9 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { BUILD_ID } from "../../util/env";
 
 export const useCommandHistory = create<{
-  history: string[][];
+  history: string[];
   historyIndex: number;
-  addCommand: (command: string[]) => void;
+  addCommand: (command: string) => void;
   incrementHistoryIndex: () => void;
   decrementHistoryIndex: () => void;
   resetHistoryIndex: () => void;
@@ -45,7 +45,7 @@ export const useCommandHistory = create<{
 export const useAddCommandToHistory = () =>
   useCommandHistory((state) => state.addCommand);
 
-export const useHistoryCommand = (): string[] | null =>
+export const useHistoryCommand = (): string | null =>
   useCommandHistory((state) => state.history[state.historyIndex] ?? null);
 
 export const useIncrementCommandHistoryIndex = () =>

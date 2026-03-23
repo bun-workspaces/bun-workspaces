@@ -3,6 +3,7 @@ import { FaTerminal } from "react-icons/fa";
 import { parse } from "shell-quote";
 import { useApiHealth } from "../../service";
 import {
+  useAddCommandToHistory,
   useDecrementCommandHistoryIndex,
   useHistoryCommand,
   useHistoryIndex,
@@ -66,6 +67,7 @@ export const TerminalInput = () => {
   const incrementHistoryIndex = useIncrementCommandHistoryIndex();
   const decrementHistoryIndex = useDecrementCommandHistoryIndex();
   const historyIndex = useHistoryIndex();
+  const addCommandToHistory = useAddCommandToHistory();
 
   const [placeholderExample, setPlaceholderExample] = useState<ExampleCommand>(
     getRandomExampleCommand()
@@ -90,7 +92,7 @@ export const TerminalInput = () => {
 
   useEffect(() => {
     if (historyCommand) {
-      setInput(historyCommand.join(" "));
+      setInput(historyCommand);
       setTimeout(() => {
         if (inputRef.current) {
           inputRef.current.selectionStart = inputRef.current?.value.length ?? 0;
@@ -126,19 +128,25 @@ export const TerminalInput = () => {
     [incrementHistoryIndex, decrementHistoryIndex, historyIndex, setInput]
   );
 
+  const handleSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (disabled) return;
+      if (!input.trim()) return;
+      invokeWebCli({
+        argv,
+      });
+      addCommandToHistory(input);
+      setInput("");
+      inputRef.current?.focus();
+    },
+    [disabled, invokeWebCli, input, argv, addCommandToHistory, setInput]
+  );
+
   return (
     <div>
       <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (disabled) return;
-          if (!input.trim()) return;
-          invokeWebCli({
-            argv,
-          });
-          setInput("");
-          inputRef.current?.focus();
-        }}
+        onSubmit={handleSubmit}
         className="web-cli-input-form"
         onClick={(e) => {
           if (

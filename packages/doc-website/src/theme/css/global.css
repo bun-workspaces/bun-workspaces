@@ -3,6 +3,7 @@
 :root {
   --rp-font-family-base: "IBM Plex Sans", sans-serif;
   --rp-font-family-mono: "UnifontEx", monospace;
+  --rp-font-family-terminal: "Kode Mono", monospace;
   --rp-c-text-1: #202020;
   --rp-c-text-2: #434343;
   --rp-c-code-block-bg: #f8f8f8;

@@ -25,6 +25,7 @@ const getTerminalTheme = (): ITheme => {
     background: getCssVariable("--rp-c-code-block-bg"),
     foreground: getCssVariable("--rp-c-text-1"),
     cursor: "transparent",
+    cursorAccent: "transparent",
     selectionBackground: getCssVariable("--rp-c-bg-soft"),
     black: getCssVariable("--web-cli-black"),
     red: getCssVariable("--web-cli-red"),
@@ -68,8 +69,9 @@ export const TerminalScreen = ({ onTerminalResize }: TerminalScreenProps) => {
       disableStdin: true,
       cursorBlink: false,
       cursorWidth: 1,
+      cursorInactiveStyle: "none",
       allowTransparency: true,
-      fontFamily: "var(--rp-font-family-mono)",
+      fontFamily: "var(--rp-font-family-terminal)",
       fontSize: 16,
       lineHeight: 1.15,
       theme: getTerminalTheme(),
@@ -133,7 +135,8 @@ export const TerminalScreen = ({ onTerminalResize }: TerminalScreenProps) => {
     const payload = newChunks
       .map((chunk) => chunk.terminalOutput)
       .join("")
-      .replaceAll("\n", "\r\n");
+      .replaceAll("\n", "\r\n")
+      .replace(/\p{Emoji_Presentation}/gu, "$& ");
     terminal.write(payload);
     writtenChunksRef.current = cliResult.length;
 

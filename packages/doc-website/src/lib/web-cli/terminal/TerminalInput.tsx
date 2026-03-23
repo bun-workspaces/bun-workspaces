@@ -45,6 +45,15 @@ const parseArgv = (input: string) => {
   };
 };
 
+const getRandomExampleCommand = (previous?: ExampleCommand) => {
+  let newExample = previous;
+  while (newExample === previous) {
+    newExample =
+      EXAMPLE_COMMANDS[Math.floor(Math.random() * EXAMPLE_COMMANDS.length)];
+  }
+  return newExample ?? EXAMPLE_COMMANDS[0];
+};
+
 export const TerminalInput = () => {
   const input = useWebCliInput();
   const setInput = useSetWebCliInput();
@@ -59,7 +68,7 @@ export const TerminalInput = () => {
   const historyIndex = useHistoryIndex();
 
   const [placeholderExample, setPlaceholderExample] = useState<ExampleCommand>(
-    EXAMPLE_COMMANDS[0]
+    getRandomExampleCommand()
   );
 
   const { argv, operations } = useMemo(() => parseArgv(input), [input]);
@@ -67,12 +76,7 @@ export const TerminalInput = () => {
   useEffect(() => {
     if (input.trim()) return;
     const timeout = setTimeout(() => {
-      let newExample = placeholderExample;
-      while (newExample === placeholderExample) {
-        newExample =
-          EXAMPLE_COMMANDS[Math.floor(Math.random() * EXAMPLE_COMMANDS.length)];
-      }
-      setPlaceholderExample(newExample);
+      setPlaceholderExample(getRandomExampleCommand(placeholderExample));
     }, 4000);
     return () => clearTimeout(timeout);
   }, [input, placeholderExample]);

@@ -1,10 +1,13 @@
 import { Link } from "rspress/theme";
 import { useLoadApiHealth } from "../service/apiHealth";
 import { WebCliMain } from "./main/WebCliMain";
+import { useSetView } from "./util/view";
 import { WebCliNotes } from "./WebCliNotes";
 
 export const WebCliPage = () => {
   useLoadApiHealth();
+
+  const setView = useSetView();
 
   return (
     <div className="web-cli-page">
@@ -13,14 +16,10 @@ export const WebCliPage = () => {
         <p>
           Try the CLI right here in your browser!
           <br />
-          This uses a demo{" "}
-          <Link className="inline-link" href="/concepts/glossary#project">
-            project
-          </Link>{" "}
-          you can view in the File Tree below.
+          This uses a demo project you can view in the Project Files below.
         </p>
         <div className="web-cli-mobile-warning">
-          Note: You may have a better experience with the Web CLI on desktop.
+          You may have a better experience with the Web CLI on desktop.
         </div>
       </div>
       <WebCliMain />

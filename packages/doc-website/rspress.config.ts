@@ -258,7 +258,7 @@ export default defineConfig({
         text: "CLI",
         link: "/cli",
         position: "left",
-        activeMatch: "/cli",
+        activeMatch: "/cli|web-cli",
         items: [
           {
             text: "Web CLI (Demo)",

@@ -8,7 +8,7 @@ const useViewStore = create<{
 }>()(
   persist(
     (set) => ({
-      view: "tree",
+      view: "terminal",
       setView: (view) => set({ view }),
     }),
     {

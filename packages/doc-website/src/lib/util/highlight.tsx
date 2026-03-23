@@ -14,7 +14,7 @@ SyntaxHighlighterLight.registerLanguage("typescript", typescript);
  * to use a core rspress API instead in the future
  */
 export const SyntaxHighlighter = (
-  props: ComponentProps<typeof SyntaxHighlighterLight>,
+  props: ComponentProps<typeof SyntaxHighlighterLight>
 ) => {
   return (
     <SyntaxHighlighterLight

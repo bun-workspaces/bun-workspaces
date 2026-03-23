@@ -11,6 +11,7 @@ export const TreeContent = () => {
   return (
     <div className="web-cli-tree-content">
       <SyntaxHighlighter
+        wrapLongLines
         language={
           fileData?.relativePath.endsWith(".ts") ? "typescript" : "json"
         }

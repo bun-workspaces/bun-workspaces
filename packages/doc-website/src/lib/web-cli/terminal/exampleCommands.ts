@@ -13,7 +13,7 @@ export const EXAMPLE_COMMANDS = [
   {
     name: "List Workspaces (JSON)",
     description: "List all workspaces as JSON",
-    command: "bw list-workspaces --json --pretty",
+    command: "bw ls --json --pretty",
   },
   {
     name: "List Scripts",
@@ -23,6 +23,6 @@ export const EXAMPLE_COMMANDS = [
   {
     name: "Workspace Info (JSON)",
     description: "Show metadata about a workspace as JSON",
-    command: "bw workspace-info my-workspace --json",
+    command: "bw info my-workspace --json",
   },
 ] satisfies ExampleCommand[];

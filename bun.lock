@@ -42,23 +42,25 @@
       "name": "@bw/doc-website",
       "devDependencies": {
         "@fontsource/unifontex": "^5.2.6",
-        "@rsbuild/plugin-svgr": "^1.2.3",
-        "@types/lodash": "^4.17.23",
-        "@types/react": "^19.2.7",
+        "@rsbuild/plugin-svgr": "^1.3.1",
+        "@types/lodash": "^4.17.24",
+        "@types/react": "^19.2.14",
         "@types/react-syntax-highlighter": "^15.5.13",
+        "@types/shell-quote": "^1.7.5",
         "@xterm/addon-fit": "^0.11.0",
         "@xterm/xterm": "^6.0.0",
         "bun-workspaces": "file:../bun-workspaces",
         "bw-web-service-shared": "^0.0.1-test.3",
-        "glob": "^13.0.0",
-        "lodash": "^4.17.21",
-        "react": "^19.2.3",
-        "react-dom": "^19.2.3",
-        "react-icons": "^5.5.0",
-        "react-router": "^7.11.0",
-        "react-router-dom": "^7.11.0",
-        "react-syntax-highlighter": "^16.1.0",
-        "rspress": "^1.47.0",
+        "glob": "^13.0.6",
+        "lodash": "^4.17.23",
+        "react": "^19.2.4",
+        "react-dom": "^19.2.4",
+        "react-icons": "^5.6.0",
+        "react-router": "^7.13.2",
+        "react-router-dom": "^7.13.2",
+        "react-syntax-highlighter": "^16.1.1",
+        "rspress": "^1.47.1",
+        "shell-quote": "^1.8.3",
         "zustand": "^5.0.12",
       },
     },
@@ -398,6 +400,8 @@
     "@types/react": ["@types/react@19.2.14", "", { "dependencies": { "csstype": "^3.2.2" } }, "sha512-ilcTH/UniCkMdtexkoCN0bI7pMcJDvmQFPvuPvmEaYA/NSfFTAgdUSLAoVjaRJm7+6PvcM+q1zYOwS4wTYMF9w=="],
 
     "@types/react-syntax-highlighter": ["@types/react-syntax-highlighter@15.5.13", "", { "dependencies": { "@types/react": "*" } }, "sha512-uLGJ87j6Sz8UaBAooU0T6lWJ0dBmjZgN1PZTrj05TNql2/XpC6+4HhMT5syIdFUUt+FASfCeLLv4kBygNU+8qA=="],
+
+    "@types/shell-quote": ["@types/shell-quote@1.7.5", "", {}, "sha512-+UE8GAGRPbJVQDdxi16dgadcBfQ+KG2vgZhV1+3A1XmHbmwcdwhCUwIdy+d3pAGrbvgRoVSjeI9vOWyq376Yzw=="],
 
     "@types/unist": ["@types/unist@3.0.3", "", {}, "sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q=="],
 
@@ -1356,6 +1360,8 @@
     "shebang-command": ["shebang-command@2.0.0", "", { "dependencies": { "shebang-regex": "^3.0.0" } }, "sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA=="],
 
     "shebang-regex": ["shebang-regex@3.0.0", "", {}, "sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A=="],
+
+    "shell-quote": ["shell-quote@1.8.3", "", {}, "sha512-ObmnIF4hXNg1BqhnHmgbDETF8dLPCggZWBjkQfhZpbszZnYur5DUljTcCHii5LC3J5E0yeO/1LIMyH+UvHQgyw=="],
 
     "side-channel": ["side-channel@1.1.0", "", { "dependencies": { "es-errors": "^1.3.0", "object-inspect": "^1.13.3", "side-channel-list": "^1.0.0", "side-channel-map": "^1.0.1", "side-channel-weakmap": "^1.0.2" } }, "sha512-ZX99e6tRweoUXqR+VBrslhda51Nh5MTQwou5tnUDgbtyM0dBgmhEDtWGP/xbKn6hqfPRHujUNwz5fy/wbbhnpw=="],
 

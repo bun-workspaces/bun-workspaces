@@ -753,7 +753,6 @@ h1#web-cli {
 .web-cli-terminal-screen {
   width: clamp(40rem, 90vw, 50rem);
   height: clamp(18rem, 48vh, 30rem);
-  border-radius: 0.5rem;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
   background: var(--rp-c-code-block-bg);
@@ -847,4 +846,26 @@ h1#web-cli {
 
 .xterm {
   background-color: var(--rp-c-code-block-bg) !important;
+}
+
+.web-cli-notes {
+  margin-top: 1rem;
+  line-height: 1.25;
+}
+
+.web-cli-notes ul {
+  line-height: 1.25 !important;
+  margin-top: 0.5rem;
+}
+
+.web-cli-notes-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.web-cli-input-warning {
+  color: var(--rp-container-warning-text);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  min-height: 1.25rem;
 }

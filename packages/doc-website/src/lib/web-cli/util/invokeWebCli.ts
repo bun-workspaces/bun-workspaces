@@ -14,8 +14,6 @@ const useInvokeWebCliStore = create<{
   result: InvokeCliResponseChunk[];
   input: string;
   terminalWidth: number;
-  lastCommand: string[];
-  setLastCommand: (lastCommand: string[]) => void;
   setTerminalWidth: (terminalWidth: number) => void;
   setInput: (input: string) => void;
   setIsLoading: (isLoading: boolean) => void;
@@ -26,8 +24,6 @@ const useInvokeWebCliStore = create<{
   result: [],
   input: "",
   terminalWidth: DEFAULT_TERMINAL_WIDTH,
-  lastCommand: [],
-  setLastCommand: (lastCommand) => set({ lastCommand }),
   setTerminalWidth: (terminalWidth) => set({ terminalWidth }),
   setInput: (input) => set({ input }),
   setIsLoading: (isLoading) => set({ isLoading }),

@@ -32,7 +32,6 @@
     "cli:dev": "_BW_RUNTIME_MODE=development bun --silent run bin/cli.js",
     "cli:build": "bun --silent run dist/bin/cli.js",
     "ajv": "bun --silent run scripts/ajv.ts",
-    "lint": "eslint src",
     "test": "rm -rf dist.test && bun test --timeout 10000",
     "test:clean": "rm -rf packages/bun-workspaces/tests/fixtures/testProjects/**/node_modules && rm -rf packages/bun-workspaces/tests/fixtures/testProjects/**/bun.lock && bun run test",
     "test:concurrent": "rm -rf dist.test && bun test --concurrent --timeout 10000",

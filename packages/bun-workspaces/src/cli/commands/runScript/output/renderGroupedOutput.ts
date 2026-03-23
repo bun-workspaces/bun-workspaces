@@ -169,36 +169,13 @@ export const renderGroupedOutput = async (
 
     const linesToWrite: Line[] = [];
 
+    const workspaceBoxContents: Record<
+      string,
+      { status: string; name: string }
+    > = {};
+
     workspaces.forEach((workspace) => {
       const state = workspaceState[workspace.name];
-
-      linesToWrite.push({
-        text: textOps[BORDER_COLOR](
-          "┌" + "─".repeat(Math.max(0, width - 2)) + "┐",
-        ),
-        type: "border",
-      });
-
-      const borderText = (text: string) => {
-        const padding = 4; // left border, spaces, right border
-        const visibleLength = calculateVisibleLength(text);
-        const truncated =
-          visibleLength > width - padding
-            ? truncateTerminalString(text, width - padding - 1) + "\x1b[0m…"
-            : text;
-        return (
-          textOps[BORDER_COLOR]("│ ") +
-          truncated +
-          " ".repeat(Math.max(0, width - visibleLength - padding)) +
-          textOps[BORDER_COLOR](" │")
-        );
-      };
-
-      linesToWrite.push({
-        text: borderText("Workspace: " + textOps.bold(workspace.name)),
-        type: "borderedContent",
-      });
-
       let statusText = state.status;
 
       const hasExitCode = state.exitCode && state.exitCode !== -1;
@@ -220,16 +197,70 @@ export const renderGroupedOutput = async (
         statusText += ` (signal: ${state.signal})`;
       }
 
-      linesToWrite.push({
-        text: borderText(
-          "   Status: " + textOps[STATUS_COLORS[state.status]](statusText),
+      const workspaceLine = "Workspace: " + textOps.bold(workspace.name);
+      const statusLine =
+        "   Status: " + textOps[STATUS_COLORS[state.status]](statusText);
+
+      workspaceBoxContents[workspace.name] = {
+        name: workspaceLine,
+        status: statusLine,
+      };
+    });
+
+    const padding = 4; // left border, spaces, right border
+
+    const workspaceBoxWidth = Math.min(
+      width,
+      Math.max(
+        ...Object.values(workspaceBoxContents).map((content) =>
+          Math.max(
+            calculateVisibleLength(content.name),
+            calculateVisibleLength(content.status),
+          ),
         ),
+      ) + padding,
+    );
+
+    workspaces.forEach((workspace) => {
+      const state = workspaceState[workspace.name];
+
+      const { name: workspaceNameContent, status: statusTextContent } =
+        workspaceBoxContents[workspace.name];
+
+      linesToWrite.push({
+        text: textOps[BORDER_COLOR](
+          "┌" + "─".repeat(workspaceBoxWidth - 2) + "┐",
+        ),
+        type: "border",
+      });
+
+      const borderText = (text: string) => {
+        const visibleLength = calculateVisibleLength(text);
+        const truncated =
+          visibleLength > width - padding
+            ? truncateTerminalString(text, width - padding - 1) + "\x1b[0m…"
+            : text;
+        return (
+          textOps[BORDER_COLOR]("│ ") +
+          truncated +
+          " ".repeat(Math.max(0, workspaceBoxWidth - visibleLength - padding)) +
+          textOps[BORDER_COLOR](" │")
+        );
+      };
+
+      linesToWrite.push({
+        text: borderText(workspaceNameContent),
+        type: "borderedContent",
+      });
+
+      linesToWrite.push({
+        text: borderText(statusTextContent),
         type: "borderedContent",
       });
 
       linesToWrite.push({
         text: textOps[BORDER_COLOR](
-          "└" + "─".repeat(Math.max(0, width - 2)) + "┘",
+          "└" + "─".repeat(workspaceBoxWidth - 2) + "┘",
         ),
         type: "border",
       });

@@ -28,8 +28,11 @@ const parseArgv = (input: string) => {
     if (typeof entry === "object" && "op" in entry) {
       if (entry.op === "glob") {
         argv.push(entry.pattern);
-      } else if (!operations.includes(entry.op)) {
-        operations.push(entry.op);
+      } else {
+        argv.push(entry.op);
+        if (!operations.includes(entry.op)) {
+          operations.push(entry.op);
+        }
       }
     } else if (typeof entry === "string") {
       argv.push(entry);
@@ -183,7 +186,8 @@ export const TerminalInput = () => {
         {operations.length > 0 && (
           <>
             Warning: Shell operations like{" "}
-            <code>{operations.join(" or ")}</code> are not supported.
+            <code>{operations.join(" or ")}</code> are not supported. This only
+            passes arguments to <code>bw</code>.
           </>
         )}
       </div>

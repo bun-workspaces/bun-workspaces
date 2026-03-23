@@ -203,7 +203,7 @@ export default defineConfig({
           attrs: {
             rel: "stylesheet",
             // ! TODO Remove unused
-            href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@300;400;500;600;700&family=Inconsolata:wght@200..900&family=Jersey+10&family=Kode+Mono:wght@400..700&family=Lexend:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap",
+            href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@300;400;500;600;700&family=Jersey+10&family=Kode+Mono:wght@400..700&family=Lexend:wght@100..900&display=swap",
           },
         },
         {

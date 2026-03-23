@@ -7,7 +7,7 @@ export const Tree = () => {
   return (
     <div className="web-cli-tree">
       <div className="web-cli-tree-files">
-        <ReactArboristTree data={REACT_ARBORIST_DATA}>
+        <ReactArboristTree data={REACT_ARBORIST_DATA} rowHeight={26}>
           {TreeNode}
         </ReactArboristTree>
       </div>

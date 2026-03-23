@@ -1,11 +1,9 @@
 import { useCallback } from "react";
-import type { NodeRendererProps, SimpleTreeData } from "react-arborist";
+import type { NodeRendererProps } from "react-arborist";
+import { type TreeNodeData } from "./arboristData";
 import { useSelectedFile, useSetSelectedFile } from "./selection";
 
-export const TreeNode = ({
-  node,
-  style,
-}: NodeRendererProps<SimpleTreeData>) => {
+export const TreeNode = ({ node, style }: NodeRendererProps<TreeNodeData>) => {
   const selectedFile = useSelectedFile();
   const setSelectedFile = useSetSelectedFile();
 
@@ -13,13 +11,17 @@ export const TreeNode = ({
     setSelectedFile(node.data.id);
   }, [setSelectedFile, node.data.id]);
 
-  return (
+  return node.data.isFile ? (
     <button
       style={style}
-      className={`web-cli-tree-node ${selectedFile === node.data.id ? "selected" : ""}`}
+      className={`web-cli-tree-node${selectedFile === node.data.id ? " selected" : ""}`}
       onClick={onClick}
     >
-      <div>{node.data.name}</div>
+      <span>{node.data.name}</span>
     </button>
+  ) : (
+    <div style={style} className="web-cli-tree-node directory">
+      <span>{node.data.name}/</span>
+    </div>
   );
 };

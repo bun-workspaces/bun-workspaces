@@ -1,7 +1,12 @@
 import { demoProject, type DemoProjectFile } from "bw-web-service-shared";
-import { type SimpleTreeData } from "react-arborist";
 
-type BuilderNode = {
+export type TreeNodeData = {
+  id: string;
+  name: string;
+  isFile: boolean;
+};
+
+export type BuilderNode = {
   id: string;
   name: string;
   children: Map<string, BuilderNode>;
@@ -15,19 +20,19 @@ const compareTreeNodes = (a: BuilderNode, b: BuilderNode): number => {
 
 const builderMapToArboristNodes = (
   map: Map<string, BuilderNode>,
-): SimpleTreeData[] =>
+): TreeNodeData[] =>
   [...map.values()].sort(compareTreeNodes).map((node) => {
     const children = builderMapToArboristNodes(node.children);
     if (children.length === 0) {
-      return { id: node.id, name: node.name };
+      return { id: node.id, name: node.name, isFile: node.isFile };
     }
-    return { id: node.id, name: node.name, children };
+    return { id: node.id, name: node.name, children, isFile: node.isFile };
   });
 
 /** Turn flat demo project files into a nested tree for react-arborist. */
 export const demoProjectFilesToArboristTree = (
   files: readonly DemoProjectFile[],
-): SimpleTreeData[] => {
+): TreeNodeData[] => {
   const root = new Map<string, BuilderNode>();
 
   for (const file of files) {

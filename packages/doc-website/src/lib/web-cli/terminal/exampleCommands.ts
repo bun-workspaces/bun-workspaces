@@ -76,13 +76,18 @@ export const EXAMPLE_COMMANDS = [
     command: "run build --dep-order",
   },
   {
+    name: "Run Script - Named options over position args",
+    description: "Named options can be used instead of positional args",
+    command: 'run --workspace-patterns="frontend backend" --script=build',
+  },
+  {
     name: "Usage",
     description: "Show CLI usage",
     command: "--help",
   },
   {
     name: "Command Usage",
-    description: "Show usage for a command",
+    description: "Show usage for a specific command",
     command: "help run",
   },
   {

@@ -46,6 +46,7 @@ h1#web-cli {
 
 .web-cli-terminal-screen-container {
   padding: 0.65rem;
+  padding-right: 0;
   width: var(--web-cli-width);
   height: var(--web-cli-height);
   box-sizing: border-box;
@@ -98,7 +99,7 @@ h1#web-cli {
   outline: none;
   flex: 1;
   caret-shape: block;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 600;
   font-family: var(--rp-font-family-mono);
 }
@@ -107,7 +108,7 @@ h1#web-cli {
   color: var(--rp-c-text-3);
   opacity: 0.75;
   padding-left: 0.25rem;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
 }
 
 .web-cli-input-error {
@@ -222,6 +223,13 @@ h1#web-cli {
 
 .web-cli-terminal-example-description {
   font-size: 0.9rem;
+}
+
+.web-cli-terminal-example-command {
+  font-size: 0.9rem;
+  color: var(--rp-c-text-3);
+  white-space: nowrap;
+  margin-left: -0.25rem;
 }
 
 .web-cli-notes {

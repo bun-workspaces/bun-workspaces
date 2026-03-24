@@ -73,7 +73,10 @@ export const TerminalExamples = forwardRef<HTMLButtonElement, object>(
                   {example.name}
                 </h3>
                 <p className="web-cli-terminal-example-description">
-                  {example.description}
+                  {example.description}:&nbsp;&nbsp;
+                  <code className="web-cli-terminal-example-command">
+                    bw {example.command}
+                  </code>
                 </p>
               </button>
             ))}

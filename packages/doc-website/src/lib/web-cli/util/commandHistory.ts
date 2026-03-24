@@ -16,7 +16,10 @@ export const useCommandHistory = create<{
       historyIndex: -1,
       addCommand: (command) =>
         set((state) => ({
-          history: [command, ...state.history.slice(0, 99)],
+          history:
+            command !== state.history[0]
+              ? [command, ...state.history.slice(0, 99)]
+              : state.history,
           historyIndex: -1,
         })),
       incrementHistoryIndex: () =>

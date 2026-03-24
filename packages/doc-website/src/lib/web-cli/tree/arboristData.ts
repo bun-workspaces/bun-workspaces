@@ -4,6 +4,7 @@ export type TreeNodeData = {
   id: string;
   name: string;
   isFile: boolean;
+  children?: TreeNodeData[];
 };
 
 export type BuilderNode = {

@@ -135,7 +135,7 @@ export const TerminalScreen = ({ onTerminalResize }: TerminalScreenProps) => {
       terminalRef.current = null;
       terminal.dispose();
     };
-  }, [onTerminalResize, setTerminalSelection]);
+  }, [onTerminalResize, setTerminalSelection, xtermModule]);
 
   useEffect(() => {
     const terminal = terminalRef.current;

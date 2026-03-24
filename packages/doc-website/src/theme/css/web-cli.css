@@ -190,7 +190,15 @@ h1#web-cli {
   border-bottom-left-radius: 0.5rem;
 }
 
-.web-cli-tree-node {
+.web-cli-tree-files > [role="tree"] {
+  height: 100% !important;
+}
+
+.web-cli-tree-files > [role="tree"] > div {
+  height: 100% !important;
+}
+
+.web-cli-tree-files .web-cli-tree-node {
   background-color: transparent;
   display: flex;
   width: 100%;
@@ -203,10 +211,14 @@ h1#web-cli {
 
 button.web-cli-tree-node {
   appearance: none;
-  cursor: pointer;
+  cursor: pointer !important;
 }
 
 button.web-cli-tree-node:hover {
+  color: var(--rp-c-link) !important;
+}
+
+.web-cli-tree-node.selected-parent {
   color: var(--web-cli-yellow) !important;
 }
 
@@ -227,9 +239,9 @@ button.web-cli-tree-node:hover {
 
 .web-cli-tree-content {
   flex: 1;
-  min-height: 100%;
+  height: 100%;
   max-width: 100%;
-  overflow: scroll;
+  overflow: auto;
 }
 
 .web-cli-tree-content pre {

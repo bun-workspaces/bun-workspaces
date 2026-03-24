@@ -4,7 +4,7 @@ const useViewStore = create<{
   view: "terminal" | "tree";
   setView: (view: "terminal" | "tree") => void;
 }>()((set) => ({
-  view: "tree",
+  view: "terminal",
   setView: (view) => set({ view }),
 }));
 

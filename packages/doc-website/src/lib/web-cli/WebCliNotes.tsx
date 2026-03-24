@@ -13,7 +13,9 @@ export const WebCliNotes = () => {
           .
         </li>
         <li>
-          <code>bw</code> is an alias for <code>bunx bun-workspaces</code>
+          <code>bw</code> is an alias for <code>bunx bun-workspaces</code>.
+          However, you can use <code>bw</code> in your root{" "}
+          <code>package.json</code> scripts without setting up a shell alias.
         </li>
         <li>
           This isn't a full bash shell, so shell operations beyond providing

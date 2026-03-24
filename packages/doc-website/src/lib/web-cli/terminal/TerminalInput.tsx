@@ -14,6 +14,7 @@ import {
   useInvokeWebCli,
   useSetWebCliInput,
   useWebCliInput,
+  useWebCliTerminalSelection,
 } from "../util/invokeWebCli";
 import { EXAMPLE_COMMANDS, type ExampleCommand } from "./exampleCommands";
 
@@ -68,6 +69,7 @@ export const TerminalInput = () => {
   const decrementHistoryIndex = useDecrementCommandHistoryIndex();
   const historyIndex = useHistoryIndex();
   const addCommandToHistory = useAddCommandToHistory();
+  const terminalSelection = useWebCliTerminalSelection();
 
   const [placeholderExample, setPlaceholderExample] = useState<ExampleCommand>(
     getRandomExampleCommand()
@@ -155,6 +157,16 @@ export const TerminalInput = () => {
             !submitRef.current?.contains(e.target as Node)
           ) {
             inputRef.current?.focus();
+          }
+        }}
+        onKeyDown={(e) => {
+          if (
+            e.key === "c" &&
+            (e.ctrlKey || e.metaKey) &&
+            inputRef.current?.selectionStart === inputRef.current?.selectionEnd
+          ) {
+            // allow copying text in terminal normally
+            navigator.clipboard.writeText(terminalSelection);
           }
         }}
       >

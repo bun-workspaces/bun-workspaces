@@ -3,7 +3,10 @@ import { Terminal as XTermTerminal, type ITheme } from "@xterm/xterm";
 import { useEffect, useRef } from "react";
 import { useThemeState } from "rspress/theme";
 import "@xterm/xterm/css/xterm.css";
-import { useWebCliResult } from "../util/invokeWebCli";
+import {
+  useSetWebCliTerminalSelection,
+  useWebCliResult,
+} from "../util/invokeWebCli";
 import { WEB_CLI_INPUT_ID } from "./TerminalInput";
 
 export type TerminalSize = {
@@ -50,6 +53,7 @@ export const TerminalScreen = ({ onTerminalResize }: TerminalScreenProps) => {
   const terminalDivRef = useRef<HTMLDivElement>(null);
   const terminalRef = useRef<XTermTerminal | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
+  const setTerminalSelection = useSetWebCliTerminalSelection();
 
   const cliResult = useWebCliResult();
   const writtenChunksRef = useRef(0);
@@ -75,6 +79,10 @@ export const TerminalScreen = ({ onTerminalResize }: TerminalScreenProps) => {
       fontSize: 16,
       lineHeight: 1.35,
       theme: getTerminalTheme(),
+    });
+
+    const cleanupOnSelectionChange = terminal.onSelectionChange(() => {
+      setTerminalSelection(terminal.getSelection());
     });
 
     const fitAddon = new FitAddon();
@@ -112,11 +120,12 @@ export const TerminalScreen = ({ onTerminalResize }: TerminalScreenProps) => {
     return () => {
       rootClassObserver.disconnect();
       resizeObserver.disconnect();
+      cleanupOnSelectionChange.dispose();
       fitAddonRef.current = null;
       terminalRef.current = null;
       terminal.dispose();
     };
-  }, [onTerminalResize]);
+  }, [onTerminalResize, setTerminalSelection]);
 
   useEffect(() => {
     const terminal = terminalRef.current;

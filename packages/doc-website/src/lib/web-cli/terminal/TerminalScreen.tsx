@@ -7,7 +7,7 @@ import {
   useSetWebCliTerminalSelection,
   useWebCliResult,
 } from "../util/invokeWebCli";
-import { WEB_CLI_INPUT_ID } from "./TerminalInput";
+import { WEB_CLI_INPUT_ID } from "./ids";
 
 export type TerminalSize = {
   cols: number;

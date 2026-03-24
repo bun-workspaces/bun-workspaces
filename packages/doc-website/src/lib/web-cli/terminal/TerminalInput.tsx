@@ -17,8 +17,8 @@ import {
   useWebCliTerminalSelection,
 } from "../util/invokeWebCli";
 import { EXAMPLE_COMMANDS, type ExampleCommand } from "./exampleCommands";
-
-export const WEB_CLI_INPUT_ID = "web-cli-input";
+import { WEB_CLI_INPUT_ID } from "./ids";
+import { TerminalExamples } from "./TerminalExamples";
 
 const parseArgv = (input: string) => {
   const parsed = parse(input);
@@ -62,7 +62,7 @@ export const TerminalInput = () => {
 
   const inputRef = useRef<HTMLInputElement>(null);
   const submitRef = useRef<HTMLButtonElement>(null);
-
+  const examplesRef = useRef<HTMLButtonElement>(null);
   const resetHistoryIndex = useResetHistoryIndex();
   const historyCommand = useHistoryCommand();
   const incrementHistoryIndex = useIncrementCommandHistoryIndex();
@@ -154,7 +154,9 @@ export const TerminalInput = () => {
           if (
             (e.target as HTMLElement) !== inputRef.current &&
             (e.target as HTMLElement) !== submitRef.current &&
-            !submitRef.current?.contains(e.target as Node)
+            (e.target as HTMLElement) !== examplesRef.current &&
+            !submitRef.current?.contains(e.target as Node) &&
+            !examplesRef.current?.contains(e.target as Node)
           ) {
             inputRef.current?.focus();
           }
@@ -205,6 +207,7 @@ export const TerminalInput = () => {
         >
           <FaTerminal />
         </button>
+        <TerminalExamples ref={examplesRef} />
       </form>
       <div className="web-cli-input-warning">
         {operations.length > 0 && (

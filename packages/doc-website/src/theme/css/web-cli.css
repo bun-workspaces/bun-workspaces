@@ -132,12 +132,17 @@ h1#web-cli {
 .web-cli-input-submit {
   color: var(--rp-c-bg);
   background-color: var(--rp-c-link);
-  padding: 0.75rem 1.75rem;
+  padding: 0.75rem 1.5rem;
   box-sizing: content-box;
   border-radius: 0.25rem;
   transition:
     opacity 0.25s,
-    background-color 0.25s;
+    background-color 0.25s,
+    filter 0.25s;
+}
+
+.web-cli-input-submit:focus {
+  filter: brightness(1.25);
 }
 
 .web-cli-input-submit:disabled {
@@ -148,6 +153,75 @@ h1#web-cli {
 
 .xterm {
   background-color: var(--rp-c-code-block-bg) !important;
+}
+
+.web-cli-terminal-examples-container {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.web-cli-terminal-example-button {
+  color: white;
+  background-color: var(--bwunster-eye-color);
+  padding: 0.55rem 0.5rem;
+  font-size: 0.85rem;
+  box-sizing: content-box;
+  border-radius: 0.25rem;
+  transition:
+    opacity 0.25s,
+    background-color 0.25s,
+    filter 0.25s;
+}
+
+.web-cli-terminal-example-button:focus {
+  filter: brightness(1.25);
+}
+
+.web-cli-terminal-examples-content {
+  position: absolute;
+  top: calc(-100% - calc(var(--web-cli-height) - 7rem));
+  height: calc(var(--web-cli-height) - 5rem);
+  max-height: calc(var(--web-cli-height) - 5rem);
+  overflow-y: auto;
+  width: calc(var(--web-cli-width) - 5rem);
+  max-width: 90vw;
+  background-color: var(--rp-c-bg-mute);
+  box-shadow: 0 8px 30px 0px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--rp-c-divider);
+  border-radius: 0.5rem;
+}
+
+.web-cli-terminal-example {
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.25s;
+  line-height: 1.25;
+}
+
+.web-cli-terminal-example.odd {
+  background-color: var(--rp-c-bg);
+}
+
+.web-cli-terminal-example.even {
+  background-color: var(--rp-c-bg-soft);
+}
+
+.web-cli-terminal-example:hover,
+.web-cli-terminal-example:focus {
+  background-color: var(--rp-c-bg-mute);
+}
+
+.web-cli-terminal-example-name {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.web-cli-terminal-example-description {
+  font-size: 0.9rem;
 }
 
 .web-cli-notes {

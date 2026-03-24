@@ -6,6 +6,7 @@
   --rp-font-family-terminal: "Kode Mono", monospace;
   --rp-c-text-1: #202020;
   --rp-c-text-2: #434343;
+  --rp-c-text-3: #848484;
   --rp-c-code-block-bg: #f8f8f8;
   --rp-c-text-code: #202020;
   --rp-c-bg: #fcfcfc;
@@ -38,8 +39,8 @@
 
 .dark {
   --rp-c-bg: #16151c;
-  --rp-c-bg-soft: #1f1f28;
-  --rp-c-bg-mute: #20202b;
+  --rp-c-bg-soft: #1d1d27;
+  --rp-c-bg-mute: #22222d;
   --rp-c-link: #80a2ff;
   --rp-c-text-code-bg: #1f1f28;
   --rp-c-text-code: #efefef;

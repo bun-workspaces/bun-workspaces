@@ -1,13 +1,17 @@
 import { type ComponentProps } from "react";
 import { Light as SyntaxHighlighterLight } from "react-syntax-highlighter";
 import bash from "react-syntax-highlighter/dist/esm/languages/hljs/bash";
+// import html from "react-syntax-highlighter/dist/esm/languages/hljs/htmlbars";
 import json from "react-syntax-highlighter/dist/esm/languages/hljs/json";
 import typescript from "react-syntax-highlighter/dist/esm/languages/hljs/typescript";
+// import tsx from "react-syntax-highlighter/dist/esm/languages/prism/tsx";
 import { stackoverflowDark as dark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 SyntaxHighlighterLight.registerLanguage("bash", bash);
 SyntaxHighlighterLight.registerLanguage("json", json);
+// SyntaxHighlighterLight.registerLanguage("html", html);
 SyntaxHighlighterLight.registerLanguage("typescript", typescript);
+// SyntaxHighlighterLight.registerLanguage("tsx", tsx);
 
 /**
  * @todo This is a workaround for non-markdown code blocks. Maybe it will be possible

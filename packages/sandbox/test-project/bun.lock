@@ -37,7 +37,7 @@
     },
   },
   "packages": {
-    "bun-workspaces": ["bun-workspaces@1.0.0", "", { "dependencies": { "commander": "^12.1.0" }, "bin": { "bun-workspaces": "bin/cli.js", "bw": "bin/cli.js" } }, "sha512-O67EO2NH3gxEsQ8sFGv9ECLEOwpvHRb6jhsiLRid5zIjuIn8Ad0/i/z3HV22ySwUHOqhoHc0yqr5xK43lSNVbQ=="],
+    "bun-workspaces": ["bun-workspaces@1.0.0", "", { "dependencies": { "commander": "^12.1.0" }, "bin": { "bw": "bin/cli.js", "bun-workspaces": "bin/cli.js" } }, "sha512-O67EO2NH3gxEsQ8sFGv9ECLEOwpvHRb6jhsiLRid5zIjuIn8Ad0/i/z3HV22ySwUHOqhoHc0yqr5xK43lSNVbQ=="],
 
     "commander": ["commander@12.1.0", "", {}, "sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA=="],
 

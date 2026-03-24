@@ -13,7 +13,13 @@ export const TreeContent = () => {
       <SyntaxHighlighter
         wrapLongLines
         language={
-          fileData?.relativePath.endsWith(".ts") ? "typescript" : "json"
+          fileData?.relativePath.endsWith(".ts")
+            ? "typescript"
+            : fileData?.relativePath.endsWith(".tsx")
+              ? "tsx"
+              : fileData?.relativePath.endsWith(".html")
+                ? "html"
+                : "json"
         }
       >
         {fileData?.content ?? ""}

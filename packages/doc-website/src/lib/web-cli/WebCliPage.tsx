@@ -1,13 +1,11 @@
-import { Link } from "rspress/theme";
 import { useLoadApiHealth } from "../service/apiHealth";
 import { WebCliMain } from "./main/WebCliMain";
-import { useSetView } from "./util/view";
 import { WebCliNotes } from "./WebCliNotes";
+
+import "../../theme/css/web-cli.css";
 
 export const WebCliPage = () => {
   useLoadApiHealth();
-
-  const setView = useSetView();
 
   return (
     <div className="web-cli-page">

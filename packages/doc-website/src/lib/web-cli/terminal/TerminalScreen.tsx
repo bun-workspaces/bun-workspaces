@@ -1,6 +1,6 @@
 import { FitAddon } from "@xterm/addon-fit";
-import { Terminal as XTermTerminal, type ITheme } from "@xterm/xterm";
-import { useEffect, useRef } from "react";
+import { type Terminal as XTermTerminal, type ITheme } from "@xterm/xterm";
+import { useEffect, useRef, useState } from "react";
 import { useThemeState } from "rspress/theme";
 import "@xterm/xterm/css/xterm.css";
 import {
@@ -53,6 +53,10 @@ export const TerminalScreen = ({ onTerminalResize }: TerminalScreenProps) => {
   const terminalDivRef = useRef<HTMLDivElement>(null);
   const terminalRef = useRef<XTermTerminal | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
+  const [xtermModule, setXtermModule] = useState<
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+    typeof import("@xterm/xterm") | null
+  >(null);
   const setTerminalSelection = useSetWebCliTerminalSelection();
 
   const cliResult = useWebCliResult();
@@ -61,15 +65,21 @@ export const TerminalScreen = ({ onTerminalResize }: TerminalScreenProps) => {
   const [theme] = useThemeState();
 
   useEffect(() => {
+    import("@xterm/xterm").then((module) => {
+      setXtermModule(module);
+    });
+  }, []);
+
+  useEffect(() => {
     if (terminalRef.current) {
       terminalRef.current.options.theme = getTerminalTheme();
     }
   }, [theme]);
 
   useEffect(() => {
-    if (!terminalDivRef.current) return;
+    if (!terminalDivRef.current || !xtermModule) return;
 
-    const terminal = new XTermTerminal({
+    const terminal = new xtermModule.Terminal({
       disableStdin: true,
       cursorBlink: false,
       cursorWidth: 1,

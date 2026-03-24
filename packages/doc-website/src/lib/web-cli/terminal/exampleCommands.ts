@@ -48,6 +48,12 @@ export const EXAMPLE_COMMANDS = [
     command: 'run type-check "*end"',
   },
   {
+    name: "Run Script - type-check by path",
+    description:
+      "Run the type-check script for workspaces' paths matching the glob",
+    command: 'run type-check "path:packages/**/*"',
+  },
+  {
     name: "Run Script - type-check workspaces by aliases",
     description:
       "Run the type-check script for specific workspaces using aliases",

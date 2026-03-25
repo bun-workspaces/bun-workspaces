@@ -73,11 +73,7 @@ export const useInitializeApi = () => {
             newError = error as Error;
           });
 
-        await Promise.all([
-          healthResponse,
-          readyResponse,
-          new Promise((resolve) => setTimeout(resolve, 10000)),
-        ]);
+        await Promise.all([healthResponse, readyResponse]);
         setError(newError);
       } catch (error) {
         // eslint-disable-next-line no-console

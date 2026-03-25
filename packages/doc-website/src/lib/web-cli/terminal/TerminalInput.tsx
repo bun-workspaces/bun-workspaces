@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FaTerminal } from "react-icons/fa";
 import { parse } from "shell-quote";
-import { useApiHealth } from "../../service";
+import { useApiState } from "../../service";
 import {
   useAddCommandToHistory,
   useDecrementCommandHistoryIndex,
@@ -47,13 +47,14 @@ const parseArgv = (input: string) => {
   };
 };
 
-const getRandomExampleCommand = (previous?: ExampleCommand) => {
+const getRandomExampleCommand = (previous?: string) => {
   let newExample = previous;
   while (newExample === previous) {
     newExample =
-      EXAMPLE_COMMANDS[Math.floor(Math.random() * EXAMPLE_COMMANDS.length)];
+      EXAMPLE_COMMANDS[Math.floor(Math.random() * EXAMPLE_COMMANDS.length)]
+        .command;
   }
-  return newExample ?? EXAMPLE_COMMANDS[0];
+  return newExample ?? EXAMPLE_COMMANDS[0].command;
 };
 
 export const TerminalInput = () => {
@@ -71,26 +72,48 @@ export const TerminalInput = () => {
   const addCommandToHistory = useAddCommandToHistory();
   const terminalSelection = useWebCliTerminalSelection();
 
-  const [placeholderExample, setPlaceholderExample] = useState<ExampleCommand>(
-    getRandomExampleCommand()
-  );
+  const [placeholderText, setPlaceholderText] = useState<string>("Loading");
 
   const { argv, operations } = useMemo(() => parseArgv(input), [input]);
 
+  const { isReady, isLoading, error } = useApiState();
+
+  const setNewPlaceholderExample = useCallback(() => {
+    setPlaceholderText(
+      `Enter a command (like: ${getRandomExampleCommand(placeholderText).replace("bw ", "")})`
+    );
+  }, [placeholderText]);
+
   useEffect(() => {
-    if (input.trim()) return;
+    if (!isLoading) {
+      inputRef.current?.focus();
+      setNewPlaceholderExample();
+    } else {
+      let ellipsisCount = 0;
+      const interval = setInterval(() => {
+        setPlaceholderText("Loading" + ".".repeat(ellipsisCount));
+        ellipsisCount++;
+        if (ellipsisCount > 3) {
+          ellipsisCount = 0;
+        }
+      }, 350);
+      return () => clearInterval(interval);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (input.trim() || isLoading) return;
     const timeout = setTimeout(() => {
-      setPlaceholderExample(getRandomExampleCommand(placeholderExample));
+      setNewPlaceholderExample();
     }, 4000);
     return () => clearTimeout(timeout);
-  }, [input, placeholderExample]);
-
-  const { isHealthy, isLoading, error } = useApiHealth();
+  }, [input, isLoading, setNewPlaceholderExample]);
 
   const { isLoading: isInvoking, invokeWebCli } = useInvokeWebCli();
 
-  const isError = !!error || (!isLoading && !isHealthy);
-  const disabled = !isHealthy || isError || isInvoking;
+  const isError = !!error || (!isLoading && !isReady);
+  const disabled = !isReady || isError || isInvoking;
 
   useEffect(() => {
     if (historyCommand) {
@@ -190,13 +213,13 @@ export const TerminalInput = () => {
             ref={inputRef}
             className="web-cli-input"
             id={WEB_CLI_INPUT_ID}
+            disabled={isLoading}
             type="text"
             value={input}
             onChange={handleInput}
             onKeyDown={handleKeyDown}
             maxLength={200}
-            placeholder={` Enter a command (like: ${placeholderExample?.command.replace("bw ", "")})`}
-            autoFocus
+            placeholder={placeholderText}
           />
         )}
         <button

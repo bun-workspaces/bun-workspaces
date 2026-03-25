@@ -4,7 +4,7 @@ import type {
 } from "bw-web-service-shared";
 import { useCallback } from "react";
 import { create } from "zustand";
-import { useApiHealth, serviceClient } from "../../service";
+import { useApiState, serviceClient } from "../../service";
 
 export const DEFAULT_TERMINAL_WIDTH = 80;
 
@@ -42,11 +42,11 @@ export const useInvokeWebCli = () => {
   const setResult = useInvokeWebCliStore((state) => state.setResult);
   const addResultChunk = useInvokeWebCliStore((state) => state.addResultChunk);
   const terminalWidth = useInvokeWebCliStore((state) => state.terminalWidth);
-  const { isHealthy } = useApiHealth();
+  const { isReady } = useApiState();
 
   const invokeWebCli = useCallback(
     async (request: Omit<InvokeCliRequestBody, "terminalWidth">) => {
-      if (isLoading || !isHealthy) return;
+      if (isLoading || !isReady) return;
 
       setIsLoading(true);
       setResult([]);
@@ -66,7 +66,7 @@ export const useInvokeWebCli = () => {
     },
     [
       addResultChunk,
-      isHealthy,
+      isReady,
       isLoading,
       setIsLoading,
       setResult,

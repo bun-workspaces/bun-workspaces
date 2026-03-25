@@ -1,11 +1,11 @@
-import { useLoadApiHealth } from "../service/apiHealth";
+import { useInitializeApi } from "../service/apiHealth";
 import { WebCliMain } from "./main/WebCliMain";
 import { WebCliNotes } from "./WebCliNotes";
 
 import "../../theme/css/web-cli.css";
 
 export const WebCliPage = () => {
-  useLoadApiHealth();
+  useInitializeApi();
 
   return (
     <div className="web-cli-page">

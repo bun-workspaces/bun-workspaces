@@ -50,7 +50,7 @@
         "@xterm/addon-fit": "^0.11.0",
         "@xterm/xterm": "^6.0.0",
         "bun-workspaces": "file:../bun-workspaces",
-        "bw-web-service-shared": "0.0.1",
+        "bw-web-service-shared": "0.1.0",
         "glob": "^13.0.6",
         "lodash": "^4.17.23",
         "react": "^19.2.4",
@@ -546,7 +546,7 @@
 
     "bun-workspaces_release": ["bun-workspaces@1.0.0", "", { "dependencies": { "commander": "^12.1.0" }, "bin": { "bw": "bin/cli.js", "bun-workspaces": "bin/cli.js" } }, "sha512-O67EO2NH3gxEsQ8sFGv9ECLEOwpvHRb6jhsiLRid5zIjuIn8Ad0/i/z3HV22ySwUHOqhoHc0yqr5xK43lSNVbQ=="],
 
-    "bw-web-service-shared": ["bw-web-service-shared@0.0.1", "", {}, "sha512-eefn1oceX1bh9V7nVH/X30XYKLojBUGEFV4SigG3l/Bq2u0lSy1C9eJc/W61HG7ybUmL1+np53eTcZVFFG4/4w=="],
+    "bw-web-service-shared": ["bw-web-service-shared@0.1.0", "", {}, "sha512-6i3zDIDYzYja9R8moMcum+RTo/BIAyE1t0uXhL1z8ZvbWdU7vfjPdA90XyANJAmJ1djiOulPQW5tWJFdCPbHqA=="],
 
     "cac": ["cac@6.7.14", "", {}, "sha512-b6Ilus+c3RrdDk+JhLKUAQfzzgLEPy6wcXqS7f/xe1EETvsDP6GORG7SFuOs6cID5YkqchW/LXZbX5bc8j7ZcQ=="],
 

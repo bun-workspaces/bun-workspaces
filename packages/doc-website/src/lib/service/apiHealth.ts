@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { create } from "zustand";
 import { useOnMount } from "../util/useOnMount";
 import { serviceClient } from "./client";
@@ -6,45 +5,80 @@ import { serviceClient } from "./client";
 const useHealthStore = create<{
   isPending: boolean;
   isLoading: boolean;
-  isHealthy: boolean;
+  isReady: boolean;
   error: Error | null;
   setIsPending: (isPending: boolean) => void;
   setIsLoading: (isLoading: boolean) => void;
-  setIsHealthy: (isHealthy: boolean) => void;
+  setIsReady: (isHealthy: boolean) => void;
   setError: (error: Error | null) => void;
 }>((set) => ({
   isPending: true,
   isLoading: false,
-  isHealthy: false,
+  isReady: false,
   error: null,
   setIsPending: (isPending) => set({ isPending }),
   setIsLoading: (isLoading) => set({ isLoading }),
-  setIsHealthy: (isHealthy) => set({ isHealthy }),
+  setIsReady: (isHealthy) => set({ isReady: isHealthy }),
   setError: (error) => set({ error }),
 }));
 
-export const useLoadApiHealth = () => {
-  const isHealthy = useHealthStore((state) => state.isHealthy);
+export const useInitializeApi = () => {
+  const isReady = useHealthStore((state) => state.isReady);
   const error = useHealthStore((state) => state.error);
   const isLoading = useHealthStore((state) => state.isLoading);
+  const setIsReady = useHealthStore((state) => state.setIsReady);
   const setIsPending = useHealthStore((state) => state.setIsPending);
-  const setIsHealthy = useHealthStore((state) => state.setIsHealthy);
   const setError = useHealthStore((state) => state.setError);
   const setIsLoading = useHealthStore((state) => state.setIsLoading);
 
   useOnMount(() => {
-    if (isLoading || isHealthy || error) return;
+    if (isLoading || isReady || error) return;
     (async () => {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await serviceClient.health();
-        const newIsHealthy = response.status === "ok";
-        setIsHealthy(newIsHealthy);
-        if (!newIsHealthy) {
-          // eslint-disable-next-line no-console
-          console.error("API is not healthy", response);
-        }
+        const healthResponse = serviceClient.health();
+
+        let newError: Error | null = null;
+        healthResponse
+          .then((response) => {
+            const newIsHealthy = response.status === "ok";
+            if (!newIsHealthy) {
+              newError = new Error("API is not healthy");
+              // eslint-disable-next-line no-console
+              console.error("API is not healthy", response);
+              setIsReady(false);
+            }
+          })
+          .catch((error) => {
+            // eslint-disable-next-line no-console
+            console.error("Error loading API health", error);
+            newError = error as Error;
+          });
+
+        const readyResponse = serviceClient.ready();
+        readyResponse
+          .then((response) => {
+            if (!newError && !response.isReady) {
+              newError = new Error("API is not ready");
+              // eslint-disable-next-line no-console
+              console.error("API is not ready", response);
+            } else {
+              setIsReady(true);
+            }
+          })
+          .catch((error) => {
+            // eslint-disable-next-line no-console
+            console.error("Error loading API ready", error);
+            newError = error as Error;
+          });
+
+        await Promise.all([
+          healthResponse,
+          readyResponse,
+          new Promise((resolve) => setTimeout(resolve, 10000)),
+        ]);
+        setError(newError);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error("Error loading API health", error);
@@ -58,11 +92,11 @@ export const useLoadApiHealth = () => {
   });
 };
 
-export const useApiHealth = () => {
+export const useApiState = () => {
   const isPending = useHealthStore((state) => state.isPending);
   const isLoading = useHealthStore((state) => state.isLoading);
-  const isHealthy = useHealthStore((state) => state.isHealthy);
+  const isReady = useHealthStore((state) => state.isReady);
   const error = useHealthStore((state) => state.error);
 
-  return { isLoading: isPending || isLoading, isHealthy, error };
+  return { isLoading: isPending || isLoading, isReady, error };
 };

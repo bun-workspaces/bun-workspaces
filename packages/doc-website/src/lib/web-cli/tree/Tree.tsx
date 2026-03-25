@@ -6,7 +6,7 @@ import { TreeNode } from "./TreeNode";
 
 const createOpenState = (
   data: TreeNodeData[],
-  selectedFile: string
+  selectedFile: string,
 ): Record<string, boolean> =>
   data.reduce(
     (acc, node) => {
@@ -18,7 +18,7 @@ const createOpenState = (
         ...createOpenState(node.children ?? [], selectedFile),
       };
     },
-    {} as Record<string, boolean>
+    {} as Record<string, boolean>,
   );
 
 export const Tree = () => {
@@ -33,7 +33,7 @@ export const Tree = () => {
             rowHeight={26}
             initialOpenState={createOpenState(
               REACT_ARBORIST_DATA,
-              selectedFile
+              selectedFile,
             )}
             width={240}
           >

@@ -84,5 +84,5 @@ export const TerminalExamples = forwardRef<HTMLButtonElement, object>(
         )}
       </div>
     );
-  }
+  },
 );

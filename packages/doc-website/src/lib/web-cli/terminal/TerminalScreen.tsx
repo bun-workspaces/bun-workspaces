@@ -162,12 +162,12 @@ export const TerminalScreen = ({ onTerminalResize }: TerminalScreenProps) => {
     const lastChunk = newChunks[newChunks.length - 1];
     lastChunk.warnings.forEach((warning) => {
       terminal.write(
-        `\x1b[33m${warning.message.replaceAll("\n", "\r\n")}\x1b[0m`
+        `\x1b[33m${warning.message.replaceAll("\n", "\r\n")}\x1b[0m`,
       );
     });
     lastChunk.errors.forEach((error) => {
       terminal.write(
-        `\x1b[31m${error.message.replaceAll("\n", "\r\n")}\x1b[0m`
+        `\x1b[31m${error.message.replaceAll("\n", "\r\n")}\x1b[0m`,
       );
     });
   }, [cliResult]);

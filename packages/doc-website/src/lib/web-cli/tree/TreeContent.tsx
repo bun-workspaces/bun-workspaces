@@ -5,7 +5,7 @@ import { useSelectedFile } from "./selection";
 export const TreeContent = () => {
   const selectedFile = useSelectedFile();
   const fileData = demoProject.files.find(
-    (file) => file.relativePath === selectedFile
+    (file) => file.relativePath === selectedFile,
   );
 
   return (

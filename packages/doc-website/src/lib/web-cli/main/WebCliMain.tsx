@@ -15,7 +15,7 @@ export const WebCliMain = () => {
     ({ cols }) => {
       setTerminalWidth(cols);
     },
-    [setTerminalWidth]
+    [setTerminalWidth],
   );
   return (
     <div className="web-cli-container">

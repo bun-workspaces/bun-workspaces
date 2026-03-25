@@ -30,7 +30,6 @@ export const WebCliNotes = () => {
           changing the working directory via <code>--cwd</code> aren't supported
           here.
         </li>
-        <li></li>
       </ul>
     </div>
   );

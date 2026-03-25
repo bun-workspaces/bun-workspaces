@@ -215,6 +215,10 @@ export const TerminalInput = () => {
             id={WEB_CLI_INPUT_ID}
             disabled={isLoading}
             type="text"
+            autoCapitalize="off"
+            autoCorrect="off"
+            autoComplete="off"
+            spellCheck={false}
             value={input}
             onChange={handleInput}
             onKeyDown={handleKeyDown}

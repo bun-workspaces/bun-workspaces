@@ -50,7 +50,7 @@
         "@xterm/addon-fit": "^0.11.0",
         "@xterm/xterm": "^6.0.0",
         "bun-workspaces": "file:../bun-workspaces",
-        "bw-web-service-shared": "0.1.0",
+        "bw-web-service-shared": "0.1.2",
         "glob": "^13.0.6",
         "lodash": "^4.17.23",
         "react": "^19.2.4",
@@ -546,7 +546,7 @@
 
     "bun-workspaces_release": ["bun-workspaces@workspace:packages/bun-workspaces"],
 
-    "bw-web-service-shared": ["bw-web-service-shared@0.1.0", "", {}, "sha512-6i3zDIDYzYja9R8moMcum+RTo/BIAyE1t0uXhL1z8ZvbWdU7vfjPdA90XyANJAmJ1djiOulPQW5tWJFdCPbHqA=="],
+    "bw-web-service-shared": ["bw-web-service-shared@0.1.2", "", {}, "sha512-SXfGu54XzV9VsYSH1zok/fCipPpfp5VDXb0TFbGQZ2p4rsY6dt7aLF9/q2FcgypPWeVqiU4NM1TivnYObNI/vw=="],
 
     "cac": ["cac@6.7.14", "", {}, "sha512-b6Ilus+c3RrdDk+JhLKUAQfzzgLEPy6wcXqS7f/xe1EETvsDP6GORG7SFuOs6cID5YkqchW/LXZbX5bc8j7ZcQ=="],
 

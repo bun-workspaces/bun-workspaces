@@ -166,7 +166,7 @@ h1#web-cli {
 .web-cli-terminal-example-button {
   color: white;
   background-color: var(--bwunster-eye-color);
-  padding: 0.55rem 0.5rem;
+  padding: 0.575rem 0.5rem;
   font-size: 0.85rem;
   box-sizing: content-box;
   border-radius: 0.25rem;

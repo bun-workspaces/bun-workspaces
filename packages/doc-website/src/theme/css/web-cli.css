@@ -73,6 +73,7 @@ h1#web-cli {
 .web-cli-input-form {
   display: flex;
   align-items: center;
+  width: var(--web-cli-width);
   max-width: 100%;
   gap: 0.5rem;
   background-color: var(--rp-c-bg-mute);

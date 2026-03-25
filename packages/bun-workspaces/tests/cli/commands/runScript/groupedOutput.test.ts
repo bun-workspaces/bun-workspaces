@@ -723,7 +723,7 @@ xactly one hundred characters long indeed
       { retry: DEFAULT_RETRY },
     );
 
-    test.only(
+    test(
       "40-wide workspace name - 54 columns",
       async () => {
         await runSnapshotTest({
@@ -735,10 +735,10 @@ xactly one hundred characters long indeed
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌─────────────────────────────────────────────────────┐
+┌────────────────────────────────────────────────────┐
 │ Workspace: has-40-wide-workspace-name-which-is-lo… │
-│    Status: success                                  │
-└─────────────────────────────────────────────────────┘
+│    Status: success                                 │
+└────────────────────────────────────────────────────┘
 long workspace name
 ✅ has-40-wide-workspace-name-which-is-long: test-scrip
 t
@@ -763,10 +763,10 @@ t
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌─────────────────┐
+┌────────────────┐
 │ Workspace: ha… │
 │    Status: pe… │
-└─────────────────┘`,
+└────────────────┘`,
           ],
           rows: 50,
           cols: 18,
@@ -787,10 +787,10 @@ t
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌───────────┐
+┌──────────┐
 │ Workspa… │
 │    Stat… │
-└───────────┘`,
+└──────────┘`,
           ],
           rows: 50,
           cols: 12,
@@ -1352,7 +1352,7 @@ xactly one hundred characters long indeed
 this test script has a very very very long output 
 that is exactly one hundred characters long indeed
 ┌────────────────────────────────────────────────┐
-│ Workspace: has-40-wide-workspace-name-which-… │
+│ Workspace: has-40-wide-workspace-name-which-i… │
 │    Status: success                             │
 └────────────────────────────────────────────────┘
 long workspace name

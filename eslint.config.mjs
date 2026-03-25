@@ -2,6 +2,8 @@ import js from "@eslint/js";
 import { defineConfig, globalIgnores } from "eslint/config";
 import importPlugin from "eslint-plugin-import";
 import globals from "globals";
+import reactPlugin from "eslint-plugin-react";
+import reactHooksPlugin from "eslint-plugin-react-hooks";
 import tseslint from "typescript-eslint";
 
 const ALLOW_UNUSED_VARNAME_PATTERN = "^_";
@@ -79,6 +81,12 @@ export default defineConfig([
     rules: {
       "no-console": "error",
     },
+  },
+  {
+    name: "docWebsitePackageConfig",
+    files: ["packages/doc-website/**/*.{js,mjs,cjs,ts,mts,cts,tsx}"],
+    ...reactPlugin.configs.flat.recommended,
+    ...reactHooksPlugin.configs.flat.recommended,
   },
   {
     name: "packageScripts",

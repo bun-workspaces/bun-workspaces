@@ -36,6 +36,13 @@ export const CliHeader = ({ activeHref }: CliHeaderProps) => {
         </Link>
       </div>
       <p className="note" style={{ marginTop: "1rem" }}>
+        Try the{" "}
+        <Link className="inline-link" href="/web-cli">
+          Web CLI demo
+        </Link>{" "}
+        right here in your browser!
+      </p>
+      <p className="note" style={{ marginTop: "1rem" }}>
         Run the CLI via <code>bunx bun-workspaces</code> or alias it to{" "}
         <code>bw</code>, such as via <code>alias bw="bunx bun-workspaces"</code>
         , which can be placed in your shell configuration file, like{" "}

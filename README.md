@@ -10,7 +10,7 @@ A CLI and API to enhance your monorepo development with Bun's [native workspaces
 
 - Works right away, with no boilerplate required 🍔🍴
 - Get metadata about your monorepo 🤖
-- Run package.json scripts across workspaces 📋
+- Orchestrate your workspaces' `package.json` scripts 📋
 - Run inline [Bun Shell](https://bun.com/docs/runtime/shell) scripts in workspaces 🐚
 
 This is a tool to help manage a Bun monorepo, offering features beyond what [Bun's --filter feature](https://bun.com/docs/pm/filter) can do. It can be used to get a variety of metadata about your project and run scripts across your workspaces with advanced control.

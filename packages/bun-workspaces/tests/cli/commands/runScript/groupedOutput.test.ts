@@ -737,11 +737,6 @@ xactly one hundred characters long indeed
             `
 ┌────────────────────────────────────────────────────┐
 │ Workspace: has-40-wide-workspace-name-which-is-lo… │
-│    Status: pending                                 │
-└────────────────────────────────────────────────────┘`,
-            `
-┌────────────────────────────────────────────────────┐
-│ Workspace: has-40-wide-workspace-name-which-is-lo… │
 │    Status: success                                 │
 └────────────────────────────────────────────────────┘
 long workspace name

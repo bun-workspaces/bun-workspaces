@@ -118,6 +118,8 @@ export default defineConfig({
             BUILD_ID: ${JSON.stringify(process.env.BUILD_ID ?? "(no build ID)")},
             REQUIRED_BUN_VERSION: ${JSON.stringify(REQUIRED_BUN_VERSION)},
             BWUNSTER_ASCII: ${JSON.stringify(BWUNSTER_ASCII)},
+            BW_WEB_SERVICE_BASE_URL: ${JSON.stringify(process.env.BW_WEB_SERVICE_BASE_URL ?? "http://localhost:8080")},
+            BW_DOC_ENV: ${JSON.stringify(process.env.BW_DOC_ENV ?? "production")},
           },
           on: function(){}
         })`,
@@ -200,7 +202,8 @@ export default defineConfig({
           tag: "link",
           attrs: {
             rel: "stylesheet",
-            href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@300;400;500;600;700&family=Lexend:wght@100..900&display=swap",
+            // ! TODO Remove unused
+            href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@300;400;500;600;700&family=Jersey+10&family=Kode+Mono:wght@400..700&family=Lexend:wght@100..900&display=swap",
           },
         },
         {
@@ -255,8 +258,13 @@ export default defineConfig({
         text: "CLI",
         link: "/cli",
         position: "left",
-        activeMatch: "/cli",
+        activeMatch: "/cli|web-cli",
         items: [
+          {
+            text: "Web CLI (Demo)",
+            link: "/web-cli",
+            activeMatch: "/web-cli$",
+          },
           {
             text: "Quick Start",
             link: "/cli",

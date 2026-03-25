@@ -3,21 +3,69 @@
 :root {
   --rp-font-family-base: "IBM Plex Sans", sans-serif;
   --rp-font-family-mono: "UnifontEx", monospace;
+  --rp-font-family-terminal: "Kode Mono", monospace;
   --rp-c-text-1: #202020;
   --rp-c-text-2: #434343;
+  --rp-c-text-3: #848484;
   --rp-c-code-block-bg: #f8f8f8;
   --rp-c-text-code: #202020;
   --rp-c-bg: #fcfcfc;
-  --rp-c-link: rgb(73, 119, 245);
+  --rp-c-link: #4977f5;
 
-  --code-base-color: rgb(15, 15, 15);
-  --code-string-color: rgb(95, 160, 3);
-  --code-keyword-color: rgb(123, 99, 158);
-  --code-attr-color: rgb(54, 143, 178);
-  --code-built-in-color: rgb(192, 105, 23);
-  --code-comment-color: rgb(130, 130, 130);
+  --code-base-color: #0f0f0f;
+  --code-string-color: #5fa003;
+  --code-keyword-color: #7b639e;
+  --code-attr-color: #2f7b9a;
+  --code-built-in-color: #c06917;
+  --code-comment-color: #828282;
+
+  --web-cli-green: #2e7e14;
+  --web-cli-blue: #407ca8;
+  --web-cli-magenta: #8f69c5;
+  --web-cli-cyan: #3b93a0;
+  --web-cli-yellow: #a58029;
+  --web-cli-red: #d25151;
+  --web-cli-black: #3d3d3d;
+  --web-cli-bright-black: #6b6b6b;
+  --web-cli-divider: rgb(232, 232, 232);
+
+  --web-cli-width: clamp(35rem, 90vw, 55rem);
+  --web-cli-height: clamp(20rem, 50vh, 30rem);
 
   --nav-color: #f5f5f5aa;
+
+  --bwunster-eye-color: #4f5dcd;
+}
+
+.dark {
+  --rp-c-bg: #16151c;
+  --rp-c-bg-soft: #1d1d27;
+  --rp-c-bg-mute: #22222d;
+  --rp-c-link: #80a2ff;
+  --rp-c-text-code-bg: #1f1f28;
+  --rp-c-text-code: #efefef;
+  --rp-c-code-block-bg: #101014;
+  --rp-c-text-1: #eee;
+  --rp-c-text-2: #b9b9b9;
+
+  --code-base-color: var(--rp-c-text-1);
+  --code-string-color: #fef78f;
+  --code-keyword-color: #d5c6fa;
+  --code-attr-color: #a2b9f7;
+  --code-built-in-color: #fdb240;
+  --code-comment-color: #919191;
+
+  --web-cli-green: #6a9f58;
+  --web-cli-blue: #2ba1f6;
+  --web-cli-magenta: #8f69c5;
+  --web-cli-cyan: #58a7b4;
+  --web-cli-yellow: #fef78f;
+  --web-cli-red: #e05a5a;
+  --web-cli-black: #696969;
+  --web-cli-bright-black: #828282;
+  --web-cli-divider: transparent;
+
+  --nav-color: #121117aa;
 }
 
 .rspress-nav::before {
@@ -40,27 +88,6 @@
 .rspress-nav-menu-item {
   letter-spacing: 0.03em !important;
   font-weight: 600 !important;
-}
-
-.dark {
-  --rp-c-bg: #16151c;
-  --rp-c-bg-soft: rgb(31, 31, 40);
-  --rp-c-bg-mute: rgb(32, 32, 43);
-  --rp-c-link: rgb(128, 162, 255);
-  --rp-c-text-code-bg: rgb(31, 31, 40);
-  --rp-c-text-code: #efefef;
-  --rp-c-code-block-bg: #101014;
-  --rp-c-text-1: #eee;
-  --rp-c-text-2: #a0a0a0;
-
-  --code-base-color: var(--rp-c-text-1);
-  --code-string-color: rgb(254, 247, 143);
-  --code-keyword-color: rgb(213, 198, 250);
-  --code-attr-color: rgb(162, 185, 247);
-  --code-built-in-color: rgb(253, 178, 64);
-  --code-comment-color: rgb(145, 145, 145);
-
-  --nav-color: #121117aa;
 }
 
 .rspress-nav-menu-group-content > * {
@@ -615,6 +642,7 @@ hr {
 }
 
 .inline-link {
+  cursor: pointer;
   color: var(--rp-c-link);
   font-weight: 500;
   transition: color 0.25s;
@@ -633,4 +661,45 @@ hr {
 .env-vars-list li > code {
   font-size: 1.5rem !important;
   margin-bottom: 0.25rem;
+}
+
+.web-cli-button-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.web-cli-button {
+  font-family: "Jersey 10", sans-serif;
+  background-color: var(--bwunster-eye-color);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  text-align: center;
+  line-height: 0.75;
+  font-size: 2.1rem;
+  border-radius: 0.5rem;
+  transition:
+    transform 0.2s,
+    filter 0.2s;
+}
+
+.web-cli-button:hover,
+.web-cli-button:focus,
+.web-cli-button:active {
+  transform: scale(1.04);
+  filter: brightness(1.1);
+  background-color: var(--bwunster-eye-color) !important;
+  color: white !important;
+  animation: none !important;
+  opacity: 1 !important;
+}
+
+.web-cli-button-note {
+  font-size: 0.85rem;
+  text-align: center;
+  opacity: 0.75;
+  margin-top: 0.35rem;
+  line-height: 1.15 !important;
 }

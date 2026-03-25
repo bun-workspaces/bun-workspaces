@@ -4,6 +4,7 @@ import Theme, { Link } from "rspress/theme";
 import "@fontsource/unifontex";
 import packageJson from "../../../bun-workspaces/package.json";
 import { Footer } from "../lib/components/Footer";
+import { BUILD_ID } from "../lib/util/env";
 import { PixelArtImage } from "../lib/util/pixelArt";
 import { useLayout } from "../lib/util/useLayout";
 
@@ -91,4 +92,4 @@ export * from "rspress/theme";
 // eslint-disable-next-line no-console
 console.log("\n" + process.env.BWUNSTER_ASCII);
 // eslint-disable-next-line no-console
-console.log("bun-workspaces Documentation:", process.env.BUILD_ID);
+console.log("bun-workspaces Documentation:", BUILD_ID);

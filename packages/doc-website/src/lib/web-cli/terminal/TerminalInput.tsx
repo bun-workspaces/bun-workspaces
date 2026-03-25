@@ -80,7 +80,7 @@ export const TerminalInput = () => {
 
   const setNewPlaceholderExample = useCallback(() => {
     setPlaceholderText(
-      `Enter a command (like: ${getRandomExampleCommand(placeholderText).replace("bw ", "")})`
+      ` Enter a command (like: ${getRandomExampleCommand(placeholderText).replace("bw ", "")})`
     );
   }, [placeholderText]);
 

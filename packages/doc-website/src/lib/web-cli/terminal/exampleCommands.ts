@@ -81,6 +81,18 @@ export const EXAMPLE_COMMANDS = [
     command: 'run --workspace-patterns="frontend backend" --script=build',
   },
   {
+    name: "Include the Root workspace",
+    description:
+      "The -r or --include-root global option includes the root package as a normal workspace in any command used",
+    command: "ls --include-root",
+  },
+  {
+    name: "Run Root script",
+    description:
+      "It's possible to reference the root package, despite it normally not being treated as a normal workspace",
+    command: "run build-all @root -o plain",
+  },
+  {
     name: "Usage",
     description: "Show CLI usage",
     command: "--help",

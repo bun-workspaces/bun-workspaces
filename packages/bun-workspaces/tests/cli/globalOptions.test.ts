@@ -2,7 +2,7 @@ import path from "path";
 import { test, expect, describe } from "bun:test";
 import { createFileSystemProject } from "../../src";
 import { getUserEnvVarName } from "../../src/config/userEnvVars";
-import { getProjectRoot, type TestProjectName } from "../fixtures/testProjects";
+import { getProjectRoot } from "../fixtures/testProjects";
 import {
   setupCliTest,
   assertOutputMatches,

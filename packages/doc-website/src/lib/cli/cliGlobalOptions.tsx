@@ -8,8 +8,8 @@ import type { CliGlobalOptionContent, CliGlobalOptionInfo } from "./cliOption";
 const defineOptionContent = (
   optionName: CliGlobalOptionName,
   factory: (
-    optionConfig: CliGlobalOptionConfig,
-  ) => Omit<CliGlobalOptionInfo, "optionName">,
+    optionConfig: CliGlobalOptionConfig
+  ) => Omit<CliGlobalOptionInfo, "optionName">
 ): CliGlobalOptionContent => {
   const config = getCliGlobalOptionConfig(optionName);
   const content = factory(config);
@@ -30,6 +30,25 @@ const CLI_GLOBAL_OPTIONS_CONTENT = {
       `bw ${shortOption} /path/to/your/project list-workspaces`,
     ],
   })),
+  workspaceRoot: defineOptionContent(
+    "workspaceRoot",
+    ({ mainOption, shortOption }) => ({
+      title: "Run from Workspace Root",
+      description:
+        "Run from the project root when you are in a workspace subdirectory. This is similar to pnpm's -w option.",
+      examples: [
+        `cd packages/my-workspace`,
+        "",
+        "# Run from the project root",
+        `bw ${mainOption} ls`,
+        `bw ${shortOption} ls`,
+        "",
+        "# Similar to pnpm -w run",
+        '# "@root" references the root package like a workspace',
+        `bw ${shortOption} run my-root-script @root`,
+      ],
+    })
+  ),
   includeRoot: defineOptionContent(
     "includeRoot",
     ({ mainOption, shortOption }) => ({
@@ -42,7 +61,7 @@ const CLI_GLOBAL_OPTIONS_CONTENT = {
         "",
         `bw ${mainOption.replace("--", "--no-")} list-workspaces # disable (to override config/env)`,
       ],
-    }),
+    })
   ),
   logLevel: defineOptionContent("logLevel", ({ mainOption, shortOption }) => ({
     title: "Log Level",

@@ -18,6 +18,7 @@ import {
 const ERRORS = defineErrors(
   "WorkingDirectoryNotFound",
   "WorkingDirectoryNotADirectory",
+  "NoCwdAndWorkspaceRoot",
 );
 
 const addGlobalOption = (
@@ -52,12 +53,9 @@ const addGlobalOption = (
   }
 };
 
-const getWorkingDirectoryFromArgs = (
-  program: Command,
-  args: string[],
-  defaultCwd: string,
-) => {
-  addGlobalOption(program, "cwd", defaultCwd);
+const getWorkingDirectoryFromArgs = (program: Command, args: string[]) => {
+  addGlobalOption(program, "cwd");
+  addGlobalOption(program, "workspaceRoot");
   program.parseOptions(args);
   return program.opts().cwd;
 };
@@ -65,10 +63,11 @@ const getWorkingDirectoryFromArgs = (
 const defineGlobalOptions = (
   program: Command,
   args: string[],
-  defaultCwd: string,
   middleware: CliMiddleware,
 ) => {
-  const cwd = getWorkingDirectoryFromArgs(program, args, defaultCwd);
+  const cwdOption = getWorkingDirectoryFromArgs(program, args);
+
+  const cwd = cwdOption || process.cwd();
 
   const exists = fs.existsSync(cwd);
   const isDirectory = exists ? fs.statSync(cwd).isDirectory() : false;
@@ -128,12 +127,11 @@ const applyGlobalOptions = (options: CliGlobalOptions) => {
 export const initializeWithGlobalOptions = (
   program: Command,
   args: string[],
-  defaultCwd: string,
   middleware: CliMiddleware,
 ) => {
   program.allowUnknownOption(true);
 
-  const { cwd } = defineGlobalOptions(program, args, defaultCwd, middleware);
+  const { cwd } = defineGlobalOptions(program, args, middleware);
 
   program.parseOptions(args);
   program.allowUnknownOption(false);

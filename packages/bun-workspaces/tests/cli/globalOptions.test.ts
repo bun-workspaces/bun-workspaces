@@ -1,5 +1,6 @@
 import path from "path";
 import { test, expect, describe } from "bun:test";
+import { createFileSystemProject } from "../../src";
 import { getUserEnvVarName } from "../../src/config/userEnvVars";
 import { getProjectRoot } from "../fixtures/testProjects";
 import {
@@ -313,5 +314,77 @@ describe("CLI Global Options", () => {
       expect(result.exitCode).toBe(0);
       expect(JSON.parse(result.stdout.raw)).toEqual(expectedWithConfigFiles);
     });
+  });
+
+  describe("--workspace-root", () => {
+    test.each(
+      ["-w", "--workspace-root"].flatMap((flag) => [
+        [flag, "."],
+        [flag, "applications"],
+        [flag, "applications/applicationA"],
+        [flag, "libraries"],
+        [flag, "libraries/libraryB"],
+        [flag, "node_modules/"],
+      ]),
+    )(
+      "finds root (flag: %s) (cwd: %s)",
+      async (flag: string, workspacePath: string) => {
+        const { run } = setupCliTest({
+          workingDirectory: path.resolve(
+            getProjectRoot("simple1"),
+            workspacePath,
+          ),
+        });
+        const result = await run(flag, "ls", "--json");
+        expect(result.stderr.raw).toBeEmpty();
+        expect(result.exitCode).toBe(0);
+        expect(JSON.parse(result.stdout.raw)).toEqual(
+          createFileSystemProject({
+            rootDirectory: getProjectRoot("simple1"),
+          }).workspaces,
+        );
+      },
+    );
+
+    test("error when no root found", async () => {
+      const cwd = path.resolve(process.cwd(), "../".repeat(5));
+      const { run } = setupCliTest({
+        workingDirectory: cwd,
+      });
+      const result = await run("-w", "ls", "--json");
+      expect(result.stdout.raw).toBeEmpty();
+      expect(result.exitCode).toBe(1);
+      assertOutputMatches(
+        result.stderr.sanitized,
+        `-w|--workspace-root option: Project root not found from current working directory "${cwd}"`,
+      );
+    });
+
+    test.each(["short", "long"])(
+      "error when both cwd and workspace-root are provided (flag type: %s)",
+      async (flagType: "short" | "long") => {
+        const cwdFlag = flagType === "short" ? "-d" : "--cwd";
+        const workspaceRootFlag =
+          flagType === "short" ? "-w" : "--workspace-root";
+
+        const { run } = setupCliTest();
+        const result = await run(
+          cwdFlag.startsWith("--")
+            ? `${cwdFlag}=applications/applicationA`
+            : cwdFlag,
+          ...(cwdFlag.startsWith("--") ? [] : ["applications/applicationA"]),
+          workspaceRootFlag,
+          "ls",
+          "--json",
+        );
+
+        expect(result.stdout.raw).toBeEmpty();
+        expect(result.exitCode).toBe(1);
+        assertOutputMatches(
+          result.stderr.sanitized,
+          `Cannot use both --cwd (-d) and --workspace-root (-w) options together`,
+        );
+      },
+    );
   });
 });

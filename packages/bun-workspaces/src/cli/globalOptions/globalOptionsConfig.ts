@@ -4,6 +4,7 @@ export interface CliGlobalOptions {
   logLevel: LogLevelSetting;
   cwd: string;
   includeRoot: boolean;
+  workspaceRoot: boolean;
 }
 
 export interface CliGlobalOptionConfig {
@@ -28,7 +29,7 @@ const CLI_GLOBAL_OPTIONS_CONFIG = {
     mainOption: "--cwd",
     shortOption: "-d",
     description: "Working directory",
-    defaultValue: ".",
+    defaultValue: "",
     values: null,
     param: "path",
   },
@@ -36,6 +37,15 @@ const CLI_GLOBAL_OPTIONS_CONFIG = {
     mainOption: "--include-root",
     shortOption: "-r",
     description: "Include the root workspace as a normal workspace",
+    defaultValue: "",
+    values: null,
+    param: "",
+  },
+  workspaceRoot: {
+    mainOption: "--workspace-root",
+    shortOption: "-w",
+    description:
+      "Run from the project root above the current working directory",
     defaultValue: "",
     values: null,
     param: "",

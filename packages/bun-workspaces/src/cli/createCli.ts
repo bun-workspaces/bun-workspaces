@@ -117,7 +117,6 @@ export const createCli = ({
       const { project, projectError } = initializeWithGlobalOptions(
         program,
         args,
-        defaultCwd,
         middleware,
       );
 

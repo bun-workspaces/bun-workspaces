@@ -30,6 +30,25 @@ const CLI_GLOBAL_OPTIONS_CONTENT = {
       `bw ${shortOption} /path/to/your/project list-workspaces`,
     ],
   })),
+  workspaceRoot: defineOptionContent(
+    "workspaceRoot",
+    ({ mainOption, shortOption }) => ({
+      title: "Run from Workspace Root",
+      description:
+        "Run from the project root when you are in a workspace subdirectory. This is similar to pnpm's -w option.",
+      examples: [
+        `cd packages/my-workspace`,
+        "",
+        "# Run from the project root",
+        `bw ${mainOption} ls`,
+        `bw ${shortOption} ls`,
+        "",
+        "# Similar to pnpm -w run",
+        '# "@root" references the root package like a workspace',
+        `bw ${shortOption} run my-root-script @root`,
+      ],
+    }),
+  ),
   includeRoot: defineOptionContent(
     "includeRoot",
     ({ mainOption, shortOption }) => ({

@@ -65,6 +65,11 @@ export const EXAMPLE_COMMANDS = [
     command: "run build --parallel=false",
   },
   {
+    name: "Run Script - Run with a parallel max of 2",
+    description: "Only two scripts can run at the same time",
+    command: "run build --parallel=2",
+  },
+  {
     name: "Run Script - Prefixed output style",
     description: "Script output uses plain lines with workspace prefixes",
     command: "run build --output-style=prefixed",

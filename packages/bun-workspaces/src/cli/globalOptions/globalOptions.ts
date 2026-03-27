@@ -8,6 +8,7 @@ import {
   createMemoryProject,
   type FileSystemProject,
 } from "../../project";
+import { resolvePackageJsonContent } from "../../workspaces";
 import type { CliMiddleware } from "../middleware";
 import {
   type CliGlobalOptionName,
@@ -19,6 +20,7 @@ const ERRORS = defineErrors(
   "WorkingDirectoryNotFound",
   "WorkingDirectoryNotADirectory",
   "NoCwdAndWorkspaceRoot",
+  "ProjectRootNotFound",
 );
 
 const addGlobalOption = (
@@ -57,7 +59,51 @@ const getWorkingDirectoryFromArgs = (program: Command, args: string[]) => {
   addGlobalOption(program, "cwd");
   addGlobalOption(program, "workspaceRoot");
   program.parseOptions(args);
-  return program.opts().cwd;
+
+  const { cwd, workspaceRoot } = program.opts();
+
+  if (cwd && workspaceRoot) {
+    throw new ERRORS.NoCwdAndWorkspaceRoot(
+      `Cannot use both ${
+        getCliGlobalOptionConfig("cwd").mainOption
+      } (${getCliGlobalOptionConfig("cwd").shortOption}) and ${
+        getCliGlobalOptionConfig("workspaceRoot").mainOption
+      } (${getCliGlobalOptionConfig("workspaceRoot").shortOption}) options together`,
+    );
+  }
+
+  return { cwdOption: cwd, workspaceRootOption: workspaceRoot };
+};
+
+const findRootFromCwd = () => {
+  let currentDirectory = process.cwd();
+  while (true) {
+    const packageJsonPath = path.join(currentDirectory, "package.json");
+    if (fs.existsSync(packageJsonPath)) {
+      try {
+        const packageJsonContent = JSON.parse(
+          fs.readFileSync(packageJsonPath, "utf8"),
+        );
+        if (packageJsonContent.workspaces) {
+          return currentDirectory;
+        }
+      } finally {
+        // Do nothing (if invalid JSON and no root above, still will eventually throw)
+      }
+      return currentDirectory;
+    }
+    const parentDirectory = path.dirname(currentDirectory);
+    if (parentDirectory === currentDirectory) {
+      break;
+    }
+    currentDirectory = parentDirectory;
+  }
+
+  throw new ERRORS.ProjectRootNotFound(
+    `${getCliGlobalOptionConfig("cwd").mainOption}|${
+      getCliGlobalOptionConfig("workspaceRoot").mainOption
+    } option: Project root not found from current working directory "${process.cwd()}"`,
+  );
 };
 
 const defineGlobalOptions = (
@@ -65,9 +111,13 @@ const defineGlobalOptions = (
   args: string[],
   middleware: CliMiddleware,
 ) => {
-  const cwdOption = getWorkingDirectoryFromArgs(program, args);
+  const { cwdOption, workspaceRootOption } = getWorkingDirectoryFromArgs(
+    program,
+    args,
+  );
 
-  const cwd = cwdOption || process.cwd();
+  const cwd =
+    cwdOption || (workspaceRootOption ? findRootFromCwd() : process.cwd());
 
   const exists = fs.existsSync(cwd);
   const isDirectory = exists ? fs.statSync(cwd).isDirectory() : false;

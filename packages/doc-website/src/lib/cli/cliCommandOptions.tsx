@@ -191,7 +191,7 @@ const CLI_PROJECT_COMMANDS_CONTENT = {
       `bw run "echo 'this is my inline script for <workspaceName>'" --inline`,
       "",
       "# By default, the Bun shell executes inline scripts.",
-      "# --shell=system uses the native shell (sh in Unix, cmd in Windows)",
+      "# --shell=system uses the native shell (sh in POSIX systems, cmd in Windows)",
       `bw run "echo 'this is my native inline script'" --inline --shell=system`,
       "",
       "# Set a name for an inline command",

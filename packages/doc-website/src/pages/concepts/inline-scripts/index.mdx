@@ -26,7 +26,7 @@ However, it's possible to run a one-off shell command from a workspace's directo
 
 Normally, inline scripts are executed using the [Bun shell](https://bun.com/docs/runtime/shell), a bash-like, cross-platform shell, the same as the utility `import { $ } from 'bun'`.
 
-You can pass `--shell=system` to use the native shell instead. In Unix (Linux, macOS, etc.), `sh -c` is called, while in Windows, `cmd /d /s /c` is called.
+You can pass `--shell=system` to use the native shell instead. In POSIX systems (Linux, macOS, etc.), `sh -c` is called, while in Windows, `cmd /d /s /c` is called.
 
 You can also set the [root](/config/root) <code>{ENV_VARS_METADATA.scriptShellDefault.rootConfigDefaultsKey}</code> or [environment variable](/config/env-vars) <code>{ENV_VARS_METADATA.scriptShellDefault.envVarName}</code> to `"system"` to use the native shell by default.
 

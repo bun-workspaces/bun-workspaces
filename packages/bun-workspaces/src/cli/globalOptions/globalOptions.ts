@@ -8,7 +8,6 @@ import {
   createMemoryProject,
   type FileSystemProject,
 } from "../../project";
-import { resolvePackageJsonContent } from "../../workspaces";
 import type { CliMiddleware } from "../middleware";
 import {
   type CliGlobalOptionName,
@@ -87,10 +86,9 @@ const findRootFromCwd = () => {
         if (packageJsonContent.workspaces) {
           return currentDirectory;
         }
-      } finally {
-        // Do nothing (if invalid JSON and no root above, still will eventually throw)
+      } catch {
+        continue;
       }
-      return currentDirectory;
     }
     const parentDirectory = path.dirname(currentDirectory);
     if (parentDirectory === currentDirectory) {
@@ -100,7 +98,7 @@ const findRootFromCwd = () => {
   }
 
   throw new ERRORS.ProjectRootNotFound(
-    `${getCliGlobalOptionConfig("cwd").mainOption}|${
+    `${getCliGlobalOptionConfig("workspaceRoot").shortOption}|${
       getCliGlobalOptionConfig("workspaceRoot").mainOption
     } option: Project root not found from current working directory "${process.cwd()}"`,
   );

@@ -347,7 +347,7 @@ describe("CLI Global Options", () => {
     );
 
     test("error when no root found", async () => {
-      const cwd = path.resolve(process.cwd(), "../../../");
+      const cwd = path.resolve(process.cwd(), "../".repeat(5));
       const { run } = setupCliTest({
         workingDirectory: cwd,
       });

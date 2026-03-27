@@ -83,7 +83,12 @@ bw run "bun run build" --inline
 
 export const CLI_PARALLEL_SCRIPTS_EXAMPLE = `
 # Scripts run in parallel by default
+# This is the same as passing --parallel=default
 bw run my-script
+
+# Normally "auto" or the value set by configuration 
+# or environment variable (see Default Limit above)
+bw run my-script --parallel=default
 
 # Explicitly run in parallel, limiting the max 
 # concurrent scripts to the available logical CPUs.
@@ -94,9 +99,6 @@ bw run my-script --parallel=auto
 
 # Run in series
 bw run my-script --parallel=false
-
-# Same as the above command
-bw run my-script --parallel=default
 
 # Run in parallel with a max of the available logical CPUs
 bw run my-script --parallel=auto

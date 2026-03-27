@@ -125,9 +125,9 @@ export const SET_LOG_LEVEL_EXAMPLE = `
 import { setLogLevel } from "bun-workspaces";
 
 setLogLevel("debug");
-setLogLevel("info" // default
+setLogLevel("info") // default
 setLogLevel("warn");
-setLogLevel("error" // default when NODE_ENV is "test"
+setLogLevel("error") // default when NODE_ENV is "test"
 setLogLevel("silent");
 `.trim();
 

@@ -703,3 +703,84 @@ hr {
   margin-top: 0.35rem;
   line-height: 1.15 !important;
 }
+
+.social-links a[href="https://github.com/sponsors/bun-workspaces"] svg {
+  color: var(--web-cli-red);
+}
+
+.banner {
+  gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  margin-top: -2rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid var(--rp-c-divider-light);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--rp-c-bg-soft);
+  color: var(--rp-c-text-1);
+  font-size: 0.85rem;
+  line-height: 1.25;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 1000;
+  position: relative;
+  width: min(90vw, 50rem);
+}
+
+.banner-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.banner-close {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--rp-c-bg-soft);
+  color: var(--rp-c-text-1);
+  border: 1px solid var(--rp-c-divider-light);
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+.dont-show-again-container {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+}
+
+.banner-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 0.5rem;
+  transform: translateY(0.2rem);
+}
+
+@media (max-width: 768px) {
+  .banner-links {
+    display: flex;
+    justify-content: center;
+    margin: 0.15rem 0;
+  }
+}
+
+.banner-link {
+  color: var(--rp-c-link);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.star-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  transform: translateY(0.085rem);
+}

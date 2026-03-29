@@ -1,3 +1,4 @@
+import os from "os";
 import path from "path";
 import { test, expect, describe } from "bun:test";
 import { createFileSystemProject } from "../../src";
@@ -133,6 +134,22 @@ describe("CLI Global Options", () => {
       assertOutputMatches(
         result.stdout.raw,
         /application-2a\napplication-2b\nlibrary-2a\nlibrary-2b$/m,
+      );
+    });
+
+    test("expands home path", async () => {
+      const { run } = setupCliTest();
+      const root = getProjectRoot("simple1");
+      const result = await run(
+        `--cwd=${root.replace(os.homedir(), "~")}`,
+        "ls",
+        "--name-only",
+      );
+      expect(result.stderr.raw).toBeEmpty();
+      expect(result.exitCode).toBe(0);
+      assertOutputMatches(
+        result.stdout.raw,
+        /application-1a\napplication-1b\nlibrary-1a\nlibrary-1b$/m,
       );
     });
 

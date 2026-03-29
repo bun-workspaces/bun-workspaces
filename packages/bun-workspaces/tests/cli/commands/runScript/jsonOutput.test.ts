@@ -1,4 +1,5 @@
 import fs from "fs";
+import os from "os";
 import path from "path";
 import { test, expect, describe, beforeAll } from "bun:test";
 import { createRawPattern } from "../../../../src/internal/core";
@@ -533,6 +534,47 @@ describe("CLI Run Script", () => {
           durationMs: expect.any(Number),
         },
       ],
+    });
+  });
+
+  test("JSON output file - resolves home path", async () => {
+    const { run } = setupCliTest({
+      testProject: "simple1",
+    });
+
+    const root = getProjectRoot("simple1");
+
+    const result = await run(
+      "run-script",
+      "application-a",
+      "--args=test-args",
+      "--json-outfile",
+      path.join(
+        root.replace(os.homedir(), "~"),
+        "test-output/results-home.json",
+      ),
+    );
+
+    expect(result.exitCode).toBe(0);
+    expect(
+      JSON.parse(
+        fs.readFileSync(
+          path.resolve(
+            getProjectRoot("simple1"),
+            "test-output/results-home.json",
+          ),
+          "utf8",
+        ),
+      ),
+    ).toEqual({
+      totalCount: 1,
+      successCount: 1,
+      failureCount: 0,
+      allSuccess: true,
+      startTimeISO: expect.any(String),
+      endTimeISO: expect.any(String),
+      durationMs: expect.any(Number),
+      scriptResults: expect.any(Array),
     });
   });
 });

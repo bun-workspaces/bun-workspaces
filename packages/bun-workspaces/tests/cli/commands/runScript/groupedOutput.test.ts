@@ -891,7 +891,7 @@ eed
           runScriptArgv: [
             "test-script",
             "has-50-line-output",
-            "--grouped-lines=all",
+            "--grouped-lines=auto",
             "--parallel=false",
           ],
           testProject: "runScriptForGroupedOutput",

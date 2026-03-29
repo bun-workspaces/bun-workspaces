@@ -231,25 +231,13 @@ export const renderGroupedOutput = async (
 
     const padding = 4; // left border, spaces, right border
 
-    const workspaceBoxWidth = Math.min(
-      width,
-      Math.max(
-        ...Object.values(workspaceBoxContents).map((content) =>
-          Math.max(
-            calculateVisibleLength(content.name),
-            calculateVisibleLength(content.status),
-          ),
-        ),
-      ) + padding,
-    );
-
     workspaces.forEach((workspace) => {
       const state = workspaceState[workspace.name];
 
       const { name: workspaceNameContent, status: statusTextContent } =
         workspaceBoxContents[workspace.name];
 
-      const borderText = (text: string, top: boolean) => {
+      const borderText = (text: string, top: boolean, headerWidth: number) => {
         const visibleLength = calculateVisibleLength(text);
         const truncated =
           visibleLength > width - padding
@@ -258,18 +246,26 @@ export const renderGroupedOutput = async (
         return (
           textOps[BORDER_COLOR](top ? "┌ " : "└ ") +
           truncated +
-          " ".repeat(Math.max(0, workspaceBoxWidth - visibleLength - padding)) +
+          " ".repeat(Math.max(0, headerWidth - visibleLength - padding)) +
           textOps[BORDER_COLOR](top ? " ┐" : " ┘")
         );
       };
 
+      const headerWidth = Math.min(
+        width,
+        Math.max(
+          Bun.stripANSI(workspaceNameContent).length,
+          Bun.stripANSI(statusTextContent).length,
+        ) + padding,
+      );
+
       linesToWrite.push({
-        text: borderText(workspaceNameContent, true),
+        text: borderText(workspaceNameContent, true, headerWidth),
         type: "borderedContent",
       });
 
       linesToWrite.push({
-        text: borderText(statusTextContent, false),
+        text: borderText(statusTextContent, false, headerWidth),
         type: "borderedContent",
       });
 

@@ -1,6 +1,5 @@
 import { Terminal } from "@xterm/headless";
 import { describe, expect, test } from "bun:test";
-import { DEFAULT_GROUPED_LINES } from "../../../../src/cli";
 import {
   createAsyncIterableQueue,
   IS_WINDOWS,
@@ -100,117 +99,75 @@ describe("grouped output", () => {
         testProject: "runScriptForGroupedOutput",
         expectedSnapshots: [
           `
-┌───────────────────────┐
-│ Workspace: a-succeeds │
-│    Status: pending    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: b-succeeds │
-│    Status: pending    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: c-succeeds │
-│    Status: pending    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: d-succeeds │
-│    Status: pending    │
-└───────────────────────┘`,
+┌ Workspace: a-succeeds ┐
+└    Status: pending    ┘
+┌ Workspace: b-succeeds ┐
+└    Status: pending    ┘
+┌ Workspace: c-succeeds ┐
+└    Status: pending    ┘
+┌ Workspace: d-succeeds ┐
+└    Status: pending    ┘
+`,
           `
-┌───────────────────────┐
-│ Workspace: a-succeeds │
-│    Status: running    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: b-succeeds │
-│    Status: pending    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: c-succeeds │
-│    Status: pending    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: d-succeeds │
-│    Status: pending    │
-└───────────────────────┘`,
+┌ Workspace: a-succeeds ┐
+└    Status: running    ┘
+┌ Workspace: b-succeeds ┐
+└    Status: pending    ┘
+┌ Workspace: c-succeeds ┐
+└    Status: pending    ┘
+┌ Workspace: d-succeeds ┐
+└    Status: pending    ┘
+`,
           `
-┌───────────────────────┐
-│ Workspace: a-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: a-succeeds ┐
+└    Status: success    ┘
 test-script a
-┌───────────────────────┐
-│ Workspace: b-succeeds │
-│    Status: running    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: c-succeeds │
-│    Status: pending    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: d-succeeds │
-│    Status: pending    │
-└───────────────────────┘`,
+┌ Workspace: b-succeeds ┐
+└    Status: running    ┘
+┌ Workspace: c-succeeds ┐
+└    Status: pending    ┘
+┌ Workspace: d-succeeds ┐
+└    Status: pending    ┘
+`,
           `
-┌───────────────────────┐
-│ Workspace: a-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: a-succeeds ┐
+└    Status: success    ┘
 test-script a
-┌───────────────────────┐
-│ Workspace: b-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: b-succeeds ┐
+└    Status: success    ┘
 test-script b
-┌───────────────────────┐
-│ Workspace: c-succeeds │
-│    Status: running    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: d-succeeds │
-│    Status: pending    │
-└───────────────────────┘`,
+┌ Workspace: c-succeeds ┐
+└    Status: running    ┘
+┌ Workspace: d-succeeds ┐
+└    Status: pending    ┘
+`,
           `
-┌───────────────────────┐
-│ Workspace: a-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: a-succeeds ┐
+└    Status: success    ┘
 test-script a
-┌───────────────────────┐
-│ Workspace: b-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: b-succeeds ┐
+└    Status: success    ┘
 test-script b
-┌───────────────────────┐
-│ Workspace: c-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: c-succeeds ┐
+└    Status: success    ┘
 test-script c
-┌───────────────────────┐
-│ Workspace: d-succeeds │
-│    Status: running    │
-└───────────────────────┘`,
+┌ Workspace: d-succeeds ┐
+└    Status: running    ┘
+`,
           `
-┌───────────────────────┐
-│ Workspace: a-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: a-succeeds ┐
+└    Status: success    ┘
 test-script a
-┌───────────────────────┐
-│ Workspace: b-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: b-succeeds ┐
+└    Status: success    ┘
 test-script b
-┌───────────────────────┐
-│ Workspace: c-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: c-succeeds ┐
+└    Status: success    ┘
 test-script c
-┌───────────────────────┐
-│ Workspace: d-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: d-succeeds ┐
+└    Status: success    ┘
 test-script d
+─ Summary ─
 ✅ a-succeeds: test-script
 ✅ b-succeeds: test-script
 ✅ c-succeeds: test-script
@@ -235,60 +192,39 @@ test-script d
         testProject: "runScriptForGroupedOutput",
         expectedSnapshots: [
           `
-┌───────────────────────┐
-│ Workspace: a-succeeds │
-│    Status: pending    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: b-succeeds │
-│    Status: pending    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: c-succeeds │
-│    Status: pending    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: d-succeeds │
-│    Status: pending    │
-└───────────────────────┘`,
+┌ Workspace: a-succeeds ┐
+└    Status: pending    ┘
+┌ Workspace: b-succeeds ┐
+└    Status: pending    ┘
+┌ Workspace: c-succeeds ┐
+└    Status: pending    ┘
+┌ Workspace: d-succeeds ┐
+└    Status: pending    ┘
+`,
           `
-┌───────────────────────┐
-│ Workspace: a-succeeds │
-│    Status: running    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: b-succeeds │
-│    Status: running    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: c-succeeds │
-│    Status: running    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: d-succeeds │
-│    Status: running    │
-└───────────────────────┘`,
+┌ Workspace: a-succeeds ┐
+└    Status: running    ┘
+┌ Workspace: b-succeeds ┐
+└    Status: running    ┘
+┌ Workspace: c-succeeds ┐
+└    Status: running    ┘
+┌ Workspace: d-succeeds ┐
+└    Status: running    ┘
+`,
           `
-┌───────────────────────┐
-│ Workspace: a-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: a-succeeds ┐
+└    Status: success    ┘
 test-script a
-┌───────────────────────┐
-│ Workspace: b-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: b-succeeds ┐
+└    Status: success    ┘
 test-script b
-┌───────────────────────┐
-│ Workspace: c-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: c-succeeds ┐
+└    Status: success    ┘
 test-script c
-┌───────────────────────┐
-│ Workspace: d-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: d-succeeds ┐
+└    Status: success    ┘
 test-script d
+─ Summary ─
 ✅ a-succeeds: test-script
 ✅ b-succeeds: test-script
 ✅ c-succeeds: test-script
@@ -311,16 +247,13 @@ test-script d
       testProject: "runScriptForGroupedOutput",
       expectedSnapshots: [
         `
-┌──────────────────────────────┐
-│ Workspace: other-workspace-a │
-│    Status: success           │
-└──────────────────────────────┘
+┌ Workspace: other-workspace-a ┐
+└    Status: success           ┘
 different script
-┌──────────────────────────────┐
-│ Workspace: other-workspace-b │
-│    Status: success           │
-└──────────────────────────────┘
+┌ Workspace: other-workspace-b ┐
+└    Status: success           ┘
 different script
+─ Summary ─
 ✅ other-workspace-a: different-script
 ✅ other-workspace-b: different-script
 2 scripts ran successfully`,
@@ -343,117 +276,75 @@ different script
         testProject: "runScriptForGroupedOutput",
         expectedSnapshots: [
           `
-┌───────────────────────┐
-│ Workspace: a-succeeds │
-│    Status: pending    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: b-succeeds │
-│    Status: pending    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: c-succeeds │
-│    Status: pending    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: d-succeeds │
-│    Status: pending    │
-└───────────────────────┘`,
+┌ Workspace: a-succeeds ┐
+└    Status: pending    ┘
+┌ Workspace: b-succeeds ┐
+└    Status: pending    ┘
+┌ Workspace: c-succeeds ┐
+└    Status: pending    ┘
+┌ Workspace: d-succeeds ┐
+└    Status: pending    ┘
+`,
           `
-┌───────────────────────┐
-│ Workspace: a-succeeds │
-│    Status: running    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: b-succeeds │
-│    Status: pending    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: c-succeeds │
-│    Status: pending    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: d-succeeds │
-│    Status: pending    │
-└───────────────────────┘`,
+┌ Workspace: a-succeeds ┐
+└    Status: running    ┘
+┌ Workspace: b-succeeds ┐
+└    Status: pending    ┘
+┌ Workspace: c-succeeds ┐
+└    Status: pending    ┘
+┌ Workspace: d-succeeds ┐
+└    Status: pending    ┘
+`,
           `
-┌───────────────────────┐
-│ Workspace: a-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: a-succeeds ┐
+└    Status: success    ┘
 test-script a
-┌───────────────────────┐
-│ Workspace: b-succeeds │
-│    Status: running    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: c-succeeds │
-│    Status: pending    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: d-succeeds │
-│    Status: pending    │
-└───────────────────────┘`,
+┌ Workspace: b-succeeds ┐
+└    Status: running    ┘
+┌ Workspace: c-succeeds ┐
+└    Status: pending    ┘
+┌ Workspace: d-succeeds ┐
+└    Status: pending    ┘
+`,
           `
-┌───────────────────────┐
-│ Workspace: a-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: a-succeeds ┐
+└    Status: success    ┘
 test-script a
-┌───────────────────────┐
-│ Workspace: b-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: b-succeeds ┐
+└    Status: success    ┘
 test-script b
-┌───────────────────────┐
-│ Workspace: c-succeeds │
-│    Status: running    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: d-succeeds │
-│    Status: pending    │
-└───────────────────────┘`,
+┌ Workspace: c-succeeds ┐
+└    Status: running    ┘
+┌ Workspace: d-succeeds ┐
+└    Status: pending    ┘
+`,
           `
-┌───────────────────────┐
-│ Workspace: a-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: a-succeeds ┐
+└    Status: success    ┘
 test-script a
-┌───────────────────────┐
-│ Workspace: b-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: b-succeeds ┐
+└    Status: success    ┘
 test-script b
-┌───────────────────────┐
-│ Workspace: c-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: c-succeeds ┐
+└    Status: success    ┘
 test-script c
-┌───────────────────────┐
-│ Workspace: d-succeeds │
-│    Status: running    │
-└───────────────────────┘`,
+┌ Workspace: d-succeeds ┐
+└    Status: running    ┘
+`,
           `
-┌───────────────────────┐
-│ Workspace: a-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: a-succeeds ┐
+└    Status: success    ┘
 test-script a
-┌───────────────────────┐
-│ Workspace: b-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: b-succeeds ┐
+└    Status: success    ┘
 test-script b
-┌───────────────────────┐
-│ Workspace: c-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: c-succeeds ┐
+└    Status: success    ┘
 test-script c
-┌───────────────────────┐
-│ Workspace: d-succeeds │
-│    Status: success    │
-└───────────────────────┘
+┌ Workspace: d-succeeds ┐
+└    Status: success    ┘
 test-script d
+─ Summary ─
 ✅ a-succeeds: test-script
 ✅ b-succeeds: test-script
 ✅ c-succeeds: test-script
@@ -478,73 +369,46 @@ test-script d
         testProject: "runScriptForGroupedOutput",
         expectedSnapshots: [
           `
-┌───────────────────────┐
-│ Workspace: a-fails    │
-│    Status: pending    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: a-signals  │
-│    Status: pending    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: a-succeeds │
-│    Status: pending    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: c-fails    │
-│    Status: pending    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: c-succeeds │
-│    Status: pending    │
-└───────────────────────┘`,
+┌ Workspace: a-fails ┐
+└    Status: pending ┘
+┌ Workspace: a-signals ┐
+└    Status: pending   ┘
+┌ Workspace: a-succeeds ┐
+└    Status: pending    ┘
+┌ Workspace: c-fails ┐
+└    Status: pending ┘
+┌ Workspace: c-succeeds ┐
+└    Status: pending    ┘
+`,
           `
-┌───────────────────────┐
-│ Workspace: a-fails    │
-│    Status: running    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: a-signals  │
-│    Status: running    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: a-succeeds │
-│    Status: running    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: c-fails    │
-│    Status: running    │
-└───────────────────────┘
-┌───────────────────────┐
-│ Workspace: c-succeeds │
-│    Status: running    │
-└───────────────────────┘`,
+┌ Workspace: a-fails ┐
+└    Status: running ┘
+┌ Workspace: a-signals ┐
+└    Status: running   ┘
+┌ Workspace: a-succeeds ┐
+└    Status: running    ┘
+┌ Workspace: c-fails ┐
+└    Status: running ┘
+┌ Workspace: c-succeeds ┐
+└    Status: running    ┘
+`,
           `
-┌─────────────────────────────────────────────────────┐
-│ Workspace: a-fails                                  │
-│    Status: failure (exit code: 1)                   │
-└─────────────────────────────────────────────────────┘
+┌ Workspace: a-fails                ┐
+└    Status: failure (exit code: 1) ┘
 test-script a
-┌─────────────────────────────────────────────────────┐
-│ Workspace: a-signals                                │
-│    Status: killed (exit code: 143, signal: SIGTERM) │
-└─────────────────────────────────────────────────────┘
+┌ Workspace: a-signals                                ┐
+└    Status: killed (exit code: 143, signal: SIGTERM) ┘
 test-script a
-┌─────────────────────────────────────────────────────┐
-│ Workspace: a-succeeds                               │
-│    Status: success                                  │
-└─────────────────────────────────────────────────────┘
+┌ Workspace: a-succeeds ┐
+└    Status: success    ┘
 test-script a
-┌─────────────────────────────────────────────────────┐
-│ Workspace: c-fails                                  │
-│    Status: failure (exit code: 1)                   │
-└─────────────────────────────────────────────────────┘
+┌ Workspace: c-fails                ┐
+└    Status: failure (exit code: 1) ┘
 test-script c
-┌─────────────────────────────────────────────────────┐
-│ Workspace: c-succeeds                               │
-│    Status: success                                  │
-└─────────────────────────────────────────────────────┘
+┌ Workspace: c-succeeds ┐
+└    Status: success    ┘
 test-script c
+─ Summary ─
 ❌ a-fails: test-script (exited with code 1)
 ❌ a-signals: test-script (exited with code 143)
 ✅ a-succeeds: test-script
@@ -575,17 +439,14 @@ test-script c
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌────────────────────────────────┐
-│ Workspace: has-100-wide-output │
-│    Status: running             │
-└────────────────────────────────┘
+┌ Workspace: has-100-wide-output ┐
+└    Status: running             ┘
 this test script has a very very very long output that is exactly one hundred characters long indeed`,
             `
-┌────────────────────────────────┐
-│ Workspace: has-100-wide-output │
-│    Status: success             │
-└────────────────────────────────┘
+┌ Workspace: has-100-wide-output ┐
+└    Status: success             ┘
 this test script has a very very very long output that is exactly one hundred characters long indeed
+─ Summary ─
 ✅ has-100-wide-output: test-script
 1 script ran successfully`,
           ],
@@ -604,18 +465,15 @@ this test script has a very very very long output that is exactly one hundred ch
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌────────────────────────────────┐
-│ Workspace: has-100-wide-output │
-│    Status: running             │
-└────────────────────────────────┘
+┌ Workspace: has-100-wide-output ┐
+└    Status: running             ┘
 this test script has a very very very long output that is exactly one hundred characters long ind… `,
             `
-┌────────────────────────────────┐
-│ Workspace: has-100-wide-output │
-│    Status: success             │
-└────────────────────────────────┘
+┌ Workspace: has-100-wide-output ┐
+└    Status: success             ┘
 this test script has a very very very long output that is exactly one hundred characters long indee
 d
+─ Summary ─
 ✅ has-100-wide-output: test-script
 1 script ran successfully`,
           ],
@@ -639,18 +497,15 @@ d
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌────────────────────────────────┐
-│ Workspace: has-100-wide-output │
-│    Status: running             │
-└────────────────────────────────┘
+┌ Workspace: has-100-wide-output ┐
+└    Status: running             ┘
 this test script has a very very very long outpu… `,
             `
-┌────────────────────────────────┐
-│ Workspace: has-100-wide-output │
-│    Status: success             │
-└────────────────────────────────┘
+┌ Workspace: has-100-wide-output ┐
+└    Status: success             ┘
 this test script has a very very very long output 
 that is exactly one hundred characters long indeed
+─ Summary ─
 ✅ has-100-wide-output: test-script
 1 script ran successfully`,
           ],
@@ -674,18 +529,15 @@ that is exactly one hundred characters long indeed
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌──────────────────────────────────────┐
-│ Workspace: has-100-wide-emoji-output │
-│    Status: running                   │
-└──────────────────────────────────────┘
+┌ Workspace: has-100-wide-emoji-output ┐
+└    Status: running                   ┘
 this test script has a ⚠️ ⚠️ ⚠️ long output that… `,
             `
-┌──────────────────────────────────────┐
-│ Workspace: has-100-wide-emoji-output │
-│    Status: success                   │
-└──────────────────────────────────────┘
+┌ Workspace: has-100-wide-emoji-output ┐
+└    Status: success                   ┘
 this test script has a ⚠️ ⚠️ ⚠️ long output that is e
 xactly one hundred characters long indeed
+─ Summary ─
 ✅ has-100-wide-emoji-output: test-script
 1 script ran successfully`,
           ],
@@ -711,10 +563,9 @@ xactly one hundred characters long indeed
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌─────────────────────────────────────────────────────┐
-│ Workspace: has-40-wide-workspace-name-which-is-long │
-│    Status: pending                                  │
-└─────────────────────────────────────────────────────┘`,
+┌ Workspace: has-40-wide-workspace-name-which-is-long ┐
+└    Status: pending                                  ┘
+`,
           ],
           rows: 50,
           cols: 55,
@@ -735,11 +586,10 @@ xactly one hundred characters long indeed
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌────────────────────────────────────────────────────┐
-│ Workspace: has-40-wide-workspace-name-which-is-lo… │
-│    Status: success                                 │
-└────────────────────────────────────────────────────┘
+┌ Workspace: has-40-wide-workspace-name-which-is-lo… ┐
+└    Status: success                                 ┘
 long workspace name
+─ Summary ─
 ✅ has-40-wide-workspace-name-which-is-long: test-scrip
 t
 1 script ran successfully`,
@@ -763,10 +613,9 @@ t
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌────────────────┐
-│ Workspace: ha… │
-│    Status: pe… │
-└────────────────┘`,
+┌ Workspace: ha… ┐
+└    Status: pe… ┘
+`,
           ],
           rows: 50,
           cols: 18,
@@ -787,10 +636,9 @@ t
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌──────────┐
-│ Workspa… │
-│    Stat… │
-└──────────┘`,
+┌ Workspa… ┐
+└    Stat… ┘
+`,
           ],
           rows: 50,
           cols: 12,
@@ -811,10 +659,9 @@ t
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌┐
 …
 …
-└┘`,
+`,
           ],
           rows: 50,
           cols: 1,
@@ -829,7 +676,7 @@ t
     const padding = 100;
 
     test(
-      `50-line output: Default max (${DEFAULT_GROUPED_LINES})`,
+      `50-line output: Default max (auto)`,
       async () => {
         await runSnapshotTest({
           runScriptArgv: [
@@ -840,10 +687,8 @@ t
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌───────────────────────────────┐
-│ Workspace: has-50-line-output │
-│    Status: running            │
-└───────────────────────────────┘
+┌ Workspace: has-50-line-output ┐
+└    Status: running            ┘
 (30 lines hidden until exit)
 31 this test script has a very very very long output that is exactly one hundred characters long i…
 32 this test script has a very very very long output that is exactly one hundred characters long i…
@@ -867,10 +712,8 @@ t
 50 this test script has a very very very long output that is exactly one hundred characters long i…
 `,
             `
-┌───────────────────────────────┐
-│ Workspace: has-50-line-output │
-│    Status: success            │
-└───────────────────────────────┘
+┌ Workspace: has-50-line-output ┐
+└    Status: success            ┘
 1 this test script has a very very very long output that is exactly one hundred characters long inde
 ed
 2 this test script has a very very very long output that is exactly one hundred characters long inde
@@ -893,90 +736,10 @@ ed
 eed
 11 this test script has a very very very long output that is exactly one hundred characters long ind
 eed
-12 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-13 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-14 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-15 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-16 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-17 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-18 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-19 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-20 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-21 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-22 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-23 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-24 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-25 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-26 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-27 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-28 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-29 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-30 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-31 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-32 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-33 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-34 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-35 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-36 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-37 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-38 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-39 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-40 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-41 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-42 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-43 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-44 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-45 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-46 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-47 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-48 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-49 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-50 this test script has a very very very long output that is exactly one hundred characters long ind
-eed
-✅ has-50-line-output: test-script
-1 script ran successfully
-`,
+            `,
           ],
-          expectFinalSnapshotAtExit: true,
-          rows: DEFAULT_GROUPED_LINES + padding,
+          expectFinalSnapshotAtExit: false,
+          rows: 24,
           cols: 100,
         });
       },
@@ -996,10 +759,8 @@ eed
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌───────────────────────────────┐
-│ Workspace: has-50-line-output │
-│    Status: running            │
-└───────────────────────────────┘
+┌ Workspace: has-50-line-output ┐
+└    Status: running            ┘
 (45 lines hidden until exit)
 46 this test script has a very very very long output that is exactly one hundred characters long i…
 47 this test script has a very very very long output that is exactly one hundred characters long i…
@@ -1008,10 +769,8 @@ eed
 50 this test script has a very very very long output that is exactly one hundred characters long i…
 `,
             `
-┌───────────────────────────────┐
-│ Workspace: has-50-line-output │
-│    Status: success            │
-└───────────────────────────────┘
+┌ Workspace: has-50-line-output ┐
+└    Status: success            ┘
 1 this test script has a very very very long output that is exactly one hundred characters long inde
 ed
 2 this test script has a very very very long output that is exactly one hundred characters long inde
@@ -1112,6 +871,7 @@ eed
 eed
 50 this test script has a very very very long output that is exactly one hundred characters long ind
 eed
+─ Summary ─
 ✅ has-50-line-output: test-script
 1 script ran successfully
 `,
@@ -1137,10 +897,8 @@ eed
           testProject: "runScriptForGroupedOutput",
           expectedSnapshots: [
             `
-┌───────────────────────────────┐
-│ Workspace: has-50-line-output │
-│    Status: running            │
-└───────────────────────────────┘
+┌ Workspace: has-50-line-output ┐
+└    Status: running            ┘
 1 this test script has a very very very long output that is exactly one hundred characters long in…
 2 this test script has a very very very long output that is exactly one hundred characters long in…
 3 this test script has a very very very long output that is exactly one hundred characters long in…
@@ -1193,10 +951,8 @@ eed
 50 this test script has a very very very long output that is exactly one hundred characters long i…
 `,
             `
-┌───────────────────────────────┐
-│ Workspace: has-50-line-output │
-│    Status: success            │
-└───────────────────────────────┘
+┌ Workspace: has-50-line-output ┐
+└    Status: success            ┘
 1 this test script has a very very very long output that is exactly one hundred characters long inde
 ed
 2 this test script has a very very very long output that is exactly one hundred characters long inde
@@ -1297,6 +1053,7 @@ eed
 eed
 50 this test script has a very very very long output that is exactly one hundred characters long ind
 eed
+─ Summary ─
 ✅ has-50-line-output: test-script
 1 script ran successfully
 `,
@@ -1339,27 +1096,19 @@ eed
         testProject: "runScriptForGroupedOutput",
         expectedSnapshots: [
           `
-┌────────────────────────────────────────────────┐
-│ Workspace: has-100-wide-emoji-output           │
-│    Status: success                             │
-└────────────────────────────────────────────────┘
+┌ Workspace: has-100-wide-emoji-output ┐
+└    Status: success                   ┘
 this test script has a ⚠️ ⚠️ ⚠️ long output that is e
 xactly one hundred characters long indeed
-┌────────────────────────────────────────────────┐
-│ Workspace: has-100-wide-output                 │
-│    Status: success                             │
-└────────────────────────────────────────────────┘
+┌ Workspace: has-100-wide-output ┐
+└    Status: success             ┘
 this test script has a very very very long output 
 that is exactly one hundred characters long indeed
-┌────────────────────────────────────────────────┐
-│ Workspace: has-40-wide-workspace-name-which-i… │
-│    Status: success                             │
-└────────────────────────────────────────────────┘
+┌ Workspace: has-40-wide-workspace-name-which-i… ┐
+└    Status: success                             ┘
 long workspace name
-┌────────────────────────────────────────────────┐
-│ Workspace: has-50-line-output                  │
-│    Status: success                             │
-└────────────────────────────────────────────────┘
+┌ Workspace: has-50-line-output ┐
+└    Status: success            ┘
 1 this test script has a very very very long outpu
 t that is exactly one hundred characters long inde
 ed
@@ -1391,7 +1140,7 @@ ed
 ut that is exactly one hundred characters long ind`,
         ],
         expectFinalSnapshotAtExit: true,
-        rows: 50,
+        rows: 42,
         cols: 50,
       });
     },

@@ -34,8 +34,6 @@ export type CliProjectCommandName = Exclude<
 
 export const JSON_FLAGS = ["-j", "--json"] as const;
 
-export const DEFAULT_GROUPED_LINES = 20;
-
 export const CLI_COMMANDS_CONFIG = {
   doctor: {
     command: "doctor",
@@ -164,7 +162,7 @@ export const CLI_COMMANDS_CONFIG = {
       },
       groupedLines: {
         flags: ["-L", "--grouped-lines <count>"],
-        description: `With "grouped" output, the max preview lines (number or "all", default ${DEFAULT_GROUPED_LINES})`,
+        description: `With "grouped" output, the max preview lines (number, "all", or "auto", default "auto")`,
       },
       noPrefix: {
         flags: ["-N", "--no-prefix"],

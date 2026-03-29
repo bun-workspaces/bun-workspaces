@@ -6,7 +6,6 @@ import {
   handleProjectCommand,
   splitWorkspacePatterns,
 } from "../commandHandlerUtils";
-import { DEFAULT_GROUPED_LINES } from "../commandsConfig";
 import {
   getDefaultOutputStyle,
   validateOutputStyle,
@@ -139,10 +138,12 @@ export const runScript = handleProjectCommand(
 
     logger.debug(`Strip disruptive controls: ${stripDisruptiveControls}`);
 
-    let groupedLines: number | "all" = DEFAULT_GROUPED_LINES;
+    let groupedLines: number | "all" | "auto" = "auto";
     if (options.groupedLines) {
       if (options.groupedLines === "all") {
         groupedLines = "all";
+      } else if (options.groupedLines === "auto") {
+        groupedLines = "auto";
       } else {
         const parsedGroupedLines = parseInt(options.groupedLines as string);
 

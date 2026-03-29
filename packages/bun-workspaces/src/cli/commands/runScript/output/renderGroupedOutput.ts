@@ -98,7 +98,7 @@ type WorkspaceState = {
 
 const STATUS_COLORS: Record<WorkspaceState["status"], keyof typeof textOps> = {
   pending: "gray",
-  running: "intenseBlue",
+  running: "intenseMagenta",
   skipped: "gray",
   success: "intenseGreen",
   failure: "intenseRed",
@@ -109,12 +109,14 @@ const STATUS_COLORS: Record<WorkspaceState["status"], keyof typeof textOps> = {
 
 const BORDER_COLOR = "intenseCyan" satisfies keyof typeof textOps;
 
+const HEADER_ROWS_PER_WORKSPACE = 2;
+
 export const renderGroupedOutput = async (
   workspaces: Workspace[],
   output: RunScriptAcrossWorkspacesOutput,
   summary: Promise<RunScriptsSummary<RunWorkspaceScriptMetadata>>,
   scriptEventTarget: ScriptEventTarget,
-  activeScriptLines: number | "all",
+  activeScriptLines: number | "all" | "auto",
   outputWriters: Required<WriteOutputOptions>,
   terminalWidth: number,
 ) => {
@@ -166,6 +168,24 @@ export const renderGroupedOutput = async (
     }
 
     const width = Math.max(2, terminalWidth || process.stdout.columns);
+
+    // Compute the max script lines to show per workspace based on terminal
+    // height, so the live TUI never exceeds the visible viewport (cursor up
+    // is clamped and cannot recover from overflow). Each workspace occupies
+    // HEADER_ROWS_PER_WORKSPACE rows plus one row for the hidden-lines
+    // indicator, with one additional safety row to prevent scroll on the
+    // final newline. The user's activeScriptLines acts as a ceiling if lower.
+    const terminalRows = process.stdout.rows ?? 24;
+    const availableRows =
+      terminalRows - 1 - workspaces.length * (HEADER_ROWS_PER_WORKSPACE + 1);
+    const computedScriptLines = Math.max(
+      1,
+      Math.floor(availableRows / workspaces.length),
+    );
+    const effectiveScriptLines =
+      activeScriptLines === "all" || activeScriptLines === "auto"
+        ? computedScriptLines
+        : Math.min(activeScriptLines, computedScriptLines);
 
     const linesToWrite: Line[] = [];
 
@@ -253,12 +273,8 @@ export const renderGroupedOutput = async (
         type: "borderedContent",
       });
 
-      if (
-        activeScriptLines !== "all" &&
-        state.lines.length > activeScriptLines &&
-        !isFinal
-      ) {
-        const hiddenLines = state.lines.length - activeScriptLines;
+      if (state.lines.length > effectiveScriptLines && !isFinal) {
+        const hiddenLines = state.lines.length - effectiveScriptLines;
         linesToWrite.push({
           text: textOps.gray(
             `(${hiddenLines} line${hiddenLines === 1 ? "" : "s"} hidden until exit)`,
@@ -268,7 +284,7 @@ export const renderGroupedOutput = async (
       }
 
       linesToWrite.push(
-        ...state.lines.slice(isFinal ? undefined : -activeScriptLines).map(
+        ...state.lines.slice(isFinal ? undefined : -effectiveScriptLines).map(
           (line) =>
             ({
               text: line.text,
@@ -279,6 +295,13 @@ export const renderGroupedOutput = async (
 
       return linesToWrite;
     });
+
+    if (isFinal) {
+      linesToWrite.push({
+        text: textOps[BORDER_COLOR]("─ Summary ─"),
+        type: "borderedContent",
+      });
+    }
 
     if (previousHeight > 0) {
       // clear previous frame

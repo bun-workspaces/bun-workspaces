@@ -162,7 +162,7 @@ export const CLI_COMMANDS_CONFIG = {
       },
       groupedLines: {
         flags: ["-L", "--grouped-lines <count>"],
-        description: `With "grouped" output, the max preview lines (number, "all", or "auto", default "auto")`,
+        description: `With grouped output, the max preview lines (number or "auto", default "auto")`,
       },
       noPrefix: {
         flags: ["-N", "--no-prefix"],

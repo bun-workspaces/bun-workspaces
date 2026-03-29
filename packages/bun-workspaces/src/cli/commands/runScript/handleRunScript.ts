@@ -6,7 +6,6 @@ import {
   handleProjectCommand,
   splitWorkspacePatterns,
 } from "../commandHandlerUtils";
-import { DEFAULT_GROUPED_LINES } from "../commandsConfig";
 import {
   getDefaultOutputStyle,
   validateOutputStyle,
@@ -22,7 +21,13 @@ import { renderPlainOutput } from "./output/renderPlainOutput";
 export const runScript = handleProjectCommand(
   "runScript",
   async (
-    { project, postTerminatorArgs, outputWriters, terminalWidth },
+    {
+      project,
+      postTerminatorArgs,
+      outputWriters,
+      terminalWidth,
+      terminalHeight,
+    },
     positionalScript: string,
     positionalWorkspacePatterns: string[],
     options: {
@@ -139,10 +144,12 @@ export const runScript = handleProjectCommand(
 
     logger.debug(`Strip disruptive controls: ${stripDisruptiveControls}`);
 
-    let groupedLines: number | "all" = DEFAULT_GROUPED_LINES;
+    let groupedLines: number | "all" | "auto" = "auto";
     if (options.groupedLines) {
       if (options.groupedLines === "all") {
         groupedLines = "all";
+      } else if (options.groupedLines === "auto") {
+        groupedLines = "auto";
       } else {
         const parsedGroupedLines = parseInt(options.groupedLines as string);
 
@@ -178,6 +185,7 @@ export const runScript = handleProjectCommand(
           groupedLines,
           outputWriters,
           terminalWidth,
+          terminalHeight,
         ),
       prefixed: () =>
         renderPlainOutput(output, outputWriters, {

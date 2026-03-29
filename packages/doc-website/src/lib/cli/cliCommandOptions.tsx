@@ -178,7 +178,7 @@ const CLI_PROJECT_COMMANDS_CONTENT = {
       `bw run my-script --output-style=grouped`,
       "",
       "# Set the max preview lines for script output in grouped output style",
-      `bw run my-script --output-style=grouped --grouped-lines=all`,
+      `bw run my-script --output-style=grouped --grouped-lines=auto`,
       `bw run my-script --output-style=grouped --grouped-lines=10`,
       "",
       "# Use simple script output with workspace prefixes (default when not on a TTY)",

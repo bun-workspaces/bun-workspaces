@@ -52,7 +52,7 @@ bw run lint --parallel=50% # Run in parallel with a max of 50% of the "auto" lim
 bw run my-script --output-style=grouped
 
 # Set the max preview lines for script output in grouped output style
-bw run my-script --output-style=grouped --grouped-lines=all
+bw run my-script --output-style=grouped --grouped-lines=auto
 bw run my-script --output-style=grouped --grouped-lines=10
 
 # Use simple script output with workspace prefixes (default when not on a TTY)

@@ -98,7 +98,7 @@ type WorkspaceState = {
 
 const STATUS_COLORS: Record<WorkspaceState["status"], keyof typeof textOps> = {
   pending: "gray",
-  running: "intenseCyan",
+  running: "intenseMagenta",
   skipped: "gray",
   success: "intenseGreen",
   failure: "intenseRed",
@@ -107,16 +107,19 @@ const STATUS_COLORS: Record<WorkspaceState["status"], keyof typeof textOps> = {
   killed: "intenseRed",
 };
 
-const BORDER_COLOR = "blue" satisfies keyof typeof textOps;
+const BORDER_COLOR = "intenseCyan" satisfies keyof typeof textOps;
+
+const HEADER_ROWS_PER_WORKSPACE = 2;
 
 export const renderGroupedOutput = async (
   workspaces: Workspace[],
   output: RunScriptAcrossWorkspacesOutput,
   summary: Promise<RunScriptsSummary<RunWorkspaceScriptMetadata>>,
   scriptEventTarget: ScriptEventTarget,
-  activeScriptLines: number | "all",
+  activeScriptLines: number | "all" | "auto",
   outputWriters: Required<WriteOutputOptions>,
   terminalWidth: number,
+  terminalHeight: number,
 ) => {
   const workspaceState: Record<string, WorkspaceState> = workspaces.reduce(
     (acc, workspace) => {
@@ -165,7 +168,27 @@ export const renderGroupedOutput = async (
       didFinalRender = true;
     }
 
-    const width = Math.max(2, terminalWidth || process.stdout.columns);
+    const width = Math.max(2, terminalWidth || process.stdout.columns || 2);
+    const height = Math.max(1, terminalHeight || process.stdout.rows || 1);
+
+    // Compute the max script lines to show per workspace based on terminal
+    // height, so the live TUI never exceeds the visible viewport (cursor up
+    // is clamped and cannot recover from overflow). Each workspace occupies
+    // HEADER_ROWS_PER_WORKSPACE rows plus one row for the hidden-lines
+    // indicator, with one additional safety row to prevent scroll on the
+    // final newline. The user's activeScriptLines acts as a ceiling if lower.
+    const availableRows = Math.max(
+      1,
+      height - 1 - workspaces.length * (HEADER_ROWS_PER_WORKSPACE + 1),
+    );
+    const computedScriptLines = Math.max(
+      1,
+      Math.floor(availableRows / workspaces.length),
+    );
+    const effectiveScriptLines =
+      activeScriptLines === "all" || activeScriptLines === "auto"
+        ? computedScriptLines
+        : Math.min(activeScriptLines, computedScriptLines);
 
     const linesToWrite: Line[] = [];
 
@@ -197,9 +220,11 @@ export const renderGroupedOutput = async (
         statusText += ` (signal: ${state.signal})`;
       }
 
-      const workspaceLine = "Workspace: " + textOps.bold(workspace.name);
+      const workspaceLine =
+        textOps[BORDER_COLOR]("Workspace: ") + textOps.bold(workspace.name);
       const statusLine =
-        "   Status: " + textOps[STATUS_COLORS[state.status]](statusText);
+        textOps[BORDER_COLOR]("   Status: ") +
+        textOps[STATUS_COLORS[state.status]](statusText);
 
       workspaceBoxContents[workspace.name] = {
         name: workspaceLine,
@@ -209,68 +234,46 @@ export const renderGroupedOutput = async (
 
     const padding = 4; // left border, spaces, right border
 
-    const workspaceBoxWidth = Math.min(
-      width,
-      Math.max(
-        ...Object.values(workspaceBoxContents).map((content) =>
-          Math.max(
-            calculateVisibleLength(content.name),
-            calculateVisibleLength(content.status),
-          ),
-        ),
-      ) + padding,
-    );
-
     workspaces.forEach((workspace) => {
       const state = workspaceState[workspace.name];
 
       const { name: workspaceNameContent, status: statusTextContent } =
         workspaceBoxContents[workspace.name];
 
-      linesToWrite.push({
-        text: textOps[BORDER_COLOR](
-          "┌" + "─".repeat(workspaceBoxWidth - 2) + "┐",
-        ),
-        type: "border",
-      });
-
-      const borderText = (text: string) => {
+      const borderText = (text: string, top: boolean, headerWidth: number) => {
         const visibleLength = calculateVisibleLength(text);
         const truncated =
           visibleLength > width - padding
             ? truncateTerminalString(text, width - padding - 1) + "\x1b[0m…"
             : text;
         return (
-          textOps[BORDER_COLOR]("│ ") +
+          textOps[BORDER_COLOR](top ? "┌ " : "└ ") +
           truncated +
-          " ".repeat(Math.max(0, workspaceBoxWidth - visibleLength - padding)) +
-          textOps[BORDER_COLOR](" │")
+          " ".repeat(Math.max(0, headerWidth - visibleLength - padding)) +
+          textOps[BORDER_COLOR](top ? " ┐" : " ┘")
         );
       };
 
+      const headerWidth = Math.min(
+        width,
+        Math.max(
+          Bun.stripANSI(workspaceNameContent).length,
+          Bun.stripANSI(statusTextContent).length,
+        ) + padding,
+      );
+
       linesToWrite.push({
-        text: borderText(workspaceNameContent),
+        text: borderText(workspaceNameContent, true, headerWidth),
         type: "borderedContent",
       });
 
       linesToWrite.push({
-        text: borderText(statusTextContent),
+        text: borderText(statusTextContent, false, headerWidth),
         type: "borderedContent",
       });
 
-      linesToWrite.push({
-        text: textOps[BORDER_COLOR](
-          "└" + "─".repeat(workspaceBoxWidth - 2) + "┘",
-        ),
-        type: "border",
-      });
-
-      if (
-        activeScriptLines !== "all" &&
-        state.lines.length > activeScriptLines &&
-        !isFinal
-      ) {
-        const hiddenLines = state.lines.length - activeScriptLines;
+      if (state.lines.length > effectiveScriptLines && !isFinal) {
+        const hiddenLines = state.lines.length - effectiveScriptLines;
         linesToWrite.push({
           text: textOps.gray(
             `(${hiddenLines} line${hiddenLines === 1 ? "" : "s"} hidden until exit)`,
@@ -280,7 +283,7 @@ export const renderGroupedOutput = async (
       }
 
       linesToWrite.push(
-        ...state.lines.slice(isFinal ? undefined : -activeScriptLines).map(
+        ...state.lines.slice(isFinal ? undefined : -effectiveScriptLines).map(
           (line) =>
             ({
               text: line.text,
@@ -291,6 +294,13 @@ export const renderGroupedOutput = async (
 
       return linesToWrite;
     });
+
+    if (isFinal) {
+      linesToWrite.push({
+        text: textOps[BORDER_COLOR]("─ Summary ─"),
+        type: "borderedContent",
+      });
+    }
 
     if (previousHeight > 0) {
       // clear previous frame

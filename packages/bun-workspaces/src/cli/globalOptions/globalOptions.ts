@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { type Command, Option } from "commander";
-import { defineErrors } from "../../internal/core";
+import { defineErrors, expandHomePath } from "../../internal/core";
 import { logger } from "../../internal/logger";
 import {
   createFileSystemProject,
@@ -114,8 +114,9 @@ const defineGlobalOptions = (
     args,
   );
 
-  const cwd =
-    cwdOption || (workspaceRootOption ? findRootFromCwd() : process.cwd());
+  const cwd = expandHomePath(
+    cwdOption || (workspaceRootOption ? findRootFromCwd() : process.cwd()),
+  );
 
   const exists = fs.existsSync(cwd);
   const isDirectory = exists ? fs.statSync(cwd).isDirectory() : false;

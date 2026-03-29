@@ -5,6 +5,7 @@ import { getUserEnvVar } from "../../config/userEnvVars";
 import type { SimpleAsyncIterable, Simplify } from "../../internal/core";
 import {
   DEFAULT_TEMP_DIR,
+  expandHomePath,
   isPlainObject,
   validateJSTypes,
 } from "../../internal/core";
@@ -199,7 +200,7 @@ class _FileSystemProject extends ProjectBase implements Project {
 
     this.rootDirectory = path.resolve(
       process.cwd(),
-      options.rootDirectory ?? "",
+      expandHomePath(options.rootDirectory ?? ""),
     );
 
     const rootConfig = loadRootConfig(this.rootDirectory);

@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { expandHomePath } from "../../../internal/core";
 import { logger } from "../../../internal/logger";
 import type { ParallelMaxValue, ScriptShellOption } from "../../../runScript";
 import {
@@ -241,7 +242,7 @@ export const runScript = handleProjectCommand(
     if (options.jsonOutfile) {
       const fullOutputPath = path.resolve(
         project.rootDirectory,
-        options.jsonOutfile,
+        expandHomePath(options.jsonOutfile),
       );
 
       // Check if can make directory

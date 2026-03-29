@@ -25,6 +25,7 @@ export interface RunCliOptions {
   middleware?: CliMiddlewareOptions;
   writeOutput?: WriteOutputOptions;
   terminalWidth?: number;
+  terminalHeight?: number;
 }
 
 export interface CLI {
@@ -49,6 +50,7 @@ export const createCli = ({
     middleware: _runMiddleware,
     writeOutput,
     terminalWidth = process.stdout.columns,
+    terminalHeight = process.stdout.rows,
   }: RunCliOptions = {}) => {
     const middleware: CliMiddleware = resolveMiddleware(
       defaultMiddleware ?? {},
@@ -136,6 +138,7 @@ export const createCli = ({
         middleware,
         outputWriters,
         terminalWidth,
+        terminalHeight,
       });
 
       defineGlobalCommands({
@@ -144,6 +147,7 @@ export const createCli = ({
         middleware,
         outputWriters,
         terminalWidth,
+        terminalHeight,
       });
 
       logger.debug(`Commands initialized. Parsing args...`);

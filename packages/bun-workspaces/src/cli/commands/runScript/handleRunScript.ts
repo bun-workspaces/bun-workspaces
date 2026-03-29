@@ -21,7 +21,13 @@ import { renderPlainOutput } from "./output/renderPlainOutput";
 export const runScript = handleProjectCommand(
   "runScript",
   async (
-    { project, postTerminatorArgs, outputWriters, terminalWidth },
+    {
+      project,
+      postTerminatorArgs,
+      outputWriters,
+      terminalWidth,
+      terminalHeight,
+    },
     positionalScript: string,
     positionalWorkspacePatterns: string[],
     options: {
@@ -179,6 +185,7 @@ export const runScript = handleProjectCommand(
           groupedLines,
           outputWriters,
           terminalWidth,
+          terminalHeight,
         ),
       prefixed: () =>
         renderPlainOutput(output, outputWriters, {

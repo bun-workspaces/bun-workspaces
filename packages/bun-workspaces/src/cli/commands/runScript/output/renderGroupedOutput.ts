@@ -119,6 +119,7 @@ export const renderGroupedOutput = async (
   activeScriptLines: number | "all" | "auto",
   outputWriters: Required<WriteOutputOptions>,
   terminalWidth: number,
+  terminalHeight: number,
 ) => {
   const workspaceState: Record<string, WorkspaceState> = workspaces.reduce(
     (acc, workspace) => {
@@ -167,7 +168,8 @@ export const renderGroupedOutput = async (
       didFinalRender = true;
     }
 
-    const width = Math.max(2, terminalWidth || process.stdout.columns);
+    const width = Math.max(2, terminalWidth || process.stdout.columns || 2);
+    const height = Math.max(1, terminalHeight || process.stdout.rows || 1);
 
     // Compute the max script lines to show per workspace based on terminal
     // height, so the live TUI never exceeds the visible viewport (cursor up
@@ -175,9 +177,10 @@ export const renderGroupedOutput = async (
     // HEADER_ROWS_PER_WORKSPACE rows plus one row for the hidden-lines
     // indicator, with one additional safety row to prevent scroll on the
     // final newline. The user's activeScriptLines acts as a ceiling if lower.
-    const terminalRows = process.stdout.rows ?? 24;
-    const availableRows =
-      terminalRows - 1 - workspaces.length * (HEADER_ROWS_PER_WORKSPACE + 1);
+    const availableRows = Math.max(
+      1,
+      height - 1 - workspaces.length * (HEADER_ROWS_PER_WORKSPACE + 1),
+    );
     const computedScriptLines = Math.max(
       1,
       Math.floor(availableRows / workspaces.length),

@@ -20,6 +20,7 @@ export type GlobalCommandContext = {
   middleware: CliMiddleware;
   outputWriters: Required<WriteOutputOptions>;
   terminalWidth: number;
+  terminalHeight: number;
 };
 
 export type ProjectCommandContext = GlobalCommandContext & {

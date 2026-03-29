@@ -98,7 +98,7 @@ type WorkspaceState = {
 
 const STATUS_COLORS: Record<WorkspaceState["status"], keyof typeof textOps> = {
   pending: "gray",
-  running: "intenseCyan",
+  running: "intenseBlue",
   skipped: "gray",
   success: "intenseGreen",
   failure: "intenseRed",
@@ -107,7 +107,7 @@ const STATUS_COLORS: Record<WorkspaceState["status"], keyof typeof textOps> = {
   killed: "intenseRed",
 };
 
-const BORDER_COLOR = "blue" satisfies keyof typeof textOps;
+const BORDER_COLOR = "intenseCyan" satisfies keyof typeof textOps;
 
 export const renderGroupedOutput = async (
   workspaces: Workspace[],
@@ -197,9 +197,11 @@ export const renderGroupedOutput = async (
         statusText += ` (signal: ${state.signal})`;
       }
 
-      const workspaceLine = "Workspace: " + textOps.bold(workspace.name);
+      const workspaceLine =
+        textOps[BORDER_COLOR]("Workspace: ") + textOps.bold(workspace.name);
       const statusLine =
-        "   Status: " + textOps[STATUS_COLORS[state.status]](statusText);
+        textOps[BORDER_COLOR]("   Status: ") +
+        textOps[STATUS_COLORS[state.status]](statusText);
 
       workspaceBoxContents[workspace.name] = {
         name: workspaceLine,
@@ -227,42 +229,28 @@ export const renderGroupedOutput = async (
       const { name: workspaceNameContent, status: statusTextContent } =
         workspaceBoxContents[workspace.name];
 
-      linesToWrite.push({
-        text: textOps[BORDER_COLOR](
-          "┌" + "─".repeat(workspaceBoxWidth - 2) + "┐",
-        ),
-        type: "border",
-      });
-
-      const borderText = (text: string) => {
+      const borderText = (text: string, top: boolean) => {
         const visibleLength = calculateVisibleLength(text);
         const truncated =
           visibleLength > width - padding
             ? truncateTerminalString(text, width - padding - 1) + "\x1b[0m…"
             : text;
         return (
-          textOps[BORDER_COLOR]("│ ") +
+          textOps[BORDER_COLOR](top ? "┌ " : "└ ") +
           truncated +
           " ".repeat(Math.max(0, workspaceBoxWidth - visibleLength - padding)) +
-          textOps[BORDER_COLOR](" │")
+          textOps[BORDER_COLOR](top ? " ┐" : " ┘")
         );
       };
 
       linesToWrite.push({
-        text: borderText(workspaceNameContent),
+        text: borderText(workspaceNameContent, true),
         type: "borderedContent",
       });
 
       linesToWrite.push({
-        text: borderText(statusTextContent),
+        text: borderText(statusTextContent, false),
         type: "borderedContent",
-      });
-
-      linesToWrite.push({
-        text: textOps[BORDER_COLOR](
-          "└" + "─".repeat(workspaceBoxWidth - 2) + "┘",
-        ),
-        type: "border",
       });
 
       if (

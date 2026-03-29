@@ -1,3 +1,4 @@
+import os from "os";
 import path from "path";
 import { expect, test, describe } from "bun:test";
 import { getUserEnvVarName } from "../../../src/config/userEnvVars";
@@ -14,6 +15,14 @@ describe("createFileSystemProject - type validation", () => {
         rootDirectory: 123 as unknown as string,
       }),
     ).toThrow(InvalidJSTypeError);
+  });
+
+  test("root directory expands home path", () => {
+    const root = getProjectRoot("default");
+    const project = createFileSystemProject({
+      rootDirectory: root.replace(os.homedir(), "~"),
+    });
+    expect(project.rootDirectory).toBe(root);
   });
 
   test("throws for non-string name", () => {

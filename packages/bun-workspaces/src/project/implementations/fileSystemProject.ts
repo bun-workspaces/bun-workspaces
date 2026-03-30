@@ -1,8 +1,9 @@
 import fs from "fs";
 import path from "path";
+import { parse, quote } from "shell-quote/";
 import { loadRootConfig } from "../../config";
 import { getUserEnvVar } from "../../config/userEnvVars";
-import type { SimpleAsyncIterable, Simplify } from "../../internal/core";
+import type { Simplify } from "../../internal/core";
 import {
   DEFAULT_TEMP_DIR,
   expandHomePath,
@@ -74,8 +75,8 @@ export type RunWorkspaceScriptOptions = {
   script: string;
   /** Whether to run the script as an inline command */
   inline?: boolean | InlineScriptOptions;
-  /** The arguments to append to the script command */
-  args?: string;
+  /** The arguments to append to the script command. Is passed as a string, the argv will be parsed POSIX-style */
+  args?: string | string[];
   /** Set to `true` to ignore all output from the script. This saves memory when you don't need script output. */
   ignoreOutput?: boolean;
 };
@@ -252,8 +253,9 @@ class _FileSystemProject extends ProjectBase implements Project {
           optional: true,
         },
         "args option": {
+          array: true,
+          itemOptions: { typeofName: "string" },
           value: options.args,
-          typeofName: "string",
           optional: true,
         },
         "ignoreOutput option": {

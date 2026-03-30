@@ -22,7 +22,7 @@
     },
     "packages/bun-workspaces": {
       "name": "bun-workspaces",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "bin": {
         "bun-workspaces": "bin/cli.js",
         "bw": "bin/cli.js",
@@ -70,6 +70,12 @@
       "devDependencies": {
         "bun-workspaces_local": "file:../bun-workspaces",
         "bun-workspaces_release": "npm:bun-workspaces@1.0.2",
+      },
+    },
+    "scripts": {
+      "name": "@bw/scripts",
+      "dependencies": {
+        "@bw/doc-website": "workspace:*",
       },
     },
   },
@@ -133,6 +139,8 @@
     "@bw/doc-website": ["@bw/doc-website@workspace:packages/doc-website"],
 
     "@bw/sandbox": ["@bw/sandbox@workspace:packages/sandbox"],
+
+    "@bw/scripts": ["@bw/scripts@workspace:scripts"],
 
     "@emnapi/core": ["@emnapi/core@1.9.1", "", { "dependencies": { "@emnapi/wasi-threads": "1.2.0", "tslib": "^2.4.0" } }, "sha512-mukuNALVsoix/w1BJwFzwXBN/dHeejQtuVzcDsfOEsdpCumXb/E9j8w11h5S54tT1xhifGfbbSm/ICrObRb3KA=="],
 

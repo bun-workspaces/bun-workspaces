@@ -1,6 +1,10 @@
 {
   "name": "@bw/doc-website",
   "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/module.ts"
+  },
   "scripts": {
     "dev": "BW_DOC_ENV=development rspress dev",
     "lint": "eslint src/",

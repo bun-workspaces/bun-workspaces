@@ -6,8 +6,10 @@ import { getUserEnvVar } from "../../config/userEnvVars";
 import type { Simplify } from "../../internal/core";
 import {
   DEFAULT_TEMP_DIR,
+  InvalidJSTypeError,
   expandHomePath,
   isPlainObject,
+  validateJSArray,
   validateJSTypes,
 } from "../../internal/core";
 import { logger } from "../../internal/logger";
@@ -130,8 +132,8 @@ export type RunScriptAcrossWorkspacesOptions = {
   script: string;
   /** Whether to run the script as an inline command */
   inline?: boolean | InlineScriptOptions;
-  /** The arguments to append to the script command. `<workspaceName>` will be replaced with the workspace name */
-  args?: string;
+  /** The arguments to append to the script command. Is passed as a string, the argv will be parsed POSIX-style */
+  args?: string | string[];
   /** Whether to run the scripts in parallel (default: `true`). Pass `false` to run in series. */
   parallel?: ParallelOption;
   /** When `true`, run scripts so that dependent workspaces run only after their dependencies */
@@ -160,6 +162,38 @@ export type RunScriptAcrossWorkspacesResult = {
   summary: Promise<RunScriptAcrossWorkspacesSummary>;
   /** The workspaces targeted */
   workspaces: Workspace[];
+};
+
+const serializeArgs = (
+  args: string | string[] | undefined,
+  metadata: ScriptRuntimeMetadata,
+  shell: ScriptShellOption,
+): string => {
+  if (!args || args.length === 0) return "";
+
+  if (Array.isArray(args)) {
+    return args
+      .map((arg) =>
+        quote([interpolateScriptRuntimeMetadata(arg, metadata, shell)]),
+      )
+      .join(" ");
+  }
+
+  const interpolated = interpolateScriptRuntimeMetadata(args, metadata, shell);
+  return parse(interpolated)
+    .flatMap((entry): string[] => {
+      if (typeof entry === "string") {
+        return [quote([entry])];
+      }
+      if ("comment" in entry) {
+        return [];
+      }
+      if ("pattern" in entry) {
+        return [entry.pattern];
+      }
+      return [entry.op];
+    })
+    .join(" ");
 };
 
 class _FileSystemProject extends ProjectBase implements Project {
@@ -252,12 +286,6 @@ class _FileSystemProject extends ProjectBase implements Project {
           typeofName: ["boolean", "object"],
           optional: true,
         },
-        "args option": {
-          array: true,
-          itemOptions: { typeofName: "string" },
-          value: options.args,
-          optional: true,
-        },
         "ignoreOutput option": {
           value: options.ignoreOutput,
           typeofName: "boolean",
@@ -266,6 +294,22 @@ class _FileSystemProject extends ProjectBase implements Project {
       },
       { throw: true },
     );
+
+    if (options.args !== undefined) {
+      if (typeof options.args !== "string" && !Array.isArray(options.args)) {
+        throw new InvalidJSTypeError(
+          `Type error: args option expects type string | string[], received ${typeof options.args}`,
+        );
+      }
+      if (Array.isArray(options.args)) {
+        const argsError = validateJSArray({
+          value: options.args,
+          valueLabel: "args option",
+          itemOptions: { typeofName: "string" },
+        });
+        if (argsError) throw argsError;
+      }
+    }
 
     if (isPlainObject(options.inline)) {
       validateJSTypes(
@@ -320,11 +364,7 @@ class _FileSystemProject extends ProjectBase implements Project {
       scriptName: options.inline ? inlineScriptName : options.script,
     };
 
-    const args = interpolateScriptRuntimeMetadata(
-      options.args ?? "",
-      scriptRuntimeMetadata,
-      shell,
-    );
+    const args = serializeArgs(options.args, scriptRuntimeMetadata, shell);
 
     const script = options.inline
       ? interpolateScriptRuntimeMetadata(
@@ -381,11 +421,6 @@ class _FileSystemProject extends ProjectBase implements Project {
           typeofName: ["boolean", "object"],
           optional: true,
         },
-        "args option": {
-          value: options.args,
-          typeofName: "string",
-          optional: true,
-        },
         "parallel option": {
           value: options.parallel,
           typeofName: ["boolean", "object"],
@@ -431,6 +466,22 @@ class _FileSystemProject extends ProjectBase implements Project {
         },
         { throw: true },
       );
+    }
+
+    if (options.args !== undefined) {
+      if (typeof options.args !== "string" && !Array.isArray(options.args)) {
+        throw new InvalidJSTypeError(
+          `Type error: args option expects type string | string[], received ${typeof options.args}`,
+        );
+      }
+      if (Array.isArray(options.args)) {
+        const argsError = validateJSArray({
+          value: options.args,
+          valueLabel: "args option",
+          itemOptions: { typeofName: "string" },
+        });
+        if (argsError) throw argsError;
+      }
     }
 
     if (isPlainObject(options.parallel)) {
@@ -533,11 +584,7 @@ class _FileSystemProject extends ProjectBase implements Project {
           scriptName: options.inline ? inlineScriptName : options.script,
         };
 
-        const args = interpolateScriptRuntimeMetadata(
-          options.args ?? "",
-          scriptRuntimeMetadata,
-          shell,
-        );
+        const args = serializeArgs(options.args, scriptRuntimeMetadata, shell);
 
         const script = options.inline
           ? interpolateScriptRuntimeMetadata(

@@ -71,7 +71,7 @@ export const runScript = handleProjectCommand(
     }
 
     const scriptArgs = postTerminatorArgs.length
-      ? postTerminatorArgs.join(" ")
+      ? postTerminatorArgs
       : options.args;
 
     if (positionalWorkspacePatterns.length && options.workspacePatterns) {

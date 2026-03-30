@@ -2,7 +2,11 @@ export const RUN_WORKSPACE_SCRIPT_EXAMPLE = `
 const { output, exit } = project.runWorkspaceScript({
   workspaceNameOrAlias: "my-workspace",
   script: "my-script",
-  args: ["--my", "--appended", "--args"], // optional args to append
+
+  // Optional. Arguments to add to the command
+  // Can be a string or an array of strings
+  // If string, the argv will be parsed POSIX-style
+  args: ["--my", "--appended", "--args"],
 
   // Optional. Whether to ignore all output from the script. 
   // This saves memory when you don't need script output.
@@ -40,7 +44,7 @@ const { output, summary } = project.runScriptAcrossWorkspaces({
   // Required. The package.json "scripts" field name to run
   script: "my-script",
 
-  // Optional. Arguments to add to the command
+  // Optional. Arguments to add to the command (same as for runWorkspaceScript)
   args: ["--my", "--appended", "--args"],
 
   // Optional. Whether to run the scripts in parallel (default: true)

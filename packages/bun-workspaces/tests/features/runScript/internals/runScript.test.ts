@@ -1,6 +1,6 @@
 import { test, expect, describe } from "bun:test";
-import { IS_WINDOWS } from "../../../src/internal/core";
-import { runScript, type RunScriptExit } from "../../../src/runScript";
+import { IS_WINDOWS } from "../../../../src/internal/core";
+import { runScript, type RunScriptExit } from "../../../../src/runScript";
 
 const makeExitResult = (
   overrides: Partial<RunScriptExit> = {},

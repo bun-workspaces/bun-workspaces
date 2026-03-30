@@ -1,11 +1,11 @@
 import path from "path";
 import { describe, test, expect } from "bun:test";
-import { IS_WINDOWS } from "../../../src/internal/core";
-import { createProcessOutput } from "../../../src/runScript/output/processOutput";
+import { IS_WINDOWS } from "../../../../src/internal/core";
+import { createProcessOutput } from "../../../../src/runScript/output/processOutput";
 
 const FIXTURE_PATH = path.join(
   import.meta.dir,
-  "../../fixtures/testScripts/createSubprocesses.ts",
+  "../../../fixtures/testScripts/createSubprocesses.ts",
 );
 
 const pidExists = async (pid: number): Promise<boolean> => {

@@ -78,7 +78,7 @@ export type RunWorkspaceScriptOptions = {
   script: string;
   /** Whether to run the script as an inline command */
   inline?: boolean | InlineScriptOptions;
-  /** The arguments to append to the script command. Is passed as a string, the argv will be parsed POSIX-style */
+  /** The arguments to append to the script command. If passed as a string, the argv will be parsed POSIX-style */
   args?: string | string[];
   /** Set to `true` to ignore all output from the script. This saves memory when you don't need script output. */
   ignoreOutput?: boolean;
@@ -133,7 +133,7 @@ export type RunScriptAcrossWorkspacesOptions = {
   script: string;
   /** Whether to run the script as an inline command */
   inline?: boolean | InlineScriptOptions;
-  /** The arguments to append to the script command. Is passed as a string, the argv will be parsed POSIX-style */
+  /** The arguments to append to the script command. If passed as a string, the argv will be parsed POSIX-style */
   args?: string | string[];
   /** Whether to run the scripts in parallel (default: `true`). Pass `false` to run in series. */
   parallel?: ParallelOption;

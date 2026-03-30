@@ -1,0 +1,16 @@
+{
+  "name": "@bw/scripts",
+  "private": true,
+  "bw": {
+    "alias": [
+      "scripts"
+    ]
+  },
+  "scripts": {
+    "generate-cursor-rules": "bun generateCursorRules.ts",
+    "generate-readme": "bun generateReadme.ts"
+  },
+  "dependencies": {
+    "@bw/doc-website": "workspace:*"
+  }
+}

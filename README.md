@@ -65,15 +65,15 @@ bw run lint my-workspace # Run for a single workspace
 bw run lint my-workspace-a my-workspace-b # Run for multiple workspaces
 bw run lint my-alias-a my-alias-b # Run by alias (set by optional config)
 
-bw run lint "my-workspace-*" # Run for matching workspace names
-bw run lint "alias:my-alias-pattern-*" "path:my-glob/**/*" # Use matching specifiers
-
 # A workspace's script will wait until any workspaces it depends on have completed
 # Similar to Bun's --filter behavior
 bw run lint --dep-order
 
 # Continue running scripts even if a dependency fails
 bw run lint --dep-order --ignore-dep-failure
+
+bw run lint "my-workspace-*" # Run for matching workspace names
+bw run lint "alias:my-alias-pattern-*" "path:my-glob/**/*" # Use matching specifiers
 
 bw run lint --args="--my-appended-args" # Add args to each script call
 bw run lint --args="--my-arg=<workspaceName>" # Use the workspace name in args
@@ -141,13 +141,17 @@ const runSingleScript = async () => {
     workspaceNameOrAlias: "my-workspace",
     script: "my-script",
     args: "--my --appended --args", // optional, arguments to add to the command
+
+    // Optional. Whether to ignore all output from the script.
+    // This saves memory when you don't need script output.
+    ignoreOutput: false,
   });
 
   // Get a stream of the script subprocess's output
   for await (const { chunk, metadata } of output.text()) {
-    // console.log(chunk); // the content (string)
-    // console.log(metadata.streamName); // "stdout" or "stderr"
-    // console.log(metadata.workspace); // the workspace that the output came from
+    // console.log(chunk); // The output chunk's content (string)
+    // console.log(metadata.streamName); // The output stream, "stdout" or "stderr"
+    // console.log(metadata.workspace); // The target Workspace
   }
 
   // Get data about the script execution after it exits
@@ -187,6 +191,10 @@ const runManyScripts = async () => {
     // continue running scripts even if a dependency fails
     ignoreDependencyFailure: false,
 
+    // Optional. Whether to ignore all output from the scripts.
+    // This saves memory when you don't need script output.
+    ignoreOutput: false,
+
     // Optional, callback when script starts, skips, or exits
     onScriptEvent: (event, { workspace, exitResult }) => {
       // event: "start", "skip", "exit"
@@ -195,9 +203,9 @@ const runManyScripts = async () => {
 
   // Get a stream of script output
   for await (const { chunk, metadata } of output.text()) {
-    // console.log(chunk); // the content (string)
+    // console.log(chunk); // the output chunk's content (string)
     // console.log(metadata.streamName); // "stdout" or "stderr"
-    // console.log(metadata.workspace); // the workspace that the output came from
+    // console.log(metadata.workspace); // the Workspace that the output came from
   }
 
   // Get final summary data and script exit details after all scripts have completed

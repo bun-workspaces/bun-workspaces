@@ -4,7 +4,8 @@
   "license": "MIT",
   "workspaces": {
     "packages": [
-      "packages/*"
+      "packages/*",
+      "scripts/"
     ],
     "catalog": {},
     "catalogs": {}
@@ -32,7 +33,9 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format-check": "prettier --check .",
-    "type-check": "bun cli run type-check -P --"
+    "type-check": "bun cli run type-check -P --",
+    "generate-cursor-rules": "bun cli run generate-cursor-rules scripts -o plain --",
+    "generate-readme": "bun cli run generate-readme scripts -o plain --"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

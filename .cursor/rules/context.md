@@ -1,8 +1,3 @@
----
-description: Overview of the bun-workspaces project
-alwaysApply: true
----
-
 ## Project Overview
 
 bun-workspaces is a CLI and TypeScript API to help manage Bun monorepos. It reads `bun.lock` to find all workspaces in the project. It is referred to as "bw" for short, which is also the recommended CLI alias. The overall goal is a monorepo tool that is more lightweight than others, with still powerful comparable features, requiring no special config to get started, only a standard Bun repo using workspaces.
@@ -12,7 +7,6 @@ Three main domain terms to know:
 - Project: generally represents a monorepo and is defined by the root `package.json` file
 - Workspace: a nested package within a project. The root package.json can count as a workspace as well, but by default, only nested packages are considered workspaces.
 - Script: an entry in the `scripts` field of a workspace's `package.json` file. bw can also run one-off commands known as "inline scripts," which can use the Bun shell or system shell (`sh -c` or `cmd /d /s /c` for windows).
-
 ## Concepts
 
 ### Workspace patterns
@@ -47,11 +41,6 @@ bw run "bun <projectPath>/my-script.ts" --inline \
   --inline-name="my-script-name" \
   --args="<workspaceName> <workspacePath>"
 ```
-
-## Examples
-
-Examples are not exhaustive but give a picture of most core features.
-
 ### CLI examples:
 
 ```bash
@@ -75,15 +64,15 @@ bw run-script lint
 # run the package.json "lint" script for workspaces using matching specifiers
 bw run lint my-workspace-name "alias:my-alias-pattern-*" "path:my-glob/**/*" # accepts workspace patterns
 
-# special root workspace selector (works even if root workspace is not included)
-bw run lint @root
-
 # A workspace's script will wait until any workspaces it depends on have completed
 # Similar to Bun's --filter behavior
 bw run lint --dep-order
 
 # Continue running scripts even if a dependency fails
 bw run lint --dep-order --ignore-dep-failure
+
+# special root workspace selector (works even if root workspace is not included)
+bw run lint @root
 
 # Scripts run in parallel by default
 bw run lint --parallel=false # Run in series
@@ -93,7 +82,6 @@ bw run lint --parallel # default "auto", os.availableParallelism()
 bw run lint --parallel=2 # Run in parallel with a max of 2 concurrent scripts
 bw run lint --parallel=50% # 50% of os.availableParallelism()
 bw run lint --parallel=unbounded # run all in one batch
-
 
 # add args to the script command
 bw run lint --args="--my-arg=value"
@@ -131,7 +119,6 @@ bw --no-include-root ls # override config/env var setting
 bw --log-level=silent ls
 bw -l silent ls
 ```
-
 ### API examples:
 
 The API is held in close parity with the CLI. It is developed first so that the CLI is a thin wrapper around the API.
@@ -154,7 +141,7 @@ project.findWorkspacesByPattern(
   "my-workspace-alias",
   "my-name-pattern-*",
   "alias:my-alias-*",
-  "path:my-glob/**/*",
+  "path:my-glob/**/*"
 ); // find workspaces by pattern like the CLI
 project.runWorkspaceScript({
   workspaceNameOrAlias: "my-workspace",
@@ -171,8 +158,9 @@ project.runScriptAcrossWorkspaces({
     "workspace-alias-b",
   ],
   parallel: true, // also could be { max: 2 }, max taking same options as seen in CLI examples above (e.g. "50%", "auto", etc.)
-  dependencyOrder: false, // optional
-  ignoreDependencyFailure: false, // optional
+  dependencyOrder: true,
+  ignoreDependencyFailure: true,
+  // Optional, callback when script starts, skips, or exits
   onScriptEvent: (event, { workspace, exitResult }) => {
     // event: "start", "skip", "exit"
   },
@@ -202,7 +190,6 @@ project.runScriptAcrossWorkspaces({
   "dependents": ["my-dependent"],
 }
 ```
-
 ## Root config
 
 Optional project config can be placed in `bw.root.jsonc`/`bw.root.json` in the root directory.
@@ -235,7 +222,6 @@ Optional config can be placed in `bw.workspace.jsonc`/`bw.workspace.json` in a w
   },
 }
 ```
-
 ## Development processes
 
 The repo contains three packages:

@@ -186,7 +186,13 @@ const serializeArgs = (
   }
 
   const interpolated = interpolateScriptRuntimeMetadata(args, metadata, shell);
-  return parse(interpolated)
+  // Escape backslashes in interpolated values before POSIX parse on Windows,
+  // so that path separators survive parse's escape processing (\\→\)
+  const parseInput =
+    IS_WINDOWS && shell === "system"
+      ? interpolated.replace(/\\/g, "\\\\")
+      : interpolated;
+  return parse(parseInput)
     .flatMap((entry): string[] => {
       if (typeof entry === "string") {
         return [quoteArg(entry, shell)];

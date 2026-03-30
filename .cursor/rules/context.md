@@ -150,6 +150,8 @@ project.runWorkspaceScript({
   workspaceNameOrAlias: "my-workspace",
   script: "lint",
   inline: true,
+  // args can be a string or an array of strings
+  // if string, the argv will be parsed POSIX-style
   args: "--my-arg=value",
 });
 project.runScriptAcrossWorkspaces({
@@ -163,6 +165,8 @@ project.runScriptAcrossWorkspaces({
   parallel: true, // also could be { max: 2 }, max taking same options as seen in CLI examples above (e.g. "50%", "auto", etc.)
   dependencyOrder: true,
   ignoreDependencyFailure: true,
+  // same as for runWorkspaceScript
+  args: ["--my", "--appended", "--args"],
   // Optional, callback when script starts, skips, or exits
   onScriptEvent: (event, { workspace, exitResult }) => {
     // event: "start", "skip", "exit"

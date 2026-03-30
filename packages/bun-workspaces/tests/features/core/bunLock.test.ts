@@ -118,6 +118,7 @@ describe("bun.lock utilities", () => {
           "packages/bun-workspaces": expect.any(Object),
           "packages/doc-website": expect.any(Object),
           "packages/sandbox": expect.any(Object),
+          scripts: expect.any(Object),
         },
       });
 

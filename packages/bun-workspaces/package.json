@@ -44,12 +44,14 @@
   },
   "devDependencies": {
     "@rslib/core": "^0.15.1",
+    "@types/shell-quote": "^1.7.5",
     "@xterm/headless": "^6.0.0",
     "ajv": "^8.17.1",
     "ajv-cli": "^5.0.0",
     "bun-workspaces": "file:."
   },
   "dependencies": {
-    "commander": "^12.1.0"
+    "commander": "^12.1.0",
+    "shell-quote": "^1.8.3"
   }
 }

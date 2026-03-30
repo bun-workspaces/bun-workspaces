@@ -1,7 +1,7 @@
 import { describe, test, expect } from "bun:test";
-import { createAsyncIterableQueue } from "../../../src/internal/core";
-import { createMultiProcessOutput } from "../../../src/runScript/output/multiProcessOutput";
-import { createProcessOutput } from "../../../src/runScript/output/processOutput";
+import { createAsyncIterableQueue } from "../../../../src/internal/core";
+import { createMultiProcessOutput } from "../../../../src/runScript/output/multiProcessOutput";
+import { createProcessOutput } from "../../../../src/runScript/output/processOutput";
 
 const createTestProcess = (name: string) => {
   const metadata = { name };

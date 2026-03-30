@@ -1,12 +1,16 @@
 import fs from "fs";
 import path from "path";
+import { parse, quote } from "shell-quote/";
 import { loadRootConfig } from "../../config";
 import { getUserEnvVar } from "../../config/userEnvVars";
-import type { SimpleAsyncIterable, Simplify } from "../../internal/core";
+import type { Simplify } from "../../internal/core";
 import {
   DEFAULT_TEMP_DIR,
+  IS_WINDOWS,
+  InvalidJSTypeError,
   expandHomePath,
   isPlainObject,
+  validateJSArray,
   validateJSTypes,
 } from "../../internal/core";
 import { logger } from "../../internal/logger";
@@ -74,8 +78,8 @@ export type RunWorkspaceScriptOptions = {
   script: string;
   /** Whether to run the script as an inline command */
   inline?: boolean | InlineScriptOptions;
-  /** The arguments to append to the script command */
-  args?: string;
+  /** The arguments to append to the script command. If passed as a string, the argv will be parsed POSIX-style */
+  args?: string | string[];
   /** Set to `true` to ignore all output from the script. This saves memory when you don't need script output. */
   ignoreOutput?: boolean;
 };
@@ -129,8 +133,8 @@ export type RunScriptAcrossWorkspacesOptions = {
   script: string;
   /** Whether to run the script as an inline command */
   inline?: boolean | InlineScriptOptions;
-  /** The arguments to append to the script command. `<workspaceName>` will be replaced with the workspace name */
-  args?: string;
+  /** The arguments to append to the script command. If passed as a string, the argv will be parsed POSIX-style */
+  args?: string | string[];
   /** Whether to run the scripts in parallel (default: `true`). Pass `false` to run in series. */
   parallel?: ParallelOption;
   /** When `true`, run scripts so that dependent workspaces run only after their dependencies */
@@ -159,6 +163,49 @@ export type RunScriptAcrossWorkspacesResult = {
   summary: Promise<RunScriptAcrossWorkspacesSummary>;
   /** The workspaces targeted */
   workspaces: Workspace[];
+};
+
+const quoteArg = (arg: string, shell: ScriptShellOption): string =>
+  IS_WINDOWS && shell === "system"
+    ? `"${arg.replace(/"/g, '""')}"`
+    : quote([arg]);
+
+const serializeArgs = (
+  args: string | string[] | undefined,
+  metadata: ScriptRuntimeMetadata,
+  shell: ScriptShellOption,
+): string => {
+  if (!args || args.length === 0) return "";
+
+  if (Array.isArray(args)) {
+    return args
+      .map((arg) =>
+        quoteArg(interpolateScriptRuntimeMetadata(arg, metadata, shell), shell),
+      )
+      .join(" ");
+  }
+
+  const interpolated = interpolateScriptRuntimeMetadata(args, metadata, shell);
+  // Escape backslashes in interpolated values before POSIX parse on Windows,
+  // so that path separators survive parse's escape processing (\\→\)
+  const parseInput =
+    IS_WINDOWS && shell === "system"
+      ? interpolated.replace(/\\/g, "\\\\")
+      : interpolated;
+  return parse(parseInput)
+    .flatMap((entry): string[] => {
+      if (typeof entry === "string") {
+        return [quoteArg(entry, shell)];
+      }
+      if ("comment" in entry) {
+        return [];
+      }
+      if ("pattern" in entry) {
+        return [entry.pattern];
+      }
+      return [entry.op];
+    })
+    .join(" ");
 };
 
 class _FileSystemProject extends ProjectBase implements Project {
@@ -251,11 +298,6 @@ class _FileSystemProject extends ProjectBase implements Project {
           typeofName: ["boolean", "object"],
           optional: true,
         },
-        "args option": {
-          value: options.args,
-          typeofName: "string",
-          optional: true,
-        },
         "ignoreOutput option": {
           value: options.ignoreOutput,
           typeofName: "boolean",
@@ -264,6 +306,22 @@ class _FileSystemProject extends ProjectBase implements Project {
       },
       { throw: true },
     );
+
+    if (options.args !== undefined) {
+      if (typeof options.args !== "string" && !Array.isArray(options.args)) {
+        throw new InvalidJSTypeError(
+          `Type error: args option expects type string | string[], received ${typeof options.args}`,
+        );
+      }
+      if (Array.isArray(options.args)) {
+        const argsError = validateJSArray({
+          value: options.args,
+          valueLabel: "args option",
+          itemOptions: { typeofName: "string" },
+        });
+        if (argsError) throw argsError;
+      }
+    }
 
     if (isPlainObject(options.inline)) {
       validateJSTypes(
@@ -318,11 +376,7 @@ class _FileSystemProject extends ProjectBase implements Project {
       scriptName: options.inline ? inlineScriptName : options.script,
     };
 
-    const args = interpolateScriptRuntimeMetadata(
-      options.args ?? "",
-      scriptRuntimeMetadata,
-      shell,
-    );
+    const args = serializeArgs(options.args, scriptRuntimeMetadata, shell);
 
     const script = options.inline
       ? interpolateScriptRuntimeMetadata(
@@ -379,11 +433,6 @@ class _FileSystemProject extends ProjectBase implements Project {
           typeofName: ["boolean", "object"],
           optional: true,
         },
-        "args option": {
-          value: options.args,
-          typeofName: "string",
-          optional: true,
-        },
         "parallel option": {
           value: options.parallel,
           typeofName: ["boolean", "object"],
@@ -429,6 +478,22 @@ class _FileSystemProject extends ProjectBase implements Project {
         },
         { throw: true },
       );
+    }
+
+    if (options.args !== undefined) {
+      if (typeof options.args !== "string" && !Array.isArray(options.args)) {
+        throw new InvalidJSTypeError(
+          `Type error: args option expects type string | string[], received ${typeof options.args}`,
+        );
+      }
+      if (Array.isArray(options.args)) {
+        const argsError = validateJSArray({
+          value: options.args,
+          valueLabel: "args option",
+          itemOptions: { typeofName: "string" },
+        });
+        if (argsError) throw argsError;
+      }
     }
 
     if (isPlainObject(options.parallel)) {
@@ -531,11 +596,7 @@ class _FileSystemProject extends ProjectBase implements Project {
           scriptName: options.inline ? inlineScriptName : options.script,
         };
 
-        const args = interpolateScriptRuntimeMetadata(
-          options.args ?? "",
-          scriptRuntimeMetadata,
-          shell,
-        );
+        const args = serializeArgs(options.args, scriptRuntimeMetadata, shell);
 
         const script = options.inline
           ? interpolateScriptRuntimeMetadata(

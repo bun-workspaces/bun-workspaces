@@ -3,14 +3,14 @@ import fs from "fs";
 import { availableParallelism } from "os";
 import path from "path";
 import { test, expect, describe, afterAll } from "bun:test";
-import { getUserEnvVarName } from "../../../src/config/userEnvVars";
-import { IS_WINDOWS } from "../../../src/internal/core";
+import { getUserEnvVarName } from "../../../../src/config/userEnvVars";
+import { IS_WINDOWS } from "../../../../src/internal/core";
 import {
   runScripts,
   type RunScriptExit,
   type RunScriptsSummary,
   type ScriptEventName,
-} from "../../../src/runScript";
+} from "../../../../src/runScript";
 
 const makeScriptExit = <Metadata extends object = object>(
   overrides: Partial<RunScriptExit<Metadata>> = {},

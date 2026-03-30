@@ -1,0 +1,6 @@
+{
+  "name": "workspace-c",
+  "scripts": {
+    "debug-argv": "bun ../../debugArgv.ts"
+  }
+}

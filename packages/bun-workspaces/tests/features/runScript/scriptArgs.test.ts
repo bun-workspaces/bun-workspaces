@@ -8,7 +8,19 @@ import { withWindowsPath } from "../../util/windows";
 const TEST_PROJECT = "runScriptWithDebugArgv" as const;
 
 // Skip tests that rely on POSIX single-quote syntax on Windows
-const testNonWindows = IS_WINDOWS ? test.skip : test;
+const testNonWindows = IS_WINDOWS
+  ? (name: string) => {
+      // eslint-disable-next-line no-console
+      console.log(`${name}: Skipping test on Windows`);
+    }
+  : test;
+// Skip tests that rely on Windows cmd double-quote syntax on non-Windows
+const testWindowsOnly = IS_WINDOWS
+  ? test
+  : (name: string) => {
+      // eslint-disable-next-line no-console
+      console.log(`${name}: Skipping test on non-Windows`);
+    };
 
 const collectOutputText = async (output: {
   text: () => AsyncIterable<{ chunk: string }>;
@@ -50,15 +62,18 @@ describe("Script args", () => {
       expect(parseArgvLines(text)).toEqual([["hello world"]]);
     });
 
-    testNonWindows("quoted string passes as single arg (string[])", async () => {
-      const { output } = getProject().runWorkspaceScript({
-        workspaceNameOrAlias: "workspace-a",
-        script: "debug-argv",
-        args: ["hello world"],
-      });
-      const text = await collectOutputText(output);
-      expect(parseArgvLines(text)).toEqual([["hello world"]]);
-    });
+    testNonWindows(
+      "quoted string passes as single arg (string[])",
+      async () => {
+        const { output } = getProject().runWorkspaceScript({
+          workspaceNameOrAlias: "workspace-a",
+          script: "debug-argv",
+          args: ["hello world"],
+        });
+        const text = await collectOutputText(output);
+        expect(parseArgvLines(text)).toEqual([["hello world"]]);
+      },
+    );
 
     test("operator passes through shell (string)", async () => {
       const { output } = getProject().runWorkspaceScript({
@@ -179,6 +194,48 @@ describe("Script args", () => {
         ]);
       },
     );
+
+    testWindowsOnly(
+      "quoted string passes as single arg via cmd quoting (string[])",
+      async () => {
+        const { output } = getProject().runWorkspaceScript({
+          workspaceNameOrAlias: "workspace-a",
+          script: "debug-argv",
+          args: ["hello world"],
+        });
+        const text = await collectOutputText(output);
+        expect(parseArgvLines(text)).toEqual([["hello world"]]);
+      },
+    );
+
+    testWindowsOnly(
+      "quoted string passes as single arg via cmd quoting (string)",
+      async () => {
+        const { output } = getProject().runWorkspaceScript({
+          workspaceNameOrAlias: "workspace-a",
+          script: "debug-argv",
+          args: "'hello world'",
+        });
+        const text = await collectOutputText(output);
+        expect(parseArgvLines(text)).toEqual([["hello world"]]);
+      },
+    );
+
+    testWindowsOnly(
+      "mix: quoted string and metadata via cmd quoting (string[])",
+      async () => {
+        const { output } = getProject().runWorkspaceScript({
+          workspaceNameOrAlias: "workspace-a",
+          script: "debug-argv",
+          args: ["spaced value", "--name=<workspaceName>"],
+        });
+        const text = await collectOutputText(output);
+        expect(parseArgvLines(text)).toContainEqual([
+          "spaced value",
+          "--name=workspace-a",
+        ]);
+      },
+    );
   });
 
   describe("API: runScriptAcrossWorkspaces", () => {
@@ -289,6 +346,43 @@ describe("Script args", () => {
         }
       },
     );
+
+    testWindowsOnly(
+      "quoted string passes per workspace via cmd quoting (string[])",
+      async () => {
+        const { output } = getProject().runScriptAcrossWorkspaces({
+          workspacePatterns: ["workspace-a", "workspace-b"],
+          script: "debug-argv",
+          args: ["hello world"],
+          parallel: false,
+        });
+        const text = await collectOutputText(output);
+        const argvLines = parseArgvLines(text);
+        expect(argvLines).toHaveLength(2);
+        for (const line of argvLines) {
+          expect(line).toEqual(["hello world"]);
+        }
+      },
+    );
+
+    testWindowsOnly(
+      "mix: quoted string and metadata per workspace via cmd quoting (string[])",
+      async () => {
+        const { output } = getProject().runScriptAcrossWorkspaces({
+          workspacePatterns: ["workspace-a", "workspace-b"],
+          script: "debug-argv",
+          args: ["spaced value", "--name=<workspaceName>"],
+          parallel: false,
+        });
+        for await (const { metadata, chunk } of output.text()) {
+          if (!chunk.trim() || metadata.streamName !== "stdout") continue;
+          expect(JSON.parse(chunk.trim())).toEqual([
+            "spaced value",
+            `--name=${metadata.workspace.name}`,
+          ]);
+        }
+      },
+    );
   });
 
   describe("CLI: --args", () => {
@@ -379,30 +473,57 @@ describe("Script args", () => {
       expect(result.exitCode).toBe(0);
       expect(
         parseArgvLines(result.stdout.sanitizedCompactLines),
-      ).toContainEqual([
-        "spaced value",
-        "--name=workspace-a",
-        "no-match/**/*",
-      ]);
+      ).toContainEqual(["spaced value", "--name=workspace-a", "no-match/**/*"]);
     });
 
-    testNonWindows(
-      "mix: quoted string, metadata, and operator",
+    testNonWindows("mix: quoted string, metadata, and operator", async () => {
+      const result = await run(
+        "run-script",
+        "debug-argv",
+        "workspace-a",
+        "--args='spaced value' --name=<workspaceName> && echo cli-mix-op-passed",
+        "--output-style=plain",
+      );
+      expect(result.exitCode).toBe(0);
+      expect(
+        parseArgvLines(result.stdout.sanitizedCompactLines),
+      ).toContainEqual(["spaced value", "--name=workspace-a"]);
+      expect(result.stdout.sanitizedCompactLines).toContain(
+        "cli-mix-op-passed",
+      );
+    });
+
+    testWindowsOnly(
+      "quoted string passes as single arg via cmd quoting",
       async () => {
         const result = await run(
           "run-script",
           "debug-argv",
           "workspace-a",
-          "--args='spaced value' --name=<workspaceName> && echo cli-mix-op-passed",
+          '--args="hello world"',
+          "--output-style=plain",
+        );
+        expect(result.exitCode).toBe(0);
+        expect(
+          parseArgvLines(result.stdout.sanitizedCompactLines),
+        ).toContainEqual(["hello world"]);
+      },
+    );
+
+    testWindowsOnly(
+      "mix: quoted string and metadata via cmd quoting",
+      async () => {
+        const result = await run(
+          "run-script",
+          "debug-argv",
+          "workspace-a",
+          '--args="spaced value" --name=<workspaceName>',
           "--output-style=plain",
         );
         expect(result.exitCode).toBe(0);
         expect(
           parseArgvLines(result.stdout.sanitizedCompactLines),
         ).toContainEqual(["spaced value", "--name=workspace-a"]);
-        expect(result.stdout.sanitizedCompactLines).toContain(
-          "cli-mix-op-passed",
-        );
       },
     );
   });
@@ -505,11 +626,44 @@ describe("Script args", () => {
       expect(result.exitCode).toBe(0);
       expect(
         parseArgvLines(result.stdout.sanitizedCompactLines),
-      ).toContainEqual([
-        "hello world",
-        "--name=workspace-a",
-        "no-match/**/*",
-      ]);
+      ).toContainEqual(["hello world", "--name=workspace-a", "no-match/**/*"]);
     });
+
+    testWindowsOnly(
+      "arg with space passes as single arg via cmd quoting",
+      async () => {
+        const result = await run(
+          "run-script",
+          "debug-argv",
+          "workspace-a",
+          "--output-style=plain",
+          "--",
+          "hello world",
+        );
+        expect(result.exitCode).toBe(0);
+        expect(
+          parseArgvLines(result.stdout.sanitizedCompactLines),
+        ).toContainEqual(["hello world"]);
+      },
+    );
+
+    testWindowsOnly(
+      "mix: arg with space and metadata via cmd quoting",
+      async () => {
+        const result = await run(
+          "run-script",
+          "debug-argv",
+          "workspace-a",
+          "--output-style=plain",
+          "--",
+          "hello world",
+          "--name=<workspaceName>",
+        );
+        expect(result.exitCode).toBe(0);
+        expect(
+          parseArgvLines(result.stdout.sanitizedCompactLines),
+        ).toContainEqual(["hello world", "--name=workspace-a"]);
+      },
+    );
   });
 });

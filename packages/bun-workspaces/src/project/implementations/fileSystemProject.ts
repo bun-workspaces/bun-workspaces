@@ -6,6 +6,7 @@ import { getUserEnvVar } from "../../config/userEnvVars";
 import type { Simplify } from "../../internal/core";
 import {
   DEFAULT_TEMP_DIR,
+  IS_WINDOWS,
   InvalidJSTypeError,
   expandHomePath,
   isPlainObject,
@@ -164,6 +165,11 @@ export type RunScriptAcrossWorkspacesResult = {
   workspaces: Workspace[];
 };
 
+const quoteArg = (arg: string, shell: ScriptShellOption): string =>
+  IS_WINDOWS && shell === "system"
+    ? `"${arg.replace(/"/g, '""')}"`
+    : quote([arg]);
+
 const serializeArgs = (
   args: string | string[] | undefined,
   metadata: ScriptRuntimeMetadata,
@@ -174,7 +180,7 @@ const serializeArgs = (
   if (Array.isArray(args)) {
     return args
       .map((arg) =>
-        quote([interpolateScriptRuntimeMetadata(arg, metadata, shell)]),
+        quoteArg(interpolateScriptRuntimeMetadata(arg, metadata, shell), shell),
       )
       .join(" ");
   }
@@ -183,7 +189,7 @@ const serializeArgs = (
   return parse(interpolated)
     .flatMap((entry): string[] => {
       if (typeof entry === "string") {
-        return [quote([entry])];
+        return [quoteArg(entry, shell)];
       }
       if ("comment" in entry) {
         return [];

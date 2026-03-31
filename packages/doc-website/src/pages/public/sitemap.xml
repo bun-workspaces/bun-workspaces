@@ -11,6 +11,11 @@
     <changefreq>weekly</changefreq>
   </url>
   <url>
+    <loc>https://bunworkspaces.com/web-cli</loc>
+    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
     <loc>https://bunworkspaces.com/cli/global-options</loc>
     <priority>0.8</priority>
     <changefreq>weekly</changefreq>

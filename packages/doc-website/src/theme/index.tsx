@@ -32,9 +32,9 @@ const HomeLink = () => {
     <Link href="/." ref={ref}>
       <div className="nav-title-container">
         <PixelArtImage
-          path="/images/png/bwaby-nooutline_16x19.png"
+          path="/images/png/bwaby-nooutline_20x22.png"
           style={{
-            width: "2rem",
+            width: "2.1rem",
           }}
           height="auto"
         />

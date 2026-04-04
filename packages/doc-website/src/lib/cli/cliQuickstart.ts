@@ -59,6 +59,9 @@ bw run my-script --output-style=prefixed
 # Use the plain output style (no workspace prefixes)
 bw run my-script --output-style=plain
 
+# Silence all output of the run command
+bw --log-level=silent run my-script --output-style=none
+
 # Show usage (you can pass --help to any command)
 bw help
 bw --help
@@ -71,11 +74,10 @@ bw --cwd=/path/to/your/project ls
 bw --cwd=/path/to/your/project run my-script
 
 # Pass --log-level to any command (debug, info, warn, error, or silent)
-bw --log-level=silent run my-script`.trim();
+bw --log-level=debug ls
+`.trim();
 
 export const INLINE_SCRIPT_EXAMPLE = `
 # Run an inline command from the workspace directory
 bw run "bun run build" --inline
-
-
 `.trim();

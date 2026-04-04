@@ -8,14 +8,14 @@ import type { CliCommandContent, CliCommandInfo } from "./cliOption";
 const defineCommandContent = (
   commandName: CliCommandName,
   factory: (
-    optionConfig: CliCommandConfig,
-  ) => Omit<CliCommandInfo, "commandName">,
+    optionConfig: CliCommandConfig
+  ) => Omit<CliCommandInfo, "commandName">
 ): CliCommandContent => {
   const config = getCliCommandConfig(commandName);
   const content = factory(config);
 
   const exampleLines = content.examples.filter(
-    (example) => example.trim() && !example.match(/^\s*#/),
+    (example) => example.trim() && !example.match(/^\s*#/)
   );
 
   const getMainFlag = (flags: string[]) => {
@@ -29,7 +29,7 @@ const defineCommandContent = (
       !exampleLines.find((line) => line.includes(getMainFlag(option.flags)))
     ) {
       throw new Error(
-        `Expected an example to include ${getMainFlag(option.flags)}`,
+        `Expected an example to include ${getMainFlag(option.flags)}`
       );
     }
   }
@@ -38,7 +38,7 @@ const defineCommandContent = (
     !exampleLines.find((line) => {
       // line that uses no flags
       return Object.values(config.options).every(
-        (option) => !line.includes(getMainFlag(option.flags)),
+        (option) => !line.includes(getMainFlag(option.flags))
       );
     })
   ) {
@@ -186,6 +186,9 @@ const CLI_PROJECT_COMMANDS_CONTENT = {
       "",
       "# Use the plain output style (no workspace prefixes)",
       `bw run my-script --output-style=plain`,
+      "",
+      "# Silence all output of the run command",
+      `bw --log-level=silent run my-script --output-style=none`,
       "",
       "# Run an inline command from each workspace's directory",
       `bw run "echo 'this is my inline script for <workspaceName>'" --inline`,

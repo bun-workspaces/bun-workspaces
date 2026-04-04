@@ -8,8 +8,8 @@ import type { CliGlobalOptionContent, CliGlobalOptionInfo } from "./cliOption";
 const defineOptionContent = (
   optionName: CliGlobalOptionName,
   factory: (
-    optionConfig: CliGlobalOptionConfig,
-  ) => Omit<CliGlobalOptionInfo, "optionName">,
+    optionConfig: CliGlobalOptionConfig
+  ) => Omit<CliGlobalOptionInfo, "optionName">
 ): CliGlobalOptionContent => {
   const config = getCliGlobalOptionConfig(optionName);
   const content = factory(config);
@@ -47,7 +47,7 @@ const CLI_GLOBAL_OPTIONS_CONTENT = {
         '# "@root" references the root package like a workspace',
         `bw ${shortOption} run my-root-script @root`,
       ],
-    }),
+    })
   ),
   includeRoot: defineOptionContent(
     "includeRoot",
@@ -61,14 +61,14 @@ const CLI_GLOBAL_OPTIONS_CONTENT = {
         "",
         `bw ${mainOption.replace("--", "--no-")} list-workspaces # disable (to override config/env)`,
       ],
-    }),
+    })
   ),
   logLevel: defineOptionContent("logLevel", ({ mainOption, shortOption }) => ({
     title: "Log Level",
     description:
-      'Set the logging level. Script output of workspaces is always preserved, except when log level is set to "silent".',
+      "Set the logging level. For the run-script (run) command, silence output with --output-style=none.",
     examples: [
-      `bw ${mainOption}=silent list-workspaces`,
+      `bw ${mainOption}=debug list-workspaces`,
       `bw ${shortOption} error list-workspaces`,
     ],
   })),

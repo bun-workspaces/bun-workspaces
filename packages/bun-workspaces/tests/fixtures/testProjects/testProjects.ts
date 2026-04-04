@@ -9,6 +9,7 @@ const TEST_PROJECTS = {
   notAProject: "notAProject",
   simple1: "simple1",
   simple2: "simple2",
+  simpleWorkspaceGlobs: "simpleWorkspaceGlobs",
   emptyWorkspaces: "emptyWorkspaces",
   emptyScripts: "emptyScripts",
   withNodeModuleWorkspace: "withNodeModuleWorkspace",

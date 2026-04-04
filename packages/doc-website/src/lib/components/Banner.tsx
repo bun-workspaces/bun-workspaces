@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaXmark, FaMugHot, FaGithub, FaStar } from "react-icons/fa6";
 import { Link } from "rspress/theme";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { useOnMount } from "../util/useOnMount";
 
 const useClosed = create<{
   isClosed: boolean;
   setIsClosed: (isClosed: boolean) => void;
 }>()((set) => ({
-  isClosed: false,
+  isClosed: true,
   setIsClosed: (isClosed) => set({ isClosed }),
 }));
 
@@ -25,8 +26,8 @@ const useDismissed = create<{
       name: "banner",
       storage: createJSONStorage(() => localStorage),
       version: 1,
-    },
-  ),
+    }
+  )
 );
 
 export const Banner = () => {
@@ -36,6 +37,10 @@ export const Banner = () => {
   const setIsDismissed = useDismissed((state) => state.setIsDismissed);
 
   const isOpen = !isClosed && !isDismissed;
+
+  useOnMount(() => {
+    setIsClosed(false);
+  });
 
   const [dontShowAgain, setDontShowAgain] = useState(false);
 

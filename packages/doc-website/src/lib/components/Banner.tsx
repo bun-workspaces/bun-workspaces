@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaXmark, FaMugHot, FaGithub, FaStar } from "react-icons/fa6";
 import { Link } from "rspress/theme";
 import { create } from "zustand";

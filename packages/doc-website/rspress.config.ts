@@ -370,6 +370,10 @@ export default defineConfig({
         position: "left",
         items: [
           {
+            text: "Blog",
+            link: "https://bunworkspaces.com/blog",
+          },
+          {
             text: "Roadmap",
             link: "/roadmap",
           },
@@ -382,6 +386,11 @@ export default defineConfig({
             link: "/lore",
           },
         ],
+      },
+      {
+        text: "Blog",
+        position: "right",
+        link: "https://bunworkspaces.com/blog",
       },
     ],
   },

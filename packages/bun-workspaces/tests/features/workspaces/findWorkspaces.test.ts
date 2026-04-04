@@ -413,4 +413,61 @@ describe("Test finding workspaces", () => {
       },
     });
   });
+
+  test("matchPattern matched for variety of workspace globs", () => {
+    const { workspaces } = findWorkspaces({
+      rootDirectory: getProjectRoot("simpleWorkspaceGlobs"),
+    });
+    expect(workspaces).toEqual([
+      makeTestWorkspace({
+        name: "application-1a",
+        aliases: ["appA"],
+        path: "applications/applicationA",
+        matchPattern: "applications/*",
+        scripts: ["a-workspaces", "all-workspaces", "application-a"],
+      }),
+      makeTestWorkspace({
+        name: "application-1b",
+        aliases: ["appB"],
+        path: "applications/applicationB",
+        matchPattern: "applications/*",
+        scripts: ["all-workspaces", "application-b", "b-workspaces"],
+      }),
+      makeTestWorkspace({
+        name: "library-1a",
+        aliases: ["libA"],
+        path: "libraries/libraryA",
+        matchPattern: "libraries/libraryA",
+        scripts: ["a-workspaces", "all-workspaces", "library-a"],
+      }),
+      makeTestWorkspace({
+        name: "library-1b",
+        aliases: ["libB"],
+        path: "libraries/libraryB",
+        matchPattern: "libraries/libraryB/",
+        scripts: ["all-workspaces", "b-workspaces", "library-b"],
+      }),
+      makeTestWorkspace({
+        name: "package-a",
+        aliases: ["pa"],
+        path: "packageA",
+        matchPattern: "packageA/",
+        scripts: ["a-workspaces", "all-workspaces", "package-a"],
+      }),
+      makeTestWorkspace({
+        name: "package-b",
+        aliases: ["pb"],
+        path: "packageB",
+        matchPattern: "packageB",
+        scripts: ["all-workspaces", "b-workspaces", "package-b"],
+      }),
+      makeTestWorkspace({
+        name: "package-c",
+        aliases: ["pc"],
+        path: "packageC",
+        matchPattern: "packageC//",
+        scripts: ["all-workspaces", "c-workspaces", "package-c"],
+      }),
+    ]);
+  });
 });

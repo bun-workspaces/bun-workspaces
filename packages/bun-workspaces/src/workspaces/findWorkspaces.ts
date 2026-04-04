@@ -140,8 +140,9 @@ export const findWorkspaces = ({
       );
 
       const matchPattern =
-        workspaceGlobs.find((glob) => new bun.Glob(glob).match(relativePath)) ??
-        "";
+        workspaceGlobs.find((glob) =>
+          new bun.Glob(glob.replace(/\/+$/, "")).match(relativePath),
+        ) ?? "";
 
       const isRootWorkspace = workspacePath === rootDirectory;
 

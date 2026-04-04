@@ -94,6 +94,12 @@ export const runScript = handleProjectCommand(
     );
     logger.debug(`Options: ${JSON.stringify(options)}`);
 
+    const outputStyle = options.outputStyle
+      ? validateOutputStyle(options.outputStyle)
+      : getDefaultOutputStyle();
+
+    logger.debug(`Effective output style: ${outputStyle}`);
+
     const scriptEventTarget = createScriptEventTarget();
 
     const { output, summary, workspaces } = project.runScriptAcrossWorkspaces({
@@ -112,7 +118,7 @@ export const runScript = handleProjectCommand(
       args: scriptArgs,
       dependencyOrder: options.depOrder,
       ignoreDependencyFailure: options.ignoreDepFailure,
-      ignoreOutput: logger.printLevel === "silent",
+      ignoreOutput: outputStyle === "none",
       onScriptEvent: (event, { workspace, exitResult }) => {
         setTimeout(() =>
           // place at end of call stack so listeners in render func receive event
@@ -198,13 +204,10 @@ export const runScript = handleProjectCommand(
           prefix: false,
           stripDisruptiveControls,
         }),
+      none: async () => {
+        // no-op
+      },
     };
-
-    const outputStyle = options.outputStyle
-      ? validateOutputStyle(options.outputStyle)
-      : getDefaultOutputStyle();
-
-    logger.debug(`Effective output style: ${outputStyle}`);
 
     await outputStyleHandlers[outputStyle]();
 

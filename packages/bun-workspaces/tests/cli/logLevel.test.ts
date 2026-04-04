@@ -170,12 +170,12 @@ application-a`,
       );
     });
 
-    test("run-script produces no output", async () => {
+    test("run-script produces output in silent", async () => {
       const { run } = setupCliTest({ testProject: "oneWorkspace" });
       assertOutputMatches(
         (await run("--log-level=silent", "run-script", "all-workspaces"))
           .stdoutAndErr.sanitized,
-        /^$/,
+        /^\[application-a\] script for all workspaces$/,
       );
     });
 

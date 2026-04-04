@@ -66,9 +66,9 @@ const CLI_GLOBAL_OPTIONS_CONTENT = {
   logLevel: defineOptionContent("logLevel", ({ mainOption, shortOption }) => ({
     title: "Log Level",
     description:
-      'Set the logging level. Script output of workspaces is always preserved, except when log level is set to "silent".',
+      "Set the logging level. For the run-script (run) command, silence output with --output-style=none.",
     examples: [
-      `bw ${mainOption}=silent list-workspaces`,
+      `bw ${mainOption}=debug list-workspaces`,
       `bw ${shortOption} error list-workspaces`,
     ],
   })),

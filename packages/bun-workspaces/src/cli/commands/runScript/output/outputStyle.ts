@@ -1,7 +1,12 @@
 import { BunWorkspacesError } from "../../../../internal/core/error";
 import { IS_TTY } from "../../../../internal/core/runtime/terminal";
 
-export const OUTPUT_STYLE_VALUES = ["grouped", "prefixed", "plain"] as const;
+export const OUTPUT_STYLE_VALUES = [
+  "grouped",
+  "prefixed",
+  "plain",
+  "none",
+] as const;
 
 export type OutputStyleName = (typeof OUTPUT_STYLE_VALUES)[number];
 

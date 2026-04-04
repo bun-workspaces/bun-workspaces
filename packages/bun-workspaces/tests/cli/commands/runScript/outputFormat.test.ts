@@ -93,6 +93,40 @@ success2
     );
   });
 
+  test("--output-style=none produces no script output", async () => {
+    const result = await setupCliTest({
+      testProject: "runScriptWithFailures",
+    }).run(
+      "run-script",
+      "test-exit",
+      "--output-style=none",
+      "--parallel=false",
+    );
+    expect(result.exitCode).toBe(1);
+    assertOutputMatches(
+      result.stdoutAndErr.sanitizedCompactLines,
+      `❌ fail1: test-exit (exited with code 1)
+❌ fail2: test-exit (exited with code 2)
+✅ success1: test-exit
+✅ success2: test-exit
+2 of 4 scripts failed`,
+    );
+  });
+
+  test("--output-style=none with --log-level=silent produces no output", async () => {
+    const result = await setupCliTest({
+      testProject: "runScriptWithFailures",
+    }).run(
+      "--log-level=silent",
+      "run-script",
+      "test-exit",
+      "--output-style=none",
+      "--parallel=false",
+    );
+    expect(result.exitCode).toBe(1);
+    assertOutputMatches(result.stdoutAndErr.sanitizedCompactLines, "");
+  });
+
   test("--no-prefix deprecation warning", async () => {
     const result = await setupCliTest({
       testProject: "simple1",

@@ -461,6 +461,13 @@ describe("Test finding workspaces", () => {
         matchPattern: "packageB",
         scripts: ["all-workspaces", "b-workspaces", "package-b"],
       }),
+      makeTestWorkspace({
+        name: "package-c",
+        aliases: ["pc"],
+        path: "packageC",
+        matchPattern: "packageC//",
+        scripts: ["all-workspaces", "c-workspaces", "package-c"],
+      }),
     ]);
   });
 });

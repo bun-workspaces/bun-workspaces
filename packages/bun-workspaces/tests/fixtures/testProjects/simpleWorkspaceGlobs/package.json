@@ -5,6 +5,7 @@
     "libraries/libraryA",
     "libraries/libraryB/",
     "packageA/",
-    "packageB"
+    "packageB",
+    "packageC//"
   ]
 }

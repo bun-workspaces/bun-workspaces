@@ -6,8 +6,6 @@
 
 ### [**See Full Documentation Here**: _https://bunworkspaces.com_](https://bunworkspaces.com)
 
-<hr/>
-
 **Big Recent Updates!**
 
 - Version 1 is here after the initial alpha! 🍔🍔👁️🍔🍔

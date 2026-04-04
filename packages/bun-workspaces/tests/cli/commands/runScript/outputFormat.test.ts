@@ -113,7 +113,7 @@ success2
     );
   });
 
-  test("--output-style=none with --log-level=silent produces  output", async () => {
+  test("--output-style=none with --log-level=silent produces no output", async () => {
     const result = await setupCliTest({
       testProject: "runScriptWithFailures",
     }).run(

@@ -70,6 +70,8 @@ const BWUNSTER_ASCII = fs.readFileSync(
   "utf8",
 );
 
+const BLOG_URL = process.env.BW_BLOG_URL || "https://bunworkspaces.com/blog";
+
 export default defineConfig({
   root: "src/pages",
   themeDir: path.join(__dirname, "src/theme"),
@@ -120,6 +122,7 @@ export default defineConfig({
             BWUNSTER_ASCII: ${JSON.stringify(BWUNSTER_ASCII)},
             BW_WEB_SERVICE_BASE_URL: ${JSON.stringify(process.env.BW_WEB_SERVICE_BASE_URL ?? "http://localhost:8080")},
             BW_DOC_ENV: ${JSON.stringify(process.env.BW_DOC_ENV ?? "production")},
+            BLOG_URL: ${JSON.stringify(BLOG_URL)},
           },
           on: function(){}
         })`,
@@ -371,7 +374,7 @@ export default defineConfig({
         items: [
           {
             text: "Blog",
-            link: "https://bunworkspaces.com/blog",
+            link: BLOG_URL,
           },
           {
             text: "Roadmap",
@@ -390,7 +393,7 @@ export default defineConfig({
       {
         text: "Blog",
         position: "right",
-        link: "https://bunworkspaces.com/blog",
+        link: BLOG_URL,
       },
     ],
   },

@@ -1,4 +1,10 @@
-export const CONFIG_LOCATION_TYPES = ["jsoncFile", "jsonFile", "packageJson"];
+export const CONFIG_LOCATION_TYPES = [
+  "tsFile",
+  "jsFile",
+  "jsoncFile",
+  "jsonFile",
+  "packageJson",
+] as const;
 
 export type ConfigLocationType = (typeof CONFIG_LOCATION_TYPES)[number];
 
@@ -12,6 +18,8 @@ const CONFIG_LOCATION_PATHS: Record<
   ConfigLocationType,
   (name: string, packageJsonKey: string) => string
 > = {
+  tsFile: (name) => `${name}.ts`,
+  jsFile: (name) => `${name}.js`,
   jsoncFile: (name) => `${name}.jsonc`,
   jsonFile: (name) => `${name}.json`,
   packageJson: (_, packageJsonKey) => `package.json["${packageJsonKey}"]`,

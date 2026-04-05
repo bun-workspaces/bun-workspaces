@@ -13,16 +13,62 @@ import {
   type ConfigLocationType,
 } from "./configLocation";
 
-export const InvalidJSONError = defineErrors("InvalidJSON").InvalidJSON;
+export const LOAD_CONFIG_ERRORS = defineErrors(
+  "InvalidJSON",
+  "NoExportError",
+  "ModuleLoadFailure",
+);
 
 const parseJSON = (jsonString: string, path: string) => {
   try {
     return parseJSONC(jsonString);
   } catch (error) {
-    throw new InvalidJSONError(
+    throw new LOAD_CONFIG_ERRORS.InvalidJSON(
       `Invalid JSON at ${path}: ${(error as Error).message}`,
     );
   }
+};
+
+const parseModule = (
+  locationType: "tsFile" | "jsFile",
+  directory: string,
+  fileName: string,
+) => {
+  const configFilePath = path.join(
+    directory,
+    createConfigLocationPath(locationType, fileName, ""),
+  );
+  if (fs.existsSync(configFilePath)) {
+    let content: unknown;
+    try {
+      // eslint-disable-next-line
+      const { default: defaultExport, config: configExport } = require(
+        configFilePath,
+      );
+      if (defaultExport && configExport) {
+        logger.warn(
+          `Found both default export and export named "config" in ${configFilePath}. Using default export.`,
+        );
+      }
+      content = defaultExport ?? configExport;
+      if (!content) {
+        throw new LOAD_CONFIG_ERRORS.NoExportError(
+          `No export found in ${configFilePath}. Expected a default export or export named "config".`,
+        );
+      }
+    } catch (error) {
+      throw new LOAD_CONFIG_ERRORS.ModuleLoadFailure(
+        `Failed to load module at ${configFilePath}: ${(error as Error).message}`,
+      );
+    }
+
+    return {
+      type: locationType,
+      content,
+      path: path.relative(process.cwd(), configFilePath),
+    };
+  }
+  return null;
 };
 
 const LOCATION_FINDERS: Record<
@@ -33,6 +79,10 @@ const LOCATION_FINDERS: Record<
     packageJsonKey: string,
   ) => ConfigLocation | null
 > = {
+  tsFile: (directory: string, fileName: string) =>
+    parseModule("tsFile", directory, fileName),
+  jsFile: (directory: string, fileName: string) =>
+    parseModule("jsFile", directory, fileName),
   jsoncFile: (directory: string, fileName: string) => {
     const configFilePath = path.join(
       directory,
@@ -118,7 +168,7 @@ export const getConfigLocation = (
     logger.warn(
       `Found multiple ${name} configs:\n${locations
         .map((location) => "  " + location.path)
-        .join("\n")}\n  Using config at ${locations[0]?.path}`,
+        .join("\n")}\nUsing config at ${locations[0]?.path}`,
     );
   }
 

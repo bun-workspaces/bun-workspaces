@@ -1,5 +1,5 @@
 import { defineWorkspaceConfig } from "bun-workspaces/config";
 
-export const config = defineWorkspaceConfig({
+export default defineWorkspaceConfig({
   alias: "bw",
 });

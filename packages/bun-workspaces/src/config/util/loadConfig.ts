@@ -42,23 +42,17 @@ const parseModule = (
     let content: unknown;
     try {
       // eslint-disable-next-line
-      const { default: defaultExport, config: configExport } = require(
-        configFilePath,
-      );
-      if (defaultExport && configExport) {
-        logger.warn(
-          `Found both default export and export named "config" in ${configFilePath}. Using default export.`,
-        );
-      }
-      content = defaultExport ?? configExport;
-      if (!content) {
-        throw new LOAD_CONFIG_ERRORS.NoExportError(
-          `No export found in ${configFilePath}. Expected a default export or export named "config".`,
-        );
-      }
+      const module = require(configFilePath);
+      content = module.default;
     } catch (error) {
       throw new LOAD_CONFIG_ERRORS.ModuleLoadFailure(
         `Failed to load module at ${configFilePath}: ${(error as Error).message}`,
+      );
+    }
+
+    if (!content) {
+      throw new LOAD_CONFIG_ERRORS.NoExportError(
+        `No default export found in ${configFilePath}. Expected config object.`,
       );
     }
 

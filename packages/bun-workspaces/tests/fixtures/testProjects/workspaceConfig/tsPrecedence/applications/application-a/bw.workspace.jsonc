@@ -1,0 +1,8 @@
+{
+  "alias": "appA-jsonc",
+  "scripts": {
+    "all-workspaces": {
+      "order": 1
+    }
+  }
+}

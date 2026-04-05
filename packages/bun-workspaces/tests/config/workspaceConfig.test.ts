@@ -1,12 +1,11 @@
 import path from "path";
 import { expect, test, describe, spyOn } from "bun:test";
-import { InvalidJSONError } from "../../src/config/util/loadConfig";
+import { LOAD_CONFIG_ERRORS } from "../../src/config";
 import {
   loadWorkspaceConfig,
   validateWorkspaceConfig,
   WORKSPACE_CONFIG_ERRORS,
 } from "../../src/config/workspaceConfig";
-import { logger } from "../../src/internal/logger";
 import { findWorkspaces } from "../../src/workspaces";
 import { getProjectRoot } from "../fixtures/testProjects";
 import { makeTestWorkspace, makeWorkspaceMapEntry } from "../util/testData";
@@ -148,7 +147,7 @@ describe("workspace config", () => {
             withWindowsPath("applications/application-a"),
           ),
         ),
-      ).toThrow(InvalidJSONError);
+      ).toThrow(LOAD_CONFIG_ERRORS.InvalidJSON);
     });
 
     test("throws for application-b", () => {
@@ -159,7 +158,7 @@ describe("workspace config", () => {
             withWindowsPath("applications/application-b"),
           ),
         ),
-      ).toThrow(InvalidJSONError);
+      ).toThrow(LOAD_CONFIG_ERRORS.InvalidJSON);
     });
   });
 
@@ -482,6 +481,190 @@ describe("workspace config", () => {
           }),
           "library-1c": makeWorkspaceMapEntry({ alias: [] }),
         },
+      });
+    });
+  });
+
+  describe("TypeScript config files", () => {
+    test("ts configs load as expected", () => {
+      const { workspaces, workspaceMap } = findWorkspaces({
+        rootDirectory: getProjectRoot("workspaceConfigTsConfig"),
+      });
+      expect(workspaces).toEqual([
+        makeTestWorkspace({
+          name: "application-1a",
+          path: "applications/application-a",
+          matchPattern: "applications/*",
+          scripts: ["a-workspaces", "all-workspaces", "application-a"],
+          aliases: ["appA"],
+        }),
+        makeTestWorkspace({
+          name: "application-1b",
+          path: "applications/application-b",
+          matchPattern: "applications/*",
+          scripts: ["all-workspaces", "application-b", "b-workspaces"],
+          aliases: ["appB"],
+        }),
+      ]);
+      expect(workspaceMap).toEqual({
+        "test-root": makeWorkspaceMapEntry({ alias: [] }),
+        "application-1a": makeWorkspaceMapEntry({
+          alias: ["appA"],
+          scripts: {
+            "all-workspaces": {
+              order: 1,
+            },
+          },
+        }),
+        "application-1b": makeWorkspaceMapEntry({
+          alias: ["appB"],
+          scripts: {
+            "b-workspaces": {
+              order: 0,
+            },
+          },
+        }),
+      });
+    });
+
+    test("ts empty configs load as expected", () => {
+      expect(() =>
+        findWorkspaces({
+          rootDirectory: getProjectRoot("workspaceConfigTsEmpty"),
+        }),
+      ).toThrow(LOAD_CONFIG_ERRORS.NoExportError);
+    });
+
+    test("ts invalid configs throw expected error", () => {
+      expect(() =>
+        findWorkspaces({
+          rootDirectory: getProjectRoot("workspaceConfigTsInvalid"),
+        }),
+      ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
+    });
+
+    test("ts config loads with precedence", () => {
+      const { workspaces, workspaceMap } = findWorkspaces({
+        rootDirectory: getProjectRoot("workspaceConfigTsPrecedence"),
+      });
+      expect(workspaces).toEqual([
+        makeTestWorkspace({
+          name: "application-1a",
+          path: "applications/application-a",
+          matchPattern: "applications/*",
+          scripts: ["a-workspaces", "all-workspaces", "application-a"],
+          aliases: ["appA-ts"],
+        }),
+        makeTestWorkspace({
+          name: "application-1b",
+          path: "applications/application-b",
+          matchPattern: "applications/*",
+          scripts: ["all-workspaces", "application-b", "b-workspaces"],
+          aliases: ["appB-ts"],
+        }),
+      ]);
+      expect(workspaceMap).toEqual({
+        "test-root": makeWorkspaceMapEntry({ alias: [] }),
+        "application-1a": makeWorkspaceMapEntry({
+          alias: ["appA-ts"],
+          scripts: {
+            "all-workspaces": {
+              order: 1,
+            },
+          },
+        }),
+        "application-1b": makeWorkspaceMapEntry({
+          alias: ["appB-ts"],
+          scripts: {
+            "all-workspaces": {
+              order: 1,
+            },
+          },
+        }),
+      });
+    });
+  });
+
+  describe("JavaScript config files", () => {
+    test("js configs load as expected", () => {
+      const { workspaces, workspaceMap } = findWorkspaces({
+        rootDirectory: getProjectRoot("workspaceConfigJsConfig"),
+      });
+      expect(workspaces).toEqual([
+        makeTestWorkspace({
+          name: "application-1a",
+          path: "applications/application-a",
+          matchPattern: "applications/*",
+          scripts: ["a-workspaces", "all-workspaces", "application-a"],
+          aliases: ["appA"],
+        }),
+        makeTestWorkspace({
+          name: "application-1b",
+          path: "applications/application-b",
+          matchPattern: "applications/*",
+          scripts: ["all-workspaces", "application-b", "b-workspaces"],
+          aliases: ["appB"],
+        }),
+      ]);
+      expect(workspaceMap).toEqual({
+        "test-root": makeWorkspaceMapEntry({ alias: [] }),
+        "application-1a": makeWorkspaceMapEntry({
+          alias: ["appA"],
+          scripts: {
+            "all-workspaces": {
+              order: 1,
+            },
+          },
+        }),
+        "application-1b": makeWorkspaceMapEntry({
+          alias: ["appB"],
+          scripts: {
+            "b-workspaces": {
+              order: 0,
+            },
+          },
+        }),
+      });
+    });
+
+    test("js config loads with precedence", () => {
+      const { workspaces, workspaceMap } = findWorkspaces({
+        rootDirectory: getProjectRoot("workspaceConfigJsPrecedence"),
+      });
+      expect(workspaces).toEqual([
+        makeTestWorkspace({
+          name: "application-1a",
+          path: "applications/application-a",
+          matchPattern: "applications/*",
+          scripts: ["a-workspaces", "all-workspaces", "application-a"],
+          aliases: ["appA-js"],
+        }),
+        makeTestWorkspace({
+          name: "application-1b",
+          path: "applications/application-b",
+          matchPattern: "applications/*",
+          scripts: ["all-workspaces", "application-b", "b-workspaces"],
+          aliases: ["appB-js"],
+        }),
+      ]);
+      expect(workspaceMap).toEqual({
+        "test-root": makeWorkspaceMapEntry({ alias: [] }),
+        "application-1a": makeWorkspaceMapEntry({
+          alias: ["appA-js"],
+          scripts: {
+            "all-workspaces": {
+              order: 1,
+            },
+          },
+        }),
+        "application-1b": makeWorkspaceMapEntry({
+          alias: ["appB-js"],
+          scripts: {
+            "all-workspaces": {
+              order: 1,
+            },
+          },
+        }),
       });
     });
   });

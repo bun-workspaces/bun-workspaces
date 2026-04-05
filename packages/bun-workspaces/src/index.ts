@@ -24,6 +24,7 @@ export {
   type ScriptEventMetadata,
   type OnScriptEventCallback,
 } from "./project";
+export * from "./config/public";
 export {
   type ScriptEventName,
   type OutputStreamName,

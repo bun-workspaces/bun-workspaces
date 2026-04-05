@@ -37,7 +37,7 @@
         "@xterm/headless": "^6.0.0",
         "ajv": "^8.17.1",
         "ajv-cli": "^5.0.0",
-        "bun-workspaces": "file:.",
+        "bun-workspaces": "workspace:*",
       },
     },
     "packages/doc-website": {

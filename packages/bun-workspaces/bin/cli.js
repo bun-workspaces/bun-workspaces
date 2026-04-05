@@ -1,3 +1,3 @@
 #!/usr/bin/env bun
-import { createCli } from "bun-workspaces/src/cli";
+import { createCli } from "bun-workspaces/cli";
 createCli().run();

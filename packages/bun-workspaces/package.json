@@ -1,7 +1,11 @@
 {
   "name": "bun-workspaces",
   "version": "1.2.0",
-  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./cli": "./src/cli/index.ts",
+    "./config": "./src/config/public.ts"
+  },
   "private": true,
   "description": "A monorepo management tool for Bun, with a CLI and API to enhance Bun's native workspaces.",
   "homepage": "https://bunworkspaces.com",
@@ -48,7 +52,7 @@
     "@xterm/headless": "^6.0.0",
     "ajv": "^8.17.1",
     "ajv-cli": "^5.0.0",
-    "bun-workspaces": "file:."
+    "bun-workspaces": "workspace:*"
   },
   "dependencies": {
     "commander": "^12.1.0",

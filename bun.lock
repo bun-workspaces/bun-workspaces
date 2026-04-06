@@ -70,7 +70,7 @@
       "name": "@bw/sandbox",
       "devDependencies": {
         "bun-workspaces_local": "file:../bun-workspaces",
-        "bun-workspaces_release": "npm:bun-workspaces@1.1.2",
+        "bun-workspaces_release": "npm:bun-workspaces@1.3.0",
       },
     },
     "scripts": {
@@ -553,7 +553,7 @@
 
     "bun-workspaces_local": ["bun-workspaces@workspace:packages/bun-workspaces"],
 
-    "bun-workspaces_release": ["bun-workspaces@1.1.2", "", { "dependencies": { "commander": "^12.1.0", "shell-quote": "^1.8.3" }, "bin": { "bun-workspaces": "bin/cli.js", "bw": "bin/cli.js" } }, "sha512-QB8mtILqsB3DduZUddUG1Bp7f3AwO+iiBGnkzweQEZYFuBzSjFGMqkVeR3HiHE0ikeODLVHH2urFtb+oCdqJrg=="],
+    "bun-workspaces_release": ["bun-workspaces@workspace:packages/bun-workspaces"],
 
     "bw-web-service-shared": ["bw-web-service-shared@0.1.2", "", {}, "sha512-SXfGu54XzV9VsYSH1zok/fCipPpfp5VDXb0TFbGQZ2p4rsY6dt7aLF9/q2FcgypPWeVqiU4NM1TivnYObNI/vw=="],
 

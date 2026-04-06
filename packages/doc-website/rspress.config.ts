@@ -101,6 +101,13 @@ export default defineConfig({
   },
   builderConfig: {
     dev: {},
+    tools: {
+      rspack: {
+        // bun-workspaces uses a dynamic require() for loading TS/JS config files
+        // at runtime — it is never executed in the browser bundle context
+        ignoreWarnings: [/Critical dependency/],
+      },
+    },
     plugins: [pluginSvgr()],
     resolve: {
       alias: {

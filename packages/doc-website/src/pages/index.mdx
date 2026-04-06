@@ -55,15 +55,11 @@ Start running some [CLI commands](/cli) right away in your repo, or take full ad
 <h2 className="whats-new-subtitle">Notable recent updates 📦</h2>
 <div className="whats-new-list">
 - <BlogLink>The `bun-workspaces` Blog</BlogLink> is now live! The <BlogLink path="bun-workspaces-v1">first post</BlogLink> covers the v1 release.
+- The optional [configuration files](/config) can now be written in TypeScript or JavaScript.
 - New CLI [global option](/cli/global-options#run-from-workspace-root): `--workspace-root|-w` to run from the project root above the current working directory, like `pnpm`'s option.
 - <span style={{ fontWeight: "500", fontSize: "1.05em"}}><span style={{ fontWeight: "800"}}>Version 1.0</span> is now here after the initial alpha! 🍔🍔👁️🍔🍔</span>
 - New CLI [output style](/cli/commands#run-script) for running scripts. `--no-prefix` is now <span className="deprecated">deprecated</span> in favor of `--output-style=plain`.
 - You can now run scripts in dependency order, similar to Bun's [`--filter` behavior](https://bun.com/docs/pm/filter#dependency-order). See more on [workspace dependencies](/concepts/workspace-dependencies).
-- More advanced [workspace patterns](/concepts/workspace-patterns) can be used to select workspaces, such as by path.
-- It's now possible to include or reference a project's [root workspace](/concepts/root-workspace).
-- Configuration updates: Added new [project root configuration](/config/root) to set defaults, and JSONC is supported for configuration files.
-- The [Bun Shell](https://bun.com/docs/runtime/shell) is now used by default to run [inline scripts](/concepts/inline-scripts), with the [option](/concepts/inline-scripts#shell) to use the system shell.
-- Increased support for Windows users.
 </div>
 
 ## Quick Start

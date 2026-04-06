@@ -1,5 +1,5 @@
 import path from "path";
-import { expect, test, describe, spyOn } from "bun:test";
+import { expect, test, describe } from "bun:test";
 import { LOAD_CONFIG_ERRORS } from "../../src/config";
 import {
   loadWorkspaceConfig,

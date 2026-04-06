@@ -9,7 +9,7 @@ footer: false
 ---
 
 import { ROOT_CONFIG_FILE_NAME, ROOT_CONFIG_PACKAGE_JSON_KEY } from "bun-workspaces/src/config/rootConfig/rootConfigLocation";
-import { exampleRootConfigSimple1, exampleRootConfigSimple2, createPackageJsonExample } from "../../../lib/config/exampleConfig";
+import { exampleRootConfigSimple1, exampleRootConfigSimple2, createPackageJsonExample, createTsFileExample } from "../../../lib/config/exampleConfig";
 import { SyntaxHighlighter } from "../../../lib/util/highlight";
 import { CONFIG_LOCATION_TYPES, createConfigLocationPath } from 'bun-workspaces/src/config/util/configLocation'
 import { ROOT_CONFIG_TYPE } from "../../../lib/config/configTypes";
@@ -35,7 +35,17 @@ You can set defaults for the [parallel max value](/concepts/parallel-scripts#par
 </SyntaxHighlighter>
 
 ### Examples:
-#### 1. JSON/JSONC file
+#### 1. TypeScript/JavaScript file
+
+<span className="config-path"><code>path/to/your/project/{createConfigLocationPath("tsFile", ROOT_CONFIG_FILE_NAME, ROOT_CONFIG_PACKAGE_JSON_KEY)}</code></span>
+or
+<span className="config-path"><code>path/to/your/project/{createConfigLocationPath("jsFile", ROOT_CONFIG_FILE_NAME, ROOT_CONFIG_PACKAGE_JSON_KEY)}</code></span>
+
+<SyntaxHighlighter language="typescript">
+  {createTsFileExample(exampleRootConfigSimple1, "root")}
+</SyntaxHighlighter>
+
+#### 2. JSON/JSONC file
 
 <span className="config-path"><code>path/to/your/project/{createConfigLocationPath("jsonFile", ROOT_CONFIG_FILE_NAME, ROOT_CONFIG_PACKAGE_JSON_KEY)}</code></span>
 or
@@ -45,7 +55,7 @@ or
   {JSON.stringify(exampleRootConfigSimple1, null, 2)}
 </SyntaxHighlighter>
 
-#### 2. package.json
+#### 3. package.json
 
 <span className="config-path"><code>path/to/your/project/package.json</code></span>
 

@@ -1,3 +1,4 @@
+import * as cp from "child_process";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
@@ -24,3 +25,11 @@ export const resolveBunPath = (): string => {
 
   return probeBunPath() ?? "bun";
 };
+
+export const validateBunPath = (): Promise<boolean> =>
+  new Promise((resolve) => {
+    const bunPath = resolveBunPath();
+    const proc = cp.spawn(bunPath, ["--version"]);
+    proc.on("close", (code) => resolve(code === 0));
+    proc.on("error", () => resolve(false));
+  });

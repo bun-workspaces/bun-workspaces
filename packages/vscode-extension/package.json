@@ -1,6 +1,6 @@
 {
   "name": "bun-workspaces-vscode",
-  "displayName": "Bun Workspaces",
+  "displayName": "bun-workspaces",
   "description": "Manage Bun monorepo workspaces from VS Code and Cursor",
   "version": "0.0.1",
   "private": true,
@@ -35,11 +35,12 @@
       {
         "command": "bunWorkspaces.runScript",
         "title": "Run Script",
-        "category": "Bun Workspaces"
+        "category": "bun-workspaces"
       }
     ],
     "configuration": {
-      "title": "Bun Workspaces",
+      "title": "bun-workspaces",
+      "displayName": "bun-workspaces",
       "properties": {
         "bunWorkspaces.bunPath": {
           "type": "string",

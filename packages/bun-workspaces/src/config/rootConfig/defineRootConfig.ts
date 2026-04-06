@@ -1,3 +1,5 @@
+import type { ShellOption } from "../../project";
+import type { ParallelMaxValue } from "../../runScript";
 import {
   resolveRootConfig,
   type RootConfig as JSONSchemaRootConfig,
@@ -6,8 +8,8 @@ import {
 
 export type RootConfig = {
   defaults?: {
-    parallelMax?: number | string;
-    shell?: string;
+    parallelMax?: ParallelMaxValue;
+    shell?: ShellOption;
     includeRootWorkspace?: boolean;
   };
 };

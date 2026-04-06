@@ -1,7 +1,0 @@
-{
-  // JSONC works
-  "defaults": {
-    "parallelMax": 2,
-    "shell": "system",
-  },
-}

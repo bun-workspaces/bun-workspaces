@@ -4,7 +4,7 @@
     "workspaces/*"
   ],
   "dependencies": {
-    "bun-workspaces": "1.0.0"
+    "bun-workspaces": "1.3.0"
   },
   "scripts": {
     "workspace-script": "echo root-workspace-script"

@@ -1,8 +1,8 @@
 import { $ } from "bun";
 
-await $`bun run build`;
+await $`bun --silent run build`;
 
-await $`bun run init-dev-project`;
+await $`bun --silent run init-dev-project`;
 
 // Prefer cursor, fall back to code
 const editor =

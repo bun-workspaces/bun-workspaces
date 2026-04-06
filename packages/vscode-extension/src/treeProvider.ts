@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 
-export class WorkspacesTreeProvider implements vscode.TreeDataProvider<WorkspaceTreeItem> {
+export class BwTreeProvider implements vscode.TreeDataProvider<BwTreeItem> {
   private readonly _onDidChangeTreeData = new vscode.EventEmitter<
-    WorkspaceTreeItem | undefined | null
+    BwTreeItem | undefined | null
   >();
 
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
@@ -11,19 +11,17 @@ export class WorkspacesTreeProvider implements vscode.TreeDataProvider<Workspace
     this._onDidChangeTreeData.fire();
   }
 
-  getTreeItem(element: WorkspaceTreeItem): vscode.TreeItem {
+  getTreeItem(element: BwTreeItem): vscode.TreeItem {
     return element;
   }
 
-  getChildren(
-    _element?: WorkspaceTreeItem,
-  ): vscode.ProviderResult<WorkspaceTreeItem[]> {
+  getChildren(_element?: BwTreeItem): vscode.ProviderResult<BwTreeItem[]> {
     // TODO: use createFileSystemProject() to get workspaces
     return [];
   }
 }
 
-export class WorkspaceTreeItem extends vscode.TreeItem {
+export class BwTreeItem extends vscode.TreeItem {
   constructor(
     label: string,
     collapsibleState: vscode.TreeItemCollapsibleState,

@@ -63,6 +63,10 @@ export const createTsFileExample = (
   return `
 import { ${target === "workspace" ? "defineWorkspaceConfig" : "defineRootConfig"} } from "bun-workspaces/config";
 
-export default ${target === "workspace" ? "defineWorkspaceConfig" : "defineRootConfig"}(${JSON.stringify(config, null, 2)});
+export default ${target === "workspace" ? "defineWorkspaceConfig" : "defineRootConfig"}(${JSON.stringify(
+    config,
+    null,
+    2,
+  ).replace(/(?<!: )"((\w|\s|\d)+)"/g, "$1")});
 `.trim();
 };

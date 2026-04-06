@@ -25,10 +25,6 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "packages/bun-workspaces/tests/fixtures/testProjects/workspaceConfig/jsConfig/applications/application-a/bw.workspace.js"
-  ],
+  "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", "dist/**/*"]
 }

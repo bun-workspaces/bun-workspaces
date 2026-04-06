@@ -100,6 +100,7 @@ export default defineConfig({
     cleanUrls: true,
   },
   builderConfig: {
+    dev: {},
     plugins: [pluginSvgr()],
     resolve: {
       alias: {

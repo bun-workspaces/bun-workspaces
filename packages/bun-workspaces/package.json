@@ -1,7 +1,25 @@
 {
   "name": "bun-workspaces",
   "version": "1.2.0",
-  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./cli": "./src/cli/index.ts",
+    "./config": "./src/config/public.ts",
+    "./src/config": "./src/config/index.ts",
+    "./src/runScript": "./src/runScript/index.ts",
+    "./src/cli/cliGlobalOptions": "./src/cli/cliGlobalOptions.ts",
+    "./src/workspaces/workspacePattern": "./src/workspaces/workspacePattern.ts",
+    "./src/internal/core": "./src/internal/core/index.ts",
+    "./src/config/util": "./src/config/util/index.ts",
+    "./src/project": "./src/project/index.ts",
+    "./src/runScript/scriptRuntimeMetadata": "./src/runScript/scriptRuntimeMetadata.ts",
+    "./src/config/workspaceConfig/workspaceConfigLocation": "./src/config/workspaceConfig/workspaceConfigLocation.ts",
+    "./src/config/userEnvVars": "./src/config/userEnvVars/index.ts",
+    "./src/config/configTypes": "./src/config/configTypes.ts",
+    "./src/config/util/configLocation": "./src/config/util/configLocation.ts",
+    "./src/config/rootConfig/rootConfigLocation": "./src/config/rootConfig/rootConfigLocation.ts",
+    "./src/cli/globalOptions/globalOptionsConfig": "./src/cli/globalOptions/globalOptionsConfig.ts"
+  },
   "private": true,
   "description": "A monorepo management tool for Bun, with a CLI and API to enhance Bun's native workspaces.",
   "homepage": "https://bunworkspaces.com",
@@ -47,8 +65,7 @@
     "@types/shell-quote": "^1.7.5",
     "@xterm/headless": "^6.0.0",
     "ajv": "^8.17.1",
-    "ajv-cli": "^5.0.0",
-    "bun-workspaces": "file:."
+    "ajv-cli": "^5.0.0"
   },
   "dependencies": {
     "commander": "^12.1.0",

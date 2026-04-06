@@ -24,7 +24,7 @@ const createDesiredPackageJson = () => {
     name,
     version,
     description,
-    main,
+    exports,
     homepage,
     repository,
     bin,
@@ -43,8 +43,12 @@ const createDesiredPackageJson = () => {
     version,
     description,
     license,
-    main: main.replace(".ts", ".mjs"),
-    types: main.replace(".ts", ".d.ts"),
+    exports: Object.fromEntries(
+      Object.entries(exports)
+        .map(([key, value]) => [key, (value as string).replace(".ts", ".mjs")])
+        .filter(([key]) => !key.startsWith("./src")),
+    ),
+    types: exports["."].replace(".ts", ".d.ts"),
     homepage,
     repository,
     keywords,

@@ -2,7 +2,7 @@ import {
   getCliGlobalOptionConfig,
   type CliGlobalOptionConfig,
   type CliGlobalOptionName,
-} from "bun-workspaces/src/cli/";
+} from "bun-workspaces/cli";
 import type { CliGlobalOptionContent, CliGlobalOptionInfo } from "./cliOption";
 
 const defineOptionContent = (

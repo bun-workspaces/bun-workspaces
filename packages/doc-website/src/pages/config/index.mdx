@@ -8,11 +8,11 @@ outline: true
 footer: false
 ---
 
-import { ROOT_CONFIG_FILE_NAME, ROOT_CONFIG_PACKAGE_JSON_KEY } from "bun-workspaces/src/config";
-import {  exampleWorkspaceConfigArray, exampleWorkspaceConfigSimple, createPackageJsonExample } from "../../lib/config/exampleConfig";
+import { ROOT_CONFIG_FILE_NAME, ROOT_CONFIG_PACKAGE_JSON_KEY } from "bun-workspaces/src/config/rootConfig/rootConfigLocation";
+import {  exampleWorkspaceConfigArray, exampleWorkspaceConfigSimple, createTsFileExample, exampleRootConfigSimple1 } from "../../lib/config/exampleConfig";
 import { SyntaxHighlighter } from "../../lib/util/highlight";
-// import { WORKSPACE_CONFIG_FILE_PATH, WORKSPACE_CONFIG_PACKAGE_JSON_KEY} from 'bun-workspaces/src/config/workspaceConfig/workspaceConfigLocation'
-import { CONFIG_LOCATION_TYPES, createConfigLocationPath } from 'bun-workspaces/src/config/util'
+import { WORKSPACE_CONFIG_FILE_NAME, WORKSPACE_CONFIG_PACKAGE_JSON_KEY} from 'bun-workspaces/src/config/workspaceConfig/workspaceConfigLocation'
+import { CONFIG_LOCATION_TYPES, createConfigLocationPath } from 'bun-workspaces/src/config/util/configLocation'
 import { ROOT_CONFIG_TYPE } from "../../lib/config/configTypes";
 import { ConfigHeader } from "../../lib/config/ConfigHeader";
 
@@ -20,9 +20,40 @@ import { ConfigHeader } from "../../lib/config/ConfigHeader";
 
 <ConfigHeader activeHref="home" divider/>
 
-Configuration is set by JSON. JSONC is supported in either `.jsonc` or `.json` files.
+Configuration is set by JSON. Config files can be written in TypeScript, JavaScript, JSON, or JSONC.
 
-See the [Root Configuration](/config/root) and [Workspace Configuration](/config/workspace) for more information on the different types of configuration.
+See [Root Configuration](/config/root) and [Workspace Configuration](/config/workspace) for more information on the purpose of each field.
+
+## Quick Examples
+
+### Root Configuration
+
+The [root configuration](/config/root) is for project-wide settings.
+
+A root configuration in JSON, at <code>path/to/your/project/{createConfigLocationPath("jsonFile", ROOT_CONFIG_FILE_NAME, ROOT_CONFIG_PACKAGE_JSON_KEY)}</code>:
+<SyntaxHighlighter language="json">
+  {JSON.stringify((exampleRootConfigSimple1), null, 2)}
+</SyntaxHighlighter>
+
+A root configuration in TypeScript, at <code>path/to/your/project/{createConfigLocationPath("tsFile", ROOT_CONFIG_FILE_NAME, ROOT_CONFIG_PACKAGE_JSON_KEY)}</code>:
+<SyntaxHighlighter language="typescript">
+  {createTsFileExample(exampleRootConfigSimple1, "root")}
+</SyntaxHighlighter>
+
+### Workspace Configuration
+
+[Workspace configurations](/config/workspace) are defined in the directory of the workspace.
+
+
+A workspace configuration in JSON, at <code>path/to/project/workspace/{createConfigLocationPath("jsonFile", WORKSPACE_CONFIG_FILE_NAME, WORKSPACE_CONFIG_PACKAGE_JSON_KEY)}</code>:
+<SyntaxHighlighter language="json">
+  {JSON.stringify((exampleWorkspaceConfigSimple), null, 2)}
+</SyntaxHighlighter>
+
+A workspace configuration in TypeScript, at <code>path/to/project/workspace/{createConfigLocationPath("tsFile", WORKSPACE_CONFIG_FILE_NAME, WORKSPACE_CONFIG_PACKAGE_JSON_KEY)}</code>:
+<SyntaxHighlighter language="typescript">
+  {createTsFileExample(exampleWorkspaceConfigSimple, "workspace")}
+</SyntaxHighlighter>
 
 ## Precedence (Resolution Order)
 

@@ -17,7 +17,7 @@ export const executeValidator = <Config extends object>(
   if (!isValid) {
     const multipleErrors = (validator.errors?.length ?? 0) > 1;
     throw new ErrorType(
-      `Root config is invalid:${multipleErrors ? "\n" : ""}${validator.errors
+      `${name.replace("Config", "")} config is invalid:${multipleErrors ? "\n" : ""}${validator.errors
         ?.map(
           (error) =>
             `${multipleErrors ? "  " : " "}${`config${

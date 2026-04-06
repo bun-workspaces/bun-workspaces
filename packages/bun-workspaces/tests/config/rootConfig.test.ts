@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import { createFileSystemProject } from "../../src";
-import { loadRootConfig } from "../../src/config/rootConfig";
+import { LOAD_CONFIG_ERRORS } from "../../src/config";
+import {
+  loadRootConfig,
+  ROOT_CONFIG_ERRORS,
+} from "../../src/config/rootConfig";
 import { determineParallelMax, resolveScriptShell } from "../../src/runScript";
 import { getProjectRoot } from "../fixtures/testProjects";
 
@@ -74,6 +78,62 @@ describe("Test project root config", () => {
       expect(() =>
         loadRootConfig(getProjectRoot("rootConfigInvalidType")),
       ).toThrow("Root config is invalid: config.defaults must be object");
+    });
+  });
+
+  describe("TypeScript config files", () => {
+    test("ts config loads as expected", () => {
+      expect(loadRootConfig(getProjectRoot("rootConfigTsFile"))).toEqual({
+        defaults: {
+          parallelMax: 3,
+          shell: "bun",
+          includeRootWorkspace: false,
+        },
+      });
+    });
+
+    test("ts empty config throws expected error", () => {
+      expect(() => loadRootConfig(getProjectRoot("rootConfigTsEmpty"))).toThrow(
+        LOAD_CONFIG_ERRORS.NoExportError,
+      );
+    });
+
+    test("ts invalid config throws expected error", () => {
+      expect(() =>
+        loadRootConfig(getProjectRoot("rootConfigTsInvalid")),
+      ).toThrow(ROOT_CONFIG_ERRORS.InvalidRootConfig);
+    });
+
+    test("ts config loads with precedence over js, jsonc, json, and package.json", () => {
+      expect(loadRootConfig(getProjectRoot("rootConfigTsPrecedence"))).toEqual({
+        defaults: {
+          parallelMax: 3,
+          shell: resolveScriptShell("default"),
+          includeRootWorkspace: false,
+        },
+      });
+    });
+  });
+
+  describe("JavaScript config files", () => {
+    test("js config loads as expected", () => {
+      expect(loadRootConfig(getProjectRoot("rootConfigJsFile"))).toEqual({
+        defaults: {
+          parallelMax: 4,
+          shell: "bun",
+          includeRootWorkspace: false,
+        },
+      });
+    });
+
+    test("js config loads with precedence over jsonc, json, and package.json", () => {
+      expect(loadRootConfig(getProjectRoot("rootConfigJsPrecedence"))).toEqual({
+        defaults: {
+          parallelMax: 4,
+          shell: resolveScriptShell("default"),
+          includeRootWorkspace: false,
+        },
+      });
     });
   });
 

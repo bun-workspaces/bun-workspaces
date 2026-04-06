@@ -30,14 +30,29 @@ export const validateWorkspaceConfig = (config: WorkspaceConfig) =>
   executeValidator(
     validate as unknown as AjvSchemaValidator<WorkspaceConfig>,
     "WorkspaceConfig",
-    config,
+    {
+      ...config,
+    },
     WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig,
   );
 
 export const resolveWorkspaceConfig = (
   config: WorkspaceConfig,
 ): ResolvedWorkspaceConfig => {
+  if (Array.isArray((config as ResolvedWorkspaceConfig).aliases)) {
+    const { aliases, ...rest } = config as ResolvedWorkspaceConfig;
+    validateWorkspaceConfig({
+      ...rest,
+      alias: aliases,
+    });
+    return {
+      aliases,
+      ...rest,
+    };
+  }
+
   validateWorkspaceConfig(config);
+
   return {
     aliases: resolveOptionalArray(config.alias ?? []),
     scripts: config.scripts ?? {},

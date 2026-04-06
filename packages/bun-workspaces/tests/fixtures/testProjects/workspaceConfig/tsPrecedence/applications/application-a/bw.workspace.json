@@ -1,0 +1,8 @@
+{
+  "alias": "appA-json",
+  "scripts": {
+    "all-workspaces": {
+      "order": 1
+    }
+  }
+}

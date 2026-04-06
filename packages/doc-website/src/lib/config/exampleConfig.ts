@@ -55,3 +55,18 @@ export const createPackageJsonExample = (
       : ROOT_CONFIG_PACKAGE_JSON_KEY]: config,
   };
 };
+
+export const createTsFileExample = (
+  config: object,
+  target: "workspace" | "root",
+) => {
+  return `
+import { ${target === "workspace" ? "defineWorkspaceConfig" : "defineRootConfig"} } from "bun-workspaces/config";
+
+export default ${target === "workspace" ? "defineWorkspaceConfig" : "defineRootConfig"}(${JSON.stringify(
+    config,
+    null,
+    2,
+  ).replace(/(?<!: )"((\w|\s|\d)+)"/g, "$1")});
+`.trim();
+};

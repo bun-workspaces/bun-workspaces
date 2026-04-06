@@ -1,4 +1,4 @@
-import { type CliGlobalOptionName } from "bun-workspaces/src/cli";
+import { type CliGlobalOptionName } from "bun-workspaces/cli";
 import { useId } from "react";
 import { SyntaxHighlighter } from "../util/highlight";
 import { getCliGlobalOptionContent } from "./cliGlobalOptions";

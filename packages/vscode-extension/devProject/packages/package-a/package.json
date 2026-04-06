@@ -1,0 +1,6 @@
+{
+  "name": "package-a",
+  "scripts": {
+    "echo": "echo 'package-a'"
+  }
+}

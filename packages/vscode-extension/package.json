@@ -1,0 +1,62 @@
+{
+  "name": "bun-workspaces-vscode",
+  "displayName": "Bun Workspaces",
+  "description": "Manage Bun monorepo workspaces from VS Code and Cursor",
+  "version": "0.0.1",
+  "private": true,
+  "publisher": "bun-workspaces",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "workspaceContains:bun.lock"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "bunWorkspaces.workspacesView",
+          "name": "Bun Workspaces",
+          "when": "bunWorkspaces.active"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "bunWorkspaces.refreshWorkspaces",
+        "title": "Refresh",
+        "category": "Bun Workspaces",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "bunWorkspaces.runScript",
+        "title": "Run Script",
+        "category": "Bun Workspaces"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "bunWorkspaces.refreshWorkspaces",
+          "when": "view == bunWorkspaces.workspacesView",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "bun run scripts/build.ts",
+    "init-dev-project": "echo '[Dev Project] Initializing...' && cd devProject && bun install && echo '[Dev Project] Initialized'",
+    "dev": "bun run scripts/dev.ts",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.90.0",
+    "vscode": "^1.1.37"
+  }
+}

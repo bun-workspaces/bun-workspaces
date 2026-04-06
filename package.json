@@ -27,6 +27,8 @@
     "sandbox:cli:release": "bun --cwd=./packages/sandbox run cli:release",
     "sandbox:api:local": "bw run api:local sandbox -o plain --",
     "sandbox:api:release": "bw run api:release sandbox -o plain --",
+    "vsc:build": "bw run build vsc -o plain --",
+    "vsc:dev": "bw run dev vsc -o plain --",
     "lint": "bw run lint -P --",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

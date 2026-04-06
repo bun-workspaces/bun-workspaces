@@ -1,0 +1,6 @@
+{
+  "name": "vscode-extension-dev-project",
+  "workspaces": [
+    "packages/*"
+  ]
+}

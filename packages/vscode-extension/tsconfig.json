@@ -3,9 +3,9 @@
   "compilerOptions": {
     "lib": ["ES2022"],
     "target": "ES2022",
-    "module": "CommonJS",
+    "module": "Preserve",
     "verbatimModuleSyntax": false,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "strict": true,
     "skipLibCheck": true,
     "noEmit": true,

@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { BwTreeProvider } from "./treeProvider";
+import { BwTreeProvider } from "./tree";
 
 export const activate = (context: vscode.ExtensionContext): void => {
   const workspacesTreeProvider = new BwTreeProvider();

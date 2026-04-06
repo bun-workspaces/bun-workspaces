@@ -38,6 +38,16 @@
         "category": "Bun Workspaces"
       }
     ],
+    "configuration": {
+      "title": "Bun Workspaces",
+      "properties": {
+        "bunWorkspaces.bunPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the bun binary. Leave empty to auto-detect from common locations."
+        }
+      }
+    },
     "menus": {
       "view/title": [
         {

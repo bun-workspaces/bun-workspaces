@@ -13,8 +13,11 @@ import { ROOT_CONFIG_ERRORS } from "./errors";
 
 export type RootConfig = {
   defaults?: {
+    /** The maximum number of scripts that can run in parallel. (default: "auto") */
     parallelMax?: ParallelMaxValue;
+    /** The shell to use for inline scripts. (default: "bun") */
     shell?: ShellOption;
+    /** Whether to include the root workspace in the workspaces list by default. (default: false) */
     includeRootWorkspace?: boolean;
   };
 };

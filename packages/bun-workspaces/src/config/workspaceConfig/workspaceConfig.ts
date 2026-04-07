@@ -6,6 +6,7 @@ import { WORKSPACE_CONFIG_ERRORS } from "./errors";
 
 const validate = _validate as unknown as AjvSchemaValidator<WorkspaceConfig>;
 
+/** Configuration that applies to a specific package.json script */
 export type ScriptConfig = {
   /**
    * The order in which the script should be executed.
@@ -18,6 +19,7 @@ export type ScriptConfig = {
   order?: number;
 };
 
+/** Configuration that applies to a specific workspace */
 export type WorkspaceConfig = {
   /**
    * An alias or list of aliases for the workspace.

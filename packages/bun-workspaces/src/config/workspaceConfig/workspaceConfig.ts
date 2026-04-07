@@ -31,8 +31,8 @@ export type WorkspaceConfig = {
   /**
    * Tags for the workspace.
    *
-   * These can be used to reference workspace groups
-   * that share a common tag.
+   * These can be used to group workspaces
+   * by a common tag.
    */
   tags?: string[];
   /**

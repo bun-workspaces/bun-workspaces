@@ -74,6 +74,22 @@ export abstract class ProjectBase implements Project {
       );
   }
 
+  mapTagsToWorkspaces(): Record<string, Workspace[]> {
+    const tags = new Set<string>();
+    this.workspaces.forEach((workspace) => {
+      workspace.tags.forEach((tag) => tags.add(tag));
+    });
+    return Array.from(tags)
+      .sort((a, b) => a.localeCompare(b))
+      .reduce(
+        (acc, tag) => ({
+          ...acc,
+          [tag]: this.findWorkspacesByTag(tag),
+        }),
+        {} as Record<string, Workspace[]>,
+      );
+  }
+
   findWorkspaceByName(workspaceName: string): Workspace | null {
     validateJSTypes(
       { workspaceName: { value: workspaceName, typeofName: "string" } },

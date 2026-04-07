@@ -131,6 +131,42 @@ export const CLI_COMMANDS_CONFIG = {
       },
     },
   },
+  listTags: {
+    command: "list-tags",
+    isGlobal: false,
+    aliases: ["ls-tags"],
+    description: "List all tags available with their workspaces",
+    options: {
+      nameOnly: {
+        flags: ["-n", "--name-only"],
+        description: "Only show tag names",
+      },
+      json: {
+        flags: JSON_FLAGS,
+        description: "Output as JSON",
+      },
+      pretty: {
+        flags: ["-p", "--pretty"],
+        description: "Pretty print JSON",
+      },
+    },
+  },
+  tagInfo: {
+    command: "tag-info <tag>",
+    isGlobal: false,
+    aliases: [],
+    description: "Show information about a tag",
+    options: {
+      json: {
+        flags: JSON_FLAGS,
+        description: "Output as JSON",
+      },
+      pretty: {
+        flags: ["-p", "--pretty"],
+        description: "Pretty print JSON",
+      },
+    },
+  },
   runScript: {
     command: "run-script [script] [workspacePatterns...]",
     isGlobal: false,

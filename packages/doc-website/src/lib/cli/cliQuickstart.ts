@@ -33,7 +33,7 @@ bw run lint --dep-order
 bw run lint --dep-order --ignore-dep-failure
 
 bw run lint "my-workspace-*" # Run for matching workspace names
-bw run lint "alias:my-alias-pattern-*" "path:my-glob/**/*" # Use matching specifiers
+bw run lint "alias:my-alias-*" "path:my-glob/**/*" "tag:my-tag" # Use matching specifiers
 
 bw run lint --args="--my-appended-args" # Add args to each script call
 bw run lint --args="--my-arg=<workspaceName>" # Use the workspace name in args

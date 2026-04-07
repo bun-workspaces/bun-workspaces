@@ -125,6 +125,46 @@ const CLI_PROJECT_COMMANDS_CONTENT = {
       `bw script-info --json --pretty`,
     ],
   })),
+  listTags: defineCommandContent("listTags", () => ({
+    title: "List Tags",
+    description:
+      "List all tags available with their workspaces. Tags are defined in a workspace's configuration file.",
+    descriptionLinks: {
+      "configuration file": "/config/workspace",
+    },
+    examples: [
+      "# Default output. Shows metadata about tags found in all workspaces",
+      "# Tags are defined in a workspace's configuration file",
+      `bw list-tags`,
+      "",
+      "# Output only the list of tag names",
+      `bw list-tags --name-only`,
+      "",
+      "# Output as JSON",
+      `bw list-tags --json`,
+      "",
+      "# Output as formatted JSON",
+      `bw list-tags --json --pretty`,
+    ],
+  })),
+  tagInfo: defineCommandContent("tagInfo", () => ({
+    title: "Tag Info",
+    description:
+      "Show metadata about a tag. Tags are defined in a workspace's configuration file.",
+    descriptionLinks: {
+      "configuration file": "/config/workspace",
+    },
+    examples: [
+      "# Default output. Shows metadata about a tag",
+      `bw tag-info my-tag`,
+      "",
+      "# Output as JSON",
+      `bw tag-info --json`,
+      "",
+      "# Output as formatted JSON",
+      `bw tag-info --json --pretty`,
+    ],
+  })),
   runScript: defineCommandContent("runScript", () => ({
     title: "Run Script",
     description:

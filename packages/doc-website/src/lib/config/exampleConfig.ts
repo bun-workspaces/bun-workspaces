@@ -23,6 +23,7 @@ export const exampleRootConfigSimple2: RootConfig = {
 
 export const exampleWorkspaceConfigSimple: WorkspaceConfig = {
   alias: "myApp",
+  tags: ["my-tag"],
   scripts: {
     start: {
       order: 10,

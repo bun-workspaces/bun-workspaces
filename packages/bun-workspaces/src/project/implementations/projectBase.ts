@@ -74,6 +74,22 @@ export abstract class ProjectBase implements Project {
       );
   }
 
+  mapTagsToWorkspaces(): Record<string, Workspace[]> {
+    const tags = new Set<string>();
+    this.workspaces.forEach((workspace) => {
+      workspace.tags.forEach((tag) => tags.add(tag));
+    });
+    return Array.from(tags)
+      .sort((a, b) => a.localeCompare(b))
+      .reduce(
+        (acc, tag) => ({
+          ...acc,
+          [tag]: this.listWorkspacesWithTag(tag),
+        }),
+        {} as Record<string, Workspace[]>,
+      );
+  }
+
   findWorkspaceByName(workspaceName: string): Workspace | null {
     validateJSTypes(
       { workspaceName: { value: workspaceName, typeofName: "string" } },
@@ -105,6 +121,10 @@ export abstract class ProjectBase implements Project {
       this.findWorkspaceByName(nameOrAlias) ||
       this.findWorkspaceByAlias(nameOrAlias)
     );
+  }
+
+  listWorkspacesWithTag(tag: string): Workspace[] {
+    return this.workspaces.filter((workspace) => workspace.tags.includes(tag));
   }
 
   findWorkspacesByPattern(...workspacePatterns: string[]): Workspace[] {

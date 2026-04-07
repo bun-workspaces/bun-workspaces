@@ -10,8 +10,10 @@ export type Workspace = {
   matchPattern: string;
   /** The scripts available in package.json */
   scripts: string[];
-  /** Aliases assigned to the workspace via the `"workspaceAliases"` field in the config */
+  /** Aliases assigned via the `"alias"` field in the workspace's config */
   aliases: string[];
+  /** Tags assigned via the `"tags"` field in the workspace's config */
+  tags: string[];
   /** Names of workspaces that this workspace depends on */
   dependencies: string[];
   /** Names of workspaces that depend on this workspace */

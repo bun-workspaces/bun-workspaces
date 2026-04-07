@@ -21,6 +21,7 @@ Patterns can include a wildcard to match only by workspace name: `my-workspace-*
 - Alias pattern specifier: `alias:my-alias-*`.
 - Path pattern specifier (supports glob): `path:packages/**/*`.
 - Name pattern specifier: `name:my-workspace-*`.
+- Tag pattern specifier: `tag:my-tag`.
 - Special root workspace selector: `@root`.
 
 ### Script runtime metadata
@@ -219,9 +220,14 @@ Explicit arguments to the CLI or API take precedence over all other settings.
 
 Optional config can be placed in `bw.workspace.jsonc`/`bw.workspace.json` in a workspace directory.
 
+Aliases must be unique to each workspace and to not clash with other workspaces' `package.json` names.
+
+Tags are strings to group workspaces together that therefore don't need to be unique to each workspace.
+
 ```jsonc
 {
   "alias": "my-alias", // can be array
+  "tags": ["my-tag"],
   "scripts": {
     "lint": {
       // set optional sorting order for scripts

@@ -41,6 +41,12 @@ export const WORKSPACE_PATTERN_CONTENT: Record<
       `bw run lint "path:packages/**/*"`,
     ],
   },
+  tag: {
+    title: "Tag",
+    description:
+      "Match workspaces that have the given tag. Tags are defined in a workspace's configuration file.",
+    cliExamples: ['bw ls "tag:my-tag"', `bw run lint "tag:my-tag-pattern-*"`],
+  },
 };
 
 export const WORKSPACE_PATTERN_API_EXAMPLE = `
@@ -51,7 +57,8 @@ const project = createFileSystemProject();
 project.findWorkspacesByPattern(
   "name:my-workspace-*", 
   "alias:my-alias-*", 
-  "path:packages/**/*"
+  "path:packages/**/*",
+  "tag:my-tag",
 );
 
 project.runScriptAcrossWorkspaces({
@@ -59,6 +66,7 @@ project.runScriptAcrossWorkspaces({
     "name:my-workspace-*",
     "alias:my-alias-*",
     "path:packages/**/*",
+    "tag:my-tag",
   ],
   script: "bun lint",
 });

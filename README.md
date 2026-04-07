@@ -80,7 +80,7 @@ bw run lint --dep-order
 bw run lint --dep-order --ignore-dep-failure
 
 bw run lint "my-workspace-*" # Run for matching workspace names
-bw run lint "alias:my-alias-pattern-*" "path:my-glob/**/*" # Use matching specifiers
+bw run lint "alias:my-alias-*" "path:my-glob/**/*" "tag:my-tag" # Use matching specifiers
 
 bw run lint --args="--my-appended-args" # Add args to each script call
 bw run lint --args="--my-arg=<workspaceName>" # Use the workspace name in args
@@ -106,6 +106,9 @@ bw run my-script --output-style=prefixed
 # Use the plain output style (no workspace prefixes)
 bw run my-script --output-style=plain
 
+# Silence all output of the run command
+bw --log-level=silent run my-script --output-style=none
+
 # Show usage (you can pass --help to any command)
 bw help
 bw --help
@@ -118,7 +121,7 @@ bw --cwd=/path/to/your/project ls
 bw --cwd=/path/to/your/project run my-script
 
 # Pass --log-level to any command (debug, info, warn, error, or silent)
-bw --log-level=silent run my-script
+bw --log-level=debug ls
 ```
 
 ### API

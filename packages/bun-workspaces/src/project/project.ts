@@ -67,12 +67,16 @@ export interface Project {
   findWorkspaceByAlias(alias: string): Workspace | null;
   /** Find a workspace that matches a workspace's name or an alias if no name matches. */
   findWorkspaceByNameOrAlias(nameOrAlias: string): Workspace | null;
+  /** Find a list of workspaces that have a given tag in their configuration */
+  listWorkspacesWithTag(tag: string): Workspace[];
   /** Accepts a wildcard pattern for finding a list of workspaces by their name*/
   findWorkspacesByPattern(workspacePattern: string): Workspace[];
   /** Get an array of all workspaces that have a given script in their package.json */
   listWorkspacesWithScript(scriptName: string): Workspace[];
   /** Get a mapping of all scripts to the workspaces that have them in their package.json */
   mapScriptsToWorkspaces(): Record<string, WorkspaceScriptMetadata>;
+  /** Get a mapping of all tags to the workspaces that have them in their config */
+  mapTagsToWorkspaces(): Record<string, Workspace[]>;
   /** Create metadata that can be used to run a workspace's script */
   createScriptCommand(
     options: CreateProjectScriptCommandOptions,

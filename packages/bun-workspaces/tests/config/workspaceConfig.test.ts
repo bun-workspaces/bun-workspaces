@@ -33,6 +33,7 @@ describe("workspace config", () => {
       );
       expect(config).toEqual({
         aliases: ["appA"],
+        tags: [],
         scripts: {
           "all-workspaces": {
             order: 1,
@@ -50,6 +51,7 @@ describe("workspace config", () => {
       );
       expect(config).toEqual({
         aliases: ["appB_file"],
+        tags: [],
         scripts: {
           "all-workspaces": {
             order: 0,
@@ -70,6 +72,7 @@ describe("workspace config", () => {
       );
       expect(config).toEqual({
         aliases: ["libA_file"],
+        tags: [],
         scripts: {},
       });
     });
@@ -83,6 +86,7 @@ describe("workspace config", () => {
       );
       expect(config).toEqual({
         aliases: ["libB", "libB2"],
+        tags: [],
         scripts: {
           "all-workspaces": {
             order: 100,
@@ -103,6 +107,7 @@ describe("workspace config", () => {
       );
       expect(config).toEqual({
         aliases: [],
+        tags: [],
         scripts: {},
       });
     });
@@ -116,6 +121,7 @@ describe("workspace config", () => {
       );
       expect(config).toEqual({
         aliases: [],
+        tags: [],
         scripts: {},
       });
     });
@@ -129,6 +135,7 @@ describe("workspace config", () => {
       );
       expect(config).toEqual({
         aliases: ["appA"],
+        tags: [],
         scripts: {
           "all-workspaces": {
             order: 1,
@@ -305,6 +312,7 @@ describe("workspace config", () => {
             matchPattern: "applications/*",
             scripts: ["a-workspaces", "all-workspaces", "application-a"],
             aliases: ["appA"],
+            tags: [],
           }),
           makeTestWorkspace({
             name: "application-1b",
@@ -312,6 +320,7 @@ describe("workspace config", () => {
             matchPattern: "applications/*",
             scripts: ["all-workspaces", "application-b", "b-workspaces"],
             aliases: ["appB"],
+            tags: [],
           }),
           makeTestWorkspace({
             name: "library-1a",
@@ -319,6 +328,7 @@ describe("workspace config", () => {
             matchPattern: "libraries/*",
             scripts: ["a-workspaces", "all-workspaces", "library-a"],
             aliases: ["libA", "libA2"],
+            tags: [],
           }),
           makeTestWorkspace({
             name: "library-1b",
@@ -326,6 +336,7 @@ describe("workspace config", () => {
             matchPattern: "libraries/*",
             scripts: ["all-workspaces", "b-workspaces", "library-b"],
             aliases: ["libB"],
+            tags: [],
           }),
         ],
         workspaceMap: {
@@ -359,6 +370,7 @@ describe("workspace config", () => {
             matchPattern: "applications/*",
             scripts: ["a-workspaces", "all-workspaces", "application-a"],
             aliases: ["appA"],
+            tags: [],
           }),
           makeTestWorkspace({
             name: "application-1b",
@@ -366,6 +378,7 @@ describe("workspace config", () => {
             matchPattern: "applications/*",
             scripts: ["all-workspaces", "application-b", "b-workspaces"],
             aliases: ["appB", "appB2"],
+            tags: [],
           }),
           makeTestWorkspace({
             name: "library-1a",
@@ -373,6 +386,7 @@ describe("workspace config", () => {
             matchPattern: "libraries/*",
             scripts: ["a-workspaces", "all-workspaces", "library-a"],
             aliases: ["libA", "libA2"],
+            tags: [],
           }),
           makeTestWorkspace({
             name: "library-1b",
@@ -380,6 +394,7 @@ describe("workspace config", () => {
             matchPattern: "libraries/*",
             scripts: ["all-workspaces", "b-workspaces", "library-b"],
             aliases: ["libB"],
+            tags: [],
           }),
         ],
         workspaceMap: {
@@ -407,6 +422,7 @@ describe("workspace config", () => {
             matchPattern: "applications/*",
             scripts: ["a-workspaces", "all-workspaces", "application-a"],
             aliases: ["appA"],
+            tags: [],
           }),
           makeTestWorkspace({
             name: "application-1b",
@@ -414,6 +430,7 @@ describe("workspace config", () => {
             matchPattern: "applications/*",
             scripts: ["all-workspaces", "application-b", "b-workspaces"],
             aliases: ["appB_file"],
+            tags: [],
           }),
           makeTestWorkspace({
             name: "application-1c",
@@ -427,6 +444,7 @@ describe("workspace config", () => {
             matchPattern: "libraries/*",
             scripts: ["a-workspaces", "all-workspaces", "library-a"],
             aliases: ["libA_file"],
+            tags: [],
           }),
           makeTestWorkspace({
             name: "library-1b",
@@ -434,6 +452,7 @@ describe("workspace config", () => {
             matchPattern: "libraries/*",
             scripts: ["all-workspaces", "b-workspaces", "library-b"],
             aliases: ["libB", "libB2"],
+            tags: [],
           }),
           makeTestWorkspace({
             name: "library-1c",
@@ -497,6 +516,7 @@ describe("workspace config", () => {
           matchPattern: "applications/*",
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
           aliases: ["appA"],
+          tags: [],
         }),
         makeTestWorkspace({
           name: "application-1b",
@@ -504,6 +524,7 @@ describe("workspace config", () => {
           matchPattern: "applications/*",
           scripts: ["all-workspaces", "application-b", "b-workspaces"],
           aliases: ["appB"],
+          tags: [],
         }),
       ]);
       expect(workspaceMap).toEqual({
@@ -554,6 +575,7 @@ describe("workspace config", () => {
           matchPattern: "applications/*",
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
           aliases: ["appA-ts"],
+          tags: [],
         }),
         makeTestWorkspace({
           name: "application-1b",
@@ -561,6 +583,7 @@ describe("workspace config", () => {
           matchPattern: "applications/*",
           scripts: ["all-workspaces", "application-b", "b-workspaces"],
           aliases: ["appB-ts"],
+          tags: [],
         }),
       ]);
       expect(workspaceMap).toEqual({
@@ -597,6 +620,7 @@ describe("workspace config", () => {
           matchPattern: "applications/*",
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
           aliases: ["appA"],
+          tags: [],
         }),
         makeTestWorkspace({
           name: "application-1b",
@@ -604,6 +628,7 @@ describe("workspace config", () => {
           matchPattern: "applications/*",
           scripts: ["all-workspaces", "application-b", "b-workspaces"],
           aliases: ["appB"],
+          tags: [],
         }),
       ]);
       expect(workspaceMap).toEqual({
@@ -638,6 +663,7 @@ describe("workspace config", () => {
           matchPattern: "applications/*",
           scripts: ["a-workspaces", "all-workspaces", "application-a"],
           aliases: ["appA-js"],
+          tags: [],
         }),
         makeTestWorkspace({
           name: "application-1b",
@@ -645,6 +671,7 @@ describe("workspace config", () => {
           matchPattern: "applications/*",
           scripts: ["all-workspaces", "application-b", "b-workspaces"],
           aliases: ["appB-js"],
+          tags: [],
         }),
       ]);
       expect(workspaceMap).toEqual({

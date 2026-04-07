@@ -1,10 +1,7 @@
-export type { ResolvedRootConfig } from "./rootConfig";
-export type { ResolvedWorkspaceConfig } from "./workspaceConfig";
-export {
-  type RootConfig,
-  defineRootConfig,
-} from "./rootConfig/defineRootConfig";
-export {
-  type WorkspaceConfig,
-  defineWorkspaceConfig,
-} from "./workspaceConfig/defineWorkspaceConfig";
+export type { RootConfig, ResolvedRootConfig } from "./rootConfig";
+export type {
+  WorkspaceConfig,
+  ResolvedWorkspaceConfig,
+} from "./workspaceConfig";
+export { defineRootConfig } from "./rootConfig/defineRootConfig";
+export { defineWorkspaceConfig } from "./workspaceConfig/defineWorkspaceConfig";

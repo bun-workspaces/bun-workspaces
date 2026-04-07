@@ -51,6 +51,7 @@ const TEST_PROJECTS = {
   workspaceConfigTsEmpty: "workspaceConfig/tsEmpty",
   workspaceConfigJsPrecedence: "workspaceConfig/jsPrecedence",
   workspaceConfigJsConfig: "workspaceConfig/jsConfig",
+  workspaceTags: "workspaceTags",
   rootConfigTsFile: "rootConfig/tsFile",
   rootConfigTsEmpty: "rootConfig/tsEmpty",
   rootConfigTsInvalid: "rootConfig/tsInvalid",

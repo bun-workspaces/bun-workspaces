@@ -18,7 +18,8 @@ const onSearch: OnSearch = async (query, defaultResult) => {
   for (const command of getCliCommandsContent()) {
     if (
       matches(command.title, query) ||
-      matches(command.description, query) ||
+      (typeof command.description === "string" &&
+        matches(command.description, query)) ||
       matches(command.command, query) ||
       matches(command.commandName, query) ||
       Object.values(command.options).some(
@@ -45,7 +46,8 @@ const onSearch: OnSearch = async (query, defaultResult) => {
       matches(globalOption.mainOption, query) ||
       matches(globalOption.shortOption, query) ||
       matches(globalOption.defaultValue, query) ||
-      matches(globalOption.description, query)
+      (typeof globalOption.description === "string" &&
+        matches(globalOption.description, query))
     ) {
       defaultResult[0].result?.push({
         statement:

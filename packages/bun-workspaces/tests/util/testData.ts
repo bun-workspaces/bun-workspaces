@@ -9,6 +9,7 @@ export const makeTestWorkspace = (data: Partial<Workspace>): Workspace => ({
   matchPattern: "",
   scripts: [],
   aliases: [],
+  tags: [],
   dependencies: [],
   dependents: [],
   ...data,

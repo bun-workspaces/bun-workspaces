@@ -8,6 +8,8 @@ import {
   scriptInfo,
   listWorkspaces,
   doctor,
+  listTags,
+  tagInfo,
 } from "./handleSimpleCommands";
 import { runScript } from "./runScript";
 
@@ -20,5 +22,7 @@ export const defineProjectCommands = (context: ProjectCommandContext) => {
   listScripts(context);
   workspaceInfo(context);
   scriptInfo(context);
+  listTags(context);
+  tagInfo(context);
   runScript(context);
 };

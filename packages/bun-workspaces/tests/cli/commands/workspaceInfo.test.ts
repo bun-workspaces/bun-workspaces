@@ -11,6 +11,7 @@ const APPLICATION_1A_PLAIN_OUTPUT = `Workspace: application-1a
  - Path: ${withWindowsPath("applications/applicationA")}
  - Glob Match: applications/*
  - Scripts: a-workspaces, all-workspaces, application-a
+ - Tags: 
  - Dependencies: 
  - Dependents: `;
 
@@ -21,6 +22,7 @@ const EXPECTED_APPLICATION_1A_JSON = {
   path: withWindowsPath("applications/applicationA"),
   scripts: ["a-workspaces", "all-workspaces", "application-a"],
   aliases: ["appA"],
+  tags: [],
   dependencies: [],
   dependents: [],
 };
@@ -106,6 +108,7 @@ describe("Workspace Info", () => {
  - Path: ${withWindowsPath("packages/d-depends-e")}
  - Glob Match: packages/*
  - Scripts: test-script
+ - Tags: 
  - Dependencies: e
  - Dependents: b-depends-cd`,
     );

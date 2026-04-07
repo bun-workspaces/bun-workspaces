@@ -1,5 +1,5 @@
-import { type FromSchema } from "json-schema-to-ts";
 import validate from "../../internal/generated/ajv/validateRootConfig";
+import type { ShellOption } from "../../project";
 import {
   determineParallelMax,
   resolveScriptShell,
@@ -10,9 +10,17 @@ import { getUserEnvVar } from "../userEnvVars";
 import type { AjvSchemaValidator } from "../util/ajvTypes";
 import { executeValidator } from "../util/validateConfig";
 import { ROOT_CONFIG_ERRORS } from "./errors";
-import type { ROOT_CONFIG_JSON_SCHEMA } from "./rootConfigSchema";
 
-export type RootConfig = FromSchema<typeof ROOT_CONFIG_JSON_SCHEMA>;
+export type RootConfig = {
+  defaults?: {
+    /** The maximum number of scripts that can run in parallel. (default: "auto") */
+    parallelMax?: ParallelMaxValue;
+    /** The shell to use for inline scripts. (default: "bun") */
+    shell?: ShellOption;
+    /** Whether to include the root workspace in the workspaces list by default. (default: false) */
+    includeRootWorkspace?: boolean;
+  };
+};
 
 export type ResolvedRootConfig = {
   defaults: {

@@ -1,30 +1,51 @@
-import { type FromSchema } from "json-schema-to-ts";
 import { resolveOptionalArray } from "../../internal/core";
 import _validate from "../../internal/generated/ajv/validateWorkspaceConfig";
 import type { AjvSchemaValidator } from "../util/ajvTypes";
 import { executeValidator } from "../util/validateConfig";
 import { WORKSPACE_CONFIG_ERRORS } from "./errors";
-import type { WORKSPACE_CONFIG_JSON_SCHEMA } from "./workspaceConfigSchema";
 
 const validate = _validate as unknown as AjvSchemaValidator<WorkspaceConfig>;
 
-/**
- * @todo json-schema-to-ts doesn't support the union type for alias as it is,
- * but AJV error messaging for oneOf is not good
- */
-export type WorkspaceConfig = Omit<
-  FromSchema<typeof WORKSPACE_CONFIG_JSON_SCHEMA>,
-  "alias"
-> & {
+/** Configuration that applies to a specific package.json script */
+export type ScriptConfig = {
+  /**
+   * The order in which the script should be executed.
+   *
+   * This is used to sort the scripts in the workspace.
+   *
+   * Scripts with no `order` set will be executed in alphanumerical order
+   * of their relative path from the project root.
+   */
+  order?: number;
+};
+
+/** Configuration that applies to a specific workspace */
+export type WorkspaceConfig = {
+  /**
+   * An alias or list of aliases for the workspace.
+   *
+   * These must be unique to other workspaces' aliases
+   * and package.json names.
+   */
   alias?: string | string[];
+  /**
+   * Tags for the workspace.
+   *
+   * These can be used to group workspaces
+   * by a common tag.
+   */
+  tags?: string[];
+  /**
+   * Configuration that maps to a script name in the workspace's package.json.
+   */
+  scripts?: Record<string, ScriptConfig>;
 };
 
 export type ResolvedWorkspaceConfig = {
   aliases: string[];
+  tags: string[];
   scripts: Record<string, ScriptConfig>;
 };
-
-export type ScriptConfig = NonNullable<WorkspaceConfig["scripts"]>[string];
 
 export const validateWorkspaceConfig = (config: WorkspaceConfig) =>
   executeValidator(
@@ -55,6 +76,7 @@ export const resolveWorkspaceConfig = (
 
   return {
     aliases: resolveOptionalArray(config.alias ?? []),
+    tags: config.tags ?? [],
     scripts: config.scripts ?? {},
   };
 };

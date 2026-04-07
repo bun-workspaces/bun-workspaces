@@ -57,7 +57,8 @@ const project = createFileSystemProject();
 project.findWorkspacesByPattern(
   "name:my-workspace-*", 
   "alias:my-alias-*", 
-  "path:packages/**/*"
+  "path:packages/**/*",
+  "tag:my-tag",
 );
 
 project.runScriptAcrossWorkspaces({
@@ -65,6 +66,7 @@ project.runScriptAcrossWorkspaces({
     "name:my-workspace-*",
     "alias:my-alias-*",
     "path:packages/**/*",
+    "tag:my-tag",
   ],
   script: "bun lint",
 });

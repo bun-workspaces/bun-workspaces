@@ -11,6 +11,7 @@ const APPLICATION_1A_PLAIN_OUTPUT = `Workspace: application-1a
  - Path: ${withWindowsPath("applications/applicationA")}
  - Glob Match: applications/*
  - Scripts: a-workspaces, all-workspaces, application-a
+ - Tags: 
  - Dependencies: 
  - Dependents: `;
 
@@ -107,6 +108,7 @@ describe("Workspace Info", () => {
  - Path: ${withWindowsPath("packages/d-depends-e")}
  - Glob Match: packages/*
  - Scripts: test-script
+ - Tags: 
  - Dependencies: e
  - Dependents: b-depends-cd`,
     );

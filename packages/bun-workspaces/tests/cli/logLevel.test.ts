@@ -34,6 +34,7 @@ describe("CLI Log Level", () => {
  - Path: ${withWindowsPath("applications/applicationA")}
  - Glob Match: applications/*
  - Scripts: a-workspaces, all-workspaces, application-a
+ - Tags: 
  - Dependencies: 
  - Dependents: `,
       );
@@ -65,6 +66,7 @@ describe("CLI Log Level", () => {
  - Path: ${withWindowsPath("applications/applicationA")}
  - Glob Match: applications/*
  - Scripts: a-workspaces, all-workspaces, application-a
+ - Tags: 
  - Dependencies: 
  - Dependents: `,
       );
@@ -200,6 +202,7 @@ application-a`,
  - Path: ${withWindowsPath("applications/applicationA")}
  - Glob Match: applications/*
  - Scripts: a-workspaces, all-workspaces, application-a
+ - Tags: 
  - Dependencies: 
  - Dependents: `,
       );
@@ -231,6 +234,7 @@ application-a`,
  - Path: ${withWindowsPath("applications/applicationA")}
  - Glob Match: applications/*
  - Scripts: a-workspaces, all-workspaces, application-a
+ - Tags: 
  - Dependencies: 
  - Dependents: `,
       );

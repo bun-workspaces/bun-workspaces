@@ -17,6 +17,7 @@ describe("CLI Workspace Aliases", () => {
  - Path: ${withWindowsPath("applications/application-a")}
  - Glob Match: applications/*
  - Scripts: a-workspaces, all-workspaces, application-a
+ - Tags: 
  - Dependencies: 
  - Dependents: `,
       );
@@ -35,6 +36,7 @@ describe("CLI Workspace Aliases", () => {
  - Path: ${withWindowsPath("applications/application-b")}
  - Glob Match: applications/*
  - Scripts: all-workspaces, application-b, b-workspaces
+ - Tags: 
  - Dependencies: 
  - Dependents: `,
       );
@@ -53,6 +55,7 @@ describe("CLI Workspace Aliases", () => {
  - Path: ${withWindowsPath("applications/application-a")}
  - Glob Match: applications/*
  - Scripts: a-workspaces, all-workspaces, application-a
+ - Tags: 
  - Dependencies: 
  - Dependents: `,
       );

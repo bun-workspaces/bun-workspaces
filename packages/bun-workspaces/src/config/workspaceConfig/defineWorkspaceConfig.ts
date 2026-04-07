@@ -1,6 +1,5 @@
 import {
   resolveWorkspaceConfig,
-  type WorkspaceConfig as JSONSchemaWorkspaceConfig,
   type ResolvedWorkspaceConfig,
   type WorkspaceConfig,
 } from "./workspaceConfig";
@@ -13,7 +12,7 @@ export const defineWorkspaceConfig = (
     return resolveWorkspaceConfig({
       ...rest,
       alias: aliases,
-    } satisfies JSONSchemaWorkspaceConfig);
+    });
   }
-  return resolveWorkspaceConfig(config satisfies JSONSchemaWorkspaceConfig);
+  return resolveWorkspaceConfig(config);
 };

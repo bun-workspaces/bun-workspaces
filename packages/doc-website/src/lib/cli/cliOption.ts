@@ -12,6 +12,9 @@ export type CliCommandInfo = {
   title: string;
   description: string;
   examples: string[];
+  descriptionLinks?: {
+    [key: string]: string;
+  };
 };
 
 export type CliGlobalOptionInfo = {

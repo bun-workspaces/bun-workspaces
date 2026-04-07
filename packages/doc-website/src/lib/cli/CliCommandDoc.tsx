@@ -1,8 +1,62 @@
 import { type CliCommandName } from "bun-workspaces/cli";
-import { useId } from "react";
+import { type ReactNode, useId } from "react";
+import { Link } from "rspress/theme";
 import { SyntaxHighlighter } from "../util/highlight";
 import { getCliCommandContent } from "./cliCommandOptions";
 import { getCommandId } from "./searchIds";
+
+const renderDescription = ({
+  description,
+  descriptionLinks,
+}: {
+  description: string;
+  descriptionLinks?: Record<string, string>;
+}) => {
+  if (!descriptionLinks || Object.keys(descriptionLinks).length === 0) {
+    return description;
+  }
+
+  const nodes: ReactNode[] = [description];
+  let linkIndex = 0;
+
+  for (const [linkText, href] of Object.entries(descriptionLinks)) {
+    const nextNodes: ReactNode[] = [];
+
+    for (const node of nodes) {
+      if (typeof node !== "string") {
+        nextNodes.push(node);
+        continue;
+      }
+
+      const segments = node.split(linkText);
+      if (segments.length === 1) {
+        nextNodes.push(node);
+        continue;
+      }
+
+      segments.forEach((segment, index) => {
+        if (segment) {
+          nextNodes.push(segment);
+        }
+        if (index < segments.length - 1) {
+          nextNodes.push(
+            <Link
+              key={`description-link-${linkIndex++}`}
+              href={href}
+              className="inline-link"
+            >
+              {linkText}
+            </Link>
+          );
+        }
+      });
+    }
+
+    nodes.splice(0, nodes.length, ...nextNodes);
+  }
+
+  return nodes;
+};
 
 export const CliCommandDoc = ({ command }: { command: CliCommandName }) => {
   const content = getCliCommandContent(command);
@@ -28,7 +82,12 @@ export const CliCommandDoc = ({ command }: { command: CliCommandName }) => {
       ) : (
         ""
       )}
-      <p style={{ marginBottom: "0" }}>{content.description}</p>
+      <p style={{ marginBottom: "0" }}>
+        {renderDescription({
+          description: content.description,
+          descriptionLinks: content.descriptionLinks,
+        })}
+      </p>
 
       {Object.values(content.options)?.length ? (
         <div style={{ marginTop: "1rem" }}>

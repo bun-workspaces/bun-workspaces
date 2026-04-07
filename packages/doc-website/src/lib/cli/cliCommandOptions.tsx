@@ -8,14 +8,14 @@ import type { CliCommandContent, CliCommandInfo } from "./cliOption";
 const defineCommandContent = (
   commandName: CliCommandName,
   factory: (
-    optionConfig: CliCommandConfig,
-  ) => Omit<CliCommandInfo, "commandName">,
+    optionConfig: CliCommandConfig
+  ) => Omit<CliCommandInfo, "commandName">
 ): CliCommandContent => {
   const config = getCliCommandConfig(commandName);
   const content = factory(config);
 
   const exampleLines = content.examples.filter(
-    (example) => example.trim() && !example.match(/^\s*#/),
+    (example) => example.trim() && !example.match(/^\s*#/)
   );
 
   const getMainFlag = (flags: string[]) => {
@@ -29,7 +29,7 @@ const defineCommandContent = (
       !exampleLines.find((line) => line.includes(getMainFlag(option.flags)))
     ) {
       throw new Error(
-        `Expected an example to include ${getMainFlag(option.flags)}`,
+        `Expected an example to include ${getMainFlag(option.flags)}`
       );
     }
   }
@@ -38,7 +38,7 @@ const defineCommandContent = (
     !exampleLines.find((line) => {
       // line that uses no flags
       return Object.values(config.options).every(
-        (option) => !line.includes(getMainFlag(option.flags)),
+        (option) => !line.includes(getMainFlag(option.flags))
       );
     })
   ) {
@@ -123,6 +123,46 @@ const CLI_PROJECT_COMMANDS_CONTENT = {
       "",
       "# Output as formatted JSON",
       `bw script-info --json --pretty`,
+    ],
+  })),
+  listTags: defineCommandContent("listTags", () => ({
+    title: "List Tags",
+    description:
+      "List all tags available with their workspaces. Tags are defined in a workspace's configuration file.",
+    descriptionLinks: {
+      "configuration file": "/config/workspace",
+    },
+    examples: [
+      "# Default output. Shows metadata about tags found in all workspaces",
+      "# Tags are defined in a workspace's configuration file",
+      `bw list-tags`,
+      "",
+      "# Output only the list of tag names",
+      `bw list-tags --name-only`,
+      "",
+      "# Output as JSON",
+      `bw list-tags --json`,
+      "",
+      "# Output as formatted JSON",
+      `bw list-tags --json --pretty`,
+    ],
+  })),
+  tagInfo: defineCommandContent("tagInfo", () => ({
+    title: "Tag Info",
+    description:
+      "Show metadata about a tag. Tags are defined in a workspace's configuration file.",
+    descriptionLinks: {
+      "configuration file": "/config/workspace",
+    },
+    examples: [
+      "# Default output. Shows metadata about a tag",
+      `bw tag-info my-tag`,
+      "",
+      "# Output as JSON",
+      `bw tag-info --json`,
+      "",
+      "# Output as formatted JSON",
+      `bw tag-info --json --pretty`,
     ],
   })),
   runScript: defineCommandContent("runScript", () => ({

@@ -45,7 +45,16 @@ const createDesiredPackageJson = () => {
     license,
     exports: Object.fromEntries(
       Object.entries(exports)
-        .map(([key, value]) => [key, (value as string).replace(".ts", ".mjs")])
+        .map(
+          ([key, value]) =>
+            [
+              key,
+              {
+                types: (value as string).replace(".ts", ".d.ts"),
+                default: (value as string).replace(".ts", ".mjs"),
+              },
+            ] as const,
+        )
         .filter(([key]) => !key.startsWith("./src")),
     ),
     types: exports["."].replace(".ts", ".d.ts"),

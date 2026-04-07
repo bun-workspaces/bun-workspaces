@@ -21,6 +21,7 @@ const EXPECTED_APPLICATION_1A_JSON = {
   path: withWindowsPath("applications/applicationA"),
   scripts: ["a-workspaces", "all-workspaces", "application-a"],
   aliases: ["appA"],
+  tags: [],
   dependencies: [],
   dependents: [],
 };

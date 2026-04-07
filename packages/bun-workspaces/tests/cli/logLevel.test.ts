@@ -18,6 +18,7 @@ const expectedOneWorkspaceJson = () => ({
   path: expectedOneWorkspace.path,
   scripts: expectedOneWorkspace.scripts,
   aliases: expectedOneWorkspace.aliases,
+  tags: expectedOneWorkspace.tags,
   dependencies: expectedOneWorkspace.dependencies,
   dependents: expectedOneWorkspace.dependents,
 });

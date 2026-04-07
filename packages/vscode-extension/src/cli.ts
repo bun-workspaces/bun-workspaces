@@ -1,7 +1,8 @@
-import * as cp from "child_process";
+import childProcess from "child_process";
 import type { Workspace } from "bun-workspaces";
 import * as vscode from "vscode";
 import { resolveBunPath } from "./bunPath";
+import { BW_VERSION } from "./bwVersion";
 
 export type { Workspace };
 
@@ -14,15 +15,21 @@ type SpawnResult = {
 const spawnBw = (args: string[], cwd: string): Promise<SpawnResult> =>
   new Promise((resolve) => {
     const bunPath = resolveBunPath();
-    const proc = cp.spawn(bunPath, ["x", "bun-workspaces", ...args], { cwd });
+    const proc = childProcess.spawn(
+      bunPath,
+      ["x", "bun-workspaces@" + BW_VERSION, ...args],
+      {
+        cwd,
+      },
+    );
 
     let stdout = "";
     let stderr = "";
 
-    proc.stdout.on("data", (chunk: Buffer) => {
+    proc.stdout.on("data", (chunk) => {
       stdout += chunk.toString();
     });
-    proc.stderr.on("data", (chunk: Buffer) => {
+    proc.stderr.on("data", (chunk) => {
       stderr += chunk.toString();
     });
     proc.on("close", (exitCode) => {

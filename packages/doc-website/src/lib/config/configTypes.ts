@@ -40,6 +40,13 @@ export const ROOT_CONFIG_TYPE =
 
 const workspaceDisplay: ValueToDisplay<RequiredDeep<WorkspaceConfig>> = {
   alias: "string | string[]",
+  tags: {
+    array: true,
+    item: {
+      primitive: true,
+      types: ["string"],
+    },
+  },
   scripts: {
     "[script: string]": {
       order: {

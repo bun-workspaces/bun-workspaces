@@ -1,3 +1,5 @@
 import { defineRootConfig } from "bun-workspaces/config";
 
-export default defineRootConfig({});
+export default defineRootConfig({
+  defaults: {},
+});

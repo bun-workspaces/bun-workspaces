@@ -18,7 +18,9 @@ import {
   FIND_WORKSPACE_BY_NAME_OR_ALIAS_EXAMPLE, 
   FIND_WORKSPACES_BY_PATTERN_EXAMPLE,
   LIST_WORKSPACES_WITH_SCRIPT_EXAMPLE,
+  LIST_WORKSPACES_WITH_TAG_EXAMPLE,
   MAP_SCRIPTS_TO_WORKSPACES_EXAMPLE,
+  MAP_TAGS_TO_WORKSPACES_EXAMPLE,
   RUN_SCRIPT_ACROSS_WORKSPACES_EXAMPLE,
   RUN_WORKSPACE_SCRIPT_EXAMPLE,
   SET_LOG_LEVEL_EXAMPLE,
@@ -149,12 +151,32 @@ Get an array of all [Workspaces](/api/reference#workspace) that have a given scr
 
 <hr className="reference-divider"/>
 
+### .listWorkspacesWithTag
+`listWorkspacesWithTag(tag: string): Workspace[]`
+
+Get an array of all [Workspaces](/api/reference#workspace) that have a given tag. Tags are defined in a workspace's [configuration](/config/workspace).
+<SyntaxHighlighter language="typescript">
+{LIST_WORKSPACES_WITH_TAG_EXAMPLE}
+</SyntaxHighlighter>
+
+<hr className="reference-divider"/>
+
 ### .mapScriptsToWorkspaces
 `mapScriptsToWorkspaces(): Record<string, WorkspaceScriptMetadata>`
 
 Get a mapping of all project script names to the [Workspaces](/api/reference#workspace) that have them in their package.json "scripts" field.
 <SyntaxHighlighter language="typescript">
 {MAP_SCRIPTS_TO_WORKSPACES_EXAMPLE}
+</SyntaxHighlighter>
+
+<hr className="reference-divider"/>
+
+### .mapTagsToWorkspaces
+`mapTagsToWorkspaces(): Record<string, Workspace[]>`
+
+Get a mapping of all tags to the [Workspaces](/api/reference#workspace) that have them in their respective [workspace configuration](/config/workspace).
+<SyntaxHighlighter language="typescript">
+{MAP_TAGS_TO_WORKSPACES_EXAMPLE}
 </SyntaxHighlighter>
 
 <hr className="reference-divider"/>

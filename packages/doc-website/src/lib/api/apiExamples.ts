@@ -64,6 +64,11 @@ export const LIST_WORKSPACES_WITH_SCRIPT_EXAMPLE = `
 // in their package.json "scripts" field
 const workspaces = project.listWorkspacesWithScript("my-script"));`.trim();
 
+export const LIST_WORKSPACES_WITH_TAG_EXAMPLE = `
+// An array of workspaces that have the tag "my-tag".
+// Tags are defined in a workspace's configuration file.
+const workspaces = project.listWorkspacesWithTag("my-tag");`.trim();
+
 export const MAP_SCRIPTS_TO_WORKSPACES_EXAMPLE = `
 // An object mapping all script names to the workspaces 
 // that have them in their package.json "scripts" field
@@ -71,6 +76,15 @@ const scriptMap = project.mapScriptsToWorkspaces();
 
 // An array of Workspaces
 const { workspaces } = scriptMap["my-script"];
+`.trim();
+
+export const MAP_TAGS_TO_WORKSPACES_EXAMPLE = `
+// An object mapping all tags to the workspaces 
+// that have them in their respective configuration.
+const tagMap = project.mapTagsToWorkspaces();
+
+// An array of Workspaces
+const { workspaces } = tagMap["my-tag"];
 `.trim();
 
 export const CREATE_SCRIPT_COMMAND_EXAMPLE = `
@@ -113,6 +127,9 @@ export const WORKSPACE_EXAMPLE = `
 
   // Aliases defined in workspace configuration (see the Configuration section)
   aliases: ["my-alias"],
+
+  // Tags defined in workspace configuration (see the Configuration section)
+  tags: ["my-tag"],
 
   // Names of other workspaces that this workspace depends on
   dependencies: ["my-dependency"],

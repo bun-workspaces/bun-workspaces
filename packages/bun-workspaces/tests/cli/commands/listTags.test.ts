@@ -130,7 +130,12 @@ describe("List Tags", () => {
 
     test("--name-only --json --pretty outputs pretty tag names", async () => {
       const { run } = setupCliTest({ testProject: "workspaceTags" });
-      const result = await run("list-tags", "--name-only", "--json", "--pretty");
+      const result = await run(
+        "list-tags",
+        "--name-only",
+        "--json",
+        "--pretty",
+      );
       expect(result.stderr.raw).toBeEmpty();
       expect(result.exitCode).toBe(0);
       assertOutputMatches(

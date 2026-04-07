@@ -46,7 +46,7 @@ const renderDescription = ({
               className="inline-link"
             >
               {linkText}
-            </Link>
+            </Link>,
           );
         }
       });

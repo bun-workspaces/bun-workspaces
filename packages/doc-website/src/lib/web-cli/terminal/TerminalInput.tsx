@@ -80,7 +80,7 @@ export const TerminalInput = () => {
 
   const setNewPlaceholderExample = useCallback(() => {
     setPlaceholderText(
-      ` Enter a command (like: ${getRandomExampleCommand(placeholderText).replace("bw ", "")})`
+      ` Enter a command (like: ${getRandomExampleCommand(placeholderText).replace("bw ", "")})`,
     );
   }, [placeholderText]);
 
@@ -131,7 +131,7 @@ export const TerminalInput = () => {
       setInput(e.target.value);
       resetHistoryIndex();
     },
-    [resetHistoryIndex, setInput]
+    [resetHistoryIndex, setInput],
   );
 
   const handleKeyDown = useCallback(
@@ -150,7 +150,7 @@ export const TerminalInput = () => {
         }
       }
     },
-    [incrementHistoryIndex, decrementHistoryIndex, historyIndex, setInput]
+    [incrementHistoryIndex, decrementHistoryIndex, historyIndex, setInput],
   );
 
   const handleSubmit = useCallback(
@@ -165,7 +165,7 @@ export const TerminalInput = () => {
       setInput("");
       inputRef.current?.focus();
     },
-    [disabled, invokeWebCli, input, argv, addCommandToHistory, setInput]
+    [disabled, invokeWebCli, input, argv, addCommandToHistory, setInput],
   );
 
   return (

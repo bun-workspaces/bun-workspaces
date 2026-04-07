@@ -16,7 +16,7 @@ import {
   useWebCliInput,
   useWebCliTerminalSelection,
 } from "../util/invokeWebCli";
-import { EXAMPLE_COMMANDS, type ExampleCommand } from "./exampleCommands";
+import { EXAMPLE_COMMANDS } from "./exampleCommands";
 import { WEB_CLI_INPUT_ID } from "./ids";
 import { TerminalExamples } from "./TerminalExamples";
 
@@ -49,7 +49,7 @@ const parseArgv = (input: string) => {
 
 const getRandomExampleCommand = (previous?: string) => {
   let newExample = previous;
-  while (newExample === previous) {
+  while (newExample === previous || (newExample?.length ?? 0) >= 40) {
     newExample =
       EXAMPLE_COMMANDS[Math.floor(Math.random() * EXAMPLE_COMMANDS.length)]
         .command;
@@ -80,7 +80,7 @@ export const TerminalInput = () => {
 
   const setNewPlaceholderExample = useCallback(() => {
     setPlaceholderText(
-      ` Enter a command (like: ${getRandomExampleCommand(placeholderText).replace("bw ", "")})`,
+      ` Enter a command (like: ${getRandomExampleCommand(placeholderText).replace("bw ", "")})`
     );
   }, [placeholderText]);
 
@@ -131,7 +131,7 @@ export const TerminalInput = () => {
       setInput(e.target.value);
       resetHistoryIndex();
     },
-    [resetHistoryIndex, setInput],
+    [resetHistoryIndex, setInput]
   );
 
   const handleKeyDown = useCallback(
@@ -150,7 +150,7 @@ export const TerminalInput = () => {
         }
       }
     },
-    [incrementHistoryIndex, decrementHistoryIndex, historyIndex, setInput],
+    [incrementHistoryIndex, decrementHistoryIndex, historyIndex, setInput]
   );
 
   const handleSubmit = useCallback(
@@ -165,7 +165,7 @@ export const TerminalInput = () => {
       setInput("");
       inputRef.current?.focus();
     },
-    [disabled, invokeWebCli, input, argv, addCommandToHistory, setInput],
+    [disabled, invokeWebCli, input, argv, addCommandToHistory, setInput]
   );
 
   return (

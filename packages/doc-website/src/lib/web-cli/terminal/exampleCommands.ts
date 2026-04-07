@@ -32,6 +32,16 @@ export const EXAMPLE_COMMANDS = [
     command: "info fe",
   },
   {
+    name: "List Tags",
+    description: "List all tags available with their workspaces",
+    command: "list-tags",
+  },
+  {
+    name: "Tag Info",
+    description: "Show metadata about a tag",
+    command: "tag-info application",
+  },
+  {
     name: "Run Script - type-check all workspaces",
     description: "Run the type-check script for all workspaces in parallel",
     command: "run type-check",
@@ -58,6 +68,12 @@ export const EXAMPLE_COMMANDS = [
     description:
       "Run the type-check script for specific workspaces using aliases",
     command: "run type-check fe be",
+  },
+  {
+    name: "Run Script - build workspaces by tag",
+    description:
+      "Run the build script for workspaces with the 'application' tag",
+    command: 'run build "tag:application"',
   },
   {
     name: "Run Script - Run builds sequentially",

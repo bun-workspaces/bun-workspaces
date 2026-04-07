@@ -333,6 +333,7 @@ button.web-cli-tree-node:hover {
   border-radius: 0 !important;
   border-bottom-right-radius: 0.5rem !important;
   overflow: visible !important;
+  font-size: 0.9rem;
 }
 
 .web-cli-tree-note {

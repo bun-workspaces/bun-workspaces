@@ -84,7 +84,7 @@ export abstract class ProjectBase implements Project {
       .reduce(
         (acc, tag) => ({
           ...acc,
-          [tag]: this.findWorkspacesByTag(tag),
+          [tag]: this.listWorkspacesWithTag(tag),
         }),
         {} as Record<string, Workspace[]>,
       );
@@ -123,7 +123,7 @@ export abstract class ProjectBase implements Project {
     );
   }
 
-  findWorkspacesByTag(tag: string): Workspace[] {
+  listWorkspacesWithTag(tag: string): Workspace[] {
     return this.workspaces.filter((workspace) => workspace.tags.includes(tag));
   }
 

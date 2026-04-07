@@ -43,10 +43,10 @@ const libB = makeTestWorkspace({
 });
 
 describe("Workspace tags - API", () => {
-  describe("findWorkspacesByTag", () => {
+  describe("listWorkspacesWithTag", () => {
     test("returns all workspaces with the given tag", () => {
       const project = makeProject();
-      expect(project.findWorkspacesByTag("workspace")).toEqual([
+      expect(project.listWorkspacesWithTag("workspace")).toEqual([
         appA,
         appB,
         libA,
@@ -56,13 +56,13 @@ describe("Workspace tags - API", () => {
 
     test("returns subset of workspaces sharing a tag", () => {
       const project = makeProject();
-      expect(project.findWorkspacesByTag("app")).toEqual([appA, appB]);
-      expect(project.findWorkspacesByTag("lib")).toEqual([libA, libB]);
+      expect(project.listWorkspacesWithTag("app")).toEqual([appA, appB]);
+      expect(project.listWorkspacesWithTag("lib")).toEqual([libA, libB]);
     });
 
     test("returns empty array for unknown tag", () => {
       const project = makeProject();
-      expect(project.findWorkspacesByTag("nonexistent")).toEqual([]);
+      expect(project.listWorkspacesWithTag("nonexistent")).toEqual([]);
     });
   });
 

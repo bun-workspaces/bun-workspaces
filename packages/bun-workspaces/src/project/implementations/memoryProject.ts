@@ -113,6 +113,7 @@ class _MemoryProject extends ProjectBase implements Project {
         path: "",
         scripts: [],
         aliases: [],
+        tags: [],
         dependencies: [],
         dependents: [],
       } as Workspace);

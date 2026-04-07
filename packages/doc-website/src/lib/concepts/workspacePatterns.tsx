@@ -44,7 +44,7 @@ export const WORKSPACE_PATTERN_CONTENT: Record<
   tag: {
     title: "Tag",
     description:
-      "Match by the tag assigned to the workspace. Tags are defined in a workspace's configuration file.",
+      "Match workspaces that have the given tag. Tags are defined in a workspace's configuration file.",
     cliExamples: ['bw ls "tag:my-tag"', `bw run lint "tag:my-tag-pattern-*"`],
   },
 };

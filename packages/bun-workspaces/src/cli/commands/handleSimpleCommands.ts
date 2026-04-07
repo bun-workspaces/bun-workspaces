@@ -214,3 +214,71 @@ export const scriptInfo = handleProjectCommand(
     );
   },
 );
+
+export const listTags = handleProjectCommand(
+  "listTags",
+  (
+    { project },
+    options: { nameOnly: boolean; json: boolean; pretty: boolean },
+  ) => {
+    logger.debug(`Options: ${JSON.stringify(options)}`);
+    const tagMap = project.mapTagsToWorkspaces();
+    const tags = Object.entries(tagMap).map(([tag, workspaces]) => ({
+      tag,
+      workspaces: workspaces.map(({ name }) => name),
+    }));
+
+    const lines: string[] = [];
+
+    if (!Object.keys(tagMap).length && !options.nameOnly) {
+      logger.info("No tags found");
+      return;
+    }
+
+    if (options.json) {
+      lines.push(
+        ...createJsonLines(
+          options.nameOnly ? tags.map(({ tag }) => tag) : tags,
+          options,
+        ),
+      );
+    } else {
+      tags.forEach(({ tag, workspaces }) => {
+        if (options.nameOnly) {
+          lines.push(tag);
+        } else {
+          lines.push(
+            `Tag: ${tag}\n${workspaces.map((name) => ` - ${name}`).join("\n")}`,
+          );
+        }
+      });
+    }
+
+    if (lines.length) commandOutputLogger.info(lines.join("\n"));
+  },
+);
+
+export const tagInfo = handleProjectCommand(
+  "tagInfo",
+  ({ project }, tag: string, options: { json: boolean; pretty: boolean }) => {
+    logger.debug(`Options: ${JSON.stringify(options)}`);
+    const tagMap = project.mapTagsToWorkspaces();
+    const tagMetadata = tagMap[tag];
+
+    if (!tagMetadata) {
+      logger.error(`Tag not found: ${JSON.stringify(tag)}`);
+      process.exit(1);
+    }
+
+    const tagInfo = {
+      name: tag,
+      workspaces: tagMetadata.map(({ name }) => name),
+    };
+
+    commandOutputLogger.info(
+      options.json
+        ? createJsonLines(tagInfo, options).join("\n")
+        : `Tag: ${tagInfo.name}\n${tagInfo.workspaces.map((name) => ` - ${name}`).join("\n")}`,
+    );
+  },
+);

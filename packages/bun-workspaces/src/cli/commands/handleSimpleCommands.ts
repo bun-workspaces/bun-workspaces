@@ -230,11 +230,6 @@ export const listTags = handleProjectCommand(
 
     const lines: string[] = [];
 
-    if (!Object.keys(tagMap).length && !options.nameOnly) {
-      logger.info("No tags found");
-      return;
-    }
-
     if (options.json) {
       lines.push(
         ...createJsonLines(
@@ -243,6 +238,11 @@ export const listTags = handleProjectCommand(
         ),
       );
     } else {
+      if (!Object.keys(tagMap).length && !options.nameOnly) {
+        logger.info("No tags found");
+        return;
+      }
+
       tags.forEach(({ tag, workspaces }) => {
         if (options.nameOnly) {
           lines.push(tag);

@@ -2,13 +2,8 @@ import {
   resolveWorkspaceConfig,
   type WorkspaceConfig as JSONSchemaWorkspaceConfig,
   type ResolvedWorkspaceConfig,
-  type ScriptConfig,
+  type WorkspaceConfig,
 } from "./workspaceConfig";
-
-export type WorkspaceConfig = {
-  alias?: string | string[];
-  scripts?: Record<string, ScriptConfig>;
-};
 
 export const defineWorkspaceConfig = (
   config: WorkspaceConfig,

@@ -1,4 +1,5 @@
-import type { JSONSchema } from "json-schema-to-ts";
+import type { JSONSchema, FromSchema } from "json-schema-to-ts";
+import type { WorkspaceConfig } from "./workspaceConfig";
 
 export const WORKSPACE_CONFIG_JSON_SCHEMA = {
   type: "object",
@@ -6,6 +7,11 @@ export const WORKSPACE_CONFIG_JSON_SCHEMA = {
   properties: {
     alias: {
       type: ["string", "array"],
+      items: { type: "string" },
+      uniqueItems: true,
+    },
+    tags: {
+      type: "array",
       items: { type: "string" },
       uniqueItems: true,
     },
@@ -22,4 +28,10 @@ export const WORKSPACE_CONFIG_JSON_SCHEMA = {
       },
     },
   },
-} satisfies JSONSchema;
+} as const satisfies JSONSchema;
+
+type _ValidateWorkspaceConfig<
+  T extends FromSchema<typeof WORKSPACE_CONFIG_JSON_SCHEMA>,
+> = T extends FromSchema<typeof WORKSPACE_CONFIG_JSON_SCHEMA> ? T : never;
+
+let _validateSchemaType: _ValidateWorkspaceConfig<WorkspaceConfig>;

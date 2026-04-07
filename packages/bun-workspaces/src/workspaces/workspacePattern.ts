@@ -2,7 +2,7 @@ import bun from "bun";
 import { defineErrors, createWildcardRegex } from "../internal/core";
 import type { Workspace } from "./workspace";
 
-const TARGETS = ["path", "alias", "name"] as const;
+const TARGETS = ["path", "alias", "name", "tag"] as const;
 
 export const WORKSPACE_PATTERN_ERRORS = defineErrors("InvalidWorkspacePattern");
 
@@ -89,6 +89,13 @@ const PATTERN_TARGET_HANDLERS: Record<
   path: (pattern, workspaces) => {
     return workspaces.filter((workspace) =>
       new bun.Glob(pattern.value).match(workspace.path),
+    );
+  },
+  tag: (pattern, workspaces, wildcardRegex) => {
+    return workspaces.filter((workspace) =>
+      pattern.value.includes("*")
+        ? workspace.tags.some((tag) => wildcardRegex.test(tag))
+        : workspace.tags.includes(pattern.value),
     );
   },
 };

@@ -107,6 +107,10 @@ export abstract class ProjectBase implements Project {
     );
   }
 
+  findWorkspacesByTag(tag: string): Workspace[] {
+    return this.workspaces.filter((workspace) => workspace.tags.includes(tag));
+  }
+
   findWorkspacesByPattern(...workspacePatterns: string[]): Workspace[] {
     const workspaces: Workspace[] = [];
     if (workspacePatterns.includes(ROOT_WORKSPACE_SELECTOR)) {

@@ -138,6 +138,7 @@ export const handleProjectCommand =
           context.middleware.catchError(projectError);
           logger.error(projectError.message);
           process.exit(1);
+          return;
         }
         await handler(context, ...actionArgs);
       },

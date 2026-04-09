@@ -69,6 +69,7 @@ export const listWorkspaces = handleProjectCommand(
         "CLI syntax error: Cannot use both inline workspace patterns and --workspace-patterns|-W option",
       );
       process.exit(1);
+      return;
     }
 
     const patterns = positionalWorkspacePatterns?.length
@@ -169,6 +170,7 @@ export const workspaceInfo = handleProjectCommand(
     if (!workspace) {
       logger.error(`Workspace ${JSON.stringify(workspaceName)} not found`);
       process.exit(1);
+      return;
     }
 
     commandOutputLogger.info(
@@ -194,6 +196,7 @@ export const scriptInfo = handleProjectCommand(
     if (!scriptMetadata) {
       logger.error(`Script not found: ${JSON.stringify(script)}`);
       process.exit(1);
+      return;
     }
 
     commandOutputLogger.info(
@@ -268,6 +271,7 @@ export const tagInfo = handleProjectCommand(
     if (!tagMetadata) {
       logger.error(`Tag not found: ${JSON.stringify(tag)}`);
       process.exit(1);
+      return;
     }
 
     const tagInfo = {

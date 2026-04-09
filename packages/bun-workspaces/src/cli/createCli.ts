@@ -114,6 +114,7 @@ export const createCli = ({
       if (bunVersionError) {
         fatalErrorLogger.error(bunVersionError.message);
         process.exit(1);
+        return;
       }
 
       const { project, projectError } = initializeWithGlobalOptions(

@@ -68,6 +68,7 @@ export const runScript = handleProjectCommand(
         "CLI syntax error: Cannot use both --args and inline script args after --",
       );
       process.exit(1);
+      return;
     }
 
     const scriptArgs = postTerminatorArgs.length
@@ -79,6 +80,7 @@ export const runScript = handleProjectCommand(
         "CLI syntax error: Cannot use both inline workspace patterns and --workspace-patterns|-W option",
       );
       process.exit(1);
+      return;
     }
 
     const workspacePatterns = positionalWorkspacePatterns?.length
@@ -165,6 +167,7 @@ export const runScript = handleProjectCommand(
             `Invalid max grouped lines value: ${options.groupedLines}. Must be a positive number or "all".`,
           );
           process.exit(1);
+          return;
         }
 
         groupedLines = parsedGroupedLines;
@@ -261,12 +264,14 @@ export const runScript = handleProjectCommand(
             `Failed to create JSON output file directory "${jsonOutputDir}": ${error}`,
           );
           process.exit(1);
+          return;
         }
       } else if (fs.statSync(jsonOutputDir).isFile()) {
         logger.error(
           `Given JSON output file directory "${jsonOutputDir}" is an existing file`,
         );
         process.exit(1);
+        return;
       }
 
       // Check if can make file
@@ -278,6 +283,7 @@ export const runScript = handleProjectCommand(
           `Given JSON output file path "${fullOutputPath}" is an existing directory`,
         );
         process.exit(1);
+        return;
       }
 
       try {
@@ -288,12 +294,14 @@ export const runScript = handleProjectCommand(
           `Failed to write JSON output file "${fullOutputPath}": ${error}`,
         );
         process.exit(1);
+        return;
       }
       logger.info(`JSON output written to ${fullOutputPath}`);
     }
 
     if (exitResults.failureCount) {
       process.exit(1);
+      return;
     }
   },
 );

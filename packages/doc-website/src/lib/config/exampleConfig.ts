@@ -34,7 +34,12 @@ export const exampleWorkspaceConfigSimple: WorkspaceConfig = {
   },
   rules: {
     workspaceDependencies: {
-      allowPatterns: ["my-workspace-a", "tag:my-tag", "path:my-path/**/*"],
+      allowPatterns: [
+        "my-workspace-a",
+        "tag:my-tag",
+        "path:my-path/**/*",
+        "not:tag:my-excluded-tag",
+      ],
     },
   },
 };

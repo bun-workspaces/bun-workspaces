@@ -8,6 +8,11 @@ import {
   type JSONPrimitiveToName,
 } from "bun-workspaces/src/internal/core";
 
+type PlainStringValueToDisplay = {
+  value: string;
+  comment?: string;
+};
+
 type PrimitiveToDisplay<P extends JSONPrimitive = JSONPrimitive> = {
   primitive: true;
   types: Array<JSONPrimitiveToName<P>>;
@@ -28,13 +33,13 @@ export type ValueToDisplay<O extends JSONData = JSONData> = O extends JSONObject
           ? ArrayToDisplay<O[key]>
           : O[key] extends JSONObject
             ? ValueToDisplay<O[key]>
-            : string;
+            : PlainStringValueToDisplay;
     }
   : O extends JSONArray
     ? ArrayToDisplay<O>
     : O extends JSONPrimitive
       ? PrimitiveToDisplay<O>
-      : string;
+      : PlainStringValueToDisplay;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const _formatSimpleTypeToDisplay = <V extends ValueToDisplay<any>>(
@@ -48,6 +53,11 @@ const _formatSimpleTypeToDisplay = <V extends ValueToDisplay<any>>(
   if ((value as { primitive: true }).primitive === true) {
     result += (value as { types: string[] }).types.join(" | ");
   } else if (isJSONObject(value)) {
+    if ((value as PlainStringValueToDisplay).value) {
+      result += (value as PlainStringValueToDisplay).value;
+      return result;
+    }
+
     if ((value as ArrayToDisplay).array === true) {
       result +=
         _formatSimpleTypeToDisplay((value as ArrayToDisplay).item, "", level) +
@@ -60,8 +70,10 @@ const _formatSimpleTypeToDisplay = <V extends ValueToDisplay<any>>(
     for (let i = 0; i < entries.length; i++) {
       const [key, val] = entries[i];
       if ((val as { comment: string }).comment) {
-        result +=
-          indent + "  // " + (val as { comment: string }).comment + "\n";
+        result += (val as { comment: string }).comment
+          .split("\n")
+          .map((line) => indent + "  // " + line + "\n")
+          .join("");
       }
       result +=
         nextIndent +
@@ -72,8 +84,6 @@ const _formatSimpleTypeToDisplay = <V extends ValueToDisplay<any>>(
         (i < entries.length - 1 ? ",\n" : "");
     }
     result += "\n" + indent + "}";
-  } else if (typeof value === "string") {
-    result += value;
   }
 
   return result;

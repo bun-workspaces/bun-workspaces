@@ -26,8 +26,8 @@ const useDismissed = create<{
       name: "banner",
       storage: createJSONStorage(() => localStorage),
       version: 1,
-    },
-  ),
+    }
+  )
 );
 
 export const Banner = () => {
@@ -50,13 +50,19 @@ export const Banner = () => {
     <div className="banner">
       <div>
         Hi, I'm Scott, the solo creator and maintainer of this project. I try my
-        best to be responsive to users and keep about a weekly release cadence,
-        with up-to-date tests and docs right away for all changes.
+        best to be responsive to users and keep about a{" "}
+        <Link
+          className="inline-link"
+          href="https://github.com/bun-workspaces/bun-workspaces/releases"
+        >
+          weekly release cadence
+        </Link>{" "}
+        (often more), with up-to-date tests and docs right away for all changes.
       </div>
       <div>
-        This is my favorite project, but it has all been for free so far, so if
-        this tool is useful for you, or you wish to see it continue to grow,
-        consider supporting:
+        This is my favorite project, but it does cost me time, so if this tool
+        is useful for you, or you wish to see it continue to grow, consider
+        supporting:
         <span className="banner-links">
           <Link
             className="banner-link"

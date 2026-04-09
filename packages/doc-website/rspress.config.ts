@@ -3,6 +3,7 @@ import path from "path";
 import { pluginSvgr } from "@rsbuild/plugin-svgr";
 import { defineConfig } from "rspress/config";
 import packageJson from "../bun-workspaces/package.json";
+import { TAG_ICONS } from "./tagIcons";
 
 const REQUIRED_BUN_VERSION = packageJson._bwInternal.bunVersion.libraryConsumer;
 
@@ -270,6 +271,7 @@ export default defineConfig({
         link: "/cli",
         position: "left",
         activeMatch: "/cli|web-cli",
+        tag: TAG_ICONS.cli,
         items: [
           {
             text: "Web CLI (Demo)",
@@ -296,6 +298,7 @@ export default defineConfig({
         link: "/api",
         position: "left",
         activeMatch: "/api",
+        tag: TAG_ICONS.api,
         items: [
           {
             text: "Quick Start",
@@ -313,6 +316,7 @@ export default defineConfig({
         link: "/config",
         position: "left",
         activeMatch: "/config",
+        tag: TAG_ICONS.config,
         items: [
           {
             text: "General",
@@ -337,6 +341,7 @@ export default defineConfig({
         link: "/concepts/glossary",
         position: "left",
         activeMatch: "/concepts",
+        tag: TAG_ICONS.concepts,
         items: [
           {
             text: "Glossary",
@@ -379,6 +384,7 @@ export default defineConfig({
       {
         text: "More",
         position: "left",
+        tag: TAG_ICONS.more,
         items: [
           {
             text: "Blog",
@@ -402,6 +408,7 @@ export default defineConfig({
         text: "Blog",
         position: "right",
         link: BW_BLOG_URL,
+        tag: TAG_ICONS.blog,
       },
     ],
   },

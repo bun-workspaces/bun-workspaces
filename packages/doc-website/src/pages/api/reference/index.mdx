@@ -154,7 +154,7 @@ Get an array of all [Workspaces](/api/reference#workspace) that have a given scr
 ### .listWorkspacesWithTag
 `listWorkspacesWithTag(tag: string): Workspace[]`
 
-Get an array of all [Workspaces](/api/reference#workspace) that have a given tag. Tags are defined in a workspace's [configuration](/config/workspace).
+Get an array of all [Workspaces](/api/reference#workspace) that have a given [tag](config/workspace#tags). Tags are defined in a workspace's [configuration](/config/workspace).
 <SyntaxHighlighter language="typescript">
 {LIST_WORKSPACES_WITH_TAG_EXAMPLE}
 </SyntaxHighlighter>
@@ -174,7 +174,7 @@ Get a mapping of all project script names to the [Workspaces](/api/reference#wor
 ### .mapTagsToWorkspaces
 `mapTagsToWorkspaces(): Record<string, Workspace[]>`
 
-Get a mapping of all tags to the [Workspaces](/api/reference#workspace) that have them in their respective [workspace configuration](/config/workspace).
+Get a mapping of all [tags](config/workspace#tags) to the [Workspaces](/api/reference#workspace) that have them in their respective [workspace configuration](/config/workspace).
 <SyntaxHighlighter language="typescript">
 {MAP_TAGS_TO_WORKSPACES_EXAMPLE}
 </SyntaxHighlighter>

@@ -43,8 +43,19 @@ export const WORKSPACE_PATTERN_CONTENT: Record<
   },
   tag: {
     title: "Tag",
-    description:
-      "Match workspaces that have the given tag. Tags are defined in a workspace's configuration file.",
+    description: (
+      <span>
+        Match workspaces that have the given{" "}
+        <Link href="/config/workspace#tags" className="inline-link">
+          tag
+        </Link>
+        . Tags are defined in a workspace's{" "}
+        <Link href="/config/workspace" className="inline-link">
+          configuration file
+        </Link>
+        .
+      </span>
+    ),
     cliExamples: ['bw ls "tag:my-tag"', `bw run lint "tag:my-tag-pattern-*"`],
   },
 };

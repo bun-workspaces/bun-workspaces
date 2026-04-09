@@ -212,6 +212,19 @@ describe("workspace config", () => {
         }),
       ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
     });
+
+    test("throws when both allowPatterns and denyPatterns are set in workspaceDependencies rule", () => {
+      expect(() =>
+        validateWorkspaceConfig({
+          rules: {
+            workspaceDependencies: {
+              allowPatterns: ["my-workspace"],
+              denyPatterns: ["other-workspace"],
+            },
+          },
+        }),
+      ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
+    });
   });
 
   describe("loadWorkspaceConfig with invalid config", () => {

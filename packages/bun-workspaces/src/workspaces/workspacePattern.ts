@@ -33,7 +33,7 @@ export const parseWorkspacePattern = (pattern: string): WorkspacePattern => {
     return {
       target: "default",
       value: patternValue,
-      isNegated: isNegated,
+      isNegated,
     };
   }
 

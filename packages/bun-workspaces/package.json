@@ -57,8 +57,7 @@
     "build": "bun run scripts/build.ts",
     "build:test": "BUILD_INCLUDE_TESTS=true bun run scripts/build.ts && chmod +x dist.test/bin/cli.js && cd dist.test && bun install && IS_BUILD=true bun run test",
     "build:rslib-only": "rslib build",
-    "type-check": "tsc --noEmit",
-    "prepare": "bun run ajv"
+    "type-check": "tsc --noEmit"
   },
   "devDependencies": {
     "@rslib/core": "^0.15.1",

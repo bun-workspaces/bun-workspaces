@@ -16,6 +16,7 @@
     "bw:lint": "bw run -o plain lint bw --",
     "bw:build": "bw run -o plain build bw --",
     "bw:build:test": "bw run -o plain build:test bw --",
+    "bw:ajv": "cd packages/bun-workspaces && bun run ajv",
     "docs": "bw run -N -W docs",
     "docs:lint": "bw run -o plain lint doc-website --",
     "docs:dev": "bw run -o plain dev doc-website --",
@@ -33,7 +34,8 @@
     "format-check": "prettier --check .",
     "type-check": "bw run type-check -P --",
     "generate-cursor-rules": "bw run generate-cursor-rules scripts -o plain --",
-    "generate-readme": "bw run generate-readme scripts -o plain --"
+    "generate-readme": "bw run generate-readme scripts -o plain --",
+    "prepare": "bun bw:ajv"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

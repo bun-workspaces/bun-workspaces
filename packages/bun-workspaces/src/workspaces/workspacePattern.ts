@@ -14,12 +14,16 @@ export type WorkspacePattern = {
   isNegated: boolean;
 };
 
+export const WORKSPACE_PATTERN_NEGATION_PREFIX = "not:";
+
 export const WORKSPACE_PATTERN_SEPARATOR = ":";
 
 export const parseWorkspacePattern = (pattern: string): WorkspacePattern => {
-  const isNegated = pattern.startsWith("!");
+  const isNegated = pattern.startsWith(WORKSPACE_PATTERN_NEGATION_PREFIX);
 
-  const patternValue = isNegated ? pattern.slice(1) : pattern;
+  const patternValue = isNegated
+    ? pattern.slice(WORKSPACE_PATTERN_NEGATION_PREFIX.length)
+    : pattern;
 
   const target = TARGETS.find((target) =>
     patternValue.startsWith(target + WORKSPACE_PATTERN_SEPARATOR),
@@ -29,7 +33,7 @@ export const parseWorkspacePattern = (pattern: string): WorkspacePattern => {
     return {
       target: "default",
       value: patternValue,
-      isNegated: pattern.startsWith("!"),
+      isNegated: isNegated,
     };
   }
 
@@ -88,7 +92,7 @@ const PATTERN_TARGET_HANDLERS: Record<
   },
   path: (pattern, workspaces) => {
     return workspaces.filter((workspace) =>
-      new bun.Glob(pattern.value).match(workspace.path),
+      new bun.Glob(pattern.value.replace(/\/+$/, "")).match(workspace.path),
     );
   },
   tag: (pattern, workspaces, wildcardRegex) => {

@@ -551,10 +551,6 @@
 
     "bun-workspaces": ["bun-workspaces@workspace:packages/bun-workspaces"],
 
-    "bun-workspaces_local": ["bun-workspaces@workspace:packages/bun-workspaces"],
-
-    "bun-workspaces_release": ["bun-workspaces@workspace:packages/bun-workspaces"],
-
     "bw-web-service-shared": ["bw-web-service-shared@0.2.0", "", {}, "sha512-hTCNH+irBXA7K9AfzNOJzQuJOA3x10UEdD0u6pC3ftM5Vfp6eYYhjT/NOuBFTcAOHm1BBfQx95x3zqHlpVeEaA=="],
 
     "cac": ["cac@6.7.14", "", {}, "sha512-b6Ilus+c3RrdDk+JhLKUAQfzzgLEPy6wcXqS7f/xe1EETvsDP6GORG7SFuOs6cID5YkqchW/LXZbX5bc8j7ZcQ=="],
@@ -1572,6 +1568,10 @@
     "zwitch": ["zwitch@2.0.4", "", {}, "sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A=="],
 
     "@babel/helper-compilation-targets/lru-cache": ["lru-cache@5.1.1", "", { "dependencies": { "yallist": "^3.0.2" } }, "sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w=="],
+
+    "@bw/sandbox/bun-workspaces_local": ["bun-workspaces@file:packages/bun-workspaces", { "dependencies": { "commander": "^12.1.0", "shell-quote": "^1.8.3" }, "devDependencies": { "@rslib/core": "^0.15.1", "@types/shell-quote": "^1.7.5", "@xterm/headless": "^6.0.0", "ajv": "^8.17.1", "ajv-cli": "^5.0.0" }, "bin": { "bun-workspaces": "bin/cli.js", "bw": "bin/cli.js" } }],
+
+    "@bw/sandbox/bun-workspaces_release": ["bun-workspaces@file:packages/bun-workspaces", { "dependencies": { "commander": "^12.1.0", "shell-quote": "^1.8.3" }, "devDependencies": { "@rslib/core": "^0.15.1", "@types/shell-quote": "^1.7.5", "@xterm/headless": "^6.0.0", "ajv": "^8.17.1", "ajv-cli": "^5.0.0" }, "bin": { "bun-workspaces": "bin/cli.js", "bw": "bin/cli.js" } }],
 
     "@eslint-community/eslint-utils/eslint-visitor-keys": ["eslint-visitor-keys@3.4.3", "", {}, "sha512-wpc+LXeiyiisxPlEkUzU6svyS1frIO3Mgxj1fdy7Pm8Ygzguax2N3Fa/D/ag1WqbOprdI+uY6wMUl8/a2G+iag=="],
 

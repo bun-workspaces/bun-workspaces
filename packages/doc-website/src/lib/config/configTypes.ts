@@ -55,6 +55,19 @@ const workspaceDisplay: ValueToDisplay<RequiredDeep<WorkspaceConfig>> = {
       },
     },
   },
+  rules: {
+    workspaceDependencies: {
+      allowPatterns: {
+        comment: "Cannot use both allowPatterns and denyPatterns",
+        array: true,
+        item: { primitive: true, types: ["string"] },
+      },
+      denyPatterns: {
+        array: true,
+        item: { primitive: true, types: ["string"] },
+      },
+    },
+  },
 };
 
 export const WORKSPACE_CONFIG_TYPE =

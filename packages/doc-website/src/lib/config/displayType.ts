@@ -11,11 +11,13 @@ import {
 type PrimitiveToDisplay<P extends JSONPrimitive = JSONPrimitive> = {
   primitive: true;
   types: Array<JSONPrimitiveToName<P>>;
+  comment?: string;
 };
 
 type ArrayToDisplay<A extends JSONArray = JSONArray> = {
   array: true;
   item: ValueToDisplay<JSONArrayToItem<A>>;
+  comment?: string;
 };
 
 export type ValueToDisplay<O extends JSONData = JSONData> = O extends JSONObject
@@ -43,7 +45,6 @@ const _formatSimpleTypeToDisplay = <V extends ValueToDisplay<any>>(
   let result = prev;
   const indent = "  ".repeat(level);
   const nextIndent = "  ".repeat(level + 1);
-
   if ((value as { primitive: true }).primitive === true) {
     result += (value as { types: string[] }).types.join(" | ");
   } else if (isJSONObject(value)) {
@@ -58,6 +59,10 @@ const _formatSimpleTypeToDisplay = <V extends ValueToDisplay<any>>(
     const entries = Object.entries(value as ValueToDisplay);
     for (let i = 0; i < entries.length; i++) {
       const [key, val] = entries[i];
+      if ((val as { comment: string }).comment) {
+        result +=
+          indent + "  // " + (val as { comment: string }).comment + "\n";
+      }
       result +=
         nextIndent +
         key +

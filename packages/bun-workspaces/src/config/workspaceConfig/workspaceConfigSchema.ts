@@ -27,6 +27,26 @@ export const WORKSPACE_CONFIG_JSON_SCHEMA = {
         additionalProperties: false,
       },
     },
+    rules: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        workspaceDependencies: {
+          type: "object",
+          properties: {
+            allowPatterns: {
+              type: "array",
+              items: { type: "string" },
+            },
+            denyPatterns: {
+              type: "array",
+              items: { type: "string" },
+            },
+          },
+          additionalProperties: false,
+        },
+      },
+    },
   },
 } as const satisfies JSONSchema;
 

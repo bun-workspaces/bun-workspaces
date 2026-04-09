@@ -1,5 +1,5 @@
-import { matchWorkspacesByPatterns } from "../workspacePattern";
 import { WORKSPACE_ERRORS } from "../errors";
+import { matchWorkspacesByPatterns } from "../workspacePattern";
 import type { WorkspaceMap } from "./resolveDependencies";
 
 type DepEntry = {

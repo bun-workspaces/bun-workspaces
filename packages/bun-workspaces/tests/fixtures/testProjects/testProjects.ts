@@ -80,6 +80,14 @@ const TEST_PROJECTS = {
     "withDependencies/withDependencyRulesDenyDirect",
   withDependencyRulesDenyIndirect:
     "withDependencies/withDependencyRulesDenyIndirect",
+  withDependencyRulesAllowDirect:
+    "withDependencies/withDependencyRulesAllowDirect",
+  withDependencyRulesAllowIndirect:
+    "withDependencies/withDependencyRulesAllowIndirect",
+  withDependencyRulesDirectCycle:
+    "withDependencies/withDependencyRulesDirectCycle",
+  withDependencyRulesIndirectCycle:
+    "withDependencies/withDependencyRulesIndirectCycle",
   recursiveScript: "recursiveScript",
 };
 

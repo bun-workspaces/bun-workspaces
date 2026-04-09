@@ -337,19 +337,55 @@ describe("validateWorkspaceDependencyRules", () => {
 });
 
 describe("findWorkspaces with dependency rules", () => {
-  test("throws DependencyRuleViolation for direct deny violation", () => {
-    expect(() =>
-      findWorkspaces({
-        rootDirectory: getProjectRoot("withDependencyRulesDenyDirect"),
-      }),
-    ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+  describe("denyPatterns", () => {
+    test("throws for a direct dependency matching denyPatterns", () => {
+      expect(() =>
+        findWorkspaces({
+          rootDirectory: getProjectRoot("withDependencyRulesDenyDirect"),
+        }),
+      ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+    });
+
+    test("throws for an indirect dependency matching denyPatterns", () => {
+      expect(() =>
+        findWorkspaces({
+          rootDirectory: getProjectRoot("withDependencyRulesDenyIndirect"),
+        }),
+      ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+    });
+
+    test("throws for a denied dep in a direct cycle (a -> b -> a)", () => {
+      expect(() =>
+        findWorkspaces({
+          rootDirectory: getProjectRoot("withDependencyRulesDirectCycle"),
+        }),
+      ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+    });
+
+    test("throws for a denied indirect dep in an indirect cycle (a -> b -> c -> a)", () => {
+      expect(() =>
+        findWorkspaces({
+          rootDirectory: getProjectRoot("withDependencyRulesIndirectCycle"),
+        }),
+      ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+    });
   });
 
-  test("throws DependencyRuleViolation for indirect deny violation", () => {
-    expect(() =>
-      findWorkspaces({
-        rootDirectory: getProjectRoot("withDependencyRulesDenyIndirect"),
-      }),
-    ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+  describe("allowPatterns", () => {
+    test("throws when a direct dependency is not in allowPatterns", () => {
+      expect(() =>
+        findWorkspaces({
+          rootDirectory: getProjectRoot("withDependencyRulesAllowDirect"),
+        }),
+      ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+    });
+
+    test("throws when an indirect dependency is not in allowPatterns", () => {
+      expect(() =>
+        findWorkspaces({
+          rootDirectory: getProjectRoot("withDependencyRulesAllowIndirect"),
+        }),
+      ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+    });
   });
 });

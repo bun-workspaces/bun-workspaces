@@ -40,6 +40,8 @@ using either `allowedPatterns` or `denyPatterns`.
 You can't use both `allowedPatterns` and `denyPatterns` at the same time, but you can use
 [negated](/concepts/workspace-patterns#negation) workspace patterns to exclude workspaces from the allowed or denied list.
 
+For example, you may disallow dependencies with the [tag](config/workspace#tags) "backend" for a frontend workspace with `denyPatterns: ["tag:backend"]`.
+
 ### Type Definition
 
 <SyntaxHighlighter language="typescript">

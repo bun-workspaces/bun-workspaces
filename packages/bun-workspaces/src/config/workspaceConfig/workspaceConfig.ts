@@ -62,7 +62,7 @@ export type ResolvedWorkspaceConfig = {
   rules: WorkspaceRules;
 };
 
-export const validateWorkspaceConfig = (config: WorkspaceConfig) =>
+export const validateWorkspaceConfig = (config: WorkspaceConfig) => {
   executeValidator(
     validate as unknown as AjvSchemaValidator<WorkspaceConfig>,
     "WorkspaceConfig",
@@ -71,6 +71,16 @@ export const validateWorkspaceConfig = (config: WorkspaceConfig) =>
     },
     WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig,
   );
+
+  if (
+    config.rules?.workspaceDependencies?.allowPatterns &&
+    config.rules?.workspaceDependencies?.denyPatterns
+  ) {
+    throw new WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig(
+      "Cannot use both allowPatterns and denyPatterns in workspaceDependencies rule",
+    );
+  }
+};
 
 export const resolveWorkspaceConfig = (
   config: WorkspaceConfig,

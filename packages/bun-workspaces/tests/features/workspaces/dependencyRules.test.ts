@@ -336,6 +336,52 @@ describe("validateWorkspaceDependencyRules", () => {
   });
 });
 
+describe("findWorkspaces - multi-violation and multi-valid", () => {
+  /**
+   * Graph: app -> service, lib-a
+   *        service -> feature, lib-b  (service <-> feature cycle)
+   *        feature -> service
+   *        lib-a -> shared
+   *        lib-b -> shared
+   *
+   * Rules:
+   *   app:     denyPatterns: ["lib-b"]         → violated (app -> service -> lib-b)
+   *   service: allowPatterns: ["feature"]      → violated by lib-b (direct) and shared (indirect via lib-b)
+   *   lib-b:   allowPatterns: ["shared"]       → valid (lib-b only reaches shared)
+   */
+  test("collects all violations into a single error and reports each one", () => {
+    let thrownError: unknown;
+    try {
+      findWorkspaces({
+        rootDirectory: getProjectRoot("withDependencyRulesMultiViolation"),
+      });
+    } catch (e) {
+      thrownError = e;
+    }
+
+    expect(thrownError).toBeInstanceOf(WORKSPACE_ERRORS.DependencyRuleViolation);
+    const message = (thrownError as Error).message;
+
+    expect(message).toContain(
+      '"app" violates workspaceDependencies rule: workspace "lib-b" is denied by denyPatterns (dependency chain: app -> service -> lib-b)',
+    );
+    expect(message).toContain(
+      '"service" violates workspaceDependencies rule: workspace "lib-b" is not permitted by allowPatterns (dependency chain: service -> lib-b)',
+    );
+    expect(message).toContain(
+      '"service" violates workspaceDependencies rule: workspace "shared" is not permitted by allowPatterns (dependency chain: service -> lib-b -> shared)',
+    );
+  });
+
+  test("does not throw when all rules are satisfied (same graph complexity, no violations)", () => {
+    expect(() =>
+      findWorkspaces({
+        rootDirectory: getProjectRoot("withDependencyRulesMultiValid"),
+      }),
+    ).not.toThrow();
+  });
+});
+
 describe("findWorkspaces with dependency rules", () => {
   describe("denyPatterns", () => {
     test("throws for a direct dependency matching denyPatterns", () => {

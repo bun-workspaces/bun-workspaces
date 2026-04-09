@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "workspaceDependencies": {
+      "allowPatterns": ["feature"]
+    }
+  }
+}

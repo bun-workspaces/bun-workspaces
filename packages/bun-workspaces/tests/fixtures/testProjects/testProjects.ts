@@ -88,6 +88,10 @@ const TEST_PROJECTS = {
     "withDependencies/withDependencyRulesDirectCycle",
   withDependencyRulesIndirectCycle:
     "withDependencies/withDependencyRulesIndirectCycle",
+  withDependencyRulesMultiViolation:
+    "withDependencies/withDependencyRulesMultiViolation",
+  withDependencyRulesMultiValid:
+    "withDependencies/withDependencyRulesMultiValid",
   recursiveScript: "recursiveScript",
 };
 

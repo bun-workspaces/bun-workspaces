@@ -19,13 +19,12 @@ const getTransitiveDeps = (
   const result: DepEntry[] = [];
 
   for (const depName of entry.workspace.dependencies) {
+    if (visited.has(depName)) continue;
+    visited.add(depName);
+
     const depChain = [...chain, depName];
     result.push({ name: depName, chain: depChain });
-
-    if (!visited.has(depName)) {
-      visited.add(depName);
-      result.push(...getTransitiveDeps(depName, workspaceMap, depChain, visited));
-    }
+    result.push(...getTransitiveDeps(depName, workspaceMap, depChain, visited));
   }
 
   return result;
@@ -38,6 +37,8 @@ export type ValidateWorkspaceDependencyRulesOptions = {
 export const validateWorkspaceDependencyRules = ({
   workspaceMap,
 }: ValidateWorkspaceDependencyRulesOptions): void => {
+  const violations: string[] = [];
+
   for (const [workspaceName, { config }] of Object.entries(workspaceMap)) {
     const rule = config.rules?.workspaceDependencies;
     if (!rule?.allowPatterns && !rule?.denyPatterns) continue;
@@ -60,8 +61,8 @@ export const validateWorkspaceDependencyRules = ({
           matchWorkspacesByPatterns(rule.denyPatterns, [depWorkspace]).length >
           0;
         if (isDenied) {
-          throw new WORKSPACE_ERRORS.DependencyRuleViolation(
-            `Workspace "${workspaceName}" violates workspaceDependencies rule: workspace "${depName}" is denied by denyPatterns (dependency chain: ${chainStr})`,
+          violations.push(
+            `"${workspaceName}" violates workspaceDependencies rule: workspace "${depName}" is denied by denyPatterns (dependency chain: ${chainStr})`,
           );
         }
       }
@@ -71,11 +72,17 @@ export const validateWorkspaceDependencyRules = ({
           matchWorkspacesByPatterns(rule.allowPatterns, [depWorkspace]).length >
           0;
         if (!isAllowed) {
-          throw new WORKSPACE_ERRORS.DependencyRuleViolation(
-            `Workspace "${workspaceName}" violates workspaceDependencies rule: workspace "${depName}" is not permitted by allowPatterns (dependency chain: ${chainStr})`,
+          violations.push(
+            `"${workspaceName}" violates workspaceDependencies rule: workspace "${depName}" is not permitted by allowPatterns (dependency chain: ${chainStr})`,
           );
         }
       }
     }
+  }
+
+  if (violations.length > 0) {
+    throw new WORKSPACE_ERRORS.DependencyRuleViolation(
+      `Workspace dependency rule violations:\n${violations.map((v) => `  - ${v}`).join("\n")}`,
+    );
   }
 };

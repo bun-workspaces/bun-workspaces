@@ -1,0 +1,7 @@
+{
+  "name": "service",
+  "dependencies": {
+    "feature": "workspace:*",
+    "lib-b": "workspace:*"
+  }
+}

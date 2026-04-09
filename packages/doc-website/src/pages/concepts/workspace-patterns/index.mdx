@@ -13,35 +13,58 @@ import { SyntaxHighlighter } from "../../../lib/util/highlight";
 
 <ConceptsHeader activeHref="workspacePatterns" />
 
-## Workspace Patterns
+<br/>
+<hr/>
+<br/>
 
-Workspace patterns are used to match workspaces when running commands such as [run-script](/cli/commands#run-script) or [list-workspaces](/cli/commands#list-workspaces).
+# Workspace Patterns - Overview
 
-### Default Matching
+Workspace patterns are used to match workspaces when running commands such as [run-script](/cli/commands#run-script) or [list-workspaces](/cli/commands#list-workspaces),
+and they are also used in some [configuration](/config) options.
 
-By default, workspace patterns match the workspace name or alias, but if a wildcard is provided, it will only match the name.
+[Negation](#negation) is supported by starting any pattern with `not:`. These exclude workspaces from any other patterns provided.
+
+## Default Matching
+
+By default, normal strings match a workspace name or alias.
+
+However, if a wildcard is provided, it will only match against workspace names, to prevent ambiguity.
+
 
 <SyntaxHighlighter language="bash">
   {`bw run lint my-name-or-alias "my-name-pattern-*"`}
 </SyntaxHighlighter>
 
-However, you can use the following matching specifiers to match workspaces by different criteria:
+See below for how you can use wildcards with aliases.
 
-### Matching Specifiers
+## Matching Specifiers
 
-#### Name
+Matching specifiers give you more control and options for how you match workspaces.
+
+### Name
 <WorkspacePatternDoc target="name" />
 
-#### Alias
+### Alias
 <WorkspacePatternDoc target="alias" />
 
-#### Path
+### Path
 <WorkspacePatternDoc target="path" />
 
-#### Tag
+### Tag
 <WorkspacePatternDoc target="tag" />
 
-#### In the API
+## Negation
+
+You can negate a pattern by prefixing it with `not:`.
+These exclude workspaces from any other patterns provided.
+
+<SyntaxHighlighter language="bash">
+  {`
+# All workspaces except those with the tag "my-tag"
+bw ls "*" "not:tag:my-tag"`.trim()}
+</SyntaxHighlighter>
+
+## In the API
 
 These same matching patterns can be used in the API.
 

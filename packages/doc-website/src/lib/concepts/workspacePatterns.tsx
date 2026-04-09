@@ -66,6 +66,7 @@ import { createFileSystemProject } from "bun-workspaces";
 const project = createFileSystemProject();
 
 project.findWorkspacesByPattern(
+  "my-name-or-alias",
   "name:my-workspace-*", 
   "alias:my-alias-*", 
   "path:packages/**/*",
@@ -74,6 +75,7 @@ project.findWorkspacesByPattern(
 
 project.runScriptAcrossWorkspaces({
   workspacePatterns: [
+    "my-name-or-alias",
     "name:my-workspace-*",
     "alias:my-alias-*",
     "path:packages/**/*",

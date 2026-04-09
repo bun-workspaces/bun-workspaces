@@ -151,27 +151,27 @@ const runSingleScript = async () => {
   const { output, exit } = project.runWorkspaceScript({
     workspaceNameOrAlias: "my-workspace",
     script: "my-script",
-  
+
     // Optional. Arguments to add to the command
     // Can be a string or an array of strings
     // If string, the argv will be parsed POSIX-style
     args: ["--my", "--appended", "--args"],
-  
-    // Optional. Whether to ignore all output from the script. 
+
+    // Optional. Whether to ignore all output from the script.
     // This saves memory when you don't need script output.
     ignoreOutput: false,
   });
-  
+
   // Get a stream of the script subprocess's output
   for await (const { chunk, metadata } of output.text()) {
     // console.log(chunk); // The output chunk's content (string)
     // console.log(metadata.streamName); // The output stream, "stdout" or "stderr"
     // console.log(metadata.workspace); // The target Workspace
   }
-  
+
   // Get data about the script execution after it exits
   const exitResult = await exit;
-  
+
   // exitResult.exitCode // The exit code (number)
   // exitResult.signal // The exit signal (string), or null
   // exitResult.success // true if exit code was 0
@@ -179,7 +179,7 @@ const runSingleScript = async () => {
   // exitResult.endTimeISO // End time (string)
   // exitResult.durationMs // Duration in milliseconds (number)
   // exitResult.metadata.workspace // The target workspace (Workspace)
-}
+};
 
 // Run a script in all workspaces that have it in their package.json "scripts" field
 const runManyScripts = async () => {
@@ -188,44 +188,44 @@ const runManyScripts = async () => {
     // Accepts same values as the CLI run-script command's workspace patterns
     // When not provided, all workspaces that have the script will be used.
     workspacePatterns: ["my-workspace", "my-name-pattern-*"],
-  
+
     // Required. The package.json "scripts" field name to run
     script: "my-script",
-  
+
     // Optional. Arguments to add to the command (same as for runWorkspaceScript)
     args: ["--my", "--appended", "--args"],
-  
+
     // Optional. Whether to run the scripts in parallel (default: true)
     parallel: true,
-  
-    // Optional. When true, a workspace's script will wait 
+
+    // Optional. When true, a workspace's script will wait
     // until any workspaces it depends on have completed
     dependencyOrder: false,
-  
-    // Optional. When true and dependencyOrder is true, 
+
+    // Optional. When true and dependencyOrder is true,
     // continue running scripts even if a dependency fails
     ignoreDependencyFailure: false,
-  
-    // Optional. Whether to ignore all output from the scripts. 
+
+    // Optional. Whether to ignore all output from the scripts.
     // This saves memory when you don't need script output.
     ignoreOutput: false,
-  
+
     // Optional, callback when script starts, skips, or exits
     onScriptEvent: (event, { workspace, exitResult }) => {
       // event: "start", "skip", "exit"
-    }
+    },
   });
-  
-  // Get a stream of script output 
+
+  // Get a stream of script output
   for await (const { chunk, metadata } of output.text()) {
     // console.log(chunk); // the output chunk's content (string)
     // console.log(metadata.streamName); // "stdout" or "stderr"
     // console.log(metadata.workspace); // the Workspace that the output came from
   }
-  
+
   // Get final summary data and script exit details after all scripts have completed
   const summaryResult = await summary;
-  
+
   // summaryResult.totalCount // Total number of scripts
   // summaryResult.allSuccess // true if all scripts succeeded
   // summaryResult.successCount // Number of scripts that succeeded
@@ -233,7 +233,7 @@ const runManyScripts = async () => {
   // summaryResult.startTimeISO // Start time (string)
   // summaryResult.endTimeISO // End time (string)
   // summaryResult.durationMs // Total duration in milliseconds (number)
-  
+
   // The exit details of each workspace script
   for (const exitResult of summaryResult.scriptResults) {
     // exitResult.exitCode // The exit code (number)
@@ -244,7 +244,7 @@ const runManyScripts = async () => {
     // exitResult.durationMs // Duration in milliseconds (number)
     // exitResult.metadata.workspace // The target workspace (Workspace)
   }
-}
+};
 ```
 
 _`bun-workspaces` is independent from the [Bun](https://bun.sh) project and is not affiliated with or endorsed by Anthropic. This project aims to enhance the experience of Bun for its users._

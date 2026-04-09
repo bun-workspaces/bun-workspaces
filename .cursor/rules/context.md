@@ -7,6 +7,7 @@ Three main domain terms to know:
 - Project: generally represents a monorepo and is defined by the root `package.json` file
 - Workspace: a nested package within a project. The root package.json can count as a workspace as well, but by default, only nested packages are considered workspaces.
 - Script: an entry in the `scripts` field of a workspace's `package.json` file. bw can also run one-off commands known as "inline scripts," which can use the Bun shell or system shell (`sh -c` or `cmd /d /s /c` for windows).
+
 ## Concepts
 
 ### Workspace patterns
@@ -43,6 +44,7 @@ bw run "bun <projectPath>/my-script.ts" --inline \
   --inline-name="my-script-name" \
   --args="<workspaceName> <workspacePath>"
 ```
+
 ### CLI examples:
 
 ```bash
@@ -121,6 +123,7 @@ bw --no-include-root ls # override config/env var setting
 bw --log-level=silent ls
 bw -l silent ls
 ```
+
 ### API examples:
 
 The API is held in close parity with the CLI. It is developed first so that the CLI is a thin wrapper around the API.
@@ -196,6 +199,7 @@ project.runScriptAcrossWorkspaces({
   "dependents": ["my-dependent"],
 }
 ```
+
 ## Root config
 
 Optional project config can be placed in `bw.root.jsonc`/`bw.root.json` in the root directory.
@@ -233,6 +237,7 @@ Tags are strings to group workspaces together that therefore don't need to be un
   },
 }
 ```
+
 ## Development processes
 
 The repo contains three packages:

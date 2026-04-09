@@ -1,0 +1,355 @@
+import { describe, test, expect } from "bun:test";
+import { resolveWorkspaceConfig } from "../../../src/config";
+import { validateWorkspaceDependencyRules } from "../../../src/workspaces/dependencyGraph";
+import { WORKSPACE_ERRORS } from "../../../src/workspaces/errors";
+import { findWorkspaces } from "../../../src/workspaces/findWorkspaces";
+import { getProjectRoot } from "../../fixtures/testProjects";
+import { makeTestWorkspace } from "../../util/testData";
+import type { WorkspaceMap } from "../../../src/workspaces/dependencyGraph";
+
+const makeWorkspaceMapEntry = (
+  workspace: ReturnType<typeof makeTestWorkspace>,
+  config: Parameters<typeof resolveWorkspaceConfig>[0] = {},
+) => ({
+  workspace,
+  config: resolveWorkspaceConfig(config),
+  packageJson: {},
+});
+
+describe("validateWorkspaceDependencyRules", () => {
+  describe("no rules", () => {
+    test("does nothing when workspaces have no rules", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["b"] }),
+        ),
+        b: makeWorkspaceMapEntry(makeTestWorkspace({ name: "b" })),
+      };
+      expect(() => validateWorkspaceDependencyRules({ workspaceMap })).not.toThrow();
+    });
+  });
+
+  describe("denyPatterns", () => {
+    test("throws when a direct dependency matches denyPatterns by name", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["b"] }),
+          { rules: { workspaceDependencies: { denyPatterns: ["b"] } } },
+        ),
+        b: makeWorkspaceMapEntry(makeTestWorkspace({ name: "b" })),
+      };
+      expect(() =>
+        validateWorkspaceDependencyRules({ workspaceMap }),
+      ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+    });
+
+    test("throws when an indirect dependency matches denyPatterns", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["b"] }),
+          { rules: { workspaceDependencies: { denyPatterns: ["c"] } } },
+        ),
+        b: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "b", dependencies: ["c"] }),
+        ),
+        c: makeWorkspaceMapEntry(makeTestWorkspace({ name: "c" })),
+      };
+      expect(() =>
+        validateWorkspaceDependencyRules({ workspaceMap }),
+      ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+    });
+
+    test("throws when an indirect dependency matches denyPatterns via a longer chain", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["b"] }),
+          { rules: { workspaceDependencies: { denyPatterns: ["d"] } } },
+        ),
+        b: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "b", dependencies: ["c"] }),
+        ),
+        c: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "c", dependencies: ["d"] }),
+        ),
+        d: makeWorkspaceMapEntry(makeTestWorkspace({ name: "d" })),
+      };
+      expect(() =>
+        validateWorkspaceDependencyRules({ workspaceMap }),
+      ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+    });
+
+    test("does not throw when no dependencies match denyPatterns", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["b"] }),
+          { rules: { workspaceDependencies: { denyPatterns: ["c"] } } },
+        ),
+        b: makeWorkspaceMapEntry(makeTestWorkspace({ name: "b" })),
+      };
+      expect(() =>
+        validateWorkspaceDependencyRules({ workspaceMap }),
+      ).not.toThrow();
+    });
+
+    test("does not throw when workspace has no dependencies and denyPatterns is set", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a" }),
+          { rules: { workspaceDependencies: { denyPatterns: ["b"] } } },
+        ),
+        b: makeWorkspaceMapEntry(makeTestWorkspace({ name: "b" })),
+      };
+      expect(() =>
+        validateWorkspaceDependencyRules({ workspaceMap }),
+      ).not.toThrow();
+    });
+
+    test("matches by tag pattern", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["b"] }),
+          { rules: { workspaceDependencies: { denyPatterns: ["tag:internal"] } } },
+        ),
+        b: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "b", tags: ["internal"] }),
+        ),
+      };
+      expect(() =>
+        validateWorkspaceDependencyRules({ workspaceMap }),
+      ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+    });
+
+    test("does not throw when tag does not match denyPatterns", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["b"] }),
+          { rules: { workspaceDependencies: { denyPatterns: ["tag:internal"] } } },
+        ),
+        b: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "b", tags: ["shared"] }),
+        ),
+      };
+      expect(() =>
+        validateWorkspaceDependencyRules({ workspaceMap }),
+      ).not.toThrow();
+    });
+
+    test("matches by path pattern", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["b"], path: "packages/a" }),
+          { rules: { workspaceDependencies: { denyPatterns: ["path:private/**/*"] } } },
+        ),
+        b: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "b", path: "private/packages/b" }),
+        ),
+      };
+      expect(() =>
+        validateWorkspaceDependencyRules({ workspaceMap }),
+      ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+    });
+
+    test("matches by alias pattern", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["b"] }),
+          { rules: { workspaceDependencies: { denyPatterns: ["alias:my-alias"] } } },
+        ),
+        b: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "b", aliases: ["my-alias"] }),
+        ),
+      };
+      expect(() =>
+        validateWorkspaceDependencyRules({ workspaceMap }),
+      ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+    });
+
+    test("matches by wildcard name pattern", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["private-lib"] }),
+          { rules: { workspaceDependencies: { denyPatterns: ["private-*"] } } },
+        ),
+        "private-lib": makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "private-lib" }),
+        ),
+      };
+      expect(() =>
+        validateWorkspaceDependencyRules({ workspaceMap }),
+      ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+    });
+
+    test("only validates the workspace that has the rule, not others", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["b"] }),
+          { rules: { workspaceDependencies: { denyPatterns: ["c"] } } },
+        ),
+        b: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "b", dependencies: ["c"] }),
+        ),
+        c: makeWorkspaceMapEntry(makeTestWorkspace({ name: "c" })),
+        // d has no rule and depends on c — should not throw
+        d: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "d", dependencies: ["c"] }),
+        ),
+      };
+      expect(() =>
+        validateWorkspaceDependencyRules({ workspaceMap }),
+      ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+    });
+  });
+
+  describe("allowPatterns", () => {
+    test("does not throw when all direct dependencies are allowed", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["b"] }),
+          { rules: { workspaceDependencies: { allowPatterns: ["b"] } } },
+        ),
+        b: makeWorkspaceMapEntry(makeTestWorkspace({ name: "b" })),
+      };
+      expect(() =>
+        validateWorkspaceDependencyRules({ workspaceMap }),
+      ).not.toThrow();
+    });
+
+    test("does not throw when all transitive dependencies are allowed", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["b"] }),
+          { rules: { workspaceDependencies: { allowPatterns: ["b", "c"] } } },
+        ),
+        b: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "b", dependencies: ["c"] }),
+        ),
+        c: makeWorkspaceMapEntry(makeTestWorkspace({ name: "c" })),
+      };
+      expect(() =>
+        validateWorkspaceDependencyRules({ workspaceMap }),
+      ).not.toThrow();
+    });
+
+    test("throws when a direct dependency is not in allowPatterns", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["b"] }),
+          { rules: { workspaceDependencies: { allowPatterns: ["c"] } } },
+        ),
+        b: makeWorkspaceMapEntry(makeTestWorkspace({ name: "b" })),
+        c: makeWorkspaceMapEntry(makeTestWorkspace({ name: "c" })),
+      };
+      expect(() =>
+        validateWorkspaceDependencyRules({ workspaceMap }),
+      ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+    });
+
+    test("throws when an indirect dependency is not in allowPatterns", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["b"] }),
+          { rules: { workspaceDependencies: { allowPatterns: ["b"] } } },
+        ),
+        b: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "b", dependencies: ["c"] }),
+        ),
+        c: makeWorkspaceMapEntry(makeTestWorkspace({ name: "c" })),
+      };
+      expect(() =>
+        validateWorkspaceDependencyRules({ workspaceMap }),
+      ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+    });
+
+    test("allows by tag pattern", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["b"] }),
+          { rules: { workspaceDependencies: { allowPatterns: ["tag:shared"] } } },
+        ),
+        b: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "b", tags: ["shared"] }),
+        ),
+      };
+      expect(() =>
+        validateWorkspaceDependencyRules({ workspaceMap }),
+      ).not.toThrow();
+    });
+
+    test("throws when dep tag is not in allowPatterns", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["b"] }),
+          { rules: { workspaceDependencies: { allowPatterns: ["tag:shared"] } } },
+        ),
+        b: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "b", tags: ["internal"] }),
+        ),
+      };
+      expect(() =>
+        validateWorkspaceDependencyRules({ workspaceMap }),
+      ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+    });
+
+    test("does not throw when workspace has no dependencies and allowPatterns is set", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a" }),
+          { rules: { workspaceDependencies: { allowPatterns: ["b"] } } },
+        ),
+        b: makeWorkspaceMapEntry(makeTestWorkspace({ name: "b" })),
+      };
+      expect(() =>
+        validateWorkspaceDependencyRules({ workspaceMap }),
+      ).not.toThrow();
+    });
+  });
+
+  describe("cycles in dependency graph", () => {
+    test("does not infinitely recurse on a cyclic dependency graph", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["b"] }),
+        ),
+        b: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "b", dependencies: ["a"] }),
+        ),
+      };
+      expect(() =>
+        validateWorkspaceDependencyRules({ workspaceMap }),
+      ).not.toThrow();
+    });
+
+    test("validates rules against cyclic deps without infinite recursion", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["b"] }),
+          { rules: { workspaceDependencies: { denyPatterns: ["b"] } } },
+        ),
+        b: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "b", dependencies: ["a"] }),
+        ),
+      };
+      expect(() =>
+        validateWorkspaceDependencyRules({ workspaceMap }),
+      ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+    });
+  });
+});
+
+describe("findWorkspaces with dependency rules", () => {
+  test("throws DependencyRuleViolation for direct deny violation", () => {
+    expect(() =>
+      findWorkspaces({
+        rootDirectory: getProjectRoot("withDependencyRulesDenyDirect"),
+      }),
+    ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+  });
+
+  test("throws DependencyRuleViolation for indirect deny violation", () => {
+    expect(() =>
+      findWorkspaces({
+        rootDirectory: getProjectRoot("withDependencyRulesDenyIndirect"),
+      }),
+    ).toThrow(WORKSPACE_ERRORS.DependencyRuleViolation);
+  });
+});

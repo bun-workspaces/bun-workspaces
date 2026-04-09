@@ -7,8 +7,9 @@ import { BunWorkspacesError } from "../internal/core";
 import { logger } from "../internal/logger/logger";
 import {
   resolveWorkspaceDependencies,
+  validateWorkspaceDependencyRules,
   type WorkspaceMap,
-} from "./dependencyGraph/resolveDependencies";
+} from "./dependencyGraph";
 import { WORKSPACE_ERRORS } from "./errors";
 import {
   resolvePackageJsonContent,
@@ -198,6 +199,8 @@ export const findWorkspaces = ({
       bunCatalogs,
     ),
   );
+
+  validateWorkspaceDependencyRules({ workspaceMap });
 
   validateWorkspaceAliases(workspaces, workspaceAliases, rootWorkspace.name);
 

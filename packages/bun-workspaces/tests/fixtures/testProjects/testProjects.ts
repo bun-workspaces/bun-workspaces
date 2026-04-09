@@ -76,6 +76,10 @@ const TEST_PROJECTS = {
   withDependenciesIndirectCycleMixed: "withDependencies/withIndirectCycleMixed",
   withDependenciesCatalogDependencies:
     "withDependencies/withCatalogDependencies",
+  withDependencyRulesDenyDirect:
+    "withDependencies/withDependencyRulesDenyDirect",
+  withDependencyRulesDenyIndirect:
+    "withDependencies/withDependencyRulesDenyIndirect",
   recursiveScript: "recursiveScript",
 };
 

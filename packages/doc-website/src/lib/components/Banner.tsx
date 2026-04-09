@@ -5,7 +5,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { useOnMount } from "../util/useOnMount";
 
-const useClosed = create<{
+const useStore = create<{
   isClosed: boolean;
   setIsClosed: (isClosed: boolean) => void;
 }>()((set) => ({
@@ -13,12 +13,16 @@ const useClosed = create<{
   setIsClosed: (isClosed) => set({ isClosed }),
 }));
 
-const useDismissed = create<{
+const usePersistedStore = create<{
+  isFirstVisit: boolean;
+  setIsFirstVisit: (isFirstVisit: boolean) => void;
   isDismissed: boolean;
   setIsDismissed: (isClosed: boolean) => void;
 }>()(
   persist(
     (set) => ({
+      isFirstVisit: true,
+      setIsFirstVisit: (isFirstVisit) => set({ isFirstVisit }),
       isDismissed: false,
       setIsDismissed: (isDismissed) => set({ isDismissed }),
     }),
@@ -31,18 +35,22 @@ const useDismissed = create<{
 );
 
 export const Banner = () => {
-  const isClosed = useClosed((state) => state.isClosed);
-  const setIsClosed = useClosed((state) => state.setIsClosed);
-  const isDismissed = useDismissed((state) => state.isDismissed);
-  const setIsDismissed = useDismissed((state) => state.setIsDismissed);
+  const [dontShowAgain, setDontShowAgain] = useState(false);
+  const isClosed = useStore((state) => state.isClosed);
+  const setIsClosed = useStore((state) => state.setIsClosed);
+  const isFirstVisit = usePersistedStore((state) => state.isFirstVisit);
+  const setIsFirstVisit = usePersistedStore((state) => state.setIsFirstVisit);
+  const isDismissed = usePersistedStore((state) => state.isDismissed);
+  const setIsDismissed = usePersistedStore((state) => state.setIsDismissed);
 
-  const isOpen = !isClosed && !isDismissed;
+  const isOpen = !isClosed && !isDismissed && !isFirstVisit;
 
   useOnMount(() => {
     setIsClosed(false);
+    window.addEventListener("beforeunload", () => {
+      setIsFirstVisit(false);
+    });
   });
-
-  const [dontShowAgain, setDontShowAgain] = useState(false);
 
   if (!isOpen) return null;
 

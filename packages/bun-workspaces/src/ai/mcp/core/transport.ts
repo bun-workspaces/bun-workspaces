@@ -11,7 +11,9 @@ export type MemoryTransport = McpTransport & {
   sent: RawMessage[];
 };
 
-export const createMemoryTransport = (messages: RawMessage[]): MemoryTransport => {
+export const createMemoryTransport = (
+  messages: RawMessage[],
+): MemoryTransport => {
   const sent: RawMessage[] = [];
 
   const send = (message: RawMessage): void => {

@@ -16,7 +16,7 @@ if (import.meta.main) {
   console.log("Generating MCP docs...");
 
   const repoRoot = path.resolve(__dirname, "../../../");
-  const outDir = path.resolve(__dirname, "../src/internal/generated/mcpDocs");
+  const outDir = path.resolve(__dirname, "../src/internal/generated/aiDocs");
 
   fs.mkdirSync(outDir, { recursive: true });
 

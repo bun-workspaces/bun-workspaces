@@ -2,7 +2,10 @@ import { startBwMcpServer } from "../../ai/mcp";
 import { logger } from "../../internal/logger";
 import { handleProjectCommand } from "./commandHandlerUtils";
 
-export const mcp = handleProjectCommand("mcp", async ({ project }) => {
-  logger.printLevel = "silent";
-  await startBwMcpServer(project);
-});
+export const mcpServer = handleProjectCommand(
+  "mcpServer",
+  async ({ project }) => {
+    logger.printLevel = "silent";
+    await startBwMcpServer(project);
+  },
+);

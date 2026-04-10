@@ -59,7 +59,7 @@ const LD_JSON = {
   softwareVersion: packageJson.version,
 };
 
-const NODE_STUBS = ["fs", "path", "process", "os", "bun", "commander"];
+const STUBS = ["fs", "path", "process", "os", "bun", "commander", "readline"];
 
 const PLACEHOLDER_STUB_PATH = path.resolve(
   __dirname,
@@ -112,7 +112,7 @@ export default defineConfig({
     plugins: [pluginSvgr()],
     resolve: {
       alias: {
-        ...NODE_STUBS.reduce<Record<string, string>>((acc, stub) => {
+        ...STUBS.reduce<Record<string, string>>((acc, stub) => {
           acc[stub] = PLACEHOLDER_STUB_PATH;
           return acc;
         }, {}),
@@ -378,6 +378,19 @@ export default defineConfig({
           {
             text: "Script Execution Order",
             link: "/concepts/script-execution-order",
+          },
+        ],
+      },
+      {
+        text: "AI",
+        link: "/ai/mcp",
+        position: "left",
+        activeMatch: "/ai",
+        tag: TAG_ICONS.ai,
+        items: [
+          {
+            text: "MCP",
+            link: "/ai/mcp",
           },
         ],
       },

@@ -31,6 +31,8 @@ export const createSubprocess = <
 ): Bun.Subprocess<In, Out, Err> => {
   const subprocess = Bun.spawn(argv, options);
 
+  logger.debug(`Subprocess spawned with pid ${subprocess.pid}`);
+
   SUBPROCESS_REGISTRY[subprocess.pid] = subprocess;
 
   subprocess.exited.finally(() => {

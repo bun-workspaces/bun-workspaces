@@ -1,4 +1,5 @@
 import { getDoctorInfo } from "../../doctor";
+import { BUN_WORKSPACES_VERSION } from "../../internal/version";
 import type { FileSystemProject } from "../../project/implementations/fileSystemProject";
 import { ROOT_WORKSPACE_SELECTOR } from "../../project/implementations/projectBase";
 import type { McpServer, CallToolResult } from "./core";
@@ -16,6 +17,15 @@ export const registerBwTools = (
   server: McpServer,
   project: FileSystemProject,
 ): void => {
+  server.registerTool(
+    {
+      name: "version",
+      description: "Get the version of bun-workspaces used by this MCP server",
+      inputSchema: { type: "object" },
+    },
+    () => textResult({ version: BUN_WORKSPACES_VERSION }),
+  );
+
   server.registerTool(
     {
       name: "list_workspaces",
@@ -72,6 +82,15 @@ export const registerBwTools = (
 
       return textResult(workspace);
     },
+  );
+
+  server.registerTool(
+    {
+      name: "root_info",
+      description: "Get information about the root workspace",
+      inputSchema: { type: "object" },
+    },
+    () => textResult(project.rootWorkspace),
   );
 
   server.registerTool(

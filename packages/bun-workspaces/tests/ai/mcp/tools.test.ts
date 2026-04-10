@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { createMcpServer } from "../../../src/ai/mcp/core/server";
 import { createMemoryTransport } from "../../../src/ai/mcp/core/transport";
 import { registerBwTools } from "../../../src/ai/mcp/tools";
+import { BUN_WORKSPACES_VERSION } from "../../../src/internal/version";
 import { createFileSystemProject } from "../../../src/project";
 import { getProjectRoot } from "../../fixtures/testProjects";
 
@@ -38,6 +39,36 @@ const callTool = async (
 };
 
 describe("bw MCP tools", () => {
+  describe("version", () => {
+    test("returns the version of bun-workspaces", async () => {
+      const { result, isError } = await callTool("fullProject", "version");
+      expect(isError).toBeUndefined();
+      expect(result).toBeObject();
+      expect((result as { version: string }).version).toBe(
+        BUN_WORKSPACES_VERSION,
+      );
+    });
+  });
+
+  describe("root_info", () => {
+    test("returns the root workspace", async () => {
+      const { result, isError } = await callTool("fullProject", "root_info");
+      expect(isError).toBeUndefined();
+      expect(result).toBeObject();
+      expect(result).toEqual({
+        name: "test-root",
+        aliases: [],
+        path: "",
+        matchPattern: "",
+        isRoot: true,
+        scripts: [],
+        tags: [],
+        dependencies: [],
+        dependents: [],
+      });
+    });
+  });
+
   describe("list_workspaces", () => {
     test("returns all workspaces when no patterns", async () => {
       const { result, isError } = await callTool(

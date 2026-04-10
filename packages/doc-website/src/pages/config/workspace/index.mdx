@@ -25,8 +25,22 @@ The optional configuration for a workspace is defined in a file such as <code>{c
 
 You can set a workspace's [alias(es)](/concepts/workspace-aliases) and the [order sequence](/concepts/script-execution-order) for its scripts.
 
-**Tags** are simple strings that can be used to group workspaces together. They are defined in a workspace's configuration file and can be used
+### Tags
+
+**Tags** are simple strings that can be used to group workspaces together. They can be used
 in [workspace patterns](/concepts/workspace-patterns).
+
+### Workspace Dependency Rules
+
+Using the `rules.workspaceDependencies` field, you can define rules for which workspaces are allowed to be dependencies,
+using either `allowPatterns` or `denyPatterns`. 
+
+[Workspace patterns](/concepts/workspace-patterns) are used to match workspaces.
+
+You can't use both `allowPatterns` and `denyPatterns` at the same time, but you can use
+[negated](/concepts/workspace-patterns#negation) workspace patterns to exclude workspaces from the allowed or denied list.
+
+For example, you may disallow dependencies with the [tag](config/workspace#tags) "backend" for a frontend workspace with `denyPatterns: ["tag:backend"]`.
 
 ### Type Definition
 

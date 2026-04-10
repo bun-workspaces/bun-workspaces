@@ -130,6 +130,7 @@ const CLI_PROJECT_COMMANDS_CONTENT = {
     description:
       "List all tags available with their workspaces. Tags are defined in a workspace's configuration file.",
     descriptionLinks: {
+      tags: "/config/workspace#tags",
       "configuration file": "/config/workspace",
     },
     examples: [
@@ -152,6 +153,7 @@ const CLI_PROJECT_COMMANDS_CONTENT = {
     description:
       "Show metadata about a tag. Tags are defined in a workspace's configuration file.",
     descriptionLinks: {
+      tag: "/config/workspace#tags",
       "configuration file": "/config/workspace",
     },
     examples: [

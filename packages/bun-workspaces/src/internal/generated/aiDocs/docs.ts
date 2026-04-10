@@ -24,6 +24,7 @@ Patterns can include a wildcard to match only by workspace name: \`my-workspace-
 - Name pattern specifier: \`name:my-workspace-*\`.
 - Tag pattern specifier: \`tag:my-tag\`.
 - Special root workspace selector: \`@root\`.
+- Any pattern can start with \`not:\` to negate the pattern. (e.g. "not:my-workspace-name", "not:tag:my-tag-\\*") This excludes workspaces that match any other present patterns from a result.
 
 ### Script runtime metadata
 
@@ -232,5 +233,51 @@ Tags are strings to group workspaces together that therefore don't need to be un
       "order": 1,
     },
   },
+  "rules": {
+    "workspaceDependencies": {
+      // use workspace patterns to allow or deny other workspaces as dependencies
+      "allowPatterns": ["my-allow-pattern-*"],
+      // or
+      // "denyPatterns": ["my-deny-pattern-*"],
+    },
+  },
 }
+\`\`\`
+
+### Workspace Dependency Rules
+
+Using the \`rules.workspaceDependencies\` field, you can define rules for which workspaces are allowed to be dependencies,
+using either \`allowPatterns\` or \`denyPatterns\`.
+
+Workspace Patterns are used to match workspaces.
+
+You can't use both \`allowPatterns\` and \`denyPatterns\` at the same time, but you can use
+
+## TypeScript/JSON Config Files
+
+You can use TypeScript/JSON config files to define your workspace configuration.
+
+### TypeScript
+
+\`bw.workspace.ts\`
+
+\`\`\`ts
+import { defineWorkspaceConfig } from "bun-workspaces/config";
+
+export default defineWorkspaceConfig({
+  alias: "my-alias",
+  tags: ["my-tag"],
+});
+\`\`\`
+
+\`bw.root.ts\`
+
+\`\`\`ts
+import { defineRootConfig } from "bun-workspaces/config";
+
+export default defineRootConfig({
+  defaults: {
+    parallelMax: 5,
+  },
+});
 \`\`\``;

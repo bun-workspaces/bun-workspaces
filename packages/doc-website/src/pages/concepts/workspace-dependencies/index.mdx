@@ -15,6 +15,8 @@ import { ConceptsHeader } from "../../../lib/concepts/ConceptsHeader";
 
 <ConceptsHeader activeHref="workspaceDependencies" />
 
+## Workspace Dependencies - Overview
+
 [Workspaces](/concepts/glossary#workspace) can depend on other workspaces and import/export code between them. This is a native capability of workspaces in Bun.
 
 For example, this might be some workspace's `package.json` file, where `my-workspace-b` depends on `my-workspace-a`:
@@ -52,6 +54,13 @@ Code in `my-workspace-a` can then import code from `my-workspace-b` like any oth
 
 myFunction();`}
 </SyntaxHighlighter>
+
+## Workspace Dependency Rules
+
+You can set rules to allow or deny other workspaces as dependencies in a workspace's [configuration](/config/workspace),
+set by [workspace patterns](/concepts/workspace-patterns).
+
+For example, you may disallow dependencies with the [tag](config/workspace#tags) "backend" for a frontend workspace with `denyPatterns: ["tag:backend"]`.
 
 ## Running Scripts in Dependency Order
 

@@ -1,6 +1,6 @@
 {
   "name": "bun-workspaces",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "exports": {
     ".": "./src/index.ts",
     "./cli": "./src/cli/index.ts",
@@ -61,7 +61,7 @@
     "build:rslib-only": "rslib build",
     "type-check": "tsc --noEmit",
     "generate-modules": "bun run ajv && bun run generate-mcp-docs",
-    "mcp:inspect": "trap 'fuser -k 6274/tcp 6277/tcp 2>/dev/null; exit 0' INT TERM EXIT; mcp-inspector bun run bin/cli.js --cwd ../../ mcp"
+    "mcp:inspect": "mcp-inspector bun --silent run bin/cli.js --cwd ../../ mcp"
   },
   "devDependencies": {
     "@modelcontextprotocol/inspector": "^0.21.1",

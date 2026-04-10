@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "workspaceDependencies": {
+      "denyPatterns": ["lib-b"]
+    }
+  }
+}

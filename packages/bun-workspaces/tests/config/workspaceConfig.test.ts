@@ -34,6 +34,7 @@ describe("workspace config", () => {
       expect(config).toEqual({
         aliases: ["appA"],
         tags: [],
+        rules: {},
         scripts: {
           "all-workspaces": {
             order: 1,
@@ -52,6 +53,7 @@ describe("workspace config", () => {
       expect(config).toEqual({
         aliases: ["appB_file"],
         tags: [],
+        rules: {},
         scripts: {
           "all-workspaces": {
             order: 0,
@@ -73,6 +75,7 @@ describe("workspace config", () => {
       expect(config).toEqual({
         aliases: ["libA_file"],
         tags: [],
+        rules: {},
         scripts: {},
       });
     });
@@ -87,6 +90,7 @@ describe("workspace config", () => {
       expect(config).toEqual({
         aliases: ["libB", "libB2"],
         tags: [],
+        rules: {},
         scripts: {
           "all-workspaces": {
             order: 100,
@@ -108,6 +112,7 @@ describe("workspace config", () => {
       expect(config).toEqual({
         aliases: [],
         tags: [],
+        rules: {},
         scripts: {},
       });
     });
@@ -122,6 +127,7 @@ describe("workspace config", () => {
       expect(config).toEqual({
         aliases: [],
         tags: [],
+        rules: {},
         scripts: {},
       });
     });
@@ -136,6 +142,7 @@ describe("workspace config", () => {
       expect(config).toEqual({
         aliases: ["appA"],
         tags: [],
+        rules: {},
         scripts: {
           "all-workspaces": {
             order: 1,
@@ -202,6 +209,19 @@ describe("workspace config", () => {
         validateWorkspaceConfig({
           // @ts-expect-error - Invalid config
           alias: [123, null],
+        }),
+      ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
+    });
+
+    test("throws when both allowPatterns and denyPatterns are set in workspaceDependencies rule", () => {
+      expect(() =>
+        validateWorkspaceConfig({
+          rules: {
+            workspaceDependencies: {
+              allowPatterns: ["my-workspace"],
+              denyPatterns: ["other-workspace"],
+            },
+          },
         }),
       ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
     });
@@ -343,6 +363,7 @@ describe("workspace config", () => {
           "test-root": makeWorkspaceMapEntry({ alias: [] }),
           "application-1a": makeWorkspaceMapEntry({
             alias: ["appA"],
+            rules: {},
             scripts: {
               "all-workspaces": {
                 order: 1,
@@ -466,6 +487,7 @@ describe("workspace config", () => {
           "test-root": makeWorkspaceMapEntry({ alias: [] }),
           "application-1a": makeWorkspaceMapEntry({
             alias: ["appA"],
+            rules: {},
             scripts: {
               "all-workspaces": {
                 order: 1,
@@ -474,6 +496,7 @@ describe("workspace config", () => {
           }),
           "application-1b": makeWorkspaceMapEntry({
             alias: ["appB_file"],
+            rules: {},
             scripts: {
               "all-workspaces": {
                 order: 0,
@@ -489,6 +512,7 @@ describe("workspace config", () => {
           }),
           "library-1b": makeWorkspaceMapEntry({
             alias: ["libB", "libB2"],
+            rules: {},
             scripts: {
               "all-workspaces": {
                 order: 100,
@@ -531,6 +555,7 @@ describe("workspace config", () => {
         "test-root": makeWorkspaceMapEntry({ alias: [] }),
         "application-1a": makeWorkspaceMapEntry({
           alias: ["appA"],
+          rules: {},
           scripts: {
             "all-workspaces": {
               order: 1,
@@ -539,6 +564,7 @@ describe("workspace config", () => {
         }),
         "application-1b": makeWorkspaceMapEntry({
           alias: ["appB"],
+          rules: {},
           scripts: {
             "b-workspaces": {
               order: 0,
@@ -590,6 +616,7 @@ describe("workspace config", () => {
         "test-root": makeWorkspaceMapEntry({ alias: [] }),
         "application-1a": makeWorkspaceMapEntry({
           alias: ["appA-ts"],
+          rules: {},
           scripts: {
             "all-workspaces": {
               order: 1,
@@ -598,6 +625,7 @@ describe("workspace config", () => {
         }),
         "application-1b": makeWorkspaceMapEntry({
           alias: ["appB-ts"],
+          rules: {},
           scripts: {
             "all-workspaces": {
               order: 1,
@@ -635,6 +663,7 @@ describe("workspace config", () => {
         "test-root": makeWorkspaceMapEntry({ alias: [] }),
         "application-1a": makeWorkspaceMapEntry({
           alias: ["appA"],
+          rules: {},
           scripts: {
             "all-workspaces": {
               order: 1,
@@ -643,6 +672,7 @@ describe("workspace config", () => {
         }),
         "application-1b": makeWorkspaceMapEntry({
           alias: ["appB"],
+          rules: {},
           scripts: {
             "b-workspaces": {
               order: 0,
@@ -678,6 +708,7 @@ describe("workspace config", () => {
         "test-root": makeWorkspaceMapEntry({ alias: [] }),
         "application-1a": makeWorkspaceMapEntry({
           alias: ["appA-js"],
+          rules: {},
           scripts: {
             "all-workspaces": {
               order: 1,
@@ -686,6 +717,7 @@ describe("workspace config", () => {
         }),
         "application-1b": makeWorkspaceMapEntry({
           alias: ["appB-js"],
+          rules: {},
           scripts: {
             "all-workspaces": {
               order: 1,

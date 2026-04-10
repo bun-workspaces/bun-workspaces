@@ -1,0 +1,7 @@
+{
+  "name": "app",
+  "dependencies": {
+    "service": "workspace:*",
+    "lib-a": "workspace:*"
+  }
+}

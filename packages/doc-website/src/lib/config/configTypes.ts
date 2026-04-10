@@ -9,14 +9,17 @@ import { formatSimpleTypeToDisplay, type ValueToDisplay } from "./displayType";
 const rootDisplay: ValueToDisplay<RequiredDeep<RootConfig>> = {
   defaults: {
     parallelMax: {
+      comment: "The default maximum number of scripts that can run in parallel",
       primitive: true,
       types: ["number", "string"],
     },
     shell: {
+      comment: "The default shell to use for inline scripts",
       primitive: true,
       types: ["string"],
     },
     includeRootWorkspace: {
+      comment: "Whether to include the root workspace in the workspace list",
       primitive: true,
       types: ["boolean"],
     },
@@ -39,9 +42,13 @@ export const ROOT_CONFIG_TYPE =
     );
 
 const workspaceDisplay: ValueToDisplay<RequiredDeep<WorkspaceConfig>> = {
-  alias: "string | string[]",
+  alias: {
+    value: "string | string[]",
+    comment: "Must be unique across other aliases and workspace names",
+  },
   tags: {
     array: true,
+    comment: "Tags can be used to group workspaces together",
     item: {
       primitive: true,
       types: ["string"],
@@ -52,6 +59,23 @@ const workspaceDisplay: ValueToDisplay<RequiredDeep<WorkspaceConfig>> = {
       order: {
         primitive: true,
         types: ["number"],
+        comment: "Optional sorting order for running scripts",
+      },
+    },
+  },
+  rules: {
+    workspaceDependencies: {
+      allowPatterns: {
+        comment:
+          "Use workspace patterns to match workspaces to allow as dependencies",
+        array: true,
+        item: { primitive: true, types: ["string"] },
+      },
+      denyPatterns: {
+        comment:
+          "Workspaces not allowed to be dependencies.\nCannot use both allowPatterns and denyPatterns",
+        array: true,
+        item: { primitive: true, types: ["string"] },
       },
     },
   },

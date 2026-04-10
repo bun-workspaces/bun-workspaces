@@ -1,0 +1,6 @@
+{
+  "name": "feature",
+  "dependencies": {
+    "service": "workspace:*"
+  }
+}

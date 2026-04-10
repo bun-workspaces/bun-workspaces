@@ -11,7 +11,7 @@
     "catalogs": {}
   },
   "scripts": {
-    "bw": "bw run -N -W bw --script=",
+    "bw": "bw -l debug run -N -W bw --script=",
     "bw:test": "bw run -o plain test bw --",
     "bw:lint": "bw run -o plain lint bw --",
     "bw:build": "bw run -o plain build bw --",

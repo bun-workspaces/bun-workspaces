@@ -1,4 +1,4 @@
-import { createStdioTransport } from "./transport";
+import { createStdioTransport, type McpTransport } from "./transport";
 import {
   JSON_RPC_ERROR_CODES,
   MCP_PROTOCOL_VERSION,
@@ -19,7 +19,7 @@ type RegisteredResource = { resource: Resource; handler: ResourceHandler };
 export type McpServer = {
   registerTool: (tool: Tool, handler: ToolHandler) => void;
   registerResource: (resource: Resource, handler: ResourceHandler) => void;
-  start: () => Promise<void>;
+  start: (transport?: McpTransport) => Promise<void>;
 };
 
 export const createMcpServer = (info: McpServerInfo): McpServer => {
@@ -37,15 +37,15 @@ export const createMcpServer = (info: McpServerInfo): McpServer => {
     resources.set(resource.uri, { resource, handler });
   };
 
-  const start = async (): Promise<void> => {
-    const transport = createStdioTransport();
+  const start = async (transport?: McpTransport): Promise<void> => {
+    const activeTransport = transport ?? createStdioTransport();
 
     const send = (id: JsonRpcId, result: unknown): void => {
-      transport.send({ jsonrpc: "2.0", id, result });
+      activeTransport.send({ jsonrpc: "2.0", id, result });
     };
 
     const sendError = (id: JsonRpcId, code: number, message: string): void => {
-      transport.send({ jsonrpc: "2.0", id, error: { code, message } });
+      activeTransport.send({ jsonrpc: "2.0", id, error: { code, message } });
     };
 
     const handleInitialize = (id: JsonRpcId): void => {
@@ -136,7 +136,7 @@ export const createMcpServer = (info: McpServerInfo): McpServer => {
       }
     };
 
-    for await (const raw of transport.receive()) {
+    for await (const raw of activeTransport.receive()) {
       const method = raw["method"];
       if (typeof method !== "string") continue;
 

@@ -59,9 +59,11 @@
     "build:test": "BUILD_INCLUDE_TESTS=true bun run scripts/build.ts && chmod +x dist.test/bin/cli.js && cd dist.test && bun install && IS_BUILD=true bun run test",
     "build:rslib-only": "rslib build",
     "type-check": "tsc --noEmit",
-    "generate-modules": "bun run ajv && bun run generate-mcp-docs"
+    "generate-modules": "bun run ajv && bun run generate-mcp-docs",
+    "mcp:inspect": "trap 'fuser -k 6274/tcp 6277/tcp 2>/dev/null; exit 0' INT TERM EXIT; mcp-inspector bun run bin/cli.js --cwd ../../ mcp"
   },
   "devDependencies": {
+    "@modelcontextprotocol/inspector": "^0.21.1",
     "@rslib/core": "^0.15.1",
     "@types/shell-quote": "^1.7.5",
     "@xterm/headless": "^6.0.0",

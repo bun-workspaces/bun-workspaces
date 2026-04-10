@@ -7,6 +7,26 @@ export type McpTransport = {
   send: (message: RawMessage) => void;
 };
 
+export type MemoryTransport = McpTransport & {
+  sent: RawMessage[];
+};
+
+export const createMemoryTransport = (messages: RawMessage[]): MemoryTransport => {
+  const sent: RawMessage[] = [];
+
+  const send = (message: RawMessage): void => {
+    sent.push(message);
+  };
+
+  const receive = async function* (): AsyncGenerator<RawMessage> {
+    for (const message of messages) {
+      yield message;
+    }
+  };
+
+  return { send, receive, sent };
+};
+
 export const createStdioTransport = (): McpTransport => {
   const send = (message: RawMessage): void => {
     process.stdout.write(JSON.stringify(message) + "\n");

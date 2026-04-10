@@ -11,6 +11,7 @@ import {
   listTags,
   tagInfo,
 } from "./handleSimpleCommands";
+import { mcpServer } from "./mcp";
 import { runScript } from "./runScript";
 
 export const defineGlobalCommands = (context: GlobalCommandContext) => {
@@ -24,5 +25,6 @@ export const defineProjectCommands = (context: ProjectCommandContext) => {
   scriptInfo(context);
   listTags(context);
   tagInfo(context);
+  mcpServer(context);
   runScript(context);
 };

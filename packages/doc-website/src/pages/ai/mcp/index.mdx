@@ -1,0 +1,51 @@
+---
+title: MCP | AI
+titleSuffix: " | bun-workspaces"
+description: "MCP server integration for bun-workspaces | Documentation for bun-workspaces: A CLI and API to help manage Bun monorepos"
+pageType: doc
+sidebar: false
+outline: true
+footer: false
+---
+
+import { CURSOR_MCP_CONFIG, CLAUDE_DESKTOP_MCP_CONFIG, CLAUDE_CODE_MCP_CONFIG, MCP_SERVER_ENTRY_TERMINAL, MCP_SERVER_ENTRY_GUI } from '../../../lib/ai/mcpIntegrations';
+import { SyntaxHighlighter } from '../../../lib/util/highlight';
+
+# AI Tool Integration: MCP Server
+
+`bun-workspaces` provides its own MCP server via `bunx bun-workspaces mcp-server`. This can be used with any tooling that supports MCP.
+
+When you set up the MCP server with your tool, it will know the basics of how to use `bun-workspaces`, so you don't have to teach it,
+and it can look up more comprehensive docs via **resources**. It also will have a variety of tools for getting metadata about the project you're working in.
+
+
+## Example Integrations
+
+#### Command
+
+Some tools work with a limited `PATH` that may not include `bun`, so you may need to use: <code>{MCP_SERVER_ENTRY_GUI.command} {MCP_SERVER_ENTRY_GUI.args.join(" ")}</code><br/> instead
+of a plain `bunx bun-workspaces mcp-server`. 
+
+If Bun is installed somewhere else, you'll need to adjust the command to include the path to the Bun executable instead 
+of `$HOME/.bun/bin/bun`.
+
+#### Project Root
+
+If your project root is in a different directory than the one you're working in with your tool, you can add the working directory 
+for `bun-workspaces` to the command as: `bunx bun-workspaces --cwd=path/to/project/root mcp-server`.
+
+### Cursor
+
+Add the following to your `.cursor/mcp.json` file for the project you're working in.
+
+<SyntaxHighlighter language="json">
+{JSON.stringify(CURSOR_MCP_CONFIG, null, 2)}
+</SyntaxHighlighter>
+
+### Claude Code
+
+Add the following to your `.mcp.json` file for a directory you're working in.
+
+<SyntaxHighlighter language="json">
+{JSON.stringify(CLAUDE_CODE_MCP_CONFIG, null, 2)}
+</SyntaxHighlighter>

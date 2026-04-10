@@ -1,0 +1,182 @@
+import { getDoctorInfo } from "../../doctor";
+import type { FileSystemProject } from "../../project/implementations/fileSystemProject";
+import { ROOT_WORKSPACE_SELECTOR } from "../../project/implementations/projectBase";
+import type { McpServer, CallToolResult } from "./core";
+
+const textResult = (data: unknown): CallToolResult => ({
+  content: [{ type: "text", text: JSON.stringify(data, null, 2) }],
+});
+
+const errorResult = (message: string): CallToolResult => ({
+  content: [{ type: "text", text: message }],
+  isError: true,
+});
+
+export const registerBwTools = (
+  server: McpServer,
+  project: FileSystemProject,
+): void => {
+  server.registerTool(
+    {
+      name: "list_workspaces",
+      description:
+        "List workspaces in the project. Optionally filter by workspace patterns (name, alias, path glob, or tag).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          patterns: {
+            type: "array",
+            items: { type: "string" },
+            description:
+              'Workspace patterns to match. Examples: "my-workspace", "name:api-*", "alias:my-alias", "path:packages/**/*", "tag:backend", "@root"',
+          },
+        },
+      },
+    },
+    ({ patterns }) => {
+      const workspaces =
+        patterns && Array.isArray(patterns) && patterns.length > 0
+          ? project.findWorkspacesByPattern(...(patterns as string[]))
+          : project.workspaces;
+      return textResult(workspaces);
+    },
+  );
+
+  server.registerTool(
+    {
+      name: "workspace_info",
+      description:
+        'Get detailed information about a single workspace by its name or alias. Use "@root" for the root workspace.',
+      inputSchema: {
+        type: "object",
+        properties: {
+          nameOrAlias: {
+            type: "string",
+            description:
+              'The workspace name, alias, or "@root" for the root workspace',
+          },
+        },
+        required: ["nameOrAlias"],
+      },
+    },
+    ({ nameOrAlias }) => {
+      const name = nameOrAlias as string;
+      const workspace =
+        name === ROOT_WORKSPACE_SELECTOR
+          ? project.rootWorkspace
+          : project.findWorkspaceByNameOrAlias(name);
+
+      if (!workspace) {
+        return errorResult(`Workspace not found: "${name}"`);
+      }
+
+      return textResult(workspace);
+    },
+  );
+
+  server.registerTool(
+    {
+      name: "list_scripts",
+      description:
+        "List all scripts available across the project, with the workspaces that have each script.",
+      inputSchema: { type: "object" },
+    },
+    () => {
+      const scriptMap = project.mapScriptsToWorkspaces();
+      const scripts = Object.values(scriptMap).map(({ name, workspaces }) => ({
+        name,
+        workspaces: workspaces.map((w) => w.name),
+      }));
+      return textResult(scripts);
+    },
+  );
+
+  server.registerTool(
+    {
+      name: "script_info",
+      description:
+        "Get information about a specific script, including all workspaces that have it in their package.json.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          script: {
+            type: "string",
+            description: "The script name to look up",
+          },
+        },
+        required: ["script"],
+      },
+    },
+    ({ script }) => {
+      const scriptMap = project.mapScriptsToWorkspaces();
+      const scriptMetadata = scriptMap[script as string];
+
+      if (!scriptMetadata) {
+        return errorResult(`Script not found: "${script}"`);
+      }
+
+      return textResult({
+        name: scriptMetadata.name,
+        workspaces: scriptMetadata.workspaces.map((w) => w.name),
+      });
+    },
+  );
+
+  server.registerTool(
+    {
+      name: "list_tags",
+      description:
+        "List all tags defined across workspaces, with the workspaces that have each tag.",
+      inputSchema: { type: "object" },
+    },
+    () => {
+      const tagMap = project.mapTagsToWorkspaces();
+      const tags = Object.entries(tagMap).map(([tag, workspaces]) => ({
+        tag,
+        workspaces: workspaces.map((w) => w.name),
+      }));
+      return textResult(tags);
+    },
+  );
+
+  server.registerTool(
+    {
+      name: "tag_info",
+      description:
+        "Get information about a specific tag, including all workspaces that have it.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          tag: {
+            type: "string",
+            description: "The tag name to look up",
+          },
+        },
+        required: ["tag"],
+      },
+    },
+    ({ tag }) => {
+      const tagMap = project.mapTagsToWorkspaces();
+      const tagWorkspaces = tagMap[tag as string];
+
+      if (!tagWorkspaces) {
+        return errorResult(`Tag not found: "${tag}"`);
+      }
+
+      return textResult({
+        name: tag,
+        workspaces: tagWorkspaces.map((w) => w.name),
+      });
+    },
+  );
+
+  server.registerTool(
+    {
+      name: "doctor",
+      description:
+        "Get diagnostic information about the bun-workspaces installation: version, Bun version, OS, and environment.",
+      inputSchema: { type: "object" },
+    },
+    () => textResult(getDoctorInfo()),
+  );
+};

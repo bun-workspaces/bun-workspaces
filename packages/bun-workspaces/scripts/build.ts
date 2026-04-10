@@ -73,6 +73,7 @@ const createDesiredPackageJson = () => {
 
 export const runBuild = async () => {
   await $`bun run ajv`;
+  await $`bun run generate-mcp-docs`;
 
   console.log("Running rslib build...");
   await build(rsLibConfig);

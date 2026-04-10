@@ -1,12 +1,14 @@
 import { describe, expect, test } from "bun:test";
-import { createFileSystemProject } from "../../../src/project";
 import { createMcpServer } from "../../../src/ai/mcp/core/server";
 import { createMemoryTransport } from "../../../src/ai/mcp/core/transport";
 import { registerBwResources } from "../../../src/ai/mcp/resources";
+import { createFileSystemProject } from "../../../src/project";
 import { getProjectRoot } from "../../fixtures/testProjects";
 
 const setupServer = () => {
-  const project = createFileSystemProject({ rootDirectory: getProjectRoot("fullProject") });
+  const project = createFileSystemProject({
+    rootDirectory: getProjectRoot("fullProject"),
+  });
   const server = createMcpServer({ name: "bun-workspaces", version: "0.0.0" });
   registerBwResources(server, project);
   return { server, project };
@@ -31,8 +33,11 @@ const listResources = async () => {
     { jsonrpc: "2.0", id: 1, method: "resources/list", params: {} },
   ]);
   await server.start(transport);
-  return (transport.sent[0] as { result: { resources: { uri: string; name: string; mimeType?: string }[] } })
-    .result.resources;
+  return (
+    transport.sent[0] as {
+      result: { resources: { uri: string; name: string; mimeType?: string }[] };
+    }
+  ).result.resources;
 };
 
 describe("bw MCP resources", () => {
@@ -58,7 +63,9 @@ describe("bw MCP resources", () => {
 
     test("doc resources have text/markdown mimeType", async () => {
       const resources = await listResources();
-      const docResources = resources.filter((r) => r.uri.startsWith("bw://docs/"));
+      const docResources = resources.filter((r) =>
+        r.uri.startsWith("bw://docs/"),
+      );
       for (const r of docResources) {
         expect(r.mimeType).toBe("text/markdown");
       }

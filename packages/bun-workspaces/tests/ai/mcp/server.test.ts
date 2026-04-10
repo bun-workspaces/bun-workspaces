@@ -1,14 +1,21 @@
 import { describe, expect, test } from "bun:test";
 import { createMcpServer } from "../../../src/ai/mcp/core/server";
 import { createMemoryTransport } from "../../../src/ai/mcp/core/transport";
-import { JSON_RPC_ERROR_CODES, MCP_PROTOCOL_VERSION } from "../../../src/ai/mcp/core/types";
+import {
+  JSON_RPC_ERROR_CODES,
+  MCP_PROTOCOL_VERSION,
+} from "../../../src/ai/mcp/core/types";
 
 const runServer = async (
   messages: Record<string, unknown>[],
   setup?: (server: ReturnType<typeof createMcpServer>) => void,
 ) => {
   const transport = createMemoryTransport(messages);
-  const server = createMcpServer({ name: "test-server", version: "1.0.0", instructions: "Test server" });
+  const server = createMcpServer({
+    name: "test-server",
+    version: "1.0.0",
+    instructions: "Test server",
+  });
   setup?.(server);
   await server.start(transport);
   return transport.sent;
@@ -37,12 +44,18 @@ describe("MCP core server", () => {
         [{ jsonrpc: "2.0", id: 1, method: "initialize", params: {} }],
         (server) => {
           server.registerTool(
-            { name: "my_tool", description: "A tool", inputSchema: { type: "object" } },
+            {
+              name: "my_tool",
+              description: "A tool",
+              inputSchema: { type: "object" },
+            },
             () => ({ content: [{ type: "text", text: "ok" }] }),
           );
         },
       );
-      expect((response.result as Record<string, unknown>).capabilities).toEqual({ tools: {} });
+      expect((response.result as Record<string, unknown>).capabilities).toEqual(
+        { tools: {} },
+      );
     });
 
     test("reports resources capability when resources are registered", async () => {
@@ -51,11 +64,15 @@ describe("MCP core server", () => {
         (server) => {
           server.registerResource(
             { uri: "test://res", name: "A resource" },
-            (uri) => ({ contents: [{ uri, mimeType: "text/plain", text: "hello" }] }),
+            (uri) => ({
+              contents: [{ uri, mimeType: "text/plain", text: "hello" }],
+            }),
           );
         },
       );
-      expect((response.result as Record<string, unknown>).capabilities).toEqual({ resources: {} });
+      expect((response.result as Record<string, unknown>).capabilities).toEqual(
+        { resources: {} },
+      );
     });
 
     test("omits instructions when not provided", async () => {
@@ -65,7 +82,9 @@ describe("MCP core server", () => {
       const server = createMcpServer({ name: "s", version: "0.0.1" });
       await server.start(transport);
       const [response] = transport.sent;
-      expect((response.result as Record<string, unknown>).instructions).toBeUndefined();
+      expect(
+        (response.result as Record<string, unknown>).instructions,
+      ).toBeUndefined();
     });
   });
 
@@ -94,30 +113,53 @@ describe("MCP core server", () => {
       const [response] = await runServer([
         { jsonrpc: "2.0", id: 3, method: "tools/list", params: {} },
       ]);
-      expect(response).toEqual({ jsonrpc: "2.0", id: 3, result: { tools: [] } });
+      expect(response).toEqual({
+        jsonrpc: "2.0",
+        id: 3,
+        result: { tools: [] },
+      });
     });
 
     test("returns registered tools", async () => {
       const tool = {
         name: "my_tool",
         description: "Does something",
-        inputSchema: { type: "object" as const, properties: { x: { type: "string" as const } } },
+        inputSchema: {
+          type: "object" as const,
+          properties: { x: { type: "string" as const } },
+        },
       };
       const [response] = await runServer(
         [{ jsonrpc: "2.0", id: 3, method: "tools/list", params: {} }],
-        (server) => server.registerTool(tool, () => ({ content: [{ type: "text", text: "ok" }] })),
+        (server) =>
+          server.registerTool(tool, () => ({
+            content: [{ type: "text", text: "ok" }],
+          })),
       );
-      expect((response.result as Record<string, unknown>).tools).toEqual([tool]);
+      expect((response.result as Record<string, unknown>).tools).toEqual([
+        tool,
+      ]);
     });
   });
 
   describe("tools/call", () => {
     test("calls tool handler and returns result", async () => {
       const [response] = await runServer(
-        [{ jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "my_tool", arguments: { x: "hello" } } }],
+        [
+          {
+            jsonrpc: "2.0",
+            id: 4,
+            method: "tools/call",
+            params: { name: "my_tool", arguments: { x: "hello" } },
+          },
+        ],
         (server) =>
           server.registerTool(
-            { name: "my_tool", description: "A tool", inputSchema: { type: "object" } },
+            {
+              name: "my_tool",
+              description: "A tool",
+              inputSchema: { type: "object" },
+            },
             ({ x }) => ({ content: [{ type: "text", text: `got: ${x}` }] }),
           ),
       );
@@ -130,28 +172,52 @@ describe("MCP core server", () => {
 
     test("returns error for unknown tool", async () => {
       const [response] = await runServer([
-        { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "missing", arguments: {} } },
+        {
+          jsonrpc: "2.0",
+          id: 5,
+          method: "tools/call",
+          params: { name: "missing", arguments: {} },
+        },
       ]);
       expect(response).toEqual({
         jsonrpc: "2.0",
         id: 5,
-        error: { code: JSON_RPC_ERROR_CODES.methodNotFound, message: "Tool not found: missing" },
+        error: {
+          code: JSON_RPC_ERROR_CODES.methodNotFound,
+          message: "Tool not found: missing",
+        },
       });
     });
 
     test("returns isError result when handler throws", async () => {
       const [response] = await runServer(
-        [{ jsonrpc: "2.0", id: 6, method: "tools/call", params: { name: "bad_tool", arguments: {} } }],
+        [
+          {
+            jsonrpc: "2.0",
+            id: 6,
+            method: "tools/call",
+            params: { name: "bad_tool", arguments: {} },
+          },
+        ],
         (server) =>
           server.registerTool(
-            { name: "bad_tool", description: "Throws", inputSchema: { type: "object" } },
-            () => { throw new Error("something went wrong"); },
+            {
+              name: "bad_tool",
+              description: "Throws",
+              inputSchema: { type: "object" },
+            },
+            () => {
+              throw new Error("something went wrong");
+            },
           ),
       );
       expect(response).toEqual({
         jsonrpc: "2.0",
         id: 6,
-        result: { content: [{ type: "text", text: "something went wrong" }], isError: true },
+        result: {
+          content: [{ type: "text", text: "something went wrong" }],
+          isError: true,
+        },
       });
     });
   });
@@ -161,11 +227,20 @@ describe("MCP core server", () => {
       const [response] = await runServer([
         { jsonrpc: "2.0", id: 7, method: "resources/list", params: {} },
       ]);
-      expect(response).toEqual({ jsonrpc: "2.0", id: 7, result: { resources: [] } });
+      expect(response).toEqual({
+        jsonrpc: "2.0",
+        id: 7,
+        result: { resources: [] },
+      });
     });
 
     test("returns registered resources", async () => {
-      const resource = { uri: "test://doc", name: "A doc", description: "Desc", mimeType: "text/plain" };
+      const resource = {
+        uri: "test://doc",
+        name: "A doc",
+        description: "Desc",
+        mimeType: "text/plain",
+      };
       const [response] = await runServer(
         [{ jsonrpc: "2.0", id: 7, method: "resources/list", params: {} }],
         (server) =>
@@ -173,35 +248,58 @@ describe("MCP core server", () => {
             contents: [{ uri, mimeType: "text/plain", text: "content" }],
           })),
       );
-      expect((response.result as Record<string, unknown>).resources).toEqual([resource]);
+      expect((response.result as Record<string, unknown>).resources).toEqual([
+        resource,
+      ]);
     });
   });
 
   describe("resources/read", () => {
     test("reads a registered resource", async () => {
       const [response] = await runServer(
-        [{ jsonrpc: "2.0", id: 8, method: "resources/read", params: { uri: "test://doc" } }],
+        [
+          {
+            jsonrpc: "2.0",
+            id: 8,
+            method: "resources/read",
+            params: { uri: "test://doc" },
+          },
+        ],
         (server) =>
           server.registerResource(
             { uri: "test://doc", name: "A doc" },
-            (uri) => ({ contents: [{ uri, mimeType: "text/plain", text: "the content" }] }),
+            (uri) => ({
+              contents: [{ uri, mimeType: "text/plain", text: "the content" }],
+            }),
           ),
       );
       expect(response).toEqual({
         jsonrpc: "2.0",
         id: 8,
-        result: { contents: [{ uri: "test://doc", mimeType: "text/plain", text: "the content" }] },
+        result: {
+          contents: [
+            { uri: "test://doc", mimeType: "text/plain", text: "the content" },
+          ],
+        },
       });
     });
 
     test("returns error for unknown resource", async () => {
       const [response] = await runServer([
-        { jsonrpc: "2.0", id: 9, method: "resources/read", params: { uri: "test://missing" } },
+        {
+          jsonrpc: "2.0",
+          id: 9,
+          method: "resources/read",
+          params: { uri: "test://missing" },
+        },
       ]);
       expect(response).toEqual({
         jsonrpc: "2.0",
         id: 9,
-        error: { code: JSON_RPC_ERROR_CODES.invalidParams, message: "Resource not found: test://missing" },
+        error: {
+          code: JSON_RPC_ERROR_CODES.invalidParams,
+          message: "Resource not found: test://missing",
+        },
       });
     });
   });
@@ -214,7 +312,10 @@ describe("MCP core server", () => {
       expect(response).toEqual({
         jsonrpc: "2.0",
         id: 10,
-        error: { code: JSON_RPC_ERROR_CODES.methodNotFound, message: "Method not found: unknown/method" },
+        error: {
+          code: JSON_RPC_ERROR_CODES.methodNotFound,
+          message: "Method not found: unknown/method",
+        },
       });
     });
   });

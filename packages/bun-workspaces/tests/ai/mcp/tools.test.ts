@@ -1,8 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import { createFileSystemProject } from "../../../src/project";
 import { createMcpServer } from "../../../src/ai/mcp/core/server";
 import { createMemoryTransport } from "../../../src/ai/mcp/core/transport";
 import { registerBwTools } from "../../../src/ai/mcp/tools";
+import { createFileSystemProject } from "../../../src/project";
 import { getProjectRoot } from "../../fixtures/testProjects";
 
 const callTool = async (
@@ -10,14 +10,23 @@ const callTool = async (
   toolName: string,
   args: Record<string, unknown> = {},
 ) => {
-  const project = createFileSystemProject({ rootDirectory: getProjectRoot(projectName) });
+  const project = createFileSystemProject({
+    rootDirectory: getProjectRoot(projectName),
+  });
   const transport = createMemoryTransport([
-    { jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: toolName, arguments: args } },
+    {
+      jsonrpc: "2.0",
+      id: 1,
+      method: "tools/call",
+      params: { name: toolName, arguments: args },
+    },
   ]);
   const server = createMcpServer({ name: "bun-workspaces", version: "0.0.0" });
   registerBwTools(server, project);
   await server.start(transport);
-  const response = transport.sent[0] as { result?: { content: { text: string }[]; isError?: boolean } };
+  const response = transport.sent[0] as {
+    result?: { content: { text: string }[]; isError?: boolean };
+  };
   const text = response.result?.content[0]?.text ?? "";
   let result: unknown = null;
   try {
@@ -31,7 +40,10 @@ const callTool = async (
 describe("bw MCP tools", () => {
   describe("list_workspaces", () => {
     test("returns all workspaces when no patterns", async () => {
-      const { result, isError } = await callTool("fullProject", "list_workspaces");
+      const { result, isError } = await callTool(
+        "fullProject",
+        "list_workspaces",
+      );
       expect(isError).toBeUndefined();
       expect(result).toBeArray();
       expect((result as { name: string }[]).map((w) => w.name)).toEqual([
@@ -44,9 +56,13 @@ describe("bw MCP tools", () => {
     });
 
     test("filters by name pattern", async () => {
-      const { result, isError } = await callTool("fullProject", "list_workspaces", {
-        patterns: ["library-*"],
-      });
+      const { result, isError } = await callTool(
+        "fullProject",
+        "list_workspaces",
+        {
+          patterns: ["library-*"],
+        },
+      );
       expect(isError).toBeUndefined();
       expect((result as { name: string }[]).map((w) => w.name)).toEqual([
         "library-a",
@@ -75,34 +91,50 @@ describe("bw MCP tools", () => {
 
   describe("workspace_info", () => {
     test("returns workspace info by name", async () => {
-      const { result, isError } = await callTool("fullProject", "workspace_info", {
-        nameOrAlias: "library-c",
-      });
+      const { result, isError } = await callTool(
+        "fullProject",
+        "workspace_info",
+        {
+          nameOrAlias: "library-c",
+        },
+      );
       expect(isError).toBeUndefined();
       expect((result as { name: string }).name).toBe("library-c");
       expect((result as { scripts: string[] }).scripts).toContain("library-c");
     });
 
     test("returns error for unknown workspace", async () => {
-      const { isError, result } = await callTool("fullProject", "workspace_info", {
-        nameOrAlias: "does-not-exist",
-      });
+      const { isError, result } = await callTool(
+        "fullProject",
+        "workspace_info",
+        {
+          nameOrAlias: "does-not-exist",
+        },
+      );
       expect(isError).toBe(true);
       expect(result as string).toContain("does-not-exist");
     });
 
     test("returns root workspace info with @root selector", async () => {
-      const { result, isError } = await callTool("fullProject", "workspace_info", {
-        nameOrAlias: "@root",
-      });
+      const { result, isError } = await callTool(
+        "fullProject",
+        "workspace_info",
+        {
+          nameOrAlias: "@root",
+        },
+      );
       expect(isError).toBeUndefined();
       expect((result as { isRoot: boolean }).isRoot).toBe(true);
     });
 
     test("returns workspace info by alias", async () => {
-      const { result, isError } = await callTool("workspaceTags", "workspace_info", {
-        nameOrAlias: "libA",
-      });
+      const { result, isError } = await callTool(
+        "workspaceTags",
+        "workspace_info",
+        {
+          nameOrAlias: "libA",
+        },
+      );
       expect(isError).toBeUndefined();
       expect((result as { name: string }).name).toBe("library-1a");
     });
@@ -158,7 +190,9 @@ describe("bw MCP tools", () => {
 
   describe("tag_info", () => {
     test("returns workspaces for a known tag", async () => {
-      const { result, isError } = await callTool("workspaceTags", "tag_info", { tag: "app" });
+      const { result, isError } = await callTool("workspaceTags", "tag_info", {
+        tag: "app",
+      });
       expect(isError).toBeUndefined();
       const info = result as { name: string; workspaces: string[] };
       expect(info.name).toBe("app");
@@ -166,7 +200,9 @@ describe("bw MCP tools", () => {
     });
 
     test("returns error for unknown tag", async () => {
-      const { isError } = await callTool("workspaceTags", "tag_info", { tag: "unknown-tag" });
+      const { isError } = await callTool("workspaceTags", "tag_info", {
+        tag: "unknown-tag",
+      });
       expect(isError).toBe(true);
     });
   });

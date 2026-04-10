@@ -1,6 +1,9 @@
 import path from "path";
 
-import { CLI_QUICKSTART, API_QUICKSTART } from "@bw/doc-website";
+import {
+  CLI_QUICKSTART,
+  API_QUICKSTART,
+} from "bun-workspaces/src/internal/docs";
 
 if (import.meta.main) {
   console.log("Generating README...");

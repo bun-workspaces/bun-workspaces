@@ -253,6 +253,15 @@ const CLI_PROJECT_COMMANDS_CONTENT = {
       `bw run my-script --json-outfile=results.json`,
     ],
   })),
+  mcpServer: defineCommandContent("mcpServer", () => ({
+    title: "MCP Server",
+    description:
+      "Start the bun-workspaces MCP (Model Context Protocol) server over stdio. Set this up with your tooling of choice. See here for more information.",
+    examples: ["bw mcp-server"],
+    descriptionLinks: {
+      here: "/ai/mcp",
+    },
+  })),
   doctor: defineCommandContent("doctor", () => ({
     title: "Doctor",
     description: "Print diagnostic information for bug reports etc.",

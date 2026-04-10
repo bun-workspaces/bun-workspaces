@@ -167,6 +167,14 @@ export const CLI_COMMANDS_CONFIG = {
       },
     },
   },
+  mcpServer: {
+    command: "mcp-server",
+    isGlobal: false,
+    aliases: [],
+    description:
+      "Start the bun-workspaces MCP (Model Context Protocol) server over stdio",
+    options: {},
+  },
   runScript: {
     command: "run-script [script] [workspacePatterns...]",
     isGlobal: false,

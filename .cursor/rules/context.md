@@ -7,7 +7,6 @@ Three main domain terms to know:
 - Project: generally represents a monorepo and is defined by the root `package.json` file
 - Workspace: a nested package within a project. The root package.json can count as a workspace as well, but by default, only nested packages are considered workspaces.
 - Script: an entry in the `scripts` field of a workspace's `package.json` file. bw can also run one-off commands known as "inline scripts," which can use the Bun shell or system shell (`sh -c` or `cmd /d /s /c` for windows).
-
 ## Concepts
 
 ### Workspace patterns
@@ -44,7 +43,6 @@ bw run "bun <projectPath>/my-script.ts" --inline \
   --inline-name="my-script-name" \
   --args="<workspaceName> <workspacePath>"
 ```
-
 ### CLI examples:
 
 ```bash
@@ -123,7 +121,6 @@ bw --no-include-root ls # override config/env var setting
 bw --log-level=silent ls
 bw -l silent ls
 ```
-
 ### API examples:
 
 The API is held in close parity with the CLI. It is developed first so that the CLI is a thin wrapper around the API.
@@ -199,7 +196,6 @@ project.runScriptAcrossWorkspaces({
   "dependents": ["my-dependent"],
 }
 ```
-
 ## Root config
 
 Optional project config can be placed in `bw.root.jsonc`/`bw.root.json` in the root directory.
@@ -235,9 +231,54 @@ Tags are strings to group workspaces together that therefore don't need to be un
       "order": 1,
     },
   },
+  "rules": {
+    "workspaceDependencies": {
+      // use workspace patterns to allow or deny other workspaces as dependencies
+      "allowPatterns": ["my-allow-pattern-*"],
+      // or
+      // "denyPatterns": ["my-deny-pattern-*"],
+    },
+  },
 }
 ```
 
+### Workspace Dependency Rules
+
+Using the `rules.workspaceDependencies` field, you can define rules for which workspaces are allowed to be dependencies,
+using either `allowPatterns` or `denyPatterns`.
+
+Workspace Patterns are used to match workspaces.
+
+You can't use both `allowPatterns` and `denyPatterns` at the same time, but you can use
+
+## TypeScript/JSON Config Files
+
+You can use TypeScript/JSON config files to define your workspace configuration.
+
+### TypeScript
+
+`bw.workspace.ts`
+
+```ts
+import { defineWorkspaceConfig } from "bun-workspaces/config";
+
+export default defineWorkspaceConfig({
+  alias: "my-alias",
+  tags: ["my-tag"],
+});
+```
+
+`bw.root.ts`
+
+```ts
+import { defineRootConfig } from "bun-workspaces/config";
+
+export default defineRootConfig({
+  defaults: {
+    parallelMax: 5,
+  },
+});
+```
 ## Development processes
 
 The repo contains three packages:

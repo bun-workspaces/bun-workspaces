@@ -30,8 +30,8 @@ const usePersistedStore = create<{
       name: "banner",
       storage: createJSONStorage(() => localStorage),
       version: 1,
-    }
-  )
+    },
+  ),
 );
 
 export const Banner = () => {

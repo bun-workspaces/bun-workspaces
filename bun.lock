@@ -672,10 +672,6 @@
 
     "bun-workspaces": ["bun-workspaces@workspace:packages/bun-workspaces"],
 
-    "bun-workspaces_local": ["bun-workspaces@workspace:packages/bun-workspaces"],
-
-    "bun-workspaces_release": ["bun-workspaces@workspace:packages/bun-workspaces"],
-
     "bundle-name": ["bundle-name@4.1.0", "", { "dependencies": { "run-applescript": "^7.0.0" } }, "sha512-tjwM5exMg6BGRI+kNmTntNsvdZS1X8BFYS6tnJ2hdH0kVxM6/eVZ2xy+FqStSWvYmtfFMDLIxurorHwDKfDz5Q=="],
 
     "bw-web-service-shared": ["bw-web-service-shared@0.2.0", "", {}, "sha512-hTCNH+irBXA7K9AfzNOJzQuJOA3x10UEdD0u6pC3ftM5Vfp6eYYhjT/NOuBFTcAOHm1BBfQx95x3zqHlpVeEaA=="],
@@ -1897,6 +1893,10 @@
     "zwitch": ["zwitch@2.0.4", "", {}, "sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A=="],
 
     "@babel/helper-compilation-targets/lru-cache": ["lru-cache@5.1.1", "", { "dependencies": { "yallist": "^3.0.2" } }, "sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w=="],
+
+    "@bw/sandbox/bun-workspaces_local": ["bun-workspaces@file:packages/bun-workspaces", { "dependencies": { "commander": "^12.1.0", "shell-quote": "^1.8.3" }, "devDependencies": { "@modelcontextprotocol/inspector": "^0.21.1", "@rslib/core": "^0.15.1", "@types/shell-quote": "^1.7.5", "@xterm/headless": "^6.0.0", "ajv": "^8.17.1", "ajv-cli": "^5.0.0" }, "bin": { "bun-workspaces": "bin/cli.js", "bw": "bin/cli.js" } }],
+
+    "@bw/sandbox/bun-workspaces_release": ["bun-workspaces@file:packages/bun-workspaces", { "dependencies": { "commander": "^12.1.0", "shell-quote": "^1.8.3" }, "devDependencies": { "@modelcontextprotocol/inspector": "^0.21.1", "@rslib/core": "^0.15.1", "@types/shell-quote": "^1.7.5", "@xterm/headless": "^6.0.0", "ajv": "^8.17.1", "ajv-cli": "^5.0.0" }, "bin": { "bun-workspaces": "bin/cli.js", "bw": "bin/cli.js" } }],
 
     "@cspotcode/source-map-support/@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.9", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.0.3", "@jridgewell/sourcemap-codec": "^1.4.10" } }, "sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ=="],
 

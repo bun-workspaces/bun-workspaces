@@ -18,7 +18,8 @@
     "./src/config/configTypes": "./src/config/configTypes.ts",
     "./src/config/util/configLocation": "./src/config/util/configLocation.ts",
     "./src/config/rootConfig/rootConfigLocation": "./src/config/rootConfig/rootConfigLocation.ts",
-    "./src/cli/globalOptions/globalOptionsConfig": "./src/cli/globalOptions/globalOptionsConfig.ts"
+    "./src/cli/globalOptions/globalOptionsConfig": "./src/cli/globalOptions/globalOptionsConfig.ts",
+    "./src/internal/docs": "./src/internal/docs/index.ts"
   },
   "private": true,
   "description": "A monorepo management tool for Bun, with a CLI and API to enhance Bun's native workspaces.",

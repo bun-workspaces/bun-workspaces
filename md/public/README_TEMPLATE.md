@@ -11,6 +11,7 @@
 - Version 1 is here after the initial alpha! 🍔🍔👁️🍔🍔
 - You can demo the CLI [directly in the browser](https://bunworkspaces.com/web-cli)
 - There's now [an official blog](https://bunworkspaces.com/blog/bun-workspaces-v1) to cover noteworthy releases and more!
+- There's now a provided [MCP server](https://bunworkspaces.com/ai/mcp) for your AI tooling to understand how to use `bun-workspaces`!
 <hr/>
 
 This is a CLI and TypeScript API to enhance your monorepo development with Bun's [native workspaces](https://bun.sh/docs/install/workspaces) feature for nested JavaScript/TypeScript packages.

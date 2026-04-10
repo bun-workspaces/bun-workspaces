@@ -382,8 +382,10 @@ export const renderGroupedOutput = async (
   process.on("SIGWINCH", render);
 
   process.stdin.on("data", (data) => {
-    if (data[0] === 0x03) process.kill(process.pid, "SIGINT");
-    if (data[0] === 0x1c) process.kill(process.pid, "SIGQUIT");
+    // Send to the entire process group (pid=0) so child processes also receive
+    // the signal — raw mode prevents the terminal from doing this automatically.
+    if (data[0] === 0x03) process.kill(0, "SIGINT");
+    if (data[0] === 0x1c) process.kill(0, "SIGQUIT");
   });
 
   runOnExit((reason) => {

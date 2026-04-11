@@ -35,7 +35,7 @@
     "type-check": "bw run type-check -P --",
     "generate-cursor-rules": "bw run generate-cursor-rules scripts -o plain --",
     "generate-readme": "bw run generate-readme scripts -o plain --",
-    "prepare": "cd packages/bun-workspaces && bun run generate-modules"
+    "prepare": "cd packages/bun-workspaces && bun run generate-modules && husky install"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
@@ -48,9 +48,13 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "globals": "^16.5.0",
+    "husky": "^9.1.7",
     "json-schema-to-ts": "^3.1.1",
     "prettier": "^3.7.4",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.51.0"
+  },
+  "lint-staged": {
+    "*.{js,ts,jsx,tsx,json,css,md,mdx,yaml,yml}": "prettier --write"
   }
 }

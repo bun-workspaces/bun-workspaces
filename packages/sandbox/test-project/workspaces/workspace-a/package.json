@@ -2,6 +2,7 @@
   "name": "workspace-a",
   "bw": {},
   "scripts": {
-    "workspace-script": "bun run script.ts"
+    "workspace-script": "bun run script.ts",
+    "server": "bun run server.ts"
   }
 }

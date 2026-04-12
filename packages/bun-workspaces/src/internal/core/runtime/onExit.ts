@@ -41,7 +41,7 @@ const registerListeners = () => {
     const handleSignal = () => {
       runAllHandlers(signal);
       process.off(signal, handleSignal);
-      process.kill(process.pid, signal);
+      process.kill(0, signal);
     };
     process.on(signal, handleSignal);
   }

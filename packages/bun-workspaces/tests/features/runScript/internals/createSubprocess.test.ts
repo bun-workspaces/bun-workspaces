@@ -223,6 +223,9 @@ describe("createSubprocess (Windows)", () => {
 
       expect(cmdPids).toHaveLength(2);
 
+      // Give cmd time to fork timeout.exe.
+      await Bun.sleep(500);
+
       // Collect grandchild PIDs (timeout.exe spawned by cmd).
       const grandchildPids: number[] = [];
       for (const cmdPid of cmdPids) {

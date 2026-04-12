@@ -13,7 +13,9 @@ runOnExit((codeOrSignal) => {
       logger.debug(
         `Killing subprocess ${subprocess.pid} with signal ${codeOrSignal}`,
       );
-      subprocess.kill(codeOrSignal);
+      subprocess.kill(
+        typeof codeOrSignal === "string" ? codeOrSignal : "SIGTERM",
+      );
     }
   });
 });

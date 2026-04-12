@@ -5,17 +5,21 @@ const SUBPROCESS_REGISTRY: Record<number, Bun.Subprocess> = {};
 
 runOnExit((codeOrSignal) => {
   Object.values(SUBPROCESS_REGISTRY).forEach((subprocess) => {
-    /**
-     * @todo Windows support for killing subprocesses is needed.
-     * subprocess.kill() will throw with not-implemented error
-     */
-    if (!subprocess.killed && subprocess.exitCode === null && !IS_WINDOWS) {
-      logger.debug(
-        `Killing subprocess ${subprocess.pid} with signal ${codeOrSignal}`,
-      );
-      subprocess.kill(
-        typeof codeOrSignal === "string" ? codeOrSignal : "SIGTERM",
-      );
+    if (!subprocess.killed && subprocess.exitCode === null) {
+      if (IS_WINDOWS) {
+        logger.debug(`Killing subprocess tree ${subprocess.pid} via taskkill`);
+        Bun.spawnSync(
+          ["taskkill", "/F", "/T", "/PID", subprocess.pid.toString()],
+          { stdout: "ignore", stderr: "ignore" },
+        );
+      } else {
+        logger.debug(
+          `Killing subprocess ${subprocess.pid} with signal ${codeOrSignal}`,
+        );
+        subprocess.kill(
+          typeof codeOrSignal === "string" ? codeOrSignal : "SIGTERM",
+        );
+      }
     }
   });
 });

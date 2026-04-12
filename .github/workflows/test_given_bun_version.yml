@@ -7,7 +7,7 @@ on:
         description: The Bun version to test
         required: true
         type: string
-        default: 1.3.10
+        default: 1.3.12
       os:
         description: The OS to test
         required: true
@@ -20,7 +20,7 @@ on:
         description: The Bun version to test
         required: true
         type: string
-        default: 1.3.10
+        default: 1.3.12
       os:
         description: The OS to test
         required: true
@@ -35,6 +35,11 @@ on:
         required: false
         type: string
         default: latest
+      test_args:
+        description: The arguments to pass to the tests
+        required: false
+        type: string
+        default: ""
 
 jobs:
   run_tests:
@@ -47,4 +52,4 @@ jobs:
           bun_version: ${{ inputs.bun_version }}
 
       - name: Run Tests Against Build
-        run: bun bw:build:test
+        run: bun bw:build:test ${{ inputs.test_args }}

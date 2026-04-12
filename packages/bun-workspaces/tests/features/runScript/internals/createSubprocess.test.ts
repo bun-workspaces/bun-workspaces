@@ -13,6 +13,11 @@ const SYSTEM_SHELL_FIXTURE_PATH = path.join(
   "../../../fixtures/testScripts/createSubprocessesSystemShell.ts",
 );
 
+const SYSTEM_SHELL_SELF_EXIT_FIXTURE_PATH = path.join(
+  import.meta.dir,
+  "../../../fixtures/testScripts/createSubprocessesSystemShellSelfExit.ts",
+);
+
 /** Returns the direct child PIDs of a process using Linux procfs. */
 const getChildPids = async (ppid: number): Promise<number[]> => {
   try {
@@ -29,10 +34,52 @@ const getChildPids = async (ppid: number): Promise<number[]> => {
   }
 };
 
+/** Returns the direct child PIDs of a process using PowerShell on Windows. */
+const getChildPidsWindows = async (ppid: number): Promise<number[]> => {
+  try {
+    const result = Bun.spawnSync(
+      [
+        "powershell",
+        "-NoProfile",
+        "-NonInteractive",
+        "-Command",
+        `$p = (Get-CimInstance Win32_Process -Filter 'ParentProcessId=${ppid}').ProcessId; if ($p) { $p -join "\`n" }`,
+      ],
+      { stdout: "pipe", stderr: "ignore" },
+    );
+    return result.stdout
+      .toString()
+      .trim()
+      .split(/\r?\n/)
+      .map((s) => parseInt(s.trim(), 10))
+      .filter((n) => Number.isFinite(n) && n > 0);
+  } catch {
+    return [];
+  }
+};
+
 const pidExists = async (pid: number): Promise<boolean> => {
   try {
     process.kill(pid, 0);
     return true;
+  } catch {
+    return false;
+  }
+};
+
+const pidExistsWindows = async (pid: number): Promise<boolean> => {
+  try {
+    const result = Bun.spawnSync(
+      [
+        "powershell",
+        "-NoProfile",
+        "-NonInteractive",
+        "-Command",
+        `$null -ne (Get-Process -Id ${pid} -ErrorAction SilentlyContinue)`,
+      ],
+      { stdout: "pipe", stderr: "ignore" },
+    );
+    return result.stdout.toString().trim().toLowerCase() === "true";
   } catch {
     return false;
   }
@@ -142,5 +189,63 @@ describe("createSubprocess", () => {
       }
     },
     { timeout: 10000 },
+  );
+});
+
+describe("createSubprocess (Windows)", () => {
+  if (!IS_WINDOWS) {
+    return;
+  }
+
+  test(
+    "kills grandchild processes (system shell) when main process exits via process.exit",
+    async () => {
+      const fixtureProcess = Bun.spawn(
+        ["bun", SYSTEM_SHELL_SELF_EXIT_FIXTURE_PATH],
+        {
+          stdout: "pipe",
+          stderr: "ignore",
+        },
+      );
+
+      // Collect the cmd PIDs printed by the fixture (one per subprocess).
+      const cmdPids: number[] = [];
+      for await (const { chunk } of createProcessOutput(
+        fixtureProcess.stdout,
+        {},
+      ).text()) {
+        for (const line of Bun.stripANSI(chunk).split("\n")) {
+          const pid = parseInt(line.trim(), 10);
+          if (Number.isFinite(pid) && pid > 0) cmdPids.push(pid);
+        }
+        if (cmdPids.length >= 2) break;
+      }
+
+      expect(cmdPids).toHaveLength(2);
+
+      // Collect grandchild PIDs (timeout.exe spawned by cmd).
+      const grandchildPids: number[] = [];
+      for (const cmdPid of cmdPids) {
+        grandchildPids.push(...(await getChildPidsWindows(cmdPid)));
+      }
+
+      expect(grandchildPids.length).toBeGreaterThan(0);
+
+      for (const pid of [...cmdPids, ...grandchildPids]) {
+        expect(await pidExistsWindows(pid)).toBe(true);
+      }
+
+      // Wait for the fixture to exit naturally. It calls process.exit() which
+      // fires process.on("exit") → runOnExit handlers → taskkill /F /T /PID.
+      await fixtureProcess.exited;
+
+      // Allow taskkill to finish terminating the process trees.
+      await Bun.sleep(500);
+
+      for (const pid of [...cmdPids, ...grandchildPids]) {
+        expect(await pidExistsWindows(pid)).toBe(false);
+      }
+    },
+    { timeout: 15000 },
   );
 });

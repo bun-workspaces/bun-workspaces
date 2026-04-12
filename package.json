@@ -35,7 +35,7 @@
     "type-check": "bw run type-check -P --",
     "generate-cursor-rules": "bw run generate-cursor-rules scripts -o plain --",
     "generate-readme": "bw run generate-readme scripts -o plain --",
-    "prepare": "cd packages/bun-workspaces && bun run generate-modules && husky install"
+    "prepare": "cd packages/bun-workspaces && bun run generate-modules"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

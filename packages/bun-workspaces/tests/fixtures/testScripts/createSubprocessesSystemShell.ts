@@ -8,7 +8,7 @@ if (import.meta.main) {
   for (let i = 0; i < 2; i++) {
     // Use a compound command to force sh to fork (not exec) the sleep subprocess,
     // creating a grandchild process that the registry does not track directly.
-    const command = IS_WINDOWS ? "timeout /t 30 /nobreak" : "sleep 30; true";
+    const command = IS_WINDOWS ? "ping -n 31 127.0.0.1" : "sleep 30; true";
     const { argv, cleanup } = createScriptExecutor(command, "system");
     const subprocess = createSubprocess(argv, {
       cwd: process.cwd(),

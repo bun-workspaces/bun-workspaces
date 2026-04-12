@@ -8,7 +8,7 @@ if (import.meta.main) {
   (async () => {
     // On Windows, cmd /d /s /c call <batchfile> spawns cmd, which then spawns
     // timeout.exe — the grandchild we're testing cleanup for.
-    const command = IS_WINDOWS ? "timeout /t 30 /nobreak" : "sleep 30; true";
+    const command = IS_WINDOWS ? "ping -n 31 127.0.0.1" : "sleep 30; true";
     for (let i = 0; i < 2; i++) {
       const { argv, cleanup } = createScriptExecutor(command, "system");
       const subprocess = createSubprocess(argv, {

@@ -1,6 +1,6 @@
 import path from "path";
 import { describe, test, expect } from "bun:test";
-import { IS_LINUX, IS_WINDOWS } from "../../../../src/internal/core";
+import { IS_POSIX, IS_WINDOWS } from "../../../../src/internal/core";
 import { createProcessOutput } from "../../../../src/runScript/output/processOutput";
 
 const FIXTURE_PATH = path.join(
@@ -11,11 +11,6 @@ const FIXTURE_PATH = path.join(
 const SYSTEM_SHELL_FIXTURE_PATH = path.join(
   import.meta.dir,
   "../../../fixtures/testScripts/createSubprocessesSystemShell.ts",
-);
-
-const SYSTEM_SHELL_SELF_EXIT_FIXTURE_PATH = path.join(
-  import.meta.dir,
-  "../../../fixtures/testScripts/createSubprocessesSystemShellSelfExit.ts",
 );
 
 /** Returns the direct child PIDs of a process using Linux procfs. */
@@ -65,6 +60,35 @@ const pidExists = async (pid: number): Promise<boolean> => {
   } catch {
     return false;
   }
+};
+
+/**
+ * Sends CTRL_C_EVENT to a process's console via PowerShell P/Invoke, triggering
+ * SIGINT in the target process without calling TerminateProcess. The target must
+ * have been spawned with detached:true so it has its own isolated console.
+ */
+const sendCtrlCWindows = (pid: number) => {
+  const script = `Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+public class ConsoleCtrl {
+    [DllImport("kernel32.dll")] public static extern bool FreeConsole();
+    [DllImport("kernel32.dll")] public static extern bool AttachConsole(uint dwProcessId);
+    [DllImport("kernel32.dll")] public static extern bool GenerateConsoleCtrlEvent(uint dwCtrlEvent, uint dwProcessGroupId);
+    [DllImport("kernel32.dll")] public static extern bool SetConsoleCtrlHandler(IntPtr HandlerRoutine, bool Add);
+}
+"@
+[ConsoleCtrl]::FreeConsole()
+[ConsoleCtrl]::AttachConsole(${pid})
+[ConsoleCtrl]::SetConsoleCtrlHandler([IntPtr]::Zero, $true)
+[ConsoleCtrl]::GenerateConsoleCtrlEvent(0, 0)
+Start-Sleep -Milliseconds 500
+[ConsoleCtrl]::SetConsoleCtrlHandler([IntPtr]::Zero, $false)
+[ConsoleCtrl]::FreeConsole()`;
+  Bun.spawnSync(
+    ["powershell", "-NoProfile", "-NonInteractive", "-Command", script],
+    { stdout: "ignore", stderr: "ignore" },
+  );
 };
 
 /** Returns true if ALL given PIDs are alive (single PowerShell invocation). */
@@ -158,7 +182,7 @@ describe("createSubprocess (POSIX)", () => {
   test(
     "kills grandchild processes (system shell) when main process exits via SIGTERM",
     async () => {
-      if (!IS_LINUX) {
+      if (!IS_POSIX) {
         // getChildPids relies on Linux procfs; skip grandchild assertion elsewhere.
         return;
       }
@@ -219,15 +243,15 @@ describe("createSubprocess (Windows)", () => {
   }
 
   test(
-    "kills grandchild processes (system shell) when main process exits via process.exit",
+    "kills grandchild processes (system shell) when main process exits via SIGINT",
     async () => {
-      const fixtureProcess = Bun.spawn(
-        ["bun", SYSTEM_SHELL_SELF_EXIT_FIXTURE_PATH],
-        {
-          stdout: "pipe",
-          stderr: "ignore",
-        },
-      );
+      // detached: true gives the fixture its own console so that
+      // GenerateConsoleCtrlEvent targets only the fixture's console group.
+      const fixtureProcess = Bun.spawn(["bun", SYSTEM_SHELL_FIXTURE_PATH], {
+        stdout: "pipe",
+        stderr: "ignore",
+        detached: true,
+      });
 
       // Collect the cmd PIDs printed by the fixture (one per subprocess).
       const cmdPids: number[] = [];
@@ -244,10 +268,10 @@ describe("createSubprocess (Windows)", () => {
 
       expect(cmdPids).toHaveLength(2);
 
-      // Give cmd time to fork timeout.exe.
+      // Give cmd time to fork ping.exe.
       await Bun.sleep(500);
 
-      // Collect grandchild PIDs (timeout.exe spawned by cmd).
+      // Collect grandchild PIDs (ping.exe spawned by cmd).
       const grandchildPids: number[] = [];
       for (const cmdPid of cmdPids) {
         grandchildPids.push(...(await getChildPidsWindows(cmdPid)));
@@ -255,19 +279,18 @@ describe("createSubprocess (Windows)", () => {
 
       expect(grandchildPids.length).toBeGreaterThan(0);
 
-      // Single PowerShell call to verify all processes are alive.
       expect(allPidsAliveWindows([...cmdPids, ...grandchildPids])).toBe(true);
 
-      // Wait for the fixture to exit naturally. It calls process.exit() which
-      // fires process.on("exit") → runOnExit handlers → taskkill /F /T /PID.
+      // Send CTRL_C_EVENT to the fixture's console. The fixture handles SIGINT
+      // via runOnExit → taskkill /F /T /PID for each subprocess tree.
+      sendCtrlCWindows(fixtureProcess.pid!);
       await fixtureProcess.exited;
 
       // Allow taskkill to finish terminating the process trees.
       await Bun.sleep(500);
 
-      // Single PowerShell call to verify all processes are dead.
       expect(anyPidAliveWindows([...cmdPids, ...grandchildPids])).toBe(false);
     },
-    { timeout: 25000 },
+    { timeout: 30000 },
   );
 });

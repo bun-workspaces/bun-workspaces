@@ -22,7 +22,9 @@ if (import.meta.main) {
     }
 
     // Allow time for the shell to fork its child processes before exit.
-    await Bun.sleep(700);
+    // Must be long enough for the test to query grandchild PIDs and verify
+    // they are alive (PowerShell startup can take 1-2s per invocation).
+    await Bun.sleep(8000);
 
     // Exit gracefully so process.on("exit") fires, which triggers runOnExit
     // handlers → taskkill /F /T /PID for each subprocess on Windows.

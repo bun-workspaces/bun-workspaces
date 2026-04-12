@@ -67,15 +67,17 @@ const pidExists = async (pid: number): Promise<boolean> => {
   }
 };
 
-const pidExistsWindows = async (pid: number): Promise<boolean> => {
+/** Returns true if ALL given PIDs are alive (single PowerShell invocation). */
+const allPidsAliveWindows = (pids: number[]): boolean => {
   try {
+    const pidList = pids.join(",");
     const result = Bun.spawnSync(
       [
         "powershell",
         "-NoProfile",
         "-NonInteractive",
         "-Command",
-        `$null -ne (Get-Process -Id ${pid} -ErrorAction SilentlyContinue)`,
+        `$alive = @(Get-Process -Id @(${pidList}) -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id); $pids = @(${pidList}); ($pids | Where-Object { $alive -notcontains $_ }).Count -eq 0`,
       ],
       { stdout: "pipe", stderr: "ignore" },
     );
@@ -85,9 +87,28 @@ const pidExistsWindows = async (pid: number): Promise<boolean> => {
   }
 };
 
-describe("createSubprocess", () => {
+/** Returns true if ANY of the given PIDs are still alive (single PowerShell invocation). */
+const anyPidAliveWindows = (pids: number[]): boolean => {
+  try {
+    const pidList = pids.join(",");
+    const result = Bun.spawnSync(
+      [
+        "powershell",
+        "-NoProfile",
+        "-NonInteractive",
+        "-Command",
+        `(Get-Process -Id @(${pidList}) -ErrorAction SilentlyContinue).Count -gt 0`,
+      ],
+      { stdout: "pipe", stderr: "ignore" },
+    );
+    return result.stdout.toString().trim().toLowerCase() === "true";
+  } catch {
+    return false;
+  }
+};
+
+describe("createSubprocess (POSIX)", () => {
   if (IS_WINDOWS) {
-    /** @todo Windows support for Bun.Subprocess.kill is needed */
     return;
   }
 
@@ -234,9 +255,8 @@ describe("createSubprocess (Windows)", () => {
 
       expect(grandchildPids.length).toBeGreaterThan(0);
 
-      for (const pid of [...cmdPids, ...grandchildPids]) {
-        expect(await pidExistsWindows(pid)).toBe(true);
-      }
+      // Single PowerShell call to verify all processes are alive.
+      expect(allPidsAliveWindows([...cmdPids, ...grandchildPids])).toBe(true);
 
       // Wait for the fixture to exit naturally. It calls process.exit() which
       // fires process.on("exit") → runOnExit handlers → taskkill /F /T /PID.
@@ -245,10 +265,9 @@ describe("createSubprocess (Windows)", () => {
       // Allow taskkill to finish terminating the process trees.
       await Bun.sleep(500);
 
-      for (const pid of [...cmdPids, ...grandchildPids]) {
-        expect(await pidExistsWindows(pid)).toBe(false);
-      }
+      // Single PowerShell call to verify all processes are dead.
+      expect(anyPidAliveWindows([...cmdPids, ...grandchildPids])).toBe(false);
     },
-    { timeout: 15000 },
+    { timeout: 25000 },
   );
 });

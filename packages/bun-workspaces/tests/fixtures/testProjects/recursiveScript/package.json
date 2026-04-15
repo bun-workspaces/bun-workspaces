@@ -1,9 +1,0 @@
-{
-  "name": "test-root",
-  "workspaces": [
-    "packages/*"
-  ],
-  "dependencies": {
-    "bun-workspaces": "file:../../../../"
-  }
-}

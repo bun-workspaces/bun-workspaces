@@ -1,0 +1,62 @@
+{
+  "lockfileVersion": 1,
+  "configVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "sandbox-test-project",
+      "dependencies": {
+        "bun-workspaces": "1.5.1",
+      },
+    },
+    "workspaces/parallel-max-a": {
+      "name": "parallel-max-a",
+    },
+    "workspaces/parallel-max-b": {
+      "name": "parallel-max-b",
+    },
+    "workspaces/parallel-max-c": {
+      "name": "parallel-max-c",
+    },
+    "workspaces/parallel-max-d": {
+      "name": "parallel-max-d",
+    },
+    "workspaces/parallel-max-e": {
+      "name": "parallel-max-e",
+    },
+    "workspaces/workspace-a": {
+      "name": "workspace-a",
+    },
+    "workspaces/workspace-b": {
+      "name": "workspace-b",
+      "dependencies": {
+        "workspace-c": "workspace:*",
+      },
+    },
+    "workspaces/workspace-c": {
+      "name": "workspace-c",
+    },
+  },
+  "packages": {
+    "bun-workspaces": ["bun-workspaces@1.5.1", "", { "dependencies": { "commander": "^12.1.0", "shell-quote": "^1.8.3" }, "bin": { "bun-workspaces": "bin/cli.js", "bw": "bin/cli.js" } }, "sha512-nHME1d4xAZzQDwDa0iYfxYrXGZuULYZXWKmLkiy7rcW72rCx1j7hNyO/CwxcjsynU81cOpefThs9lQTm2aylgA=="],
+
+    "commander": ["commander@12.1.0", "", {}, "sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA=="],
+
+    "parallel-max-a": ["parallel-max-a@workspace:workspaces/parallel-max-a"],
+
+    "parallel-max-b": ["parallel-max-b@workspace:workspaces/parallel-max-b"],
+
+    "parallel-max-c": ["parallel-max-c@workspace:workspaces/parallel-max-c"],
+
+    "parallel-max-d": ["parallel-max-d@workspace:workspaces/parallel-max-d"],
+
+    "parallel-max-e": ["parallel-max-e@workspace:workspaces/parallel-max-e"],
+
+    "shell-quote": ["shell-quote@1.8.3", "", {}, "sha512-ObmnIF4hXNg1BqhnHmgbDETF8dLPCggZWBjkQfhZpbszZnYur5DUljTcCHii5LC3J5E0yeO/1LIMyH+UvHQgyw=="],
+
+    "workspace-a": ["workspace-a@workspace:workspaces/workspace-a"],
+
+    "workspace-b": ["workspace-b@workspace:workspaces/workspace-b"],
+
+    "workspace-c": ["workspace-c@workspace:workspaces/workspace-c"],
+  }
+}

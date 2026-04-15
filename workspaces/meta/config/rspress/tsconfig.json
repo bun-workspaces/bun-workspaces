@@ -1,0 +1,22 @@
+{
+  "extends": "../base/tsconfig.json",
+  "compilerOptions": {
+    // All directly from recommended config in rspress docs
+    "target": "ES2020",
+    "lib": ["DOM", "ES2021", "DOM.AsyncIterable", "DOM.Iterable"],
+    "module": "ESNext",
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "isolatedModules": false,
+    "resolveJsonModule": true,
+    "moduleResolution": "bundler",
+    "useDefineForClassFields": true,
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": false
+  },
+  "mdx": {
+    "checkMdx": true
+  }
+}

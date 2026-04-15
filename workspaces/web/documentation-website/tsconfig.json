@@ -1,0 +1,10 @@
+{
+  "extends": "../../meta/config/rspress/tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist/**/*", "doc_build/**/*"]
+}

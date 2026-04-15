@@ -1,0 +1,34 @@
+{
+  "name": "documentation-website",
+  "private": true,
+  "scripts": {
+    "dev": "BW_DOC_ENV=development rspress dev",
+    "lint": "eslint src/",
+    "build": "BW_DOC_ENV=production bun run scripts/build.ts",
+    "build:dev": "BW_DOC_ENV=development bun run scripts/build.ts",
+    "preview": "rspress preview",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@fontsource/unifontex": "catalog:web",
+    "@rsbuild/plugin-svgr": "catalog:web",
+    "@types/lodash": "catalog:web",
+    "@types/react": "catalog:web",
+    "@types/react-syntax-highlighter": "catalog:web",
+    "@types/shell-quote": "catalog:bun-workspaces-dev",
+    "@xterm/addon-fit": "^0.11.0",
+    "@xterm/xterm": "^6.0.0",
+    "bw-web-service-shared": "0.2.0",
+    "lodash": "catalog:web",
+    "react": "catalog:web",
+    "react-arborist": "catalog:web",
+    "react-dom": "catalog:web",
+    "react-icons": "catalog:web",
+    "react-router": "catalog:web",
+    "react-router-dom": "catalog:web",
+    "react-syntax-highlighter": "catalog:web",
+    "rspress": "catalog:web",
+    "shell-quote": "catalog:bun-workspaces-prod",
+    "zustand": "catalog:web"
+  }
+}

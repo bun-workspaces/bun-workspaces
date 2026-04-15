@@ -33,11 +33,15 @@
     "bunx",
     "bwunster",
     "eastasianwidth",
+    "modelcontextprotocol",
     "pids",
+    "rsbuild",
     "rslib",
+    "rspack",
     "rspress",
     "smorsic",
     "Spritesheet",
-    "spritesheets"
+    "spritesheets",
+    "unifontex"
   ]
 }

@@ -38,6 +38,7 @@ on:
 
 jobs:
   run_tests:
+    name: "Test Against Build: Bun ${{ inputs.bun_version }} on ${{ inputs.os }}"
     runs-on: ${{ inputs.os }}-${{ inputs.os_version || 'latest' }}
     steps:
       - uses: actions/checkout@v4

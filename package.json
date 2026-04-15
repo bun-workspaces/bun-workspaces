@@ -1,14 +1,45 @@
 {
-  "name": "@bw/root",
+  "name": "bw-root",
   "private": true,
   "license": "MIT",
   "workspaces": {
     "packages": [
-      "packages/*",
-      "scripts/"
+      "workspaces/**/*",
+      "!workspaces/packages/bun-workspaces/**/*",
+      "!workspaces/sandboxes/local-vs-release/**/*"
     ],
     "catalog": {},
-    "catalogs": {}
+    "catalogs": {
+      "bun-workspaces-prod": {
+        "commander": "^12.1.0",
+        "shell-quote": "^1.8.3"
+      },
+      "bun-workspaces-dev": {
+        "@modelcontextprotocol/inspector": "^0.21.1",
+        "@rslib/core": "^0.21.2",
+        "@types/shell-quote": "^1.7.5",
+        "@xterm/headless": "^6.0.0",
+        "ajv": "^8.17.1",
+        "ajv-cli": "^5.0.0"
+      },
+      "web": {
+        "@fontsource/unifontex": "^5.2.6",
+        "@rsbuild/plugin-svgr": "^1.3.1",
+        "@types/lodash": "^4.17.24",
+        "@types/react": "^19.2.14",
+        "@types/react-syntax-highlighter": "^15.5.13",
+        "lodash": "^4.17.23",
+        "react": "^19.2.4",
+        "react-arborist": "^3.4.3",
+        "react-dom": "^19.2.4",
+        "react-icons": "^5.6.0",
+        "react-router": "^7.13.2",
+        "react-router-dom": "^7.13.2",
+        "react-syntax-highlighter": "^16.1.1",
+        "rspress": "^1.47.1",
+        "zustand": "^5.0.12"
+      }
+    }
   },
   "scripts": {
     "bw": "bw run -N -W bw --script=",
@@ -18,41 +49,42 @@
     "bw:build:test": "bw run -o plain build:test bw --",
     "mcp-server": "bw mcp-server",
     "docs": "bw run -N -W docs",
-    "docs:lint": "bw run -o plain lint doc-website --",
-    "docs:dev": "bw run -o plain dev doc-website --",
-    "docs:build": "bw run -o plain build doc-website --",
-    "docs:build:dev": "bw run -o plain build:dev doc-website --",
-    "docs:preview": "bw run -o plain preview doc-website --",
+    "docs:lint": "bw run -o plain lint docs --",
+    "docs:dev": "bw run -o plain dev docs --",
+    "docs:build": "bw run -o plain build docs --",
+    "docs:build:dev": "bw run -o plain build:dev docs --",
+    "docs:preview": "bw run -o plain preview docs --",
     "sandbox": "bw run -o plain -W sandbox",
-    "sandbox:cli:local": "bun --cwd=./packages/sandbox run cli:local",
-    "sandbox:cli:release": "bun --cwd=./packages/sandbox run cli:release",
-    "sandbox:api:local": "bw run api:local sandbox -o plain --",
-    "sandbox:api:release": "bw run api:release sandbox -o plain --",
+    "sandbox:cli:local": "bun --cwd=./workspaces/sandboxes/local-vs-release run cli:local",
+    "sandbox:cli:release": "bun --cwd=./workspaces/sandboxes/local-vs-release run cli:release",
+    "sandbox:api:local": "bw run api:local local-vs-release -o plain --",
+    "sandbox:api:release": "bw run api:release local-vs-release -o plain --",
     "lint": "bw run lint -P --",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format-check": "prettier --check .",
+    "test": "bw run test && bw run build:test",
     "type-check": "bw run type-check -P --",
-    "generate-cursor-rules": "bw run generate-cursor-rules scripts -o plain --",
-    "generate-readme": "bw run generate-readme scripts -o plain --",
-    "prepare": "cd packages/bun-workspaces && bun run generate-modules"
+    "generate-cursor-rules": "bw run generate-cursor-rules meta -o plain --",
+    "generate-readme": "bw run generate-readme meta -o plain --",
+    "prepare": "BW_PROJECT_PATH=$PWD bun --cwd=workspaces/packages/bun-workspaces run generate-modules"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
-    "@types/bun": "^1.3.5",
-    "@typescript-eslint/eslint-plugin": "^8.51.0",
-    "@typescript-eslint/parser": "^8.51.0",
+    "@eslint/js": "^9.39.4",
+    "@types/bun": "^1.3.12",
+    "@typescript-eslint/eslint-plugin": "^8.58.2",
+    "@typescript-eslint/parser": "^8.58.2",
     "bun-workspaces": "workspace:*",
-    "eslint": "^9.39.2",
+    "eslint": "^9.39.4",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "globals": "^16.5.0",
     "husky": "^9.1.7",
     "json-schema-to-ts": "^3.1.1",
-    "prettier": "^3.7.4",
+    "prettier": "^3.8.3",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.51.0"
+    "typescript-eslint": "^8.58.2"
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx,json,css,md,mdx,yaml,yml}": "prettier --write"

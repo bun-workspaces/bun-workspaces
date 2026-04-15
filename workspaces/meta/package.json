@@ -1,5 +1,5 @@
 {
-  "name": "bw-internal-meta",
+  "name": "bw-meta",
   "scripts": {
     "generate-cursor-rules": "bun scripts/generateCursorRules.ts",
     "generate-readme": "bun scripts/generateReadme.ts",

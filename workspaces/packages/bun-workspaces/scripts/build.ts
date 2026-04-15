@@ -5,6 +5,7 @@ import {
   renameSync,
   copyFileSync,
   mkdirSync,
+  cpSync,
 } from "fs";
 import path from "path";
 import { createRslib, mergeRslibConfig, type RslibConfig } from "@rslib/core";
@@ -146,6 +147,31 @@ export const runBuild = async () => {
         "src/internal/generated/ajv/",
         path.basename(file).replace(".js", ".mjs"),
       ),
+    );
+  }
+
+  if (IS_TEST_BUILD) {
+    cpSync(
+      path.resolve(__dirname, "../tests"),
+      path.resolve(DIST_PATH, "tests"),
+      { recursive: true },
+    );
+    cpSync(
+      path.resolve(__dirname, "../scripts"),
+      path.resolve(DIST_PATH, "scripts"),
+      { recursive: true },
+    );
+    copyFileSync(
+      path.resolve(__dirname, "../bunfig.toml"),
+      path.resolve(DIST_PATH, "bunfig.toml"),
+    );
+    copyFileSync(
+      path.resolve(__dirname, "../.env.test"),
+      path.resolve(DIST_PATH, ".env.test"),
+    );
+    copyFileSync(
+      path.resolve(__dirname, "../setupTests.ts"),
+      path.resolve(DIST_PATH, "setupTests.ts"),
     );
   }
 };

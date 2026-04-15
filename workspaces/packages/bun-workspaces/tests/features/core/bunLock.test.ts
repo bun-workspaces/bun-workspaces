@@ -124,7 +124,7 @@ describe("bun.lock utilities", () => {
       ).toBe("bun-workspaces");
       expect(
         projectBunLock.workspaces["workspaces/web/documentation-website"].name,
-      ).toBe("bw-documentation-website");
+      ).toBe("documentation-website");
     });
 
     test("reads project lockfile from file path", () => {

@@ -51,30 +51,6 @@ export default defineConfig({
         from: path.resolve(__dirname, "bin"),
         to: "../bin",
       },
-      ...(IS_TEST_BUILD
-        ? [
-            {
-              from: path.resolve(__dirname, "tests"),
-              to: "../tests",
-            },
-            {
-              from: path.resolve(__dirname, "scripts"),
-              to: "../scripts",
-            },
-            {
-              from: path.resolve(__dirname, "bunfig.toml"),
-              to: "../bunfig.toml",
-            },
-            {
-              from: path.resolve(__dirname, ".env.test"),
-              to: "../",
-            },
-            {
-              from: path.resolve(__dirname, "setupTests.ts"),
-              to: "../setupTests.ts",
-            },
-          ]
-        : []),
     ],
   },
 });

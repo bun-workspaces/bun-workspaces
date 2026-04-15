@@ -23,7 +23,7 @@
       },
     },
     "workspaces/meta": {
-      "name": "bw-internal-meta",
+      "name": "bw-meta",
     },
     "workspaces/packages/bun-workspaces": {
       "name": "bun-workspaces",
@@ -53,7 +53,7 @@
       },
     },
     "workspaces/web/documentation-website": {
-      "name": "bw-documentation-website",
+      "name": "documentation-website",
       "devDependencies": {
         "@fontsource/unifontex": "catalog:web",
         "@rsbuild/plugin-svgr": "catalog:web",
@@ -694,11 +694,13 @@
 
     "bun-workspaces": ["bun-workspaces@workspace:workspaces/packages/bun-workspaces"],
 
+    "bun-workspaces_local": ["bun-workspaces@workspace:workspaces/packages/bun-workspaces"],
+
+    "bun-workspaces_release": ["bun-workspaces@workspace:workspaces/packages/bun-workspaces"],
+
     "bundle-name": ["bundle-name@4.1.0", "", { "dependencies": { "run-applescript": "^7.0.0" } }, "sha512-tjwM5exMg6BGRI+kNmTntNsvdZS1X8BFYS6tnJ2hdH0kVxM6/eVZ2xy+FqStSWvYmtfFMDLIxurorHwDKfDz5Q=="],
 
-    "bw-documentation-website": ["bw-documentation-website@workspace:workspaces/web/documentation-website"],
-
-    "bw-internal-meta": ["bw-internal-meta@workspace:workspaces/meta"],
+    "bw-meta": ["bw-meta@workspace:workspaces/meta"],
 
     "bw-sandbox--local-vs-release": ["bw-sandbox--local-vs-release@workspace:workspaces/sandboxes/local-vs-release"],
 
@@ -831,6 +833,8 @@
     "dnd-core": ["dnd-core@14.0.1", "", { "dependencies": { "@react-dnd/asap": "^4.0.0", "@react-dnd/invariant": "^2.0.0", "redux": "^4.1.1" } }, "sha512-+PVS2VPTgKFPYWo3vAFEA8WPbTf7/xo43TifH9G8S1KqnrQu0o77A3unrF5yOugy4mIz7K5wAVFHUcha7wsz6A=="],
 
     "doctrine": ["doctrine@2.1.0", "", { "dependencies": { "esutils": "^2.0.2" } }, "sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw=="],
+
+    "documentation-website": ["documentation-website@workspace:workspaces/web/documentation-website"],
 
     "dom-serializer": ["dom-serializer@2.0.0", "", { "dependencies": { "domelementtype": "^2.3.0", "domhandler": "^5.0.2", "entities": "^4.2.0" } }, "sha512-wIkAryiqt/nV5EQKqQpo3SToSOV9J0DnbJqwK7Wv/Trc92zIAYZ4FlMu+JPFW1DfGFt81ZTCGgDEabffXeLyJg=="],
 
@@ -2004,13 +2008,7 @@
 
     "body-parser/bytes": ["bytes@3.1.2", "", {}, "sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg=="],
 
-    "bw-sandbox--local-vs-release/bun-workspaces_local": ["bun-workspaces@file:workspaces/packages/bun-workspaces", { "dependencies": { "commander": "catalog:bun-workspaces-prod", "shell-quote": "catalog:bun-workspaces-prod" }, "devDependencies": { "@modelcontextprotocol/inspector": "catalog:bun-workspaces-dev", "@rslib/core": "catalog:bun-workspaces-dev", "@types/shell-quote": "catalog:bun-workspaces-dev", "@xterm/headless": "catalog:bun-workspaces-dev", "ajv": "catalog:bun-workspaces-dev", "ajv-cli": "catalog:bun-workspaces-dev" }, "bin": { "bun-workspaces": "bin/cli.js", "bw": "bin/cli.js" } }],
-
-    "bw-sandbox--local-vs-release/bun-workspaces_release": ["bun-workspaces@file:workspaces/packages/bun-workspaces", { "dependencies": { "commander": "catalog:bun-workspaces-prod", "shell-quote": "catalog:bun-workspaces-prod" }, "devDependencies": { "@modelcontextprotocol/inspector": "catalog:bun-workspaces-dev", "@rslib/core": "catalog:bun-workspaces-dev", "@types/shell-quote": "catalog:bun-workspaces-dev", "@xterm/headless": "catalog:bun-workspaces-dev", "ajv": "catalog:bun-workspaces-dev", "ajv-cli": "catalog:bun-workspaces-dev" }, "bin": { "bun-workspaces": "bin/cli.js", "bw": "bin/cli.js" } }],
-
     "chokidar/glob-parent": ["glob-parent@5.1.2", "", { "dependencies": { "is-glob": "^4.0.1" } }, "sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow=="],
-
-    "cmdk/@radix-ui/react-primitive": ["@radix-ui/react-primitive@2.1.4", "", { "dependencies": { "@radix-ui/react-slot": "1.2.4" }, "peerDependencies": { "@types/react": "*", "@types/react-dom": "*", "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc", "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc" }, "optionalPeers": ["@types/react", "@types/react-dom"] }, "sha512-9hQc4+GNVtJAIEPEqlYqW5RiYdrr8ea5XQ0ZOnD6fgru+83kqT15mq2OCcbe8KnjRZl5vF3ks69AKz3kh1jrhg=="],
 
     "concurrently/supports-color": ["supports-color@8.1.1", "", { "dependencies": { "has-flag": "^4.0.0" } }, "sha512-MpUEN2OodtUzxvKQl72cUF7RQ5EiHsGvSsVG0ia9c5RbWGL2CI4C7EpPS8UTBIplnlzZiNuV56w+FuNxy3ty2Q=="],
 

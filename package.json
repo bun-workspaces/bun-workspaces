@@ -63,6 +63,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format-check": "prettier --check .",
+    "test": "bw run test && bw run build:test",
     "type-check": "bw run type-check -P --",
     "generate-cursor-rules": "bw run generate-cursor-rules meta -o plain --",
     "generate-readme": "bw run generate-readme meta -o plain --",

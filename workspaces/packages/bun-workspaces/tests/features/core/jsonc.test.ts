@@ -96,12 +96,7 @@ describe("JSONC parser works", () => {
       isJSONObject(
         parseJSONC(
           fs.readFileSync(
-            path.join(
-              __dirname,
-              "../../../../../",
-              process.env.IS_BUILD === "true" ? "../" : "",
-              "bun.lock",
-            ),
+            path.join(process.env.BW_PROJECT_PATH as string, "bun.lock"),
             "utf8",
           ),
         ),

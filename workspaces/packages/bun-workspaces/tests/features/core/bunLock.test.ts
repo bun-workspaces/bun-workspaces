@@ -7,10 +7,7 @@ import {
   type RelevantBunLock,
 } from "../../../src/internal/bun/bunLock";
 
-const rootDirectory = path.join(
-  __dirname,
-  "../../../../.." + (process.env.IS_BUILD === "true" ? "/.." : ""),
-);
+const rootDirectory = process.env.BW_PROJECT_PATH as string;
 
 describe("bun.lock utilities", () => {
   describe("parseBunLock", () => {
@@ -115,22 +112,19 @@ describe("bun.lock utilities", () => {
         lockfileVersion: 1,
         workspaces: {
           "": expect.any(Object),
-          "packages/bun-workspaces": expect.any(Object),
-          "packages/doc-website": expect.any(Object),
-          "packages/sandbox": expect.any(Object),
-          scripts: expect.any(Object),
+          "workspaces/packages/bun-workspaces": expect.any(Object),
+          "workspaces/web/documentation-website": expect.any(Object),
+          "workspaces/sandboxes/local-vs-release": expect.any(Object),
+          "workspaces/meta": expect.any(Object),
         },
       });
 
-      expect(projectBunLock.workspaces["packages/bun-workspaces"].name).toBe(
-        "bun-workspaces",
-      );
-      expect(projectBunLock.workspaces["packages/doc-website"].name).toBe(
-        "@bw/doc-website",
-      );
-      expect(projectBunLock.workspaces["packages/sandbox"].name).toBe(
-        "@bw/sandbox",
-      );
+      expect(
+        projectBunLock.workspaces["workspaces/packages/bun-workspaces"].name,
+      ).toBe("bun-workspaces");
+      expect(
+        projectBunLock.workspaces["workspaces/web/documentation-website"].name,
+      ).toBe("bw-documentation-website");
     });
 
     test("reads project lockfile from file path", () => {

@@ -89,8 +89,6 @@ export const runBuild = async () => {
     },
   }) as RslibConfig;
 
-  console.log("rslibConfig", rslibConfig);
-
   const rslib = await createRslib({
     config: rslibConfig,
   });

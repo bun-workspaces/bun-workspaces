@@ -1,4 +1,0 @@
-{
-  "extends": "../meta/config/base/tsconfig.json",
-  "include": ["**/*.ts"]
-}

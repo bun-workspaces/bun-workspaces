@@ -1,4 +1,10 @@
 {
   "name": "bw-internal-meta",
+  "scripts": {
+    "generate-cursor-rules": "bun scripts/generateCursorRules.ts",
+    "generate-readme": "bun scripts/generateReadme.ts",
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit"
+  },
   "private": true
 }

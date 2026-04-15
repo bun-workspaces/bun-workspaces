@@ -5,7 +5,7 @@ export default defineWorkspaceConfig({
   tags: ["deployable"],
   rules: {
     workspaceDependencies: {
-      denyPatterns: ["*"],
+      allowPatterns: ["bw-common"],
     },
   },
 });

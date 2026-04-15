@@ -1,5 +1,5 @@
 import { ENV_VARS_METADATA } from "../config/envVars";
-export { CLI_QUICKSTART } from "./cliQuickstart";
+export { CLI_QUICKSTART } from "bw-common";
 
 export const CLI_PARALLEL_SCRIPTS_EXAMPLE = `
 # Scripts run in parallel by default

@@ -18,8 +18,7 @@
     "./src/config/configTypes": "./src/config/configTypes.ts",
     "./src/config/util/configLocation": "./src/config/util/configLocation.ts",
     "./src/config/rootConfig/rootConfigLocation": "./src/config/rootConfig/rootConfigLocation.ts",
-    "./src/cli/globalOptions/globalOptionsConfig": "./src/cli/globalOptions/globalOptionsConfig.ts",
-    "./src/internal/docs": "./src/internal/docs/index.ts"
+    "./src/cli/globalOptions/globalOptionsConfig": "./src/cli/globalOptions/globalOptionsConfig.ts"
   },
   "private": true,
   "description": "A monorepo management tool for Bun, with a CLI and API to enhance Bun's native workspaces.",
@@ -72,6 +71,7 @@
     "ajv-cli": "catalog:bun-workspaces-dev"
   },
   "dependencies": {
+    "bw-common": "workspace:*",
     "commander": "catalog:bun-workspaces-prod",
     "shell-quote": "catalog:bun-workspaces-prod"
   }

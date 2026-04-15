@@ -67,7 +67,7 @@ const PLACEHOLDER_STUB_PATH = path.resolve(
 );
 
 const BWUNSTER_ASCII = fs.readFileSync(
-  path.resolve(__dirname, "../../bwunster.txt"),
+  path.resolve(__dirname, "../../../bwunster.txt"),
   "utf8",
 );
 

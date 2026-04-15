@@ -1,10 +1,9 @@
 ## Development processes
 
-The repo contains three packages:
+Most work happens in the workspace at `workspaces/packages/bun-workspaces`, the main npm package source. This
+is the assumed default location for development.
 
-- `packages/bun-workspaces`: the package that is published, built via rslib. Except when working on the docs, this is the assumed package to be working on.
-- `packages/doc-website`: the documentation website (uses the rspress doc framework that has React and MDX support). This imports some metadata directly from the `bun-workspaces` package for consistency.
-- `packages/sandbox`: a sandbox for testing the CLI and API (can largely be ignored)
+The next most commonly developed workspace is `workspaces/web/documentation-website`, the documentation website.
 
 Useful development commands:
 

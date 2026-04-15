@@ -12,7 +12,7 @@ if (import.meta.main) {
     "md/ai/context/cliExamples.md",
     "md/ai/context/apiExamples.md",
     "md/ai/context/config.md",
-    "md/ai/context/practices.md",
+    "md/ai/context/development.md",
   ]) {
     const contextFilePath = path.resolve(root, contextFile);
     console.log(`Reading ${contextFilePath}`);

@@ -12,17 +12,18 @@ const MD_FILES: Array<{ name: string; file: string }> = [
 const escapeForTemplateLiteral = (content: string): string =>
   content.replace(/\\/g, "\\\\").replace(/`/g, "\\`").replace(/\$\{/g, "\\${");
 
+const root = process.env.BW_PROJECT_PATH as string;
+
 if (import.meta.main) {
   console.log("Generating MCP docs...");
 
-  const repoRoot = path.resolve(__dirname, "../../../");
   const outDir = path.resolve(__dirname, "../src/internal/generated/aiDocs");
 
   fs.mkdirSync(outDir, { recursive: true });
 
   const constants = MD_FILES.map(({ name, file }) => {
-    const filePath = path.join(repoRoot, file);
-    console.log(`Reading ${path.relative(repoRoot, filePath)}`);
+    const filePath = path.join(root, file);
+    console.log(`Reading ${path.relative(root, filePath)}`);
     const content = fs.readFileSync(filePath, "utf8").trimEnd();
     return `export const ${name} = \`${escapeForTemplateLiteral(content)}\`;`;
   });
@@ -36,7 +37,7 @@ if (import.meta.main) {
 
   const outPath = path.join(outDir, "docs.ts");
   fs.writeFileSync(outPath, output);
-  console.log(`Written to ${path.relative(repoRoot, outPath)}`);
+  console.log(`Written to ${path.relative(root, outPath)}`);
 
   console.log("Finished MCP docs generation");
 }

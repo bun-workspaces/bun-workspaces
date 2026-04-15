@@ -1,6 +1,6 @@
 import { defineWorkspaceConfig } from "bun-workspaces/config";
 
 export default defineWorkspaceConfig({
-  alias: ["doc-website", "docs"],
-  tags: ["deployable"],
+  alias: ["sandbox", "sbx", "local-vs-release"],
+  tags: ["dev-only"],
 });

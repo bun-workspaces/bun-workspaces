@@ -5,7 +5,8 @@
   "workspaces": {
     "packages": [
       "workspaces/**/*",
-      "scripts/"
+      "!workspaces/packages/bun-workspaces/**/*",
+      "!workspaces/sandboxes/local-vs-release/**/*"
     ],
     "catalog": {},
     "catalogs": {}
@@ -18,16 +19,16 @@
     "bw:build:test": "bw run -o plain build:test bw --",
     "mcp-server": "bw mcp-server",
     "docs": "bw run -N -W docs",
-    "docs:lint": "bw run -o plain lint doc-website --",
-    "docs:dev": "bw run -o plain dev doc-website --",
-    "docs:build": "bw run -o plain build doc-website --",
-    "docs:build:dev": "bw run -o plain build:dev doc-website --",
-    "docs:preview": "bw run -o plain preview doc-website --",
+    "docs:lint": "bw run -o plain lint docs --",
+    "docs:dev": "bw run -o plain dev docs --",
+    "docs:build": "bw run -o plain build docs --",
+    "docs:build:dev": "bw run -o plain build:dev docs --",
+    "docs:preview": "bw run -o plain preview docs --",
     "sandbox": "bw run -o plain -W sandbox",
-    "sandbox:cli:local": "bun --cwd=./packages/sandbox run cli:local",
-    "sandbox:cli:release": "bun --cwd=./packages/sandbox run cli:release",
-    "sandbox:api:local": "bw run api:local sandbox -o plain --",
-    "sandbox:api:release": "bw run api:release sandbox -o plain --",
+    "sandbox:cli:local": "bun --cwd=./workspaces/sandboxes/local-vs-release run cli:local",
+    "sandbox:cli:release": "bun --cwd=./workspaces/sandboxes/local-vs-release run cli:release",
+    "sandbox:api:local": "bw run api:local local-vs-release -o plain --",
+    "sandbox:api:release": "bw run api:release local-vs-release -o plain --",
     "lint": "bw run lint -P --",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -35,7 +36,7 @@
     "type-check": "bw run type-check -P --",
     "generate-cursor-rules": "bw run generate-cursor-rules scripts -o plain --",
     "generate-readme": "bw run generate-readme scripts -o plain --",
-    "prepare": "cd packages/bun-workspaces && bun run generate-modules"
+    "prepare": "BW_PROJECT_PATH=$PWD bun --cwd=workspaces/packages/bun-workspaces run generate-modules"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

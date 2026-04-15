@@ -1,5 +1,7 @@
 import path from "path";
 
+const root = process.env.BW_PROJECT_PATH as string;
+
 if (import.meta.main) {
   console.log("Generating Cursor rules...");
 
@@ -12,13 +14,13 @@ if (import.meta.main) {
     "md/ai/context/config.md",
     "md/ai/context/practices.md",
   ]) {
-    const contextFilePath = path.resolve(process.cwd(), "../", contextFile);
+    const contextFilePath = path.resolve(root, contextFile);
     console.log(`Reading ${contextFilePath}`);
     content += await Bun.file(contextFilePath).text();
   }
   console.log("All files read");
 
-  const outputPath = path.resolve(process.cwd(), "../.cursor/rules/context.md");
+  const outputPath = path.resolve(root, ".cursor/rules/context.md");
 
   console.log(`Writing to ${outputPath}`);
   await Bun.write(outputPath, content);

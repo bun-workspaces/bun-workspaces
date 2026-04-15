@@ -61,11 +61,11 @@
     "build:rslib-only": "rslib build",
     "type-check": "tsc --noEmit",
     "generate-modules": "bun run ajv && bun run generate-mcp-docs",
-    "mcp:inspect": "mcp-inspector bun --silent run bin/cli.js --cwd ../../ mcp"
+    "mcp:inspect": "mcp-inspector bun --silent run bin/cli.js --cwd ../../../ mcp"
   },
   "devDependencies": {
     "@modelcontextprotocol/inspector": "^0.21.1",
-    "@rslib/core": "file:../../../../../forks/rslib/packages/core",
+    "@rslib/core": "^0.21.2",
     "@types/shell-quote": "^1.7.5",
     "@xterm/headless": "^6.0.0",
     "ajv": "^8.17.1",

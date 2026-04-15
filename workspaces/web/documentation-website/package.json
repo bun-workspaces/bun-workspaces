@@ -1,5 +1,5 @@
 {
-  "name": "@bw/doc-website",
+  "name": "bw-documentation-website",
   "private": true,
   "scripts": {
     "dev": "BW_DOC_ENV=development rspress dev",

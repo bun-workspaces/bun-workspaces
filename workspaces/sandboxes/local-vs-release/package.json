@@ -1,5 +1,5 @@
 {
-  "name": "@bw/sandbox",
+  "name": "bw-sandbox--local-vs-release",
   "private": true,
   "scripts": {
     "api:local": "bun run src/local.ts",
@@ -9,7 +9,7 @@
     "prepare": "cd test-project && bun install"
   },
   "devDependencies": {
-    "bun-workspaces_local": "file:../bun-workspaces",
-    "bun-workspaces_release": "npm:bun-workspaces@1.5.0"
+    "bun-workspaces_local": "file:../../packages/bun-workspaces",
+    "bun-workspaces_release": "npm:bun-workspaces@1.5.1"
   }
 }

@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { pluginSvgr } from "@rsbuild/plugin-svgr";
 import { defineConfig } from "rspress/config";
-import packageJson from "../bun-workspaces/package.json";
+import packageJson from "../../packages/bun-workspaces/package.json";
 import { TAG_ICONS } from "./tagIcons";
 
 const REQUIRED_BUN_VERSION = packageJson._bwInternal.bunVersion.libraryConsumer;

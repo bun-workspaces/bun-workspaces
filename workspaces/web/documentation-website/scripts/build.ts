@@ -2,7 +2,7 @@ import { writeFileSync, rmSync, readFileSync } from "fs";
 import path from "path";
 import { $ } from "bun";
 import { globSync } from "glob";
-import packageJson from "../../bun-workspaces/package.json";
+import packageJson from "../../../packages/bun-workspaces/package.json";
 
 export const runBuild = async () => {
   const outputPath = path.resolve("__dirname", "..", "doc_build");

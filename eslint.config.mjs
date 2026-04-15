@@ -58,7 +58,6 @@ export default defineConfig([
         },
       ],
       eqeqeq: "error",
-      "no-console": "warn",
       "import/no-dynamic-require": "warn",
       "import/order": [
         "warn",
@@ -77,14 +76,18 @@ export default defineConfig([
   },
   {
     name: "bunWorkspacesPackageConfig",
-    files: ["packages/bun-workspaces/**/*.{js,mjs,cjs,ts,mts,cts,tsx}"],
+    files: [
+      "workspaces/packages/bun-workspaces/**/*.{js,mjs,cjs,ts,mts,cts,tsx}",
+    ],
     rules: {
       "no-console": "error",
     },
   },
   {
     name: "docWebsitePackageConfig",
-    files: ["packages/doc-website/**/*.{js,mjs,cjs,ts,mts,cts,tsx}"],
+    files: [
+      "workspaces/web/documentation-website/**/*.{js,mjs,cjs,ts,mts,cts,tsx}",
+    ],
     ...reactPlugin.configs.flat.recommended,
     ...reactHooksPlugin.configs.flat.recommended,
   },

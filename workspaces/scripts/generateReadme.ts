@@ -5,13 +5,12 @@ import {
   API_QUICKSTART,
 } from "bun-workspaces/src/internal/docs";
 
+const root = process.env.BW_PROJECT_PATH as string;
+
 if (import.meta.main) {
   console.log("Generating README...");
 
-  const readmeTemplatePath = path.resolve(
-    process.cwd(),
-    "../md/public/README_TEMPLATE.md",
-  );
+  const readmeTemplatePath = path.resolve(root, "md/public/README_TEMPLATE.md");
 
   console.log(`Reading ${readmeTemplatePath}`);
   const readmeTemplate = await Bun.file(readmeTemplatePath).text();
@@ -20,7 +19,7 @@ if (import.meta.main) {
     .replace(/<<CLI_QUICKSTART>>/gm, CLI_QUICKSTART)
     .replace(/<<API_QUICKSTART>>/gm, API_QUICKSTART);
 
-  const readmePath = path.resolve(process.cwd(), "../README.md");
+  const readmePath = path.resolve(root, "README.md");
 
   console.log(`Writing to ${readmePath}`);
   await Bun.write(readmePath, content);

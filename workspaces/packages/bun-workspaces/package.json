@@ -65,7 +65,7 @@
   },
   "devDependencies": {
     "@modelcontextprotocol/inspector": "^0.21.1",
-    "@rslib/core": "^0.15.1",
+    "@rslib/core": "file:../../../../../forks/rslib/packages/core",
     "@types/shell-quote": "^1.7.5",
     "@xterm/headless": "^6.0.0",
     "ajv": "^8.17.1",

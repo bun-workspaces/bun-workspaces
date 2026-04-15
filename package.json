@@ -1,10 +1,10 @@
 {
-  "name": "@bw/root",
+  "name": "bw-root",
   "private": true,
   "license": "MIT",
   "workspaces": {
     "packages": [
-      "packages/*",
+      "workspaces/**/*",
       "scripts/"
     ],
     "catalog": {},

@@ -46,7 +46,12 @@ runs:
         bun --eval '
           const packageJsonPath = "package.json";
           const packageJson = JSON.parse(await Bun.file(packageJsonPath).text());
-          packageJson.workspaces.packages = ["workspaces/packages/*"];
+          packageJson.workspaces.packages = [
+           "workspaces/packages/*",
+           "workspaces/web/*",
+           "workspaces/meta",
+           "workspaces/sandboxes/*"
+          ];
           await Bun.write(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
         '
         bun install

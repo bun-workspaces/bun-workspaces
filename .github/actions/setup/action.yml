@@ -37,6 +37,19 @@ runs:
         "$env:USERPROFILE\.bun\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
         bun --version
 
+    # This is a hack to get around Bun 1.2 not supporting negation globs in the root package.json workspaces.
+    # Bun 1.2 is only used for testing bun-workspaces to verify support.
+    - name: Patch workspaces for Bun 1.2.x
+      if: runner.os != 'Windows' && startsWith(inputs.bun_version || env.BUN_VERSION, '1.2.')
+      shell: bash
+      run: |
+        bun --eval '
+          const packageJsonPath = "package.json";
+          const packageJson = JSON.parse(await Bun.file(packageJsonPath).text());
+          packageJson.workspaces.packages = ["workspaces/packages/*"];
+          await Bun.write(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
+        '
+
     - name: Install Dependencies
       id: install-deps
       shell: bash

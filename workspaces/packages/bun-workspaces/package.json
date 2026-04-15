@@ -64,15 +64,15 @@
     "mcp:inspect": "mcp-inspector bun --silent run bin/cli.js --cwd ../../../ mcp"
   },
   "devDependencies": {
-    "@modelcontextprotocol/inspector": "^0.21.1",
-    "@rslib/core": "^0.21.2",
-    "@types/shell-quote": "^1.7.5",
-    "@xterm/headless": "^6.0.0",
-    "ajv": "^8.17.1",
-    "ajv-cli": "^5.0.0"
+    "@modelcontextprotocol/inspector": "catalog:bun-workspaces-dev",
+    "@rslib/core": "catalog:bun-workspaces-dev",
+    "@types/shell-quote": "catalog:bun-workspaces-dev",
+    "@xterm/headless": "catalog:bun-workspaces-dev",
+    "ajv": "catalog:bun-workspaces-dev",
+    "ajv-cli": "catalog:bun-workspaces-dev"
   },
   "dependencies": {
-    "commander": "^12.1.0",
-    "shell-quote": "^1.8.3"
+    "commander": "catalog:bun-workspaces-prod",
+    "shell-quote": "catalog:bun-workspaces-prod"
   }
 }

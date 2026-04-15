@@ -1,7 +1,6 @@
 import { writeFileSync, rmSync, readFileSync } from "fs";
 import path from "path";
 import { $ } from "bun";
-import { globSync } from "glob";
 import packageJson from "../../../packages/bun-workspaces/package.json";
 
 export const runBuild = async () => {
@@ -22,7 +21,9 @@ export const runBuild = async () => {
 
   writeFileSync(path.resolve(outputPath, "version.txt"), packageJson.version);
 
-  const outputHtmlFiles = globSync(path.resolve(outputPath, "**/*.html"));
+  const outputHtmlFiles = new Bun.Glob(
+    path.resolve(outputPath, "**/*.html"),
+  ).scanSync();
   for (const htmlFile of outputHtmlFiles) {
     const html = readFileSync(htmlFile, "utf8");
     writeFileSync(htmlFile, html.replace(/href=['"]\/?index['"]/g, 'href="/"'));

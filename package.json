@@ -9,7 +9,37 @@
       "!workspaces/sandboxes/local-vs-release/**/*"
     ],
     "catalog": {},
-    "catalogs": {}
+    "catalogs": {
+      "bun-workspaces-prod": {
+        "commander": "^12.1.0",
+        "shell-quote": "^1.8.3"
+      },
+      "bun-workspaces-dev": {
+        "@modelcontextprotocol/inspector": "^0.21.1",
+        "@rslib/core": "^0.21.2",
+        "@types/shell-quote": "^1.7.5",
+        "@xterm/headless": "^6.0.0",
+        "ajv": "^8.17.1",
+        "ajv-cli": "^5.0.0"
+      },
+      "web": {
+        "@fontsource/unifontex": "^5.2.6",
+        "@rsbuild/plugin-svgr": "^1.3.1",
+        "@types/lodash": "^4.17.24",
+        "@types/react": "^19.2.14",
+        "@types/react-syntax-highlighter": "^15.5.13",
+        "lodash": "^4.17.23",
+        "react": "^19.2.4",
+        "react-arborist": "^3.4.3",
+        "react-dom": "^19.2.4",
+        "react-icons": "^5.6.0",
+        "react-router": "^7.13.2",
+        "react-router-dom": "^7.13.2",
+        "react-syntax-highlighter": "^16.1.1",
+        "rspress": "^1.47.1",
+        "zustand": "^5.0.12"
+      }
+    }
   },
   "scripts": {
     "bw": "bw run -N -W bw --script=",

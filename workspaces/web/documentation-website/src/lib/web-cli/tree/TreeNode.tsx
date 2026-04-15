@@ -13,7 +13,7 @@ export const TreeNode = ({ node, style }: NodeRendererProps<TreeNodeData>) => {
     } else {
       node.toggle();
     }
-  }, [setSelectedFile, node.data.id, node]);
+  }, [setSelectedFile, node]);
 
   const classNames = ["web-cli-tree-node"];
   if (!node.data.isFile) classNames.push("directory");

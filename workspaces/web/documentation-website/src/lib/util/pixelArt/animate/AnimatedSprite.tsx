@@ -40,6 +40,7 @@ export const AnimatedSprite = ({
           : width,
       );
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spritesheetFileName]);
 
   const isDrawingRef = useRef(false);
@@ -129,6 +130,7 @@ export const AnimatedSprite = ({
     };
 
     requestAnimationFrame(draw);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spritesheetData, canvasHeight]);
 
   useEffect(() => {

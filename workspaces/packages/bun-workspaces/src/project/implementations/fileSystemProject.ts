@@ -1,8 +1,8 @@
 import fs from "fs";
 import path from "path";
-import { parse, quote } from "shell-quote";
 import { loadRootConfig } from "../../config";
 import { getUserEnvVar } from "../../config/userEnvVars";
+import { parse, quote } from "../../internal/bundledDeps/shellQuote";
 import type { Simplify } from "../../internal/core";
 import {
   DEFAULT_TEMP_DIR,

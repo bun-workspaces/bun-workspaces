@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { type Command, Option } from "commander";
+import { type Command } from "../../internal/bundledDeps/commander";
+import { Option } from "../../internal/bundledDeps/commander";
 import { defineErrors, expandHomePath } from "../../internal/core";
 import { logger } from "../../internal/logger";
 import {

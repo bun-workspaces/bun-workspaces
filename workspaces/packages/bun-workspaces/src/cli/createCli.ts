@@ -1,6 +1,6 @@
-import { createCommand } from "commander";
 import packageJson from "../../package.json";
 import { validateCurrentBunVersion } from "../internal/bun";
+import { createCommand } from "../internal/bundledDeps/commander";
 import { BunWorkspacesError } from "../internal/core";
 import { logger } from "../internal/logger";
 import { defineGlobalCommands, defineProjectCommands } from "./commands";

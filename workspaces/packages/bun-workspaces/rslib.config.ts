@@ -4,7 +4,10 @@ import { validateCurrentBunVersion } from "./src/internal/bun";
 
 export const IS_TEST_BUILD = process.env.BUILD_INCLUDE_TESTS === "true";
 
-const DIST_PATH = IS_TEST_BUILD ? "dist.test/src" : "dist/src";
+export const DIST_PATH = path.join(
+  __dirname,
+  IS_TEST_BUILD ? "dist.test" : "dist",
+);
 
 const bunVersionError = validateCurrentBunVersion(true);
 
@@ -32,20 +35,16 @@ export default defineConfig({
       },
     },
     distPath: {
-      root: DIST_PATH,
+      root: path.join(DIST_PATH, "src"),
     },
     cleanDistPath: true,
     copy: [
       {
-        from: path.resolve(__dirname, "package.json"),
-        to: "../package.json",
-      },
-      {
-        from: path.resolve(__dirname, "../../README.md"),
+        from: path.resolve(process.env.BW_PROJECT_PATH as string, "README.md"),
         to: "../README.md",
       },
       {
-        from: path.resolve(__dirname, "../../LICENSE.md"),
+        from: path.resolve(process.env.BW_PROJECT_PATH as string, "LICENSE.md"),
         to: "../LICENSE.md",
       },
       {

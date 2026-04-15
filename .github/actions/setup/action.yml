@@ -40,7 +40,7 @@ runs:
     # This is a hack to get around Bun 1.2 not supporting negation globs in the root package.json workspaces.
     # Bun 1.2 is only used for testing bun-workspaces to verify support.
     - name: Patch workspaces for Bun 1.2.x
-      if: runner.os != 'Windows' && startsWith(inputs.bun_version || env.BUN_VERSION, '1.2.')
+      if: startsWith(inputs.bun_version || env.BUN_VERSION, '1.2.')
       shell: bash
       run: |
         bun --eval '
@@ -49,6 +49,7 @@ runs:
           packageJson.workspaces.packages = ["workspaces/packages/*"];
           await Bun.write(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
         '
+        bun install
 
     - name: Install Dependencies
       id: install-deps

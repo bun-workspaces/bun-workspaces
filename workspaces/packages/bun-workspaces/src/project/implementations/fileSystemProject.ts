@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { parse, quote } from "shell-quote/";
+import { parse, quote } from "shell-quote";
 import { loadRootConfig } from "../../config";
 import { getUserEnvVar } from "../../config/userEnvVars";
 import type { Simplify } from "../../internal/core";

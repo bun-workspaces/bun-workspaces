@@ -48,9 +48,7 @@ runs:
           const packageJson = JSON.parse(await Bun.file(packageJsonPath).text());
           packageJson.workspaces.packages = [
            "workspaces/packages/*",
-           "workspaces/web/*",
-           "workspaces/meta",
-           "workspaces/sandboxes/*"
+           "workspaces/web/*"
           ];
           await Bun.write(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
         '

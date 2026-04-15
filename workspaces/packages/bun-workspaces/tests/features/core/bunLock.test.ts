@@ -110,13 +110,17 @@ describe("bun.lock utilities", () => {
 
       expect(projectBunLock).toEqual({
         lockfileVersion: 1,
-        workspaces: {
-          "": expect.any(Object),
-          "workspaces/packages/bun-workspaces": expect.any(Object),
-          "workspaces/web/documentation-website": expect.any(Object),
-          "workspaces/sandboxes/local-vs-release": expect.any(Object),
-          "workspaces/meta": expect.any(Object),
-        },
+        workspaces: expect.any(Object),
+      });
+
+      const {
+        "workspaces/packages/bun-workspaces": bunWorkspaces,
+        "workspaces/web/documentation-website": documentationWebsite,
+      } = projectBunLock.workspaces;
+
+      expect({ bunWorkspaces, documentationWebsite }).toEqual({
+        bunWorkspaces: expect.any(Object),
+        documentationWebsite: expect.any(Object),
       });
 
       expect(

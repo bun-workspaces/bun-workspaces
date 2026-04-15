@@ -14,7 +14,7 @@ runs:
       id: get-bun-version
       shell: bash
       run: |
-        BUN_VERSION=$(cat packages/bun-workspaces/package.json | jq -r '._bwInternal.bunVersion.build')
+        BUN_VERSION=$(cat workspaces/packages/bun-workspaces/package.json | jq -r '._bwInternal.bunVersion.build')
         echo BUN_VERSION=$BUN_VERSION >> $GITHUB_ENV
         echo "Bun version to be installed: $BUN_VERSION"
 

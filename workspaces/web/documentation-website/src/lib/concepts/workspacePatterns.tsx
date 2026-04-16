@@ -1,4 +1,4 @@
-import { type WorkspacePatternTarget } from "bun-workspaces/src/workspaces/workspacePattern";
+import { type WorkspacePatternTarget } from "bw-common/workspaces";
 import { Link } from "rspress/theme";
 import { SyntaxHighlighter } from "../util/highlight";
 

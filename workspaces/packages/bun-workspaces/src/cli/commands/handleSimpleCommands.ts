@@ -1,7 +1,7 @@
+import { ROOT_WORKSPACE_SELECTOR } from "bw-common/project";
+import { isJSONObject } from "bw-common/types";
 import { getDoctorInfo } from "../../doctor";
-import { isJSONObject } from "../../internal/core";
 import { logger } from "../../internal/logger";
-import { ROOT_WORKSPACE_SELECTOR } from "../../project";
 import {
   createJsonLines,
   commandOutputLogger,

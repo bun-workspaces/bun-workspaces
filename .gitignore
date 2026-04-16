@@ -1,7 +1,9 @@
 # generic personal ignored files
 *ignore-me*
-# package build used for testing only
+# package build output
+dist
 dist.test
+.rslib
 # doc-website build
 doc_build
 # test output

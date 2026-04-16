@@ -2,3 +2,6 @@
 preload = ["./setupTests.ts"]
 root = "tests"
 timeout = 10000
+
+[run]
+silent = true

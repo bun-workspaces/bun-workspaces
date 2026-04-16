@@ -1,24 +1,8 @@
 import os from "os";
-import { getUserEnvVar, getUserEnvVarName } from "../config/userEnvVars";
+import { getUserEnvVarName } from "bw-common/config";
+import { type ParallelMaxValue } from "bw-common/parameters";
+import { getUserEnvVar } from "../config/userEnvVars";
 import { BunWorkspacesError } from "../internal/core";
-
-export const PARALLEL_MAX_VALUES = ["auto", "unbounded", "default"] as const;
-
-export type PercentageValue = `${number}%`;
-
-/**
- * The maximum number of scripts that can run in parallel.
- *
- * - `number`: The exact number of scripts that can run in parallel.
- * - `"auto"`: The number of available logical CPU threads.
- * - `"unbounded"`: No limit.
- * - `"default"`: The default value, either "auto" or the value of the root config's "parallelMax" option.
- * - `"${number}%"`: A percentage of the available logical CPU threads (e.g. "50%").
- */
-export type ParallelMaxValue =
-  | number
-  | (typeof PARALLEL_MAX_VALUES)[number]
-  | PercentageValue;
 
 /** Should always return at least 1 */
 export const determineParallelMax = (

@@ -1,0 +1,10 @@
+{
+  "name": "bw-common",
+  "private": true,
+  "main": "index.ts",
+  "scripts": {
+    "lint": "eslint .",
+    "build:dts": "tsc",
+    "type-check": "tsc --noEmit"
+  }
+}

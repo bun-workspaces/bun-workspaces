@@ -1,11 +1,6 @@
-import { stripANSI } from "bun";
 import { test, describe, expect, spyOn, afterAll } from "bun:test";
-import {
-  logger,
-  LOGGER_ERRORS,
-  setLogLevel,
-  type LogLevelSetting,
-} from "../../src/internal/logger";
+import { type LogLevelSetting } from "bw-common/logging";
+import { logger, LOGGER_ERRORS, setLogLevel } from "../../src/internal/logger";
 
 describe("setLogLevel", () => {
   afterAll(() => {

@@ -1,4 +1,4 @@
-import { LOG_LEVELS, type LogLevelSetting } from "../../internal/logger";
+import { LOG_LEVELS, type LogLevelSetting } from "../logging";
 
 export interface CliGlobalOptions {
   logLevel: LogLevelSetting;

@@ -1,4 +1,1 @@
-export {
-  CLI_QUICKSTART,
-  INLINE_SCRIPT_EXAMPLE,
-} from "bun-workspaces/src/internal/docs";
+export { CLI_QUICKSTART, INLINE_SCRIPT_EXAMPLE } from "bw-common/docs";

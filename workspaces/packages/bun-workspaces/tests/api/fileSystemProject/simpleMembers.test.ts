@@ -1,7 +1,7 @@
 import os from "os";
 import path from "path";
 import { expect, test, describe } from "bun:test";
-import { getUserEnvVarName } from "../../../src/config/userEnvVars";
+import { getUserEnvVarName } from "bw-common/config";
 import { BUN_LOCK_ERRORS } from "../../../src/internal/bun";
 import { InvalidJSTypeError } from "../../../src/internal/core";
 import { createFileSystemProject } from "../../../src/project";

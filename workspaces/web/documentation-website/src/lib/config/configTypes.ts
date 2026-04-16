@@ -1,9 +1,9 @@
-import type { RootConfig, WorkspaceConfig } from "bun-workspaces/src/config";
-import type { RequiredDeep } from "bun-workspaces/src/internal/core";
+import { type RootConfig, type WorkspaceConfig } from "bw-common/config";
 import {
   PARALLEL_MAX_VALUES,
   SCRIPT_SHELL_OPTIONS,
-} from "bun-workspaces/src/runScript";
+} from "bw-common/parameters";
+import { type RequiredDeep } from "bw-common/types";
 import { formatSimpleTypeToDisplay, type ValueToDisplay } from "./displayType";
 
 const rootDisplay: ValueToDisplay<RequiredDeep<RootConfig>> = {

@@ -1,7 +1,7 @@
+import { ROOT_WORKSPACE_SELECTOR } from "bw-common/project";
 import { getDoctorInfo } from "../../doctor";
 import { BUN_WORKSPACES_VERSION } from "../../internal/version";
 import type { FileSystemProject } from "../../project/implementations/fileSystemProject";
-import { ROOT_WORKSPACE_SELECTOR } from "../../project/implementations/projectBase";
 import type { McpServer, CallToolResult } from "./core";
 
 const textResult = (data: unknown): CallToolResult => ({

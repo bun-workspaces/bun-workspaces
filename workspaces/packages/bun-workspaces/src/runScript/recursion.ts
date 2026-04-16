@@ -1,4 +1,4 @@
-import { getScriptRuntimeMetadataConfig } from "./scriptRuntimeMetadata";
+import { getScriptRuntimeMetadataConfig } from "bw-common/runScript";
 
 export const checkIsRecursiveScript = (
   workspaceName: string,

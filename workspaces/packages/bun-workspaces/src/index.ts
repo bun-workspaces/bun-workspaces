@@ -20,19 +20,22 @@ export {
   type RunScriptAcrossWorkspacesOutput as RunScriptAcrossWorkspacesProcessOutput,
   type RunScriptAcrossWorkspacesResult,
   type ParallelOption,
-  type ShellOption,
   type ScriptEventMetadata,
   type OnScriptEventCallback,
 } from "./project";
 export * from "./config/public";
 export {
-  type ScriptEventName,
-  type OutputStreamName,
   type PercentageValue,
   type ParallelMaxValue,
+  type ShellOption,
+} from "bw-common/parameters";
+export {
+  type ScriptEventName,
+  type OutputStreamName,
   type WorkspaceScriptCommandMethod,
   type RunScriptsParallelOptions,
 } from "./runScript";
 export { type Workspace } from "./workspaces";
 export { type SimpleAsyncIterable, BunWorkspacesError } from "./internal/core";
-export { setLogLevel, type LogLevelSetting } from "./internal/logger";
+export { type LogLevelSetting } from "bw-common/logging";
+export { setLogLevel } from "./internal/logger";

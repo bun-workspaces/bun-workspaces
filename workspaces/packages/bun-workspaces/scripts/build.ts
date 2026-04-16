@@ -4,14 +4,17 @@ import {
   rmSync,
   renameSync,
   copyFileSync,
+  readdirSync,
   mkdirSync,
   cpSync,
 } from "fs";
 import path from "path";
 import { createRslib, mergeRslibConfig, type RslibConfig } from "@rslib/core";
 import { $ } from "bun";
+import { createFileSystemProject } from "bun-workspaces";
+import { generateDtsBundle } from "dts-bundle-generator";
 
-import rsLibConfig, { IS_TEST_BUILD, DIST_PATH } from "../rslib.config.ts";
+import rsLibConfigRaw, { IS_TEST_BUILD, DIST_PATH } from "../rslib.config.ts";
 
 const PACKAGE_JSON_PATH = path.resolve(__dirname, "../package.json");
 
@@ -41,24 +44,35 @@ const processPackageJson = () => {
 
   return {
     dependencies,
+    inputPackageJson: {
+      name,
+      version,
+      description,
+      exports,
+      homepage,
+      repository,
+      bin,
+      _bwInternal,
+      dependencies,
+      keywords,
+      scripts,
+    },
     outputPackageJson: {
       name,
       version,
       description,
       license,
       exports: Object.fromEntries(
-        Object.entries(exports)
-          .map(
-            ([key, value]) =>
-              [
-                key,
-                {
-                  types: (value as string).replace(".ts", ".d.ts"),
-                  default: (value as string).replace(".ts", ".mjs"),
-                },
-              ] as const,
-          )
-          .filter(([key]) => !key.startsWith("./src")),
+        Object.entries(exports).map(
+          ([key, value]) =>
+            [
+              key,
+              {
+                types: (value as string).replace(".ts", ".d.ts"),
+                default: (value as string).replace(".ts", ".mjs"),
+              },
+            ] as const,
+        ),
       ),
       types: exports["."].replace(".ts", ".d.ts"),
       homepage,
@@ -78,23 +92,76 @@ export const runBuild = async () => {
   await $`bun run ajv`;
   await $`bun run generate-mcp-docs`;
 
-  const { outputPackageJson, dependencies } = processPackageJson();
+  const { outputPackageJson, inputPackageJson, dependencies } =
+    processPackageJson();
 
   console.log("Creating rslib build...");
 
-  const rslibConfig = mergeRslibConfig(rsLibConfig, {
+  const project = createFileSystemProject({
+    rootDirectory: process.env.BW_PROJECT_PATH as string,
+  });
+
+  const bundledDependencies = Object.entries(dependencies).reduce(
+    (acc, [key, value]) => {
+      acc.push(key);
+      if (value === "workspace:*") {
+        const workspace = project.findWorkspaceByName(key);
+        if (workspace) {
+          // push all subpaths of the workspace
+          for (const subpath of readdirSync(
+            path.resolve(project.rootDirectory, workspace.path),
+            {
+              withFileTypes: true,
+            },
+          )) {
+            if (subpath.isDirectory()) {
+              acc.push(path.join(workspace.name, subpath.name));
+            }
+          }
+        }
+      }
+      return acc;
+    },
+    [] as string[],
+  );
+
+  const rsLibConfig = mergeRslibConfig(rsLibConfigRaw, {
     output: {
       externals: Object.fromEntries(
-        Object.keys(dependencies).map((key) => [key, false]),
+        bundledDependencies.map((dependency) => [dependency, false]),
       ),
     },
   }) as RslibConfig;
 
   const rslib = await createRslib({
-    config: rslibConfig,
+    config: rsLibConfig,
   });
 
   await rslib.build();
+
+  if (!IS_TEST_BUILD) {
+    console.log("Bundling DTS...");
+
+    const dtsEntries = Object.values(inputPackageJson.exports) as string[];
+
+    const fileContents = await generateDtsBundle(
+      dtsEntries.map((exp) => ({
+        inlinedLibraries: bundledDependencies,
+        filePath: path.resolve(__dirname, "..", exp as string),
+      })),
+      {
+        preferredConfigPath: path.resolve(__dirname, "../tsconfig.json"),
+      },
+    );
+
+    for (let i = 0; i < fileContents.length; i++) {
+      const fileContent = fileContents[i];
+      writeFileSync(
+        path.resolve(DIST_PATH, dtsEntries[i].replace(".ts", ".d.ts")),
+        fileContent,
+      );
+    }
+  }
 
   console.log("Writing package.json...");
   writeFileSync(

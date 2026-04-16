@@ -1,5 +1,5 @@
+import type { RootConfig } from "bw-common/config";
 import type { FromSchema, JSONSchema } from "json-schema-to-ts";
-import type { RootConfig } from "./rootConfig";
 
 export const ROOT_CONFIG_JSON_SCHEMA = {
   type: "object",

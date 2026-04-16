@@ -20,11 +20,8 @@ export default defineConfig({
   lib: [
     {
       format: "esm",
-      dts: true,
       bundle: false,
-      source: {
-        include: ["src/**/*.ts"],
-      },
+      source: { include: ["src/**/*.ts"] },
     },
   ],
   output: {

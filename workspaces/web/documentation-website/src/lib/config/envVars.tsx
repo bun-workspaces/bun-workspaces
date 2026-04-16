@@ -1,8 +1,8 @@
-import { type ResolvedRootConfig } from "bun-workspaces/src/config";
 import {
+  type ResolvedRootConfig,
   getUserEnvVarName,
   type UserEnvVarName,
-} from "bun-workspaces/src/config/userEnvVars";
+} from "bw-common/config";
 import { type ReactNode } from "react";
 import { Link } from "rspress/theme";
 

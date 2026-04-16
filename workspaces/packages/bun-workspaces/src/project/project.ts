@@ -1,4 +1,7 @@
-import type { ResolvedRootConfig, ResolvedWorkspaceConfig } from "../config";
+import type {
+  ResolvedRootConfig,
+  ResolvedWorkspaceConfig,
+} from "bw-common/config";
 import type { ScriptCommand, WorkspaceScriptCommandMethod } from "../runScript";
 import type { Workspace } from "../workspaces";
 

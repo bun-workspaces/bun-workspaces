@@ -1,3 +1,4 @@
+import type { ScriptShellOption } from "bw-common/parameters";
 import {
   createProcessOutput,
   createMultiProcessOutput,
@@ -6,7 +7,6 @@ import {
 } from "./output";
 import type { ScriptCommand } from "./scriptCommand";
 import { createScriptExecutor } from "./scriptExecution";
-import type { ScriptShellOption } from "./scriptShellOption";
 import { createSubprocess } from "./subprocesses";
 
 export type RunScriptExit<ScriptMetadata extends object = object> = {

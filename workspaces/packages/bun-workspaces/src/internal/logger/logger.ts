@@ -1,13 +1,11 @@
+import {
+  LOG_LEVELS,
+  getLogLevelNumber,
+  type LogLevelSetting,
+  type LogLevel,
+} from "bw-common/logging";
 import { defineErrors } from "../core/error";
 import { IS_TEST } from "../core/runtime/env";
-
-export const LOG_LEVELS = ["debug", "info", "warn", "error"] as const;
-
-const getLevelNumber = (level: LogLevel) => LOG_LEVELS.indexOf(level);
-
-export type LogLevel = (typeof LOG_LEVELS)[number];
-
-export type LogLevelSetting = LogLevel | "silent";
 
 export const LOGGER_ERRORS = defineErrors("InvalidLogLevel");
 
@@ -175,7 +173,7 @@ class _Logger implements Logger {
 
   private shouldPrint(level: LogLevel): boolean {
     if (this.printLevel === "silent") return false;
-    return getLevelNumber(level) >= getLevelNumber(this.printLevel);
+    return getLogLevelNumber(level) >= getLogLevelNumber(this.printLevel);
   }
 
   private _printStdout: (

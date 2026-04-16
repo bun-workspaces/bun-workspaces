@@ -1,10 +1,11 @@
-export type { RootConfig, ResolvedRootConfig } from "./rootConfig";
 export type {
+  RootConfig,
+  ResolvedRootConfig,
   WorkspaceConfig,
-  ResolvedWorkspaceConfig,
   WorkspaceDependenciesRule,
+  ResolvedWorkspaceConfig,
   WorkspaceRules,
   ScriptConfig,
-} from "./workspaceConfig";
+} from "bw-common/config";
 export { defineRootConfig } from "./rootConfig/defineRootConfig";
 export { defineWorkspaceConfig } from "./workspaceConfig/defineWorkspaceConfig";

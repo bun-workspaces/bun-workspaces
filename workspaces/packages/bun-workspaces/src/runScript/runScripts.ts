@@ -1,3 +1,4 @@
+import type { ParallelMaxValue, ScriptShellOption } from "bw-common/parameters";
 import { createAsyncIterableQueue } from "../internal/core";
 import { logger } from "../internal/logger";
 import {
@@ -7,14 +8,13 @@ import {
   type BytesOutput,
   type OutputStreamName,
 } from "./output";
-import { determineParallelMax, type ParallelMaxValue } from "./parallel";
+import { determineParallelMax } from "./parallel";
 import {
   runScript,
   type RunScriptExit,
   type RunScriptResult,
 } from "./runScript";
 import { type ScriptCommand } from "./scriptCommand";
-import { type ScriptShellOption } from "./scriptShellOption";
 
 export type RunScriptsScript<ScriptMetadata extends object = object> = {
   scriptCommand: ScriptCommand;

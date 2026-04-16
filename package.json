@@ -20,7 +20,8 @@
         "@types/shell-quote": "^1.7.5",
         "@xterm/headless": "^6.0.0",
         "ajv": "^8.17.1",
-        "ajv-cli": "^5.0.0"
+        "ajv-cli": "^5.0.0",
+        "dts-bundle-generator": "^9.5.1"
       },
       "web": {
         "@fontsource/unifontex": "^5.2.6",
@@ -67,7 +68,7 @@
     "type-check": "bw run type-check -P --",
     "generate-cursor-rules": "bw run generate-cursor-rules meta -o plain --",
     "generate-readme": "bw run generate-readme meta -o plain --",
-    "prepare": "BW_PROJECT_PATH=$PWD bun --cwd=workspaces/packages/bun-workspaces run generate-modules"
+    "prepare": "BW_PROJECT_PATH=$PWD bun  --cwd=workspaces/packages/bun-workspaces run generate-modules && bun  --cwd=workspaces/libraries/bw-common run build:dts"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

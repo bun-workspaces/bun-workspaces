@@ -1,8 +1,8 @@
 import {
-  resolveWorkspaceConfig,
-  type ResolvedWorkspaceConfig,
   type WorkspaceConfig,
-} from "./workspaceConfig";
+  type ResolvedWorkspaceConfig,
+} from "bw-common/config";
+import { resolveWorkspaceConfig } from "./workspaceConfig";
 
 export const defineWorkspaceConfig = (
   config: WorkspaceConfig,

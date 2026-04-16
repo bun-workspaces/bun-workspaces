@@ -2,4 +2,4 @@ export {
   RUN_WORKSPACE_SCRIPT_EXAMPLE,
   RUN_SCRIPT_ACROSS_WORKSPACES_EXAMPLE,
   API_QUICKSTART,
-} from "bun-workspaces/src/internal/docs";
+} from "bw-common/docs";

@@ -1,5 +1,8 @@
 import fs from "fs";
 import path from "path";
+import type { ScriptShellOption, ShellOption } from "bw-common/parameters";
+import { ROOT_WORKSPACE_SELECTOR } from "bw-common/project";
+import type { ScriptRuntimeMetadata } from "bw-common/runScript";
 import { loadRootConfig } from "../../config";
 import { getUserEnvVar } from "../../config/userEnvVars";
 import { parse, quote } from "../../internal/bundledDeps/shellQuote";
@@ -20,7 +23,6 @@ import {
   createScriptRuntimeEnvVars,
   interpolateScriptRuntimeMetadata,
   type RunScriptsParallelOptions,
-  type ScriptRuntimeMetadata,
   type RunScriptsSummary,
   type RunScriptExit,
   type OutputStreamName,
@@ -28,10 +30,7 @@ import {
 } from "../../runScript";
 import type { MultiProcessOutput } from "../../runScript/output/multiProcessOutput";
 import { checkIsRecursiveScript } from "../../runScript/recursion";
-import {
-  resolveScriptShell,
-  type ScriptShellOption,
-} from "../../runScript/scriptShellOption";
+import { resolveScriptShell } from "../../runScript/scriptShellOption";
 import {
   findWorkspaces,
   sortWorkspaces,
@@ -44,7 +43,6 @@ import {
   ProjectBase,
   resolveRootWorkspaceSelector,
   resolveWorkspacePath,
-  ROOT_WORKSPACE_SELECTOR,
 } from "./projectBase";
 
 /** Arguments for {@link createFileSystemProject} */
@@ -60,8 +58,6 @@ export type CreateFileSystemProjectOptions = {
   /** Whether to include the root workspace as a normal workspace. This overrides any config or env var settings. */
   includeRootWorkspace?: boolean;
 };
-
-export type ShellOption = ScriptShellOption | "default";
 
 export type InlineScriptOptions = {
   /** A name to act as a label for the inline script */

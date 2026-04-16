@@ -1,4 +1,5 @@
 import path from "path";
+import { ROOT_WORKSPACE_SELECTOR } from "bw-common/project";
 import { validateCurrentBunVersion } from "../../internal/bun";
 import { validateJSTypes } from "../../internal/core";
 import { logger } from "../../internal/logger";
@@ -16,8 +17,6 @@ import type {
 
 export const resolveWorkspacePath = (project: Project, workspace: Workspace) =>
   path.resolve(project.rootDirectory, workspace.path);
-
-export const ROOT_WORKSPACE_SELECTOR = "@root";
 
 export const resolveRootWorkspaceSelector = (
   workspacePattern: string,

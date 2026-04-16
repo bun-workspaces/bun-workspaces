@@ -1,11 +1,11 @@
 import { describe, test, expect } from "bun:test";
 import { resolveWorkspaceConfig } from "../../../src/config";
 import { validateWorkspaceDependencyRules } from "../../../src/workspaces/dependencyGraph";
+import type { WorkspaceMap } from "../../../src/workspaces/dependencyGraph";
 import { WORKSPACE_ERRORS } from "../../../src/workspaces/errors";
 import { findWorkspaces } from "../../../src/workspaces/findWorkspaces";
 import { getProjectRoot } from "../../fixtures/testProjects";
 import { makeTestWorkspace } from "../../util/testData";
-import type { WorkspaceMap } from "../../../src/workspaces/dependencyGraph";
 
 const makeWorkspaceMapEntry = (
   workspace: ReturnType<typeof makeTestWorkspace>,
@@ -13,7 +13,7 @@ const makeWorkspaceMapEntry = (
 ) => ({
   workspace,
   config: resolveWorkspaceConfig(config),
-  packageJson: {},
+  packageJson: expect.any(Object),
 });
 
 describe("validateWorkspaceDependencyRules", () => {

@@ -1,25 +1,10 @@
 {
   "name": "bun-workspaces",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "exports": {
     ".": "./src/index.ts",
     "./cli": "./src/cli/index.ts",
-    "./config": "./src/config/public.ts",
-    "./src/config": "./src/config/index.ts",
-    "./src/runScript": "./src/runScript/index.ts",
-    "./src/cli/cliGlobalOptions": "./src/cli/cliGlobalOptions.ts",
-    "./src/workspaces/workspacePattern": "./src/workspaces/workspacePattern.ts",
-    "./src/internal/core": "./src/internal/core/index.ts",
-    "./src/config/util": "./src/config/util/index.ts",
-    "./src/project": "./src/project/index.ts",
-    "./src/runScript/scriptRuntimeMetadata": "./src/runScript/scriptRuntimeMetadata.ts",
-    "./src/config/workspaceConfig/workspaceConfigLocation": "./src/config/workspaceConfig/workspaceConfigLocation.ts",
-    "./src/config/userEnvVars": "./src/config/userEnvVars/index.ts",
-    "./src/config/configTypes": "./src/config/configTypes.ts",
-    "./src/config/util/configLocation": "./src/config/util/configLocation.ts",
-    "./src/config/rootConfig/rootConfigLocation": "./src/config/rootConfig/rootConfigLocation.ts",
-    "./src/cli/globalOptions/globalOptionsConfig": "./src/cli/globalOptions/globalOptionsConfig.ts",
-    "./src/internal/docs": "./src/internal/docs/index.ts"
+    "./config": "./src/config/public.ts"
   },
   "private": true,
   "description": "A monorepo management tool for Bun, with a CLI and API to enhance Bun's native workspaces.",
@@ -47,21 +32,21 @@
     }
   },
   "scripts": {
-    "cli": "bun --silent run bin/cli.js",
-    "cli:dev": "_BW_RUNTIME_MODE=development bun --silent run bin/cli.js",
-    "cli:build": "bun --silent run dist/bin/cli.js",
-    "ajv": "bun --silent run scripts/ajv.ts",
-    "generate-mcp-docs": "bun --silent run scripts/generateMcpDocs.ts",
-    "test": "rm -rf dist.test && bun test --timeout 10000",
+    "cli": "bun  run bin/cli.js",
+    "cli:dev": "_BW_RUNTIME_MODE=development bun  run bin/cli.js",
+    "cli:build": "bun  run dist/bin/cli.js",
+    "ajv": "bun  run scripts/ajv.ts",
+    "generate-mcp-docs": "bun  run scripts/generateMcpDocs.ts",
+    "test": "rm -rf dist.test && bun  test --timeout 10000",
     "test:clean": "rm -rf packages/bun-workspaces/tests/fixtures/testProjects/**/node_modules && rm -rf packages/bun-workspaces/tests/fixtures/testProjects/**/bun.lock && bun run test",
-    "test:concurrent": "rm -rf dist.test && bun test --concurrent --timeout 10000",
+    "test:concurrent": "rm -rf dist.test && bun  test --concurrent --timeout 10000",
     "lint": "eslint src",
     "build": "bun run scripts/build.ts",
-    "build:test": "BUILD_INCLUDE_TESTS=true bun run scripts/build.ts && chmod +x dist.test/bin/cli.js && cd dist.test && bun install && IS_BUILD=true bun run test",
+    "build:test": "BUILD_INCLUDE_TESTS=true bun  run scripts/build.ts && chmod +x dist.test/bin/cli.js && cd dist.test && bun install && IS_BUILD=true bun  run test",
     "build:rslib-only": "rslib build",
     "type-check": "tsc --noEmit",
-    "generate-modules": "bun run ajv && bun run generate-mcp-docs",
-    "mcp:inspect": "mcp-inspector bun --silent run bin/cli.js --cwd ../../../ mcp"
+    "generate-modules": "bun  run ajv && bun  run generate-mcp-docs",
+    "mcp:inspect": "mcp-inspector bun  run bin/cli.js --cwd ../../../ mcp"
   },
   "devDependencies": {
     "@modelcontextprotocol/inspector": "catalog:bun-workspaces-dev",
@@ -69,9 +54,11 @@
     "@types/shell-quote": "catalog:bun-workspaces-dev",
     "@xterm/headless": "catalog:bun-workspaces-dev",
     "ajv": "catalog:bun-workspaces-dev",
-    "ajv-cli": "catalog:bun-workspaces-dev"
+    "ajv-cli": "catalog:bun-workspaces-dev",
+    "dts-bundle-generator": "catalog:bun-workspaces-dev"
   },
   "dependencies": {
+    "bw-common": "workspace:*",
     "commander": "catalog:bun-workspaces-prod",
     "shell-quote": "catalog:bun-workspaces-prod"
   }

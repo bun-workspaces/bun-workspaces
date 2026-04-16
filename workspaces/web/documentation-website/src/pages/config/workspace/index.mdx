@@ -8,10 +8,9 @@ outline: true
 footer: false
 ---
 
-import { WORKSPACE_CONFIG_FILE_NAME, WORKSPACE_CONFIG_PACKAGE_JSON_KEY } from "bun-workspaces/src/config/workspaceConfig/workspaceConfigLocation";
+import { WORKSPACE_CONFIG_FILE_NAME, WORKSPACE_CONFIG_PACKAGE_JSON_KEY, CONFIG_LOCATION_TYPES, createConfigLocationPath } from 'bw-common/config';
 import {  exampleWorkspaceConfigArray, exampleWorkspaceConfigSimple, createPackageJsonExample, createTsFileExample } from "../../../lib/config/exampleConfig";
 import { SyntaxHighlighter } from "../../../lib/util/highlight";
-import { CONFIG_LOCATION_TYPES, createConfigLocationPath } from 'bun-workspaces/src/config/util/configLocation'
 import { ROOT_CONFIG_TYPE, WORKSPACE_CONFIG_TYPE } from "../../../lib/config/configTypes";
 import { ConfigHeader } from "../../../lib/config/ConfigHeader";  
 

@@ -83,12 +83,6 @@ export const runBuild = async () => {
 
   console.log("Creating rslib build...");
 
-  // The pain of not having the type you want exported
-  type ExternalsCallback = Extract<
-    NonNullable<RslibConfig["output"]>["externals"],
-    AnyFunction
-  >;
-
   const project = createFileSystemProject({
     rootDirectory: process.env.BW_PROJECT_PATH as string,
   });
@@ -122,8 +116,6 @@ export const runBuild = async () => {
       ),
     },
   }) as RslibConfig;
-
-  console.log(rsLibConfig);
 
   const rslib = await createRslib({
     config: rsLibConfig,

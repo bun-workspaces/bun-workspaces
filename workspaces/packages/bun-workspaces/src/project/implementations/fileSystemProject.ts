@@ -62,7 +62,7 @@ export type CreateFileSystemProjectOptions = {
 export type InlineScriptOptions = {
   /** A name to act as a label for the inline script */
   scriptName?: string;
-  /** Whether to run the script as an inline command */
+  /** Whether to use the system shell or Bun shell */
   shell?: ShellOption;
 };
 

@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import type { ScriptShellOption } from "bw-common/parameters";
+import type { ScriptShellOption, ShellOption } from "bw-common/parameters";
 import { ROOT_WORKSPACE_SELECTOR } from "bw-common/project";
 import type { ScriptRuntimeMetadata } from "bw-common/runScript";
 import { loadRootConfig } from "../../config";
@@ -58,8 +58,6 @@ export type CreateFileSystemProjectOptions = {
   /** Whether to include the root workspace as a normal workspace. This overrides any config or env var settings. */
   includeRootWorkspace?: boolean;
 };
-
-export type ShellOption = ScriptShellOption | "default";
 
 export type InlineScriptOptions = {
   /** A name to act as a label for the inline script */

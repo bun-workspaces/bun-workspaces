@@ -12,9 +12,9 @@ import path from "path";
 import { createRslib, mergeRslibConfig, type RslibConfig } from "@rslib/core";
 import { $ } from "bun";
 import { createFileSystemProject } from "bun-workspaces";
+import { generateDtsBundle } from "dts-bundle-generator";
 
 import rsLibConfigRaw, { IS_TEST_BUILD, DIST_PATH } from "../rslib.config.ts";
-import type { AnyFunction } from "../src/internal/core/index.ts";
 
 const PACKAGE_JSON_PATH = path.resolve(__dirname, "../package.json");
 
@@ -44,6 +44,19 @@ const processPackageJson = () => {
 
   return {
     dependencies,
+    inputPackageJson: {
+      name,
+      version,
+      description,
+      exports,
+      homepage,
+      repository,
+      bin,
+      _bwInternal,
+      dependencies,
+      keywords,
+      scripts,
+    },
     outputPackageJson: {
       name,
       version,
@@ -79,7 +92,8 @@ export const runBuild = async () => {
   await $`bun run ajv`;
   await $`bun run generate-mcp-docs`;
 
-  const { outputPackageJson, dependencies } = processPackageJson();
+  const { outputPackageJson, inputPackageJson, dependencies } =
+    processPackageJson();
 
   console.log("Creating rslib build...");
 
@@ -124,6 +138,25 @@ export const runBuild = async () => {
   });
 
   await rslib.build();
+
+  console.log("Bundling DTS...");
+
+  const files = await generateDtsBundle(
+    [{ filePath: path.resolve(__dirname, "../dist/src/cli/index.d.ts") }],
+    // Object.values(inputPackageJson.exports).map((exp) => ({
+    //   inlinedLibraries: bundledDependencies,
+    //   filePath: path.resolve(
+    //     __dirname,
+    //     "../dist",
+    //     (exp as string).replace(".ts", ".d.ts"),
+    //   ),
+    // })),
+    {
+      preferredConfigPath: path.resolve(__dirname, "../tsconfig.dts.json"),
+    },
+  );
+
+  console.log(files);
 
   console.log("Writing package.json...");
   writeFileSync(

@@ -42,6 +42,7 @@
     "test:concurrent": "rm -rf dist.test && bun test --concurrent --timeout 10000",
     "lint": "eslint src",
     "build": "bun run scripts/build.ts",
+    "build:dts": "dts-bundle-generator -o ignore-me.d.ts src/index.ts --project tsconfig.dts.json",
     "build:test": "BUILD_INCLUDE_TESTS=true bun run scripts/build.ts && chmod +x dist.test/bin/cli.js && cd dist.test && bun install && IS_BUILD=true bun run test",
     "build:rslib-only": "rslib build",
     "type-check": "tsc --noEmit",
@@ -54,7 +55,8 @@
     "@types/shell-quote": "catalog:bun-workspaces-dev",
     "@xterm/headless": "catalog:bun-workspaces-dev",
     "ajv": "catalog:bun-workspaces-dev",
-    "ajv-cli": "catalog:bun-workspaces-dev"
+    "ajv-cli": "catalog:bun-workspaces-dev",
+    "dts-bundle-generator": "catalog:bun-workspaces-dev"
   },
   "dependencies": {
     "bw-common": "workspace:*",

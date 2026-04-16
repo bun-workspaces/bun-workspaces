@@ -1,8 +1,12 @@
 {
   "extends": "../../meta/config/base/tsconfig.json",
   "compilerOptions": {
-    "rootDir": "src"
+    "composite": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist/**/*", "dist.test/**/*"]
+  "references": [
+    { "path": "./tsconfig.src.json" },
+    { "path": "./tsconfig.tests.json" }
+  ]
 }

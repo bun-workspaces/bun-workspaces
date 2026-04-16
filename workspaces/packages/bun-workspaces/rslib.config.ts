@@ -20,9 +20,10 @@ export default defineConfig({
   lib: [
     {
       format: "esm",
-      dts: false,
+      dts: true,
       bundle: false,
       source: {
+        tsconfigPath: path.resolve(__dirname, "tsconfig.src.json"),
         include: ["src/**/*.ts"],
       },
     },

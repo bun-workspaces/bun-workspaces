@@ -20,7 +20,6 @@ export {
   type RunScriptAcrossWorkspacesOutput as RunScriptAcrossWorkspacesProcessOutput,
   type RunScriptAcrossWorkspacesResult,
   type ParallelOption,
-  type ShellOption,
   type ScriptEventMetadata,
   type OnScriptEventCallback,
 } from "./project";
@@ -28,6 +27,7 @@ export * from "./config/public";
 export {
   type PercentageValue,
   type ParallelMaxValue,
+  type ShellOption,
 } from "bw-common/parameters";
 export {
   type ScriptEventName,

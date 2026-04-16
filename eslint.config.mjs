@@ -77,6 +77,7 @@ export default defineConfig([
   {
     name: "bunWorkspacesPackageConfig",
     files: [
+      "workspaces/libraries/bw-common/**/*.{js,mjs,cjs,ts,mts,cts,tsx}",
       "workspaces/packages/bun-workspaces/**/*.{js,mjs,cjs,ts,mts,cts,tsx}",
     ],
     rules: {

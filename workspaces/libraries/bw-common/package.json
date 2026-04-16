@@ -1,4 +1,8 @@
 {
   "name": "bw-common",
-  "private": true
+  "private": true,
+  "scripts": {
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit"
+  }
 }

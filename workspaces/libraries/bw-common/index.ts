@@ -1,5 +1,6 @@
 export * from "./cli";
 export * from "./config";
+export * from "./logging";
 export * from "./docs";
 export * from "./parameters";
 export * from "./project";

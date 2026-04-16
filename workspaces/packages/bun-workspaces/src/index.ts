@@ -37,4 +37,5 @@ export {
 } from "./runScript";
 export { type Workspace } from "./workspaces";
 export { type SimpleAsyncIterable, BunWorkspacesError } from "./internal/core";
-export { setLogLevel, type LogLevelSetting } from "./internal/logger";
+export { type LogLevelSetting } from "bw-common/logging";
+export { setLogLevel } from "./internal/logger";

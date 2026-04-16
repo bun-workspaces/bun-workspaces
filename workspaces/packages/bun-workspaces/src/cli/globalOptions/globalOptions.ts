@@ -1,5 +1,10 @@
 import fs from "fs";
 import path from "path";
+import {
+  type CliGlobalOptionName,
+  type CliGlobalOptions,
+  getCliGlobalOptionConfig,
+} from "bw-common/cli";
 import { type Command } from "../../internal/bundledDeps/commander";
 import { Option } from "../../internal/bundledDeps/commander";
 import { defineErrors, expandHomePath } from "../../internal/core";
@@ -10,11 +15,6 @@ import {
   type FileSystemProject,
 } from "../../project";
 import type { CliMiddleware } from "../middleware";
-import {
-  type CliGlobalOptionName,
-  type CliGlobalOptions,
-  getCliGlobalOptionConfig,
-} from "./globalOptionsConfig";
 
 const ERRORS = defineErrors(
   "WorkingDirectoryNotFound",

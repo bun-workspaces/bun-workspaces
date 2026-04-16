@@ -1,4 +1,4 @@
-import { type CliCommandName } from "bun-workspaces/cli";
+import type { CliCommandName } from "bw-common/cli";
 import { type ReactNode, useId } from "react";
 import { Link } from "rspress/theme";
 import { SyntaxHighlighter } from "../util/highlight";

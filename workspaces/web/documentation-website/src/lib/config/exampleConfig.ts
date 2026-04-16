@@ -3,7 +3,7 @@ import {
   type RootConfig,
   WORKSPACE_CONFIG_PACKAGE_JSON_KEY,
   ROOT_CONFIG_PACKAGE_JSON_KEY,
-} from "bun-workspaces/src/config";
+} from "bw-common/config";
 
 export const exampleRootConfigSimple1: RootConfig = {
   defaults: {

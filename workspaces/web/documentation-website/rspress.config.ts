@@ -59,13 +59,6 @@ const LD_JSON = {
   softwareVersion: packageJson.version,
 };
 
-const STUBS = ["fs", "path", "process", "os", "bun", "commander", "readline"];
-
-const PLACEHOLDER_STUB_PATH = path.resolve(
-  __dirname,
-  "src/stubs/placeholderModule.ts",
-);
-
 const BWUNSTER_ASCII = fs.readFileSync(
   path.resolve(__dirname, "../../../bwunster.txt"),
   "utf8",
@@ -110,14 +103,6 @@ export default defineConfig({
       },
     },
     plugins: [pluginSvgr()],
-    resolve: {
-      alias: {
-        ...STUBS.reduce<Record<string, string>>((acc, stub) => {
-          acc[stub] = PLACEHOLDER_STUB_PATH;
-          return acc;
-        }, {}),
-      },
-    },
     output: {
       cleanDistPath: true,
     },

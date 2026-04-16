@@ -6,7 +6,7 @@ import {
   type JSONObject,
   type JSONPrimitive,
   type JSONPrimitiveToName,
-} from "bun-workspaces/src/internal/core";
+} from "bw-common/types";
 
 type PlainStringValueToDisplay = {
   value: string;

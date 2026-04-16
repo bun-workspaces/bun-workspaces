@@ -4,14 +4,17 @@ import {
   rmSync,
   renameSync,
   copyFileSync,
+  readdirSync,
   mkdirSync,
   cpSync,
 } from "fs";
 import path from "path";
 import { createRslib, mergeRslibConfig, type RslibConfig } from "@rslib/core";
 import { $ } from "bun";
+import { createFileSystemProject } from "bun-workspaces";
 
-import rsLibConfig, { IS_TEST_BUILD, DIST_PATH } from "../rslib.config.ts";
+import rsLibConfigRaw, { IS_TEST_BUILD, DIST_PATH } from "../rslib.config.ts";
+import type { AnyFunction } from "../src/internal/core/index.ts";
 
 const PACKAGE_JSON_PATH = path.resolve(__dirname, "../package.json");
 
@@ -82,16 +85,50 @@ export const runBuild = async () => {
 
   console.log("Creating rslib build...");
 
-  const rslibConfig = mergeRslibConfig(rsLibConfig, {
+  // The pain of not having the type you want exported
+  type ExternalsCallback = Extract<
+    NonNullable<RslibConfig["output"]>["externals"],
+    AnyFunction
+  >;
+
+  const project = createFileSystemProject({
+    rootDirectory: process.env.BW_PROJECT_PATH as string,
+  });
+
+  const rsLibConfig = mergeRslibConfig(rsLibConfigRaw, {
     output: {
       externals: Object.fromEntries(
-        Object.keys(dependencies).map((key) => [key, false]),
+        Object.entries(dependencies).reduce(
+          (acc, [key, value]) => {
+            acc.push([key, false]);
+            if (value === "workspace:*") {
+              const workspace = project.findWorkspaceByName(key);
+              if (workspace) {
+                // push all subpaths of the workspace
+                for (const subpath of readdirSync(
+                  path.resolve(project.rootDirectory, workspace.path),
+                  {
+                    withFileTypes: true,
+                  },
+                )) {
+                  if (subpath.isDirectory()) {
+                    acc.push([path.join(workspace.name, subpath.name), false]);
+                  }
+                }
+              }
+            }
+            return acc;
+          },
+          [] as [string, boolean][],
+        ),
       ),
     },
   }) as RslibConfig;
 
+  console.log(rsLibConfig);
+
   const rslib = await createRslib({
-    config: rslibConfig,
+    config: rsLibConfig,
   });
 
   await rslib.build();

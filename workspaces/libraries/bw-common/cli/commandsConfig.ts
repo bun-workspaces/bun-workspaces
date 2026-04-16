@@ -1,5 +1,4 @@
-import { SCRIPT_SHELL_OPTIONS } from "../../runScript/scriptShellOption";
-import { OUTPUT_STYLE_VALUES } from "./runScript/output/outputStyle";
+import { OUTPUT_STYLE_VALUES, SCRIPT_SHELL_OPTIONS } from "../parameters";
 
 export interface CliCommandConfig {
   command: string;

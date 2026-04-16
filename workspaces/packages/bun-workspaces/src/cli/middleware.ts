@@ -1,8 +1,8 @@
+import type { CliCommandName, CliGlobalCommandName } from "bw-common/cli";
 import type { Command as CommanderProgram } from "../internal/bundledDeps/commander";
 import { defineErrors } from "../internal/core";
 import { logger } from "../internal/logger";
 import type { FileSystemProject } from "../project";
-import type { CliCommandName, CliGlobalCommandName } from "./commands";
 import type {
   GlobalCommandContext,
   ProjectCommandContext,

@@ -1,4 +1,4 @@
-import { API_QUICKSTART, CLI_QUICKSTART } from "bw-common";
+import { API_QUICKSTART, CLI_QUICKSTART } from "bw-common/docs";
 import packageJson from "../../../package.json";
 import type { FileSystemProject } from "../../project/implementations/fileSystemProject";
 import { createMcpServer } from "./core";

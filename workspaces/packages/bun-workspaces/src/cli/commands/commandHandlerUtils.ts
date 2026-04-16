@@ -1,3 +1,9 @@
+import {
+  getCliCommandConfig,
+  type CliCommandName,
+  type CliGlobalCommandName,
+  type CliProjectCommandName,
+} from "bw-common/cli";
 import { Option, type Command } from "../../internal/bundledDeps/commander";
 import { BunWorkspacesError } from "../../internal/core/error";
 import { createLogger, logger } from "../../internal/logger";
@@ -5,12 +11,6 @@ import type { FileSystemProject } from "../../project/implementations/fileSystem
 import type { Workspace } from "../../workspaces";
 import type { WriteOutputOptions } from "../createCli";
 import type { CliMiddleware, CommandMiddlewareContext } from "../middleware";
-import {
-  getCliCommandConfig,
-  type CliCommandName,
-  type CliGlobalCommandName,
-  type CliProjectCommandName,
-} from "./commandsConfig";
 
 /** @todo DRY use of output text in cases such as having no workspaces/scripts */
 

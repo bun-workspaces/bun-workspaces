@@ -1,5 +1,5 @@
 <a href="https://bunworkspaces.com">
-<img src="./packages/doc-website/src/pages/public/images/png/bwunster-bg-banner-wide_3000x900.png" alt="bun-workspaces" width="100%" />
+<img src="./workspaces/web/documentation-website/src/pages/public/images/png/bwunster-bg-banner-wide_3000x900.png" alt="bun-workspaces" width="100%" />
 </a>
 
 # bun-workspaces

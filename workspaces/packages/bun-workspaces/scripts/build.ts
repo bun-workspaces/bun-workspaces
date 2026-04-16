@@ -87,32 +87,34 @@ export const runBuild = async () => {
     rootDirectory: process.env.BW_PROJECT_PATH as string,
   });
 
+  const bundledDependencies = Object.entries(dependencies).reduce(
+    (acc, [key, value]) => {
+      acc.push(key);
+      if (value === "workspace:*") {
+        const workspace = project.findWorkspaceByName(key);
+        if (workspace) {
+          // push all subpaths of the workspace
+          for (const subpath of readdirSync(
+            path.resolve(project.rootDirectory, workspace.path),
+            {
+              withFileTypes: true,
+            },
+          )) {
+            if (subpath.isDirectory()) {
+              acc.push(path.join(workspace.name, subpath.name));
+            }
+          }
+        }
+      }
+      return acc;
+    },
+    [] as string[],
+  );
+
   const rsLibConfig = mergeRslibConfig(rsLibConfigRaw, {
     output: {
       externals: Object.fromEntries(
-        Object.entries(dependencies).reduce(
-          (acc, [key, value]) => {
-            acc.push([key, false]);
-            if (value === "workspace:*") {
-              const workspace = project.findWorkspaceByName(key);
-              if (workspace) {
-                // push all subpaths of the workspace
-                for (const subpath of readdirSync(
-                  path.resolve(project.rootDirectory, workspace.path),
-                  {
-                    withFileTypes: true,
-                  },
-                )) {
-                  if (subpath.isDirectory()) {
-                    acc.push([path.join(workspace.name, subpath.name), false]);
-                  }
-                }
-              }
-            }
-            return acc;
-          },
-          [] as [string, boolean][],
-        ),
+        bundledDependencies.map((dependency) => [dependency, false]),
       ),
     },
   }) as RslibConfig;

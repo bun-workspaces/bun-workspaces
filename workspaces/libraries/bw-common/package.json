@@ -1,6 +1,18 @@
 {
   "name": "bw-common",
   "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./cli": "./src/cli/index.ts",
+    "./config": "./src/config/index.ts",
+    "./docs": "./src/docs/index.ts",
+    "./logging": "./src/logging/index.ts",
+    "./parameters": "./src/parameters/index.ts",
+    "./project": "./src/project/index.ts",
+    "./runScript": "./src/runScript/index.ts",
+    "./types": "./src/types/index.ts",
+    "./workspaces": "./src/workspaces/index.ts"
+  },
   "scripts": {
     "lint": "eslint .",
     "type-check": "tsc --noEmit"

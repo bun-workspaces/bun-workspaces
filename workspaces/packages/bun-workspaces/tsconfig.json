@@ -1,8 +1,8 @@
 {
   "extends": "../../meta/config/base/tsconfig.json",
   "compilerOptions": {
-    "rootDir": "."
+    "rootDir": "src"
   },
-  "include": ["**/*.ts"],
-  "exclude": ["node_modules", "dist/**/*"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist/**/*", "dist.test/**/*"]
 }

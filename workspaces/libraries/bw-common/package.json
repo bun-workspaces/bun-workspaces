@@ -15,6 +15,7 @@
   },
   "scripts": {
     "lint": "eslint .",
+    "build:dts": "tsc",
     "type-check": "tsc --noEmit"
   }
 }

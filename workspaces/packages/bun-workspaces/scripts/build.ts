@@ -139,24 +139,29 @@ export const runBuild = async () => {
 
   await rslib.build();
 
-  console.log("Bundling DTS...");
+  if (!IS_TEST_BUILD) {
+    console.log("Bundling DTS...");
 
-  const files = await generateDtsBundle(
-    [{ filePath: path.resolve(__dirname, "../dist/src/cli/index.d.ts") }],
-    // Object.values(inputPackageJson.exports).map((exp) => ({
-    //   inlinedLibraries: bundledDependencies,
-    //   filePath: path.resolve(
-    //     __dirname,
-    //     "../dist",
-    //     (exp as string).replace(".ts", ".d.ts"),
-    //   ),
-    // })),
-    {
-      preferredConfigPath: path.resolve(__dirname, "../tsconfig.dts.json"),
-    },
-  );
+    const dtsEntries = Object.values(inputPackageJson.exports) as string[];
 
-  console.log(files);
+    const fileContents = await generateDtsBundle(
+      dtsEntries.map((exp) => ({
+        inlinedLibraries: bundledDependencies,
+        filePath: path.resolve(__dirname, "..", exp as string),
+      })),
+      {
+        preferredConfigPath: path.resolve(__dirname, "../tsconfig.dts.json"),
+      },
+    );
+
+    for (let i = 0; i < fileContents.length; i++) {
+      const fileContent = fileContents[i];
+      writeFileSync(
+        path.resolve(DIST_PATH, dtsEntries[i].replace(".ts", ".d.ts")),
+        fileContent,
+      );
+    }
+  }
 
   console.log("Writing package.json...");
   writeFileSync(

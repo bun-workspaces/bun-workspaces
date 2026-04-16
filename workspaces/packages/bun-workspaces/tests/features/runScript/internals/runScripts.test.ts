@@ -3,7 +3,7 @@ import fs from "fs";
 import { availableParallelism } from "os";
 import path from "path";
 import { test, expect, describe, afterAll } from "bun:test";
-import { getUserEnvVarName } from "../../../../src/config/userEnvVars";
+import { getUserEnvVarName } from "bw-common/config";
 import { IS_WINDOWS } from "../../../../src/internal/core";
 import {
   runScripts,

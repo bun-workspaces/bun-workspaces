@@ -1,11 +1,7 @@
 import fs from "fs";
 import path from "path";
-import {
-  type BunWorkspacesError,
-  defineErrors,
-  isJSONObject,
-  parseJSONC,
-} from "../core";
+import { isJSONObject } from "bw-common/types";
+import { type BunWorkspacesError, defineErrors, parseJSONC } from "../core";
 
 export const BUN_LOCK_ERRORS = defineErrors(
   "BunLockNotFound",

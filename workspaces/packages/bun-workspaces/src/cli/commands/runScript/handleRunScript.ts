@@ -1,8 +1,8 @@
 import fs from "fs";
 import path from "path";
+import type { ParallelMaxValue, ScriptShellOption } from "bw-common/parameters";
 import { expandHomePath } from "../../../internal/core";
 import { logger } from "../../../internal/logger";
-import type { ParallelMaxValue, ScriptShellOption } from "../../../runScript";
 import {
   handleProjectCommand,
   splitWorkspacePatterns,

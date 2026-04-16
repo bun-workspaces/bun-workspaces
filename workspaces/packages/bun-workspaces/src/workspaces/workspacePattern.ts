@@ -1,12 +1,14 @@
 import bun from "bun";
+import {
+  WORKSPACE_PATTERN_TARGETS,
+  type WorkspacePatternTarget,
+} from "bw-common/workspaces";
 import { defineErrors, createWildcardRegex } from "../internal/core";
 import type { Workspace } from "./workspace";
 
-const TARGETS = ["path", "alias", "name", "tag"] as const;
+const TARGETS = WORKSPACE_PATTERN_TARGETS;
 
 export const WORKSPACE_PATTERN_ERRORS = defineErrors("InvalidWorkspacePattern");
-
-export type WorkspacePatternTarget = (typeof TARGETS)[number];
 
 export type WorkspacePattern = {
   target: WorkspacePatternTarget | "default";

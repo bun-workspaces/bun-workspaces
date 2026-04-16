@@ -50,18 +50,16 @@ const processPackageJson = () => {
       description,
       license,
       exports: Object.fromEntries(
-        Object.entries(exports)
-          .map(
-            ([key, value]) =>
-              [
-                key,
-                {
-                  types: (value as string).replace(".ts", ".d.ts"),
-                  default: (value as string).replace(".ts", ".mjs"),
-                },
-              ] as const,
-          )
-          .filter(([key]) => !key.startsWith("./src")),
+        Object.entries(exports).map(
+          ([key, value]) =>
+            [
+              key,
+              {
+                types: (value as string).replace(".ts", ".d.ts"),
+                default: (value as string).replace(".ts", ".mjs"),
+              },
+            ] as const,
+        ),
       ),
       types: exports["."].replace(".ts", ".d.ts"),
       homepage,

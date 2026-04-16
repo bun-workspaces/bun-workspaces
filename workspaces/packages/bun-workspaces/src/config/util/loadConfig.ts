@@ -1,17 +1,17 @@
 import fs from "fs";
 import path from "path";
 import {
+  CONFIG_LOCATION_TYPES,
+  createConfigLocationPath,
+  type ConfigLocation,
+  type ConfigLocationType,
+} from "bw-common/config";
+import {
   defineErrors,
   parseJSONC,
   type AnyFunction,
 } from "../../internal/core";
 import { logger } from "../../internal/logger";
-import {
-  CONFIG_LOCATION_TYPES,
-  createConfigLocationPath,
-  type ConfigLocation,
-  type ConfigLocationType,
-} from "./configLocation";
 
 export const LOAD_CONFIG_ERRORS = defineErrors(
   "InvalidJSON",

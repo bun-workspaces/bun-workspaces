@@ -26,10 +26,12 @@ export {
 } from "./project";
 export * from "./config/public";
 export {
-  type ScriptEventName,
-  type OutputStreamName,
   type PercentageValue,
   type ParallelMaxValue,
+} from "bw-common/parameters";
+export {
+  type ScriptEventName,
+  type OutputStreamName,
   type WorkspaceScriptCommandMethod,
   type RunScriptsParallelOptions,
 } from "./runScript";

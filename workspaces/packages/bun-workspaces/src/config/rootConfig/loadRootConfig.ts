@@ -1,13 +1,10 @@
-import { loadConfig } from "../util/loadConfig";
-import {
-  createDefaultRootConfig,
-  resolveRootConfig,
-  type RootConfig,
-} from "./rootConfig";
 import {
   ROOT_CONFIG_FILE_NAME,
   ROOT_CONFIG_PACKAGE_JSON_KEY,
-} from "./rootConfigLocation";
+  type RootConfig,
+} from "bw-common/config";
+import { loadConfig } from "../util/loadConfig";
+import { createDefaultRootConfig, resolveRootConfig } from "./rootConfig";
 
 export const loadRootConfig = (rootDirectory: string) => {
   const config = loadConfig(

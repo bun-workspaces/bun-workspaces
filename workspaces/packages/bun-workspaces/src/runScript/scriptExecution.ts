@@ -1,13 +1,11 @@
+import type { ScriptShellOption } from "bw-common/parameters";
 import {
   BunWorkspacesError,
   createShortId,
   DEFAULT_TEMP_DIR,
   IS_WINDOWS,
 } from "../internal/core";
-import {
-  resolveScriptShell,
-  type ScriptShellOption,
-} from "./scriptShellOption";
+import { resolveScriptShell } from "./scriptShellOption";
 
 const createWindowsBatchFile = (command: string) => {
   const fileName = `${createShortId(6)}.cmd`;

@@ -1,4 +1,4 @@
-import type { ResolvedWorkspaceConfig } from "../../config";
+import type { ResolvedWorkspaceConfig } from "bw-common/config";
 import {
   resolveCatalogDependencyVersion,
   type BunCatalogSet,

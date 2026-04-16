@@ -1,5 +1,5 @@
+import type { WorkspaceConfig } from "bw-common/config";
 import type { JSONSchema, FromSchema } from "json-schema-to-ts";
-import type { WorkspaceConfig } from "./workspaceConfig";
 
 export const WORKSPACE_CONFIG_JSON_SCHEMA = {
   type: "object",

@@ -1,9 +1,10 @@
-import { getUserEnvVar, getUserEnvVarName } from "../config/userEnvVars";
+import { getUserEnvVarName } from "bw-common/config";
+import {
+  SCRIPT_SHELL_OPTIONS,
+  type ScriptShellOption,
+} from "bw-common/parameters";
+import { getUserEnvVar } from "../config/userEnvVars";
 import { BunWorkspacesError } from "../internal/core/error";
-
-export const SCRIPT_SHELL_OPTIONS = ["bun", "system"] as const;
-
-export type ScriptShellOption = (typeof SCRIPT_SHELL_OPTIONS)[number];
 
 export const validateScriptShellOption = (
   shell: string,

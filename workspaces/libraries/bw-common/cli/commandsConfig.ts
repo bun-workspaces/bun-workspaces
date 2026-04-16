@@ -33,6 +33,8 @@ export type CliProjectCommandName = Exclude<
 
 export const JSON_FLAGS = ["-j", "--json"] as const;
 
+export const PRETTY_FLAGS = ["-p", "--pretty"] as const;
+
 export const CLI_COMMANDS_CONFIG = {
   doctor: {
     command: "doctor",
@@ -45,7 +47,7 @@ export const CLI_COMMANDS_CONFIG = {
         description: "Output as JSON",
       },
       pretty: {
-        flags: ["-p", "--pretty"],
+        flags: PRETTY_FLAGS,
         description: "Pretty print JSON",
       },
     },
@@ -69,7 +71,7 @@ export const CLI_COMMANDS_CONFIG = {
         description: "Output as JSON",
       },
       pretty: {
-        flags: ["-p", "--pretty"],
+        flags: PRETTY_FLAGS,
         description: "Pretty print JSON",
       },
     },
@@ -89,7 +91,7 @@ export const CLI_COMMANDS_CONFIG = {
         description: "Output as JSON",
       },
       pretty: {
-        flags: ["-p", "--pretty"],
+        flags: PRETTY_FLAGS,
         description: "Pretty print JSON",
       },
     },
@@ -105,7 +107,7 @@ export const CLI_COMMANDS_CONFIG = {
         description: "Output as JSON",
       },
       pretty: {
-        flags: ["-p", "--pretty"],
+        flags: PRETTY_FLAGS,
         description: "Pretty print JSON",
       },
     },
@@ -125,7 +127,7 @@ export const CLI_COMMANDS_CONFIG = {
         description: "Output as JSON",
       },
       pretty: {
-        flags: ["-p", "--pretty"],
+        flags: PRETTY_FLAGS,
         description: "Pretty print JSON",
       },
     },
@@ -145,7 +147,7 @@ export const CLI_COMMANDS_CONFIG = {
         description: "Output as JSON",
       },
       pretty: {
-        flags: ["-p", "--pretty"],
+        flags: PRETTY_FLAGS,
         description: "Pretty print JSON",
       },
     },
@@ -161,7 +163,7 @@ export const CLI_COMMANDS_CONFIG = {
         description: "Output as JSON",
       },
       pretty: {
-        flags: ["-p", "--pretty"],
+        flags: PRETTY_FLAGS,
         description: "Pretty print JSON",
       },
     },

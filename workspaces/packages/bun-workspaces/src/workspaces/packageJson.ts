@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { isJSONObject } from "../internal/core";
+import { isJSONObject } from "bw-common/types";
 import { logger } from "../internal/logger";
 import { WORKSPACE_ERRORS } from "./errors";
 

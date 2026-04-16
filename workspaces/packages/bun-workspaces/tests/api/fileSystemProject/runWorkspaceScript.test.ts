@@ -1,10 +1,10 @@
 import { expect, test, describe } from "bun:test";
+import type { ShellOption } from "bw-common/parameters";
 import { InvalidJSTypeError } from "../../../src/internal/core";
 import {
   createFileSystemProject,
   PROJECT_ERRORS,
   type RunWorkspaceScriptExit,
-  type ShellOption,
 } from "../../../src/project";
 import { getProjectRoot } from "../../fixtures/testProjects";
 import { makeTestWorkspace } from "../../util/testData";

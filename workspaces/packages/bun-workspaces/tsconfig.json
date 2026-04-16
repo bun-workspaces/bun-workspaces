@@ -1,12 +1,4 @@
 {
   "extends": "../../meta/config/base/tsconfig.json",
-  "compilerOptions": {
-    "composite": true,
-    "noEmit": false,
-    "emitDeclarationOnly": true
-  },
-  "references": [
-    { "path": "./tsconfig.src.json" },
-    { "path": "./tsconfig.tests.json" }
-  ]
+  "include": ["src/**/*.ts", "src/**/*.js", "tests/**/*.ts"]
 }

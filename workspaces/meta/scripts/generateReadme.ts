@@ -1,9 +1,6 @@
 import path from "path";
 
-import {
-  CLI_QUICKSTART,
-  API_QUICKSTART,
-} from "bun-workspaces/src/internal/docs";
+import { CLI_QUICKSTART, API_QUICKSTART } from "bw-common/docs";
 
 const root = process.env.BW_PROJECT_PATH as string;
 

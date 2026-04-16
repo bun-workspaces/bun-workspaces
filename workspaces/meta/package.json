@@ -6,5 +6,8 @@
     "lint": "eslint .",
     "type-check": "tsc --noEmit"
   },
-  "private": true
+  "private": true,
+  "dependencies": {
+    "bw-common": "workspace:*"
+  }
 }

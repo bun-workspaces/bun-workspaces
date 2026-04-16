@@ -76,7 +76,6 @@
     "@typescript-eslint/eslint-plugin": "^8.58.2",
     "@typescript-eslint/parser": "^8.58.2",
     "bun-workspaces": "workspace:*",
-    "dts-bundle-generator": "^9.5.1",
     "eslint": "^9.39.4",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-react": "^7.37.5",

@@ -150,7 +150,7 @@ export const runBuild = async () => {
         filePath: path.resolve(__dirname, "..", exp as string),
       })),
       {
-        preferredConfigPath: path.resolve(__dirname, "../tsconfig.dts.json"),
+        preferredConfigPath: path.resolve(__dirname, "../tsconfig.json"),
       },
     );
 

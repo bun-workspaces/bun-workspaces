@@ -21,10 +21,7 @@ export default defineConfig({
     {
       format: "esm",
       bundle: false,
-      source: {
-        tsconfigPath: path.resolve(__dirname, "tsconfig.src.json"),
-        include: ["src/**/*.ts"],
-      },
+      source: { include: ["src/**/*.ts"] },
     },
   ],
   output: {

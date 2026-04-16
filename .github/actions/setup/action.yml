@@ -3,7 +3,7 @@ description: Setup the project for the workflow
 
 inputs:
   bun_version:
-    description: The Bun version to test
+    description: The Bun version to install
     required: false
 
 runs:

@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import type { WorkspaceConfig } from "../../src/config/public";
 import { mergeWorkspaceConfig } from "../../src/config/workspaceConfig";
 
 describe("mergeWorkspaceConfig", () => {
@@ -160,6 +161,31 @@ describe("mergeWorkspaceConfig", () => {
       tags: ["x", "y"],
       scripts: { build: { order: 2 } },
       rules: {},
+    });
+  });
+
+  describe("factory function", () => {
+    test("factory receives the accumulated config and its return value is merged", () => {
+      expect(
+        mergeWorkspaceConfig({ alias: "a", tags: ["x"] }, (prev) => ({
+          alias: [...(prev.alias as string[]), "b"],
+        })),
+      ).toMatchObject({ alias: ["a", "b"], tags: ["x"] });
+    });
+
+    test("factory can be used in place of any argument", () => {
+      expect(
+        mergeWorkspaceConfig((prev) => ({ ...prev, tags: ["injected"] })),
+      ).toMatchObject({ tags: ["injected"] });
+    });
+
+    test("factory receives intermediate accumulated state in a multi-config chain", () => {
+      const seenPrev: WorkspaceConfig[] = [];
+      mergeWorkspaceConfig({ alias: "a" }, { tags: ["x"] }, (prev) => {
+        seenPrev.push(prev);
+        return {};
+      });
+      expect(seenPrev[0]).toMatchObject({ alias: ["a"], tags: ["x"] });
     });
   });
 

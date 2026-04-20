@@ -5,6 +5,10 @@ import type {
 } from "bw-common/config";
 import { resolveOptionalArray } from "../../internal/core";
 
+export type WorkspaceConfigFactory = (prev: WorkspaceConfig) => WorkspaceConfig;
+
+export type WorkspaceConfigInput = WorkspaceConfig | WorkspaceConfigFactory;
+
 const uniqueArray = <T>(arr: T[]): T[] => [...new Set(arr)];
 
 const concatPatterns = (
@@ -62,19 +66,28 @@ const mergeScripts = (
   return merged;
 };
 
-/** Merge two or more workspace configs left to right, with each subsequent config taking precedence */
+const applyConfig = (
+  acc: WorkspaceConfig,
+  config: WorkspaceConfig,
+): WorkspaceConfig => ({
+  alias: uniqueArray([
+    ...resolveOptionalArray(acc.alias ?? []),
+    ...resolveOptionalArray(config.alias ?? []),
+  ]),
+  tags: uniqueArray([...(acc.tags ?? []), ...(config.tags ?? [])]),
+  scripts: mergeScripts(acc.scripts, config.scripts),
+  rules: mergeWorkspaceRules(acc.rules, config.rules),
+});
+
+/** Merge two or more workspace configs left to right, with each subsequent config taking precedence.
+ * Any argument may be a factory function receiving the accumulated config up to that point. */
 export const mergeWorkspaceConfig = (
-  ...configs: WorkspaceConfig[]
+  ...configs: WorkspaceConfigInput[]
 ): WorkspaceConfig =>
-  configs.reduce<WorkspaceConfig>(
-    (acc, config) => ({
-      alias: uniqueArray([
-        ...resolveOptionalArray(acc.alias ?? []),
-        ...resolveOptionalArray(config.alias ?? []),
-      ]),
-      tags: uniqueArray([...(acc.tags ?? []), ...(config.tags ?? [])]),
-      scripts: mergeScripts(acc.scripts, config.scripts),
-      rules: mergeWorkspaceRules(acc.rules, config.rules),
-    }),
-    {},
-  );
+  configs.reduce<WorkspaceConfig>((acc, configOrFactory) => {
+    const config =
+      typeof configOrFactory === "function"
+        ? configOrFactory(acc)
+        : configOrFactory;
+    return applyConfig(acc, config);
+  }, {});

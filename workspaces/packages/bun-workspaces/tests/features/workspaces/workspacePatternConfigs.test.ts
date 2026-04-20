@@ -328,6 +328,41 @@ describe("workspacePatternConfigs - via findWorkspaces", () => {
       expect(libA.tags).toContain("extra-tag");
     });
 
+    test("local config tags appear before pattern config tags in merged array", () => {
+      // library-1a local tags: ["lib", "workspace"] — pattern config adds after
+      const { workspaces } = findWorkspaces({
+        rootDirectory: WORKSPACE_TAGS_ROOT,
+        workspacePatternConfigs: [
+          { patterns: ["library-1a"], config: { tags: ["pattern-tag"] } },
+        ],
+      });
+      const libA = workspaces.find((w) => w.name === "library-1a")!;
+      const libIndex = libA.tags.indexOf("lib");
+      const patternIndex = libA.tags.indexOf("pattern-tag");
+      expect(libIndex).toBeGreaterThanOrEqual(0);
+      expect(patternIndex).toBeGreaterThanOrEqual(0);
+      expect(libIndex).toBeLessThan(patternIndex);
+    });
+
+    test("local config allowPatterns appear before pattern config allowPatterns in merged rules", () => {
+      // workspace "a" in withDependencyRulesAllowDirect has local allowPatterns: ["c"]
+      const { workspaceMap } = findWorkspaces({
+        rootDirectory: getProjectRoot("withDependencyRulesAllowDirect"),
+        workspacePatternConfigs: [
+          {
+            patterns: ["a"],
+            config: {
+              rules: { workspaceDependencies: { allowPatterns: ["b"] } },
+            },
+          },
+        ],
+      });
+      const allow =
+        workspaceMap["a"].config.rules.workspaceDependencies?.allowPatterns ??
+        [];
+      expect(allow.indexOf("c")).toBeLessThan(allow.indexOf("b"));
+    });
+
     test("workspaceMap config reflects merged result of local config and pattern configs", () => {
       const { workspaceMap } = findWorkspaces({
         rootDirectory: WORKSPACE_TAGS_ROOT,

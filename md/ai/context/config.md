@@ -35,10 +35,11 @@ Tags are strings to group workspaces together that therefore don't need to be un
   },
   "rules": {
     "workspaceDependencies": {
-      // use workspace patterns to allow or deny other workspaces as dependencies
+      // allowPatterns: only workspaces matching these patterns are permitted as dependencies
       "allowPatterns": ["my-allow-pattern-*"],
-      // or
-      // "denyPatterns": ["my-deny-pattern-*"],
+      // denyPatterns: workspaces matching these patterns are forbidden as dependencies.
+      // When combined with allowPatterns, deny filters within the allowed subset.
+      "denyPatterns": ["my-deny-pattern-*"],
     },
   },
 }
@@ -47,11 +48,12 @@ Tags are strings to group workspaces together that therefore don't need to be un
 ### Workspace Dependency Rules
 
 Using the `rules.workspaceDependencies` field, you can define rules for which workspaces are allowed to be dependencies,
-using either `allowPatterns` or `denyPatterns`.
+using `allowPatterns`, `denyPatterns`, or both.
+
+`allowPatterns` defines the permitted subset of dependencies. `denyPatterns` forbids specific dependencies.
+When both are present, `denyPatterns` further filters within the subset permitted by `allowPatterns`.
 
 Workspace Patterns are used to match workspaces.
-
-You can't use both `allowPatterns` and `denyPatterns` at the same time, but you can use
 
 ## TypeScript/JSON Config Files
 

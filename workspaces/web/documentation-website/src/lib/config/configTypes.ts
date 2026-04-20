@@ -73,7 +73,7 @@ const workspaceDisplay: ValueToDisplay<RequiredDeep<WorkspaceConfig>> = {
       },
       denyPatterns: {
         comment:
-          "Workspaces not allowed to be dependencies.\nYou cannot use both allowPatterns and denyPatterns",
+          "Workspace patterns to forbid as dependencies.\nWhen combined with allowPatterns, filters within that allowed subset.",
         array: true,
         item: { primitive: true, types: ["string"] },
       },

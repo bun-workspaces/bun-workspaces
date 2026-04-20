@@ -32,12 +32,13 @@ in [workspace patterns](/concepts/workspace-patterns).
 ### Workspace Dependency Rules
 
 Using the `rules.workspaceDependencies` field, you can define rules for which workspaces are allowed to be dependencies,
-using either `allowPatterns` or `denyPatterns`. 
+using `allowPatterns`, `denyPatterns`, or both.
 
 [Workspace patterns](/concepts/workspace-patterns) are used to match workspaces.
 
-You can't use both `allowPatterns` and `denyPatterns` at the same time, but you can use
-[negated](/concepts/workspace-patterns#negation) workspace patterns to exclude workspaces from the allowed or denied list.
+`allowPatterns` defines the permitted subset of dependencies. `denyPatterns` forbids specific dependencies.
+When both are present, `denyPatterns` further filters within the subset permitted by `allowPatterns`.
+You can also use [negated](/concepts/workspace-patterns#negation) workspace patterns to exclude workspaces from the allowed or denied list.
 
 For example, you may disallow dependencies with the [tag](config/workspace#tags) "backend" for a frontend workspace with `denyPatterns: ["tag:backend"]`.
 

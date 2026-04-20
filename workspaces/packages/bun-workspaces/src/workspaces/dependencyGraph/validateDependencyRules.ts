@@ -56,17 +56,6 @@ export const validateWorkspaceDependencyRules = ({
 
       const chainStr = chain.join(" -> ");
 
-      if (rule.denyPatterns) {
-        const isDenied =
-          matchWorkspacesByPatterns(rule.denyPatterns, [depWorkspace]).length >
-          0;
-        if (isDenied) {
-          violations.push(
-            `"${workspaceName}" violates workspaceDependencies rule: workspace "${depName}" is denied by denyPatterns (dependency chain: ${chainStr})`,
-          );
-        }
-      }
-
       if (rule.allowPatterns) {
         const isAllowed =
           matchWorkspacesByPatterns(rule.allowPatterns, [depWorkspace]).length >
@@ -74,6 +63,18 @@ export const validateWorkspaceDependencyRules = ({
         if (!isAllowed) {
           violations.push(
             `"${workspaceName}" violates workspaceDependencies rule: workspace "${depName}" is not permitted by allowPatterns (dependency chain: ${chainStr})`,
+          );
+          continue;
+        }
+      }
+
+      if (rule.denyPatterns) {
+        const isDenied =
+          matchWorkspacesByPatterns(rule.denyPatterns, [depWorkspace]).length >
+          0;
+        if (isDenied) {
+          violations.push(
+            `"${workspaceName}" violates workspaceDependencies rule: workspace "${depName}" is denied by denyPatterns (dependency chain: ${chainStr})`,
           );
         }
       }

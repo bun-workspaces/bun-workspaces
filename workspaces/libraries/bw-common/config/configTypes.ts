@@ -5,7 +5,18 @@ import type {
 } from "../parameters";
 
 export type WorkspaceDependenciesRule = {
+  /**
+   * Workspace patterns that are permitted as dependencies.
+   * Only workspaces matching these patterns are allowed.
+   * When combined with `denyPatterns`, the deny list further
+   * filters this allowed subset.
+   */
   allowPatterns?: string[];
+  /**
+   * Workspace patterns that are forbidden as dependencies.
+   * When combined with `allowPatterns`, this further filters
+   * the subset of allowed workspaces.
+   */
   denyPatterns?: string[];
 };
 

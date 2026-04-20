@@ -213,7 +213,7 @@ describe("workspace config", () => {
       ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
     });
 
-    test("throws when both allowPatterns and denyPatterns are set in workspaceDependencies rule", () => {
+    test("does not throw when both allowPatterns and denyPatterns are set in workspaceDependencies rule", () => {
       expect(() =>
         validateWorkspaceConfig({
           rules: {
@@ -223,7 +223,7 @@ describe("workspace config", () => {
             },
           },
         }),
-      ).toThrow(WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig);
+      ).not.toThrow();
     });
   });
 

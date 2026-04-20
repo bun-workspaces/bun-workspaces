@@ -63,5 +63,5 @@ _`bun-workspaces` is independent from the [Bun](https://bun.sh) project and is n
 Developed By:
 
 <a href="https://smorsic.io" target="_blank" rel="noopener noreferrer">
-  <img src="./packages/doc-website/src/pages/public/images/png/smorsic-banner_light_803x300.png" alt="Smorsic Labs logo" width="280" />
+  <img src="./workspaces/web/documentation-website/src/pages/public/images/png/smorsic-banner_light_803x300.png" alt="Smorsic Labs logo" width="280" />
 </a>

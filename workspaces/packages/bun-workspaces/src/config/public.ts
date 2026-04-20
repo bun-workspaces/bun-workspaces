@@ -8,4 +8,5 @@ export type {
   ScriptConfig,
 } from "bw-common/config";
 export { defineRootConfig } from "./rootConfig/defineRootConfig";
+export { mergeRootConfig } from "./rootConfig/mergeRootConfig";
 export { defineWorkspaceConfig } from "./workspaceConfig/defineWorkspaceConfig";

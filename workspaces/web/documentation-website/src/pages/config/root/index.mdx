@@ -9,7 +9,7 @@ footer: false
 ---
 
 import { ROOT_CONFIG_FILE_NAME, ROOT_CONFIG_PACKAGE_JSON_KEY, CONFIG_LOCATION_TYPES, createConfigLocationPath } from 'bw-common/config';
-import { exampleRootConfigSimple1, exampleRootConfigSimple2, createPackageJsonExample, createTsFileExample } from "../../../lib/config/exampleConfig";
+import { exampleRootConfigSimple1, exampleRootConfigSimple2, createPackageJsonExample, createTsFileExample, MERGE_ROOT_CONFIG_EXAMPLE } from "../../../lib/config/exampleConfig";
 import { SyntaxHighlighter } from "../../../lib/util/highlight";
 import { ROOT_CONFIG_TYPE } from "../../../lib/config/configTypes";
 import { ConfigHeader } from "../../../lib/config/ConfigHeader";
@@ -42,6 +42,14 @@ or
 
 <SyntaxHighlighter language="typescript">
   {createTsFileExample(exampleRootConfigSimple1, "root")}
+</SyntaxHighlighter>
+
+#### Merge Utility
+You can use the `mergeRootConfig` function to merge multiple root configurations left to right, with each subsequent config taking precedence. 
+Objects are merged deeply.
+
+<SyntaxHighlighter language="typescript">
+  {MERGE_ROOT_CONFIG_EXAMPLE}
 </SyntaxHighlighter>
 
 #### 2. JSON/JSONC file

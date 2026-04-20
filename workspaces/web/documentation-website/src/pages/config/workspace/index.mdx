@@ -9,7 +9,7 @@ footer: false
 ---
 
 import { WORKSPACE_CONFIG_FILE_NAME, WORKSPACE_CONFIG_PACKAGE_JSON_KEY, CONFIG_LOCATION_TYPES, createConfigLocationPath } from 'bw-common/config';
-import {  exampleWorkspaceConfigArray, exampleWorkspaceConfigSimple, createPackageJsonExample, createTsFileExample } from "../../../lib/config/exampleConfig";
+import {  exampleWorkspaceConfigArray, exampleWorkspaceConfigSimple, createPackageJsonExample, createTsFileExample, MERGE_WORKSPACE_CONFIG_EXAMPLE } from "../../../lib/config/exampleConfig";
 import { SyntaxHighlighter } from "../../../lib/util/highlight";
 import { ROOT_CONFIG_TYPE, WORKSPACE_CONFIG_TYPE } from "../../../lib/config/configTypes";
 import { ConfigHeader } from "../../../lib/config/ConfigHeader";  
@@ -57,6 +57,14 @@ or
 
 <SyntaxHighlighter language="typescript">
   {createTsFileExample(exampleWorkspaceConfigSimple, "workspace")}
+</SyntaxHighlighter>
+
+#### Merge Utility
+You can use the `mergeWorkspaceConfig` function to merge multiple workspace configurations left to right, with each subsequent config taking precedence. 
+Objects are merged deeply, and array items are concatenated while keeping items unique.
+
+<SyntaxHighlighter language="typescript">
+  {MERGE_WORKSPACE_CONFIG_EXAMPLE}
 </SyntaxHighlighter>
 
 #### 2. JSON/JSONC file

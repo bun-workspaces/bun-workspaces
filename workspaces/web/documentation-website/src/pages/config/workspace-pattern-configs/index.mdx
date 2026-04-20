@@ -19,7 +19,8 @@ import { WORKSPACE_PATTERN_CONFIGS_EXAMPLE } from "../../../lib/config/exampleCo
 
 You can use the [root config](/config/root#workspace-pattern-configs) to set [workspace configs](/config/workspace) in bulk by using [workspace patterns](/concepts/workspace-patterns).
 
-Entries will merge configs with any existing local configs and then will be merged with the next entry in the list, using
+Entries' configs will be merged with any existing workspaces' local configs, and each subsequent entry's config will be merged with 
+the accumulated config from any similarly matching previous entries, using
 the same behavior as [`mergeWorkspaceConfig`](/config/workspace#merge-utility).
 
 Since [workspace patterns](/concepts/workspace-patterns) are affected by config, such as using [tags](/config/workspace#tags), 

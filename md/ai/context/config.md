@@ -37,8 +37,8 @@ Tags are strings to group workspaces together that therefore don't need to be un
     "workspaceDependencies": {
       // allowPatterns: only workspaces matching these patterns are permitted as dependencies
       "allowPatterns": ["my-allow-pattern-*"],
-      // denyPatterns: workspaces matching these patterns are forbidden as dependencies
-      // when combined with allowPatterns, deny filters within the allowed subset
+      // denyPatterns: workspaces matching these patterns are forbidden as dependencies.
+      // When combined with allowPatterns, deny filters within the allowed subset.
       "denyPatterns": ["my-deny-pattern-*"],
     },
   },

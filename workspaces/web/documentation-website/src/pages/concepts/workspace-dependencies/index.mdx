@@ -60,8 +60,8 @@ myFunction();`}
 You can set rules to allow or deny other workspaces as dependencies in a workspace's [configuration](/config/workspace),
 set by [workspace patterns](/concepts/workspace-patterns).
 
-Use `allowPatterns` to define which dependencies are permitted, `denyPatterns` to forbid specific ones, or combine both —
-`denyPatterns` will filter within the subset already permitted by `allowPatterns`.
+Use `allowPatterns` to define which dependencies are permitted or `denyPatterns` to forbid specific ones. When both are present,
+`denyPatterns` will further filter the subset already permitted by `allowPatterns`.
 
 For example, you may disallow dependencies with the [tag](config/workspace#tags) "backend" for a frontend workspace with `denyPatterns: ["tag:backend"]`.
 

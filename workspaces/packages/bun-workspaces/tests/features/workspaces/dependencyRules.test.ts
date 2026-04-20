@@ -386,7 +386,7 @@ describe("validateWorkspaceDependencyRules", () => {
             rules: {
               workspaceDependencies: {
                 allowPatterns: ["c"],
-                denyPatterns: ["b"],
+                denyPatterns: ["a"],
               },
             },
           },

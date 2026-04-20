@@ -17,6 +17,7 @@ describe("Test project root config", () => {
           shell: resolveScriptShell("default"),
           includeRootWorkspace: false,
         },
+        workspacePatternConfigs: [],
       });
     });
 
@@ -27,6 +28,7 @@ describe("Test project root config", () => {
           shell: "system",
           includeRootWorkspace: true,
         },
+        workspacePatternConfigs: [],
       });
     });
 
@@ -37,6 +39,7 @@ describe("Test project root config", () => {
           shell: "system",
           includeRootWorkspace: false,
         },
+        workspacePatternConfigs: [],
       });
     });
 
@@ -49,6 +52,7 @@ describe("Test project root config", () => {
           shell: resolveScriptShell("default"),
           includeRootWorkspace: false,
         },
+        workspacePatternConfigs: [],
       });
     });
 
@@ -89,6 +93,7 @@ describe("Test project root config", () => {
           shell: "bun",
           includeRootWorkspace: false,
         },
+        workspacePatternConfigs: [],
       });
     });
 
@@ -111,6 +116,7 @@ describe("Test project root config", () => {
           shell: resolveScriptShell("default"),
           includeRootWorkspace: false,
         },
+        workspacePatternConfigs: [],
       });
     });
   });
@@ -123,6 +129,7 @@ describe("Test project root config", () => {
           shell: "bun",
           includeRootWorkspace: false,
         },
+        workspacePatternConfigs: [],
       });
     });
 
@@ -133,6 +140,7 @@ describe("Test project root config", () => {
           shell: resolveScriptShell("default"),
           includeRootWorkspace: false,
         },
+        workspacePatternConfigs: [],
       });
     });
   });
@@ -149,6 +157,7 @@ describe("Test project root config", () => {
           shell: resolveScriptShell("default"),
           includeRootWorkspace: false,
         },
+        workspacePatternConfigs: [],
       });
     });
 
@@ -163,6 +172,7 @@ describe("Test project root config", () => {
           shell: "system",
           includeRootWorkspace: true,
         },
+        workspacePatternConfigs: [],
       });
     });
 

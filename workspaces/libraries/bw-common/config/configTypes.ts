@@ -67,6 +67,33 @@ export type ResolvedWorkspaceConfig = {
   rules: WorkspaceRules;
 };
 
+/** Static workspace context passed to a {@link WorkspacePatternConfigFactory}.
+ * Contains only the immutable, package.json-derived fields — not config-derived fields like aliases or tags. */
+export type RawWorkspace = {
+  name: string;
+  isRoot: boolean;
+  path: string;
+  matchPattern: string;
+  scripts: string[];
+  dependencies: string[];
+  dependents: string[];
+};
+
+/** A factory that returns a {@link WorkspaceConfig} to merge for a matched workspace.
+ * Receives the static workspace context and the workspace's accumulated resolved config at that point. */
+export type WorkspacePatternConfigFactory = (
+  workspace: RawWorkspace,
+  prevConfig: ResolvedWorkspaceConfig,
+) => WorkspaceConfig;
+
+/** A single entry in {@link RootConfig.workspacePatternConfigs} */
+export type WorkspacePatternConfigEntry = {
+  /** Workspace patterns to match. Supports all workspace pattern specifiers (name, alias, tag, path, not:). */
+  patterns: string[];
+  /** Config to merge into all matching workspaces. May be a factory receiving the workspace context and accumulated config. */
+  config: WorkspaceConfig | WorkspacePatternConfigFactory;
+};
+
 export type RootConfig = {
   defaults?: {
     /** The maximum number of scripts that can run in parallel. (default: "auto") */
@@ -76,6 +103,14 @@ export type RootConfig = {
     /** Whether to include the root workspace in the workspaces list by default. (default: false) */
     includeRootWorkspace?: boolean;
   };
+  /**
+   * Workspace configs applied by pattern, in order, merging left to right,
+   * using any workspaces' local configs as the starting config.
+   * Each entry's config is merged into all workspaces matching its patterns.
+   * Pattern matching reflects accumulated aliases and tags from previous entries.
+   * Factory functions are only supported in TypeScript/JavaScript config files.
+   */
+  workspacePatternConfigs?: WorkspacePatternConfigEntry[];
 };
 
 export type ResolvedRootConfig = {
@@ -85,4 +120,5 @@ export type ResolvedRootConfig = {
     /** `undefined` means the value was not set in the input config */
     includeRootWorkspace: boolean | undefined;
   };
+  workspacePatternConfigs: WorkspacePatternConfigEntry[];
 };

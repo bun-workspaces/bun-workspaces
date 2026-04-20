@@ -254,6 +254,7 @@ class _FileSystemProject extends ProjectBase implements Project {
         options.includeRootWorkspace ??
         rootConfig.defaults.includeRootWorkspace ??
         getUserEnvVar("includeRootWorkspaceDefault") === "true",
+      workspacePatternConfigs: rootConfig.workspacePatternConfigs,
     });
 
     this.rootWorkspace = rootWorkspace;

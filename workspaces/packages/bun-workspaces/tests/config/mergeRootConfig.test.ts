@@ -107,6 +107,49 @@ describe("mergeRootConfig", () => {
     });
   });
 
+  describe("workspacePatternConfigs", () => {
+    test("entries from two configs are concatenated in order", () => {
+      const entry1 = { patterns: ["a"], config: { tags: ["x"] } };
+      const entry2 = { patterns: ["b"], config: { tags: ["y"] } };
+      expect(
+        mergeRootConfig(
+          { workspacePatternConfigs: [entry1] },
+          { workspacePatternConfigs: [entry2] },
+        ),
+      ).toMatchObject({ workspacePatternConfigs: [entry1, entry2] });
+    });
+
+    test("entries from three configs are concatenated left to right", () => {
+      const entry1 = { patterns: ["a"], config: {} };
+      const entry2 = { patterns: ["b"], config: {} };
+      const entry3 = { patterns: ["c"], config: {} };
+      const { workspacePatternConfigs } = mergeRootConfig(
+        { workspacePatternConfigs: [entry1] },
+        { workspacePatternConfigs: [entry2] },
+        { workspacePatternConfigs: [entry3] },
+      );
+      expect(workspacePatternConfigs).toEqual([entry1, entry2, entry3]);
+    });
+
+    test("config with no workspacePatternConfigs does not clear accumulated entries", () => {
+      const entry1 = { patterns: ["a"], config: {} };
+      expect(
+        mergeRootConfig(
+          { workspacePatternConfigs: [entry1] },
+          { defaults: { parallelMax: 4 } },
+        ),
+      ).toMatchObject({ workspacePatternConfigs: [entry1] });
+    });
+
+    test("workspacePatternConfigs is absent from result when neither config has entries", () => {
+      const result = mergeRootConfig(
+        { defaults: { parallelMax: 4 } },
+        { defaults: { shell: "system" } },
+      );
+      expect(result.workspacePatternConfigs).toBeUndefined();
+    });
+  });
+
   test("is exported from the main module", async () => {
     const { mergeRootConfig: imported } = await import("../../src/index");
     expect(imported).toBe(mergeRootConfig);

@@ -12,10 +12,17 @@ export const mergeRootConfig = (...configs: RootConfigInput[]): RootConfig =>
       typeof configOrFactory === "function"
         ? configOrFactory(acc)
         : configOrFactory;
+    const mergedPatternConfigs = [
+      ...(acc.workspacePatternConfigs ?? []),
+      ...(config.workspacePatternConfigs ?? []),
+    ];
     return {
       defaults: {
         ...acc.defaults,
         ...config.defaults,
       },
+      ...(mergedPatternConfigs.length > 0 && {
+        workspacePatternConfigs: mergedPatternConfigs,
+      }),
     };
   }, {});

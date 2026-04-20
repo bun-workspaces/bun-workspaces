@@ -103,3 +103,56 @@ export default mergeRootConfig(
   (prevConfig) => ({ defaults: { includeRootWorkspace: true } }),
 );
 `.trim();
+
+export const WORKSPACE_PATTERN_CONFIGS_EXAMPLE = `
+// bw.root.ts
+
+import { defineRootConfig } from "bun-workspaces/config";
+
+export default defineRootConfig({
+  workspacePatternConfigs: [
+    { 
+      // Any matching workspaces under this path
+      // will have their local config merged with this one
+      patterns: ["path:libraries/frontend/**/*"],
+      config: {
+        tags: ["frontend"],
+      },
+    },
+    {
+      patterns: ["path:libraries/backend/**/*"],
+      config: {
+        tags: ["backend"],
+      },
+    },
+    {
+      // This tag can be matched thanks to the first entry,
+      // merging the accumulated config with this one
+      patterns: ["tag:frontend"],
+      config: {
+        rules: {
+          workspaceDependencies: {
+            denyPatterns: ["tag:backend"],
+          },
+        },
+      },
+    },
+    {
+      patterns: ["tag:backend"],
+      // You can use the raw workspace data and
+      // accumulated config for each workspace via callback
+      config: (workspace, prevConfig) => ({
+        rules: {
+          workspaceDependencies: workspace.name.startsWith("@some-scope/")
+          ? {
+              denyPatterns: ["@some-other-scope/*"],
+            }
+          : {
+              allowPatterns: ["@some-scope/*"],
+            }
+        },
+      }),
+    }
+  ],
+});
+`.trim();

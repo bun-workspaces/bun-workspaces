@@ -4,6 +4,7 @@ const LINKS = {
   home: "/config",
   root: "/config/root",
   workspace: "/config/workspace",
+  workspacePatternConfigs: "/config/workspace-pattern-configs",
   envVars: "/config/env-vars",
 } as const;
 
@@ -26,13 +27,19 @@ export const ConfigHeader = ({ activeHref, divider }: ConfigHeaderProps) => {
           href={LINKS.root}
           className={activeHref === "root" ? "active" : ""}
         >
-          Root Configuration
+          Root Config
         </Link>
         <Link
           href={LINKS.workspace}
           className={activeHref === "workspace" ? "active" : ""}
         >
-          Workspace Configuration
+          Workspace Config
+        </Link>
+        <Link
+          href={LINKS.workspacePatternConfigs}
+          className={activeHref === "workspacePatternConfigs" ? "active" : ""}
+        >
+          Workspace Pattern Configs
         </Link>
         <Link
           href={LINKS.envVars}

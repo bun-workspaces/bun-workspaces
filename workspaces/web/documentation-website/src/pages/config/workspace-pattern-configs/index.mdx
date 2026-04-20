@@ -1,0 +1,32 @@
+---
+title: Workspace Pattern Configs
+titleSuffix: " | bun-workspaces"
+description: "Workspace pattern configs documentation for bun-workspaces | Documentation for bun-workspaces: A CLI and API to help manage Bun monorepos"
+pageType: doc
+sidebar: false
+outline: true
+footer: false
+---
+import { SyntaxHighlighter } from "../../../lib/util/highlight";
+import { ConfigHeader } from "../../../lib/config/ConfigHeader";
+import { WORKSPACE_PATTERN_CONFIGS_EXAMPLE } from "../../../lib/config/exampleConfig";
+
+# Configuration > Workspace Pattern Configs
+
+<ConfigHeader activeHref="workspacePatternConfigs"/>
+
+## Workspace Pattern Configs
+
+You can use the [root config](/config/root#workspace-pattern-configs) to set [workspace configs](/config/workspace) in bulk by using [workspace patterns](/concepts/workspace-patterns).
+
+Entries will merge configs with any existing local configs and then will be merged with the next entry in the list, using
+the same behavior as [`mergeWorkspaceConfig`](/config/workspace#merge-utility).
+
+Since [workspace patterns](/concepts/workspace-patterns) are affected by config, such as using [tags](/config/workspace#tags), 
+each entry's patterns will match against the accumulated config from the previous entries.
+
+### Example Root Config
+
+<SyntaxHighlighter language="typescript">
+  {WORKSPACE_PATTERN_CONFIGS_EXAMPLE}
+</SyntaxHighlighter>

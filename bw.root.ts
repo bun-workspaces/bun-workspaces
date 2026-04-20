@@ -1,7 +1,6 @@
 import { defineRootConfig } from "bun-workspaces/config";
 
 export default defineRootConfig({
-  defaults: {},
   workspacePatternConfigs: [
     {
       patterns: ["path:workspaces/libraries/**/*"],

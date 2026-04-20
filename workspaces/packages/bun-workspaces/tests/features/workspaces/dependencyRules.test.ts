@@ -328,6 +328,86 @@ describe("validateWorkspaceDependencyRules", () => {
     });
   });
 
+  describe("allowPatterns and denyPatterns combined", () => {
+    test("does not throw when dep is in allowPatterns and not in denyPatterns", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["b"] }),
+          {
+            rules: {
+              workspaceDependencies: {
+                allowPatterns: ["b"],
+                denyPatterns: ["c"],
+              },
+            },
+          },
+        ),
+        b: makeWorkspaceMapEntry(makeTestWorkspace({ name: "b" })),
+        c: makeWorkspaceMapEntry(makeTestWorkspace({ name: "c" })),
+      };
+      expect(() =>
+        validateWorkspaceDependencyRules({ workspaceMap }),
+      ).not.toThrow();
+    });
+
+    test("throws with denyPatterns message when dep is in allowPatterns but also in denyPatterns", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["b"] }),
+          {
+            rules: {
+              workspaceDependencies: {
+                allowPatterns: ["b"],
+                denyPatterns: ["b"],
+              },
+            },
+          },
+        ),
+        b: makeWorkspaceMapEntry(makeTestWorkspace({ name: "b" })),
+      };
+      expect(() => validateWorkspaceDependencyRules({ workspaceMap })).toThrow(
+        WORKSPACE_ERRORS.DependencyRuleViolation,
+      );
+      try {
+        validateWorkspaceDependencyRules({ workspaceMap });
+      } catch (e) {
+        expect((e as Error).message).toContain("denied by denyPatterns");
+        expect((e as Error).message).not.toContain(
+          "not permitted by allowPatterns",
+        );
+      }
+    });
+
+    test("throws with allowPatterns message when dep is not in allowPatterns, regardless of denyPatterns", () => {
+      const workspaceMap: WorkspaceMap = {
+        a: makeWorkspaceMapEntry(
+          makeTestWorkspace({ name: "a", dependencies: ["b"] }),
+          {
+            rules: {
+              workspaceDependencies: {
+                allowPatterns: ["c"],
+                denyPatterns: ["b"],
+              },
+            },
+          },
+        ),
+        b: makeWorkspaceMapEntry(makeTestWorkspace({ name: "b" })),
+        c: makeWorkspaceMapEntry(makeTestWorkspace({ name: "c" })),
+      };
+      expect(() => validateWorkspaceDependencyRules({ workspaceMap })).toThrow(
+        WORKSPACE_ERRORS.DependencyRuleViolation,
+      );
+      try {
+        validateWorkspaceDependencyRules({ workspaceMap });
+      } catch (e) {
+        expect((e as Error).message).toContain(
+          "not permitted by allowPatterns",
+        );
+        expect((e as Error).message).not.toContain("denied by denyPatterns");
+      }
+    });
+  });
+
   describe("cycles in dependency graph", () => {
     test("does not infinitely recurse on a cyclic dependency graph", () => {
       const workspaceMap: WorkspaceMap = {

@@ -19,15 +19,6 @@ export const validateWorkspaceConfig = (config: WorkspaceConfig) => {
     },
     WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig,
   );
-
-  if (
-    config.rules?.workspaceDependencies?.allowPatterns &&
-    config.rules?.workspaceDependencies?.denyPatterns
-  ) {
-    throw new WORKSPACE_CONFIG_ERRORS.InvalidWorkspaceConfig(
-      "Cannot use both allowPatterns and denyPatterns in workspaceDependencies rule",
-    );
-  }
 };
 
 export const resolveWorkspaceConfig = (

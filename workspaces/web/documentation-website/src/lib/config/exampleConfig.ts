@@ -81,3 +81,25 @@ export default ${target === "workspace" ? "defineWorkspaceConfig" : "defineRootC
   ).replace(/(?<!: )"((\w|\s|\d)+)"/g, "$1")});
 `.trim();
 };
+
+export const MERGE_WORKSPACE_CONFIG_EXAMPLE = `
+import { mergeWorkspaceConfig } from "bun-workspaces/config";
+
+export default mergeWorkspaceConfig(
+  { alias: "a", tags: ["x"] },
+  { alias: "b", scripts: { build: { order: 1 } } },
+  // Factory function receives the accumulated config up to that point
+  (prevConfig) => ({ tags: ["y"] }),
+);
+`.trim();
+
+export const MERGE_ROOT_CONFIG_EXAMPLE = `
+import { mergeRootConfig } from "bun-workspaces/config";
+
+export default mergeRootConfig(
+  { defaults: { parallelMax: 4 } },
+  { defaults: { shell: "system" } },
+  // Factory function receives the accumulated config up to that point
+  (prevConfig) => ({ defaults: { includeRootWorkspace: true } }),
+);
+`.trim();

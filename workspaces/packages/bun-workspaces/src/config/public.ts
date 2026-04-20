@@ -10,3 +10,4 @@ export type {
 export { defineRootConfig } from "./rootConfig/defineRootConfig";
 export { mergeRootConfig } from "./rootConfig/mergeRootConfig";
 export { defineWorkspaceConfig } from "./workspaceConfig/defineWorkspaceConfig";
+export { mergeWorkspaceConfig } from "./workspaceConfig/mergeWorkspaceConfig";

@@ -237,10 +237,11 @@ Tags are strings to group workspaces together that therefore don't need to be un
   },
   "rules": {
     "workspaceDependencies": {
-      // use workspace patterns to allow or deny other workspaces as dependencies
+      // allowPatterns: only workspaces matching these patterns are permitted as dependencies
       "allowPatterns": ["my-allow-pattern-*"],
-      // or
-      // "denyPatterns": ["my-deny-pattern-*"],
+      // denyPatterns: workspaces matching these patterns are forbidden as dependencies.
+      // When combined with allowPatterns, deny filters within the allowed subset.
+      "denyPatterns": ["my-deny-pattern-*"],
     },
   },
 }
@@ -249,11 +250,12 @@ Tags are strings to group workspaces together that therefore don't need to be un
 ### Workspace Dependency Rules
 
 Using the `rules.workspaceDependencies` field, you can define rules for which workspaces are allowed to be dependencies,
-using either `allowPatterns` or `denyPatterns`.
+using `allowPatterns`, `denyPatterns`, or both.
+
+`allowPatterns` defines the permitted subset of dependencies. `denyPatterns` forbids specific dependencies.
+When both are present, `denyPatterns` further filters within the subset permitted by `allowPatterns`.
 
 Workspace Patterns are used to match workspaces.
-
-You can't use both `allowPatterns` and `denyPatterns` at the same time, but you can use
 
 ## TypeScript/JSON Config Files
 
@@ -286,11 +288,10 @@ export default defineRootConfig({
 
 ## Development processes
 
-The repo contains three packages:
+Most work happens in the workspace at `workspaces/packages/bun-workspaces`, the main npm package source. This
+is the assumed default location for development.
 
-- `packages/bun-workspaces`: the package that is published, built via rslib. Except when working on the docs, this is the assumed package to be working on.
-- `packages/doc-website`: the documentation website (uses the rspress doc framework that has React and MDX support). This imports some metadata directly from the `bun-workspaces` package for consistency.
-- `packages/sandbox`: a sandbox for testing the CLI and API (can largely be ignored)
+The next most commonly developed workspace is `workspaces/web/documentation-website`, the documentation website.
 
 Useful development commands:
 

@@ -58,6 +58,33 @@ Note that you need to run `bun install` in your project for `bun-workspaces` to 
 <<API_QUICKSTART>>
 ```
 
+### Configuration
+
+`bun-workspaces` has no required configuration, but there are optional config files.
+
+#### Workspace Config
+
+Workspace configs can be placed in a workspace's directory at `bw.workspace.ts`.
+
+[Workspace configuration documentation here](https://bunworkspaces.com/config/workspace)
+
+```typescript
+<<WORKSPACE_CONFIG_QUICKSTART>>
+```
+
+#### Root Config
+
+A root config can be placed in the project root directory at `bw.root.ts`,
+which can also apply workspace configs in bulk by using workspace patterns.
+
+[Root configuration documentation here](https://bunworkspaces.com/config/root)
+
+[More on workspace pattern configs here](https://bunworkspaces.com/config/workspace-pattern-configs)
+
+```typescript
+<<ROOT_CONFIG_QUICKSTART>>
+```
+
 _`bun-workspaces` is independent from the [Bun](https://bun.sh) project and is not affiliated with or endorsed by Anthropic. This project aims to enhance the experience of Bun for its users._
 
 Developed By:

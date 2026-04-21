@@ -1,4 +1,9 @@
-import { API_QUICKSTART, CLI_QUICKSTART } from "bw-common/docs";
+import {
+  API_QUICKSTART,
+  CLI_QUICKSTART,
+  ROOT_CONFIG_QUICKSTART,
+  WORKSPACE_CONFIG_QUICKSTART,
+} from "bw-common/docs";
 import packageJson from "../../../package.json";
 import type { FileSystemProject } from "../../project/implementations/fileSystemProject";
 import { createMcpServer } from "./core";
@@ -24,6 +29,18 @@ ${CLI_QUICKSTART}
 
 \`\`\`typescript
 ${API_QUICKSTART}
+\`\`\`
+
+## Root config quickstart
+
+\`\`\`typescript
+${ROOT_CONFIG_QUICKSTART}
+\`\`\`
+
+## Workspace config quickstart
+
+\`\`\`typescript
+${WORKSPACE_CONFIG_QUICKSTART}
 \`\`\`
 `.trim();
 

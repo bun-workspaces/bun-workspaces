@@ -6,12 +6,12 @@ import { createDefaultWorkspaceConfig, loadWorkspaceConfig } from "../config";
 import { BUN_LOCK_ERRORS, readBunLockfile } from "../internal/bun";
 import { BunWorkspacesError } from "../internal/core";
 import { logger } from "../internal/logger/logger";
+import { applyWorkspacePatternConfigs } from "./applyWorkspacePatternConfigs";
 import {
   resolveWorkspaceDependencies,
   validateWorkspaceDependencyRules,
   type WorkspaceMap,
 } from "./dependencyGraph";
-import { applyWorkspacePatternConfigs } from "./applyWorkspacePatternConfigs";
 import { WORKSPACE_ERRORS } from "./errors";
 import {
   resolvePackageJsonContent,

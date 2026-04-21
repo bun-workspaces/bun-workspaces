@@ -7,6 +7,7 @@ import { createFileSystemProject } from "../../../src/project";
 import { WORKSPACE_ERRORS } from "../../../src/workspaces/errors";
 import { findWorkspaces } from "../../../src/workspaces/findWorkspaces";
 import { getProjectRoot } from "../../fixtures/testProjects";
+import { withWindowsPath } from "../../util/windows";
 
 // workspaceTags fixture: four workspaces with pre-existing aliases and tags via package.json bw field
 // application-1a: aliases=["appA"], tags=["app","workspace"], path=applications/applicationA
@@ -230,7 +231,7 @@ describe("workspacePatternConfigs - via findWorkspaces", () => {
       expect(contexts[0]).toEqual({
         name: "application-1a",
         isRoot: false,
-        path: "applications/applicationA",
+        path: withWindowsPath("applications/applicationA"),
         matchPattern: "applications/*",
         scripts: expect.arrayContaining(["application-a", "all-workspaces"]),
         dependencies: [],

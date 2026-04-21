@@ -65,6 +65,7 @@ const TEST_PROJECTS = {
   rootConfigInvalidShell: "rootConfig/invalidShell",
   rootConfigInvalidParallel: "rootConfig/invalidParallel",
   rootConfigParallelMaxOnly: "rootConfig/parallelMaxOnly",
+  rootConfigWorkspacePatternConfigs: "rootConfig/workspacePatternConfigs",
   withCatalogSimple: "withCatalog/simple",
   withRootWorkspace: "withRootWorkspace/simple",
   withRootWorkspaceWithConfigFiles: "withRootWorkspace/withConfigFiles",

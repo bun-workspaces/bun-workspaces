@@ -23,17 +23,26 @@ import { CONFIG_DEFAULTS_KEY } from "../../../lib/config/envVars";
 
 The optional root configuration is the general configuration for a [project](/concepts/glossary#project) at a file such as <code>{createConfigLocationPath("jsonFile", ROOT_CONFIG_FILE_NAME, ROOT_CONFIG_PACKAGE_JSON_KEY)}</code> or in its `package.json` file.
 
-The values in <code>{CONFIG_DEFAULTS_KEY}</code> can also be set by [environment variables](/config/env-vars). Defaults provided in the configuration take precedence over environment variables.
-
-You can set defaults for the [parallel max value](/concepts/parallel-scripts#parallel-max-value), the [shell option for inline scripts](/concepts/inline-scripts#shell), and whether to include the [root workspace](/concepts/root-workspace) in the project's workspaces list.
-
 ### Type Definition
 
 <SyntaxHighlighter language="typescript">
   {ROOT_CONFIG_TYPE}
 </SyntaxHighlighter>
 
-### Examples:
+
+### Defaults
+
+The values in <code>{CONFIG_DEFAULTS_KEY}</code> can also be set by [environment variables](/config/env-vars). Defaults provided in the configuration take precedence over environment variables.
+
+You can set defaults for the [parallel max value](/concepts/parallel-scripts#parallel-max-value), the [shell option for inline scripts](/concepts/inline-scripts#shell), and whether to include the [root workspace](/concepts/root-workspace) in the project's workspaces list.
+
+### Workspace Pattern Configs
+
+You can set workspace configs in bulk by using workspace patterns in `workspacePatternConfigs`.
+
+See the [workspace pattern configs](/config/workspace-pattern-configs) page for more information.
+
+## Examples:
 #### 1. TypeScript/JavaScript file
 
 <span className="config-path"><code>path/to/your/project/{createConfigLocationPath("tsFile", ROOT_CONFIG_FILE_NAME, ROOT_CONFIG_PACKAGE_JSON_KEY)}</code></span>

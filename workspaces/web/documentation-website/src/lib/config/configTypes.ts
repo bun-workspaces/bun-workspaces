@@ -24,6 +24,19 @@ const rootDisplay: ValueToDisplay<RequiredDeep<RootConfig>> = {
       types: ["boolean"],
     },
   },
+  workspacePatternConfigs: {
+    array: true,
+    comment: "Apply workspace configs in bulk by using workspace patterns",
+    item: {
+      patterns: {
+        array: true,
+        item: { primitive: true, types: ["string"] },
+      },
+      config: {
+        value: "WorkspaceConfig | WorkspacePatternConfigFactory",
+      },
+    },
+  },
 };
 
 export const ROOT_CONFIG_TYPE =

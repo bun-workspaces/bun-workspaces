@@ -1,10 +1,12 @@
 import fs from "fs";
 import path from "path";
 import bun from "bun";
+import type { WorkspacePatternConfigEntry } from "bw-common/config";
 import { createDefaultWorkspaceConfig, loadWorkspaceConfig } from "../config";
 import { BUN_LOCK_ERRORS, readBunLockfile } from "../internal/bun";
 import { BunWorkspacesError } from "../internal/core";
 import { logger } from "../internal/logger/logger";
+import { applyWorkspacePatternConfigs } from "./applyWorkspacePatternConfigs";
 import {
   resolveWorkspaceDependencies,
   validateWorkspaceDependencyRules,
@@ -24,6 +26,8 @@ export interface FindWorkspacesOptions {
   workspaceGlobs?: string[];
   /** Whether to include the root workspace as a normal workspace.*/
   includeRootWorkspace?: boolean;
+  /** Workspace pattern config entries from the root config to apply after local configs are loaded. */
+  workspacePatternConfigs?: WorkspacePatternConfigEntry[];
 }
 
 export const sortWorkspaces = (workspaces: Workspace[]) =>
@@ -80,6 +84,7 @@ export const findWorkspaces = ({
   rootDirectory,
   workspaceGlobs: _workspaceGlobs,
   includeRootWorkspace = false,
+  workspacePatternConfigs,
 }: FindWorkspacesOptions) => {
   rootDirectory = path.resolve(rootDirectory);
 
@@ -199,6 +204,15 @@ export const findWorkspaces = ({
       bunCatalogs,
     ),
   );
+
+  if (workspacePatternConfigs?.length) {
+    applyWorkspacePatternConfigs(
+      workspaces,
+      workspaceMap,
+      workspaceAliases,
+      workspacePatternConfigs,
+    );
+  }
 
   validateWorkspaceDependencyRules({ workspaceMap });
 

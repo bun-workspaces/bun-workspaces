@@ -5,6 +5,7 @@ import { determineParallelMax, resolveScriptShell } from "../../runScript";
 import { getUserEnvVar } from "../userEnvVars";
 import type { AjvSchemaValidator } from "../util/ajvTypes";
 import { executeValidator } from "../util/validateConfig";
+import { validateWorkspaceConfig } from "../workspaceConfig/workspaceConfig";
 import { ROOT_CONFIG_ERRORS } from "./errors";
 
 export const validateRootConfig = (config: RootConfig) =>
@@ -21,6 +22,12 @@ export const createDefaultRootConfig = (): ResolvedRootConfig =>
 export const resolveRootConfig = (config: RootConfig): ResolvedRootConfig => {
   validateRootConfig(config);
 
+  for (const entry of config.workspacePatternConfigs ?? []) {
+    if (typeof entry.config !== "function") {
+      validateWorkspaceConfig(entry.config);
+    }
+  }
+
   return {
     defaults: {
       parallelMax: determineParallelMax(
@@ -32,5 +39,6 @@ export const resolveRootConfig = (config: RootConfig): ResolvedRootConfig => {
         config.defaults?.includeRootWorkspace ??
         getUserEnvVar("includeRootWorkspaceDefault") === "true",
     },
+    workspacePatternConfigs: config.workspacePatternConfigs ?? [],
   };
 };

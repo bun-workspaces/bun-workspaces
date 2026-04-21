@@ -6,6 +6,9 @@ export type {
   ResolvedWorkspaceConfig,
   WorkspaceRules,
   ScriptConfig,
+  RawWorkspace,
+  WorkspacePatternConfigFactory,
+  WorkspacePatternConfigEntry,
 } from "bw-common/config";
 export { defineRootConfig } from "./rootConfig/defineRootConfig";
 export {

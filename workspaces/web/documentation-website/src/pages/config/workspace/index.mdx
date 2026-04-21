@@ -22,7 +22,11 @@ import { ConfigHeader } from "../../../lib/config/ConfigHeader";
 
 The optional configuration for a workspace is defined in a file such as <code>{createConfigLocationPath("jsonFile", WORKSPACE_CONFIG_FILE_NAME, WORKSPACE_CONFIG_PACKAGE_JSON_KEY)}</code> in its directory or in its `package.json` file.
 
-You can set a workspace's [alias(es)](/concepts/workspace-aliases) and the [order sequence](/concepts/script-execution-order) for its scripts.
+You can set a workspace's [alias(es)](/concepts/workspace-aliases), the [order sequence](/concepts/script-execution-order) for its scripts,
+workspace tags (see below), and workspace dependency rules (see below).
+
+You can also use the root config to set workspace configs in bulk by using workspace patterns.
+See the [**workspace pattern configs**](/config/workspace-pattern-configs) page for more information.
 
 ### Tags
 
@@ -40,7 +44,7 @@ using `allowPatterns`, `denyPatterns`, or both.
 When both are present, `denyPatterns` further filters within the subset permitted by `allowPatterns`.
 You can also use [negated](/concepts/workspace-patterns#negation) workspace patterns to exclude workspaces from the allowed or denied list.
 
-For example, you may disallow dependencies with the [tag](config/workspace#tags) "backend" for a frontend workspace with `denyPatterns: ["tag:backend"]`.
+For example, you may disallow dependencies with the [tag](/config/workspace#tags) "backend" for a frontend workspace with `denyPatterns: ["tag:backend"]`.
 
 ### Type Definition
 

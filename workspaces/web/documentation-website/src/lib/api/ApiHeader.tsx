@@ -35,16 +35,20 @@ export const ApiHeader = ({ activeHref, divider }: ApiHeaderProps) => {
       </p>
 
       <p className="note" style={{ marginTop: "1rem" }}>
-        Note that you need to run <code>bun install</code> in your project for
-        <code>bun-workspaces</code> to find your project's workspaces, and you
-        likely must run this again after you've updated your workspaces.
-      </p>
-      <p className="note" style={{ marginTop: "1rem" }}>
         See the{" "}
         <Link href="/concepts/glossary" style={{ color: "var(--rp-c-link)" }}>
           Glossary
         </Link>{" "}
         for more fundamental concepts.
+      </p>
+      <h4 style={{ marginTop: "1rem" }}>Ensuring Workspace Data is Current</h4>
+      <p className="note" style={{ marginTop: "1rem" }}>
+        Note that you need to run <code>bun install</code> in your project for
+        <code>bun-workspaces</code> to find your project's workspaces, and you
+        likely must run this again after you've updated your workspaces, such as
+        changing a name or adding/removing one. This is because{" "}
+        <code>bun.lock</code> lists workspaces and is used as the source of
+        truth.
       </p>
       <RequiredBunVersion className="bun-version sub-header-bun-version" />
       {divider && <hr />}

@@ -111,6 +111,16 @@
     <changefreq>weekly</changefreq>
   </url>
   <url>
+    <loc>https://bunworkspaces.com/ai/mcp</loc>
+    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://bunworkspaces.com/lore</loc>
+    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
     <loc>https://bunworkspaces.com/roadmap</loc>
     <priority>0.8</priority>
     <changefreq>weekly</changefreq>

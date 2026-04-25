@@ -40,6 +40,7 @@ const TEST_PROJECTS = {
   runScriptWithSequenceConfigPartial: "forRunScript/withSequenceConfigPartial",
   runScriptForGroupedOutput: "forRunScript/forGroupedOutput",
   runScriptWithDebugArgv: "forRunScript/withDebugArgv",
+  runScriptWithScriptMetadataApi: "forRunScript/withScriptMetadataApi",
   workspaceConfigPackageOnly: "workspaceConfig/packageOnly",
   workspaceConfigPackageFileMix: "workspaceConfig/packageFileMix",
   workspaceConfigFileOnly: "workspaceConfig/fileOnly",

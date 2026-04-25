@@ -12,6 +12,7 @@
   "devDependencies": {
     "@fontsource/unifontex": "catalog:web",
     "@rsbuild/plugin-svgr": "catalog:web",
+    "@rspress/plugin-client-redirects": "catalog:web",
     "@types/lodash": "catalog:web",
     "@types/react": "catalog:web",
     "@types/react-syntax-highlighter": "catalog:web",

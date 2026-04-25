@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { pluginSvgr } from "@rsbuild/plugin-svgr";
+import { pluginClientRedirects } from "@rspress/plugin-client-redirects";
 import { defineConfig } from "rspress/config";
 import packageJson from "../../packages/bun-workspaces/package.json";
 import { TAG_ICONS } from "./tagIcons";
@@ -79,6 +80,14 @@ export default defineConfig({
     searchHooks: path.join(__dirname, "src/search/search.tsx"),
   },
   plugins: [
+    pluginClientRedirects({
+      redirects: [
+        {
+          from: "/concepts/script-runtime-metadata",
+          to: "/concepts/workspace-script-metadata",
+        },
+      ],
+    }),
     // TODO: This worked briefly with mismatched versions. This will likely not work again until rspress v2 is out of beta.
     // * In the meantime, manage src/pages/public/sitemap.xml manually.
     // * And however, be mindful that trailing slashes vs. non-trailing slashes

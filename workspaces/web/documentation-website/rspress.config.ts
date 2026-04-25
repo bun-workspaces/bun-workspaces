@@ -366,8 +366,8 @@ export default defineConfig({
             link: "/concepts/parallel-scripts",
           },
           {
-            text: "Script Runtime Metadata",
-            link: "/concepts/script-runtime-metadata",
+            text: "Workspace Script Metadata",
+            link: "/concepts/workspace-script-metadata",
           },
           {
             text: "Script Execution Order",

@@ -6,7 +6,7 @@ const LINKS = {
   workspaceDependencies: "/concepts/workspace-dependencies",
   parallelScripts: "/concepts/parallel-scripts",
   rootWorkspace: "/concepts/root-workspace",
-  scriptRuntimeMetadata: "/concepts/script-runtime-metadata",
+  scriptRuntimeMetadata: "/concepts/workspace-script-metadata",
   scriptExecutionOrder: "/concepts/script-execution-order",
   inlineScripts: "/concepts/inline-scripts",
 } as const;

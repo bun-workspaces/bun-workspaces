@@ -1,5 +1,5 @@
 ---
-title: Concepts > Script Runtime Metadata
+title: Concepts > Workspace Script Metadata
 titleSuffix: " | bun-workspaces"
 description: "Script Runtime Metadata | Concepts | Documentation for bun-workspaces: A CLI and API to help manage Bun monorepos"
 pageType: doc
@@ -24,7 +24,7 @@ This same metadata can be referenced within inline script commands and/or append
 
 ## Example
 
-#### CLI:
+#### Interpolation via CLI:
 In this command, all workspaces will run the same `my-script.ts` file found at the project root, thanks to using `<projectPath>` to interpolate the project root's path, 
 and the workspace name and path will be passed to the script as arguments.
 
@@ -37,26 +37,7 @@ and the workspace name and path will be passed to the script as arguments.
 The script itself could use metadata from the environment variables to dynamically change
 its behavior based on the workspace context passed to it:
 
-<SyntaxHighlighter language="typescript">
-{`// Contents of my-script.ts (in project root)
-
-// the --args passed
-// [
-//   "my-workspace-name", 
-//   "/my/project/path/my-workspace" 
-// ]
-console.log(process.argv.slice(2));
-
-// All metadata is available as environment variables for use within a script
-console.log(process.env.${getScriptRuntimeMetadataConfig("projectPath").envVarName});
-console.log(process.env.${getScriptRuntimeMetadataConfig("projectName").envVarName});
-console.log(process.env.${getScriptRuntimeMetadataConfig("workspaceName").envVarName});
-console.log(process.env.${getScriptRuntimeMetadataConfig("workspacePath").envVarName});
-console.log(process.env.${getScriptRuntimeMetadataConfig("workspaceRelativePath").envVarName});
-console.log(process.env.${getScriptRuntimeMetadataConfig("scriptName").envVarName});`}
-</SyntaxHighlighter>
-
-#### API:
+#### Interpolation via API:
 The same as the above CLI example using the TypeScript API:
 <SyntaxHighlighter language="typescript">
 {`
@@ -69,6 +50,33 @@ ${"  "}script: "bun <projectPath>/my-script.ts",
 ${"  "}args: "<workspaceName> <workspacePath>",
 ${"  "}inline: { scriptName: "my-script-name" },
 });`}
+</SyntaxHighlighter>
+
+#### Accessing in a script via environment variables
+
+You can access metadata from within a script that was invoked via `bun-workspaces` via 
+environment variables directly or the `getWorkspaceScriptMetadata` helper.
+
+<SyntaxHighlighter language="typescript">
+{`
+import { getWorkspaceScriptMetadata } from 'bun-workspaces/script';
+
+// Use the helper within a script that was invoked via bun-workspaces
+const projectPath = getWorkspaceScriptMetadata("projectPath");
+const projectName = getWorkspaceScriptMetadata("projectName");
+const workspaceName = getWorkspaceScriptMetadata("workspaceName");
+const workspacePath = getWorkspaceScriptMetadata("workspacePath");
+const workspaceRelativePath = getWorkspaceScriptMetadata("workspaceRelativePath");
+const scriptName = getWorkspaceScriptMetadata("scriptName");
+
+// Access via plain environment variables (same values as above)
+console.log(process.env.${getScriptRuntimeMetadataConfig("projectPath").envVarName});
+console.log(process.env.${getScriptRuntimeMetadataConfig("projectName").envVarName});
+console.log(process.env.${getScriptRuntimeMetadataConfig("workspaceName").envVarName});
+console.log(process.env.${getScriptRuntimeMetadataConfig("workspacePath").envVarName});
+console.log(process.env.${getScriptRuntimeMetadataConfig("workspaceRelativePath").envVarName});
+console.log(process.env.${getScriptRuntimeMetadataConfig("scriptName").envVarName});
+`.trim()}
 </SyntaxHighlighter>
 
 ## Available Metadata

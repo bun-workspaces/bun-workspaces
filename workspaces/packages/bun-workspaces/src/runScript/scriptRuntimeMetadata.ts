@@ -4,7 +4,7 @@ import {
   type ScriptRuntimeMetadata,
   type ScriptRuntimeMetadataKey,
 } from "bw-common/runScript";
-import { IS_WINDOWS } from "../internal/core";
+import { BunWorkspacesError, IS_WINDOWS } from "../internal/core";
 
 export const createScriptRuntimeEnvVars = (metadata: ScriptRuntimeMetadata) => {
   const keys = [
@@ -54,4 +54,19 @@ export const interpolateScriptRuntimeMetadata = (
     }
     return value;
   });
+};
+
+/**
+ * This is a utility to run from a workspace's script that was called via `bun-workspaces`.
+ *
+ * It gets the value of some metadata value about the project, workspace, or script that was invoked.
+ */
+export const getWorkspaceScriptMetadata = (key: ScriptRuntimeMetadataKey) => {
+  const { envVarName } = getScriptRuntimeMetadataConfig(key);
+  if (!(envVarName in process.env)) {
+    throw new BunWorkspacesError(
+      `getScriptMetadata() called with key "${key}" but environment variable ${envVarName} is not set. getScriptMetadata() may not have been called in a workspace script running via bun-workspaces.`,
+    );
+  }
+  return process.env[envVarName] as string;
 };

@@ -1,0 +1,6 @@
+{
+  "name": "workspace-a",
+  "scripts": {
+    "get-metadata": "bun ../../getMetadata.ts"
+  }
+}

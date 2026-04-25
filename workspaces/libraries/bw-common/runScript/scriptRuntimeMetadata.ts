@@ -37,5 +37,15 @@ const SCRIPT_RUNTIME_METADATA_CONFIG = {
 export type ScriptRuntimeMetadataKey =
   keyof typeof SCRIPT_RUNTIME_METADATA_CONFIG;
 
-export const getScriptRuntimeMetadataConfig = (key: ScriptRuntimeMetadataKey) =>
-  SCRIPT_RUNTIME_METADATA_CONFIG[key];
+export const validateScriptRuntimeMetadataKey = (key: string) => {
+  if (!(key in SCRIPT_RUNTIME_METADATA_CONFIG)) {
+    throw new Error(`Invalid script runtime metadata key: ${key}`);
+  }
+};
+
+export const getScriptRuntimeMetadataConfig = (
+  key: ScriptRuntimeMetadataKey,
+) => {
+  validateScriptRuntimeMetadataKey(key);
+  return SCRIPT_RUNTIME_METADATA_CONFIG[key];
+};

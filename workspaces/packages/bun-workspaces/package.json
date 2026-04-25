@@ -4,7 +4,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./cli": "./src/cli/index.ts",
-    "./config": "./src/config/public.ts"
+    "./config": "./src/config/public.ts",
+    "./script": "./src/runScript/public.ts"
   },
   "private": true,
   "description": "A monorepo management tool for Bun, with a CLI and API to enhance Bun's native workspaces.",

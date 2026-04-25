@@ -87,6 +87,7 @@ export const TerminalInput = () => {
   useEffect(() => {
     if (!isLoading) {
       inputRef.current?.focus();
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setNewPlaceholderExample();
     } else {
       let ellipsisCount = 0;

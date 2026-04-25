@@ -1,7 +1,6 @@
 import { type ScriptShellOption } from "bw-common/parameters";
 import {
   getScriptRuntimeMetadataConfig,
-  validateScriptRuntimeMetadataKey,
   type ScriptRuntimeMetadata,
   type ScriptRuntimeMetadataKey,
 } from "bw-common/runScript";

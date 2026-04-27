@@ -4,7 +4,7 @@ import { registerBwResources } from "./resources";
 import { setServerWorkingDirectory } from "./serverState";
 import { registerBwTools } from "./tools";
 
-const SERVER_INSTRUCTIONS = `
+export const SERVER_INSTRUCTIONS = `
 bun-workspaces ${packageJson.version} MCP server: tools to query Bun monorepo workspace metadata and documentation resources for the bun-workspaces CLI and TypeScript API.
 
 bun-workspaces is an npm package that works on top of Bun's native workspaces. It has a CLI and TS API.

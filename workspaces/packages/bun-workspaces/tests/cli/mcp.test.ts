@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { SERVER_INSTRUCTIONS } from "../../src/ai/mcp";
 import { createSubprocess } from "../../src/runScript/subprocesses";
 import { getProjectRoot, type TestProjectName } from "../fixtures/testProjects";
 import { SOURCE_BIN_PATH } from "../util/cliTestUtils";
@@ -36,8 +37,6 @@ const sendMcpInitialize = async (
 describe("CLI - mcp-server command", () => {
   test("initializes with server instructions", async () => {
     const response = await sendMcpInitialize([]);
-    expect(response.result?.instructions).toContain(
-      "## Current project at MCP initialization",
-    );
+    expect(response.result?.instructions).toContain(SERVER_INSTRUCTIONS);
   });
 });

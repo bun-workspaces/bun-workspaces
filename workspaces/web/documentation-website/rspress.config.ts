@@ -83,7 +83,7 @@ export default defineConfig({
     pluginClientRedirects({
       redirects: [
         {
-          from: "/concepts/workspace-script-metadata",
+          from: "/concepts/script-runtime-metadata",
           to: "/concepts/workspace-script-metadata",
         },
       ],

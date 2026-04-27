@@ -1,16 +1,27 @@
-import type { FileSystemProject } from "../../project/implementations/fileSystemProject";
+import {
+  createFileSystemProject,
+  type FileSystemProject,
+} from "../../project/implementations/fileSystemProject";
 
 interface ServerState {
-  project: FileSystemProject | null;
+  workingDirectory: string | null;
 }
 
 const SERVER_STATE: ServerState = {
-  project: null,
+  workingDirectory: null,
 };
 
-export const setServerProject = (project: FileSystemProject | null): void => {
-  SERVER_STATE.project = project;
+export const setServerWorkingDirectory = (directory: string | null): void => {
+  SERVER_STATE.workingDirectory = directory;
 };
 
-export const getServerProject = (): FileSystemProject | null =>
-  SERVER_STATE.project;
+export const getServerProject = (): FileSystemProject | null => {
+  if (!SERVER_STATE.workingDirectory) return null;
+  try {
+    return createFileSystemProject({
+      rootDirectory: SERVER_STATE.workingDirectory,
+    });
+  } catch {
+    return null;
+  }
+};

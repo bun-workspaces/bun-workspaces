@@ -1,21 +1,23 @@
-import { describe, expect, test } from "bun:test";
+import { afterEach, describe, expect, test } from "bun:test";
 import { createMcpServer } from "../../../src/ai/mcp/core/server";
 import { createMemoryTransport } from "../../../src/ai/mcp/core/transport";
 import { registerBwResources } from "../../../src/ai/mcp/resources";
-import { createFileSystemProject } from "../../../src/project";
+import { setServerWorkingDirectory } from "../../../src/ai/mcp/serverState";
 import { getProjectRoot } from "../../fixtures/testProjects";
 
-const setupServer = () => {
-  const project = createFileSystemProject({
-    rootDirectory: getProjectRoot("fullProject"),
-  });
+afterEach(() => setServerWorkingDirectory(null));
+
+const setupServer = (withProject = true) => {
+  if (withProject) {
+    setServerWorkingDirectory(getProjectRoot("fullProject"));
+  }
   const server = createMcpServer({ name: "bun-workspaces", version: "0.0.0" });
-  registerBwResources(server, project);
-  return { server, project };
+  registerBwResources(server);
+  return server;
 };
 
-const readResource = async (uri: string) => {
-  const { server } = setupServer();
+const readResource = async (uri: string, withProject = true) => {
+  const server = setupServer(withProject);
   const transport = createMemoryTransport([
     { jsonrpc: "2.0", id: 1, method: "resources/read", params: { uri } },
   ]);
@@ -28,7 +30,7 @@ const readResource = async (uri: string) => {
 };
 
 const listResources = async () => {
-  const { server } = setupServer();
+  const server = setupServer();
   const transport = createMemoryTransport([
     { jsonrpc: "2.0", id: 1, method: "resources/list", params: {} },
   ]);
@@ -80,10 +82,12 @@ describe("bw MCP resources", () => {
       expect(content.uri).toBe("bw://project");
       expect(content.mimeType).toBe("application/json");
       const projectData = JSON.parse(content.text) as {
+        available: boolean;
         name: string;
         rootDirectory: string;
         workspaces: { name: string }[];
       };
+      expect(projectData.available).toBe(true);
       expect(typeof projectData.name).toBe("string");
       expect(typeof projectData.rootDirectory).toBe("string");
       expect(projectData.workspaces.map((w) => w.name)).toEqual([
@@ -93,6 +97,19 @@ describe("bw MCP resources", () => {
         "library-b",
         "library-c",
       ]);
+    });
+
+    test("returns available: false without a project", async () => {
+      const response = await readResource("bw://project", false);
+      expect(response.error).toBeUndefined();
+      const content = response.result!.contents[0];
+      expect(content.mimeType).toBe("application/json");
+      const data = JSON.parse(content.text) as {
+        available: boolean;
+        message: string;
+      };
+      expect(data.available).toBe(false);
+      expect(typeof data.message).toBe("string");
     });
   });
 

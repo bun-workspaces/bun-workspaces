@@ -1,8 +1,8 @@
 import { ROOT_WORKSPACE_SELECTOR } from "bw-common/project";
 import { getDoctorInfo } from "../../doctor";
 import { BUN_WORKSPACES_VERSION } from "../../internal/version";
-import type { FileSystemProject } from "../../project/implementations/fileSystemProject";
 import type { McpServer, CallToolResult } from "./core";
+import { getServerProject } from "./serverState";
 
 const textResult = (data: unknown): CallToolResult => ({
   content: [{ type: "text", text: JSON.stringify(data, null, 2) }],
@@ -13,10 +13,7 @@ const errorResult = (message: string): CallToolResult => ({
   isError: true,
 });
 
-export const registerBwTools = (
-  server: McpServer,
-  project: FileSystemProject,
-): void => {
+export const registerBwTools = (server: McpServer): void => {
   server.registerTool(
     {
       name: "version",
@@ -44,6 +41,8 @@ export const registerBwTools = (
       },
     },
     ({ patterns }) => {
+      const project = getServerProject();
+
       const workspaces =
         patterns && Array.isArray(patterns) && patterns.length > 0
           ? project.findWorkspacesByPattern(...(patterns as string[]))
@@ -70,6 +69,8 @@ export const registerBwTools = (
       },
     },
     ({ nameOrAlias }) => {
+      const project = getServerProject();
+
       const name = nameOrAlias as string;
       const workspace =
         name === ROOT_WORKSPACE_SELECTOR
@@ -90,7 +91,10 @@ export const registerBwTools = (
       description: "Get information about the root workspace",
       inputSchema: { type: "object" },
     },
-    () => textResult(project.rootWorkspace),
+    () => {
+      const project = getServerProject();
+      return textResult(project.rootWorkspace);
+    },
   );
 
   server.registerTool(
@@ -101,6 +105,8 @@ export const registerBwTools = (
       inputSchema: { type: "object" },
     },
     () => {
+      const project = getServerProject();
+
       const scriptMap = project.mapScriptsToWorkspaces();
       const scripts = Object.values(scriptMap).map(({ name, workspaces }) => ({
         name,
@@ -127,6 +133,8 @@ export const registerBwTools = (
       },
     },
     ({ script }) => {
+      const project = getServerProject();
+
       const scriptMap = project.mapScriptsToWorkspaces();
       const scriptMetadata = scriptMap[script as string];
 
@@ -149,6 +157,8 @@ export const registerBwTools = (
       inputSchema: { type: "object" },
     },
     () => {
+      const project = getServerProject();
+
       const tagMap = project.mapTagsToWorkspaces();
       const tags = Object.entries(tagMap).map(([tag, workspaces]) => ({
         tag,
@@ -175,6 +185,8 @@ export const registerBwTools = (
       },
     },
     ({ tag }) => {
+      const project = getServerProject();
+
       const tagMap = project.mapTagsToWorkspaces();
       const tagWorkspaces = tagMap[tag as string];
 

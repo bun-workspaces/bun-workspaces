@@ -5,17 +5,14 @@ import {
   DOC_CONFIG,
   DOC_OVERVIEW,
 } from "../../internal/generated/aiDocs/docs";
-import type { FileSystemProject } from "../../project/implementations/fileSystemProject";
 import type { McpServer, ReadResourceResult } from "./core";
+import { getServerProject } from "./serverState";
 
 const textResource = (uri: string, text: string): ReadResourceResult => ({
   contents: [{ uri, mimeType: "text/markdown", text }],
 });
 
-export const registerBwResources = (
-  server: McpServer,
-  project: FileSystemProject,
-): void => {
+export const registerBwResources = (server: McpServer): void => {
   server.registerResource(
     {
       uri: "bw://project",
@@ -24,23 +21,27 @@ export const registerBwResources = (
         "Overview of this bun-workspaces project: name, root directory, and all workspace metadata.",
       mimeType: "application/json",
     },
-    (uri) => ({
-      contents: [
-        {
-          uri,
-          mimeType: "application/json",
-          text: JSON.stringify(
-            {
-              name: project.name,
-              rootDirectory: project.rootDirectory,
-              workspaces: project.workspaces,
-            },
-            null,
-            2,
-          ),
-        },
-      ],
-    }),
+    (uri) => {
+      const project = getServerProject();
+
+      return {
+        contents: [
+          {
+            uri,
+            mimeType: "application/json",
+            text: JSON.stringify(
+              {
+                name: project.name,
+                rootDirectory: project.rootDirectory,
+                workspaces: project.workspaces,
+              },
+              null,
+              2,
+            ),
+          },
+        ],
+      };
+    },
   );
 
   server.registerResource(

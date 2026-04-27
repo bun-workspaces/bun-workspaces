@@ -5,9 +5,10 @@ import {
   WORKSPACE_CONFIG_QUICKSTART,
 } from "bw-common/docs";
 import packageJson from "../../../package.json";
-import type { FileSystemProject } from "../../project/implementations/fileSystemProject";
+import { createFileSystemProject } from "../../project/implementations/fileSystemProject";
 import { createMcpServer } from "./core";
 import { registerBwResources } from "./resources";
+import { setServerProject } from "./serverState";
 import { registerBwTools } from "./tools";
 
 const SERVER_INSTRUCTIONS = `
@@ -45,16 +46,25 @@ ${WORKSPACE_CONFIG_QUICKSTART}
 `.trim();
 
 export const startBwMcpServer = async (
-  project: FileSystemProject,
+  initialWorkingDirectory: string,
 ): Promise<void> => {
+  try {
+    const project = createFileSystemProject({
+      rootDirectory: initialWorkingDirectory,
+    });
+    setServerProject(project);
+  } catch {
+    setServerProject(null);
+  }
+
   const server = createMcpServer({
     name: "bun-workspaces",
     version: packageJson.version,
     instructions: SERVER_INSTRUCTIONS,
   });
 
-  registerBwTools(server, project);
-  registerBwResources(server, project);
+  registerBwTools(server);
+  registerBwResources(server);
 
   await server.start();
 };

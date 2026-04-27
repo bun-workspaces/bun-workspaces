@@ -59,7 +59,7 @@ export const registerBwResources = (
       uri: "bw://docs/concepts",
       name: "bun-workspaces concepts",
       description:
-        "Workspace patterns, script runtime metadata, and how to run scripts via the CLI.",
+        "Workspace patterns, workspace script metadata, and how to run scripts via the CLI.",
       mimeType: "text/markdown",
     },
     (uri) => textResource(uri, DOC_CONCEPTS),

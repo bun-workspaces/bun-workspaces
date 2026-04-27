@@ -1,12 +1,14 @@
 import { type ScriptShellOption } from "bw-common/parameters";
 import {
-  getScriptRuntimeMetadataConfig,
-  type ScriptRuntimeMetadata,
-  type ScriptRuntimeMetadataKey,
+  getWorkspaceScriptMetadataConfig,
+  type WorkspaceScriptMetadata,
+  type WorkspaceScriptMetadataKey,
 } from "bw-common/runScript";
 import { BunWorkspacesError, IS_WINDOWS } from "../internal/core";
 
-export const createScriptRuntimeEnvVars = (metadata: ScriptRuntimeMetadata) => {
+export const createScriptRuntimeEnvVars = (
+  metadata: WorkspaceScriptMetadata,
+) => {
   const keys = [
     "projectPath",
     "projectName",
@@ -14,11 +16,11 @@ export const createScriptRuntimeEnvVars = (metadata: ScriptRuntimeMetadata) => {
     "workspaceRelativePath",
     "scriptName",
     "workspaceName",
-  ] as const satisfies ScriptRuntimeMetadataKey[];
+  ] as const satisfies WorkspaceScriptMetadataKey[];
 
   return keys.reduce(
     (acc, key) => {
-      const { envVarName } = getScriptRuntimeMetadataConfig(key);
+      const { envVarName } = getWorkspaceScriptMetadataConfig(key);
       acc[envVarName] = metadata[key];
       return acc;
     },
@@ -26,9 +28,9 @@ export const createScriptRuntimeEnvVars = (metadata: ScriptRuntimeMetadata) => {
   );
 };
 
-export const interpolateScriptRuntimeMetadata = (
+export const interpolateWorkspaceScriptMetadata = (
   text: string,
-  metadata: ScriptRuntimeMetadata,
+  metadata: WorkspaceScriptMetadata,
   shell: ScriptShellOption,
 ) => {
   const keys = [
@@ -38,17 +40,17 @@ export const interpolateScriptRuntimeMetadata = (
     "workspaceRelativePath",
     "scriptName",
     "workspaceName",
-  ] as const satisfies ScriptRuntimeMetadataKey[];
+  ] as const satisfies WorkspaceScriptMetadataKey[];
 
   const inlineNames = keys.map(
-    (key) => getScriptRuntimeMetadataConfig(key).inlineName,
+    (key) => getWorkspaceScriptMetadataConfig(key).inlineName,
   );
 
   return text.replace(new RegExp(inlineNames.join("|"), "g"), (match) => {
     const key = keys.find(
-      (k) => getScriptRuntimeMetadataConfig(k).inlineName === match,
+      (k) => getWorkspaceScriptMetadataConfig(k).inlineName === match,
     );
-    const value = metadata[key as ScriptRuntimeMetadataKey];
+    const value = metadata[key as WorkspaceScriptMetadataKey];
     if (IS_WINDOWS && shell === "bun") {
       return value.replace(/\\/g, "\\\\");
     }
@@ -61,8 +63,8 @@ export const interpolateScriptRuntimeMetadata = (
  *
  * It gets the value of some metadata value about the project, workspace, or script that was invoked.
  */
-export const getWorkspaceScriptMetadata = (key: ScriptRuntimeMetadataKey) => {
-  const { envVarName } = getScriptRuntimeMetadataConfig(key);
+export const getWorkspaceScriptMetadata = (key: WorkspaceScriptMetadataKey) => {
+  const { envVarName } = getWorkspaceScriptMetadataConfig(key);
   if (!(envVarName in process.env)) {
     throw new BunWorkspacesError(
       `getScriptMetadata() called with key "${key}" but environment variable ${envVarName} is not set. getScriptMetadata() may not have been called in a workspace script running via bun-workspaces.`,

@@ -1,2 +1,2 @@
-export type { ScriptRuntimeMetadataKey } from "bw-common/runScript";
-export { getWorkspaceScriptMetadata } from "./scriptRuntimeMetadata";
+export type { WorkspaceScriptMetadataKey } from "bw-common/runScript";
+export { getWorkspaceScriptMetadata } from "./workspaceScriptMetadata";

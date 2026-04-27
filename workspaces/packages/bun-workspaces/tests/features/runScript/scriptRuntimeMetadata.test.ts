@@ -1,7 +1,7 @@
 import path from "path";
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { BunWorkspacesError, createFileSystemProject } from "../../../src";
-import { getWorkspaceScriptMetadata } from "../../../src/runScript/scriptRuntimeMetadata";
+import { getWorkspaceScriptMetadata } from "../../../src/runScript/workspaceScriptMetadata";
 import { getProjectRoot } from "../../fixtures/testProjects";
 import { withWindowsPath } from "../../util/windows";
 

@@ -1,4 +1,4 @@
-export interface ScriptRuntimeMetadata {
+export interface WorkspaceScriptMetadata {
   projectPath: string;
   projectName: string;
   workspacePath: string;
@@ -7,7 +7,7 @@ export interface ScriptRuntimeMetadata {
   scriptName: string;
 }
 
-const SCRIPT_RUNTIME_METADATA_CONFIG = {
+const WORKSPACE_SCRIPT_METADATA_CONFIG = {
   projectPath: {
     inlineName: "<projectPath>",
     envVarName: "BW_PROJECT_PATH",
@@ -34,18 +34,18 @@ const SCRIPT_RUNTIME_METADATA_CONFIG = {
   },
 } as const;
 
-export type ScriptRuntimeMetadataKey =
-  keyof typeof SCRIPT_RUNTIME_METADATA_CONFIG;
+export type WorkspaceScriptMetadataKey =
+  keyof typeof WORKSPACE_SCRIPT_METADATA_CONFIG;
 
-export const validateScriptRuntimeMetadataKey = (key: string) => {
-  if (!(key in SCRIPT_RUNTIME_METADATA_CONFIG)) {
-    throw new Error(`Invalid script runtime metadata key: ${key}`);
+export const validateWorkspaceScriptMetadataKey = (key: string) => {
+  if (!(key in WORKSPACE_SCRIPT_METADATA_CONFIG)) {
+    throw new Error(`Invalid workspace script metadata key: ${key}`);
   }
 };
 
-export const getScriptRuntimeMetadataConfig = (
-  key: ScriptRuntimeMetadataKey,
+export const getWorkspaceScriptMetadataConfig = (
+  key: WorkspaceScriptMetadataKey,
 ) => {
-  validateScriptRuntimeMetadataKey(key);
-  return SCRIPT_RUNTIME_METADATA_CONFIG[key];
+  validateWorkspaceScriptMetadataKey(key);
+  return WORKSPACE_SCRIPT_METADATA_CONFIG[key];
 };

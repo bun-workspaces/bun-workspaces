@@ -1,1 +1,1 @@
-export * from "./scriptRuntimeMetadata";
+export * from "./workspaceScriptMetadata";

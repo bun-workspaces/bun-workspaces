@@ -3,7 +3,7 @@ import { getDoctorInfo } from "../../doctor";
 import { BUN_WORKSPACES_VERSION } from "../../internal/version";
 import type { FileSystemProject } from "../../project/implementations/fileSystemProject";
 import type { McpServer, CallToolResult } from "./core";
-import { getServerProject } from "./serverState";
+import { getServerProject, setServerWorkingDirectory } from "./serverState";
 
 const textResult = (data: unknown): CallToolResult => ({
   content: [{ type: "text", text: JSON.stringify(data, null, 2) }],
@@ -198,6 +198,37 @@ export const registerBwTools = (server: McpServer): void => {
         workspaces: tagWorkspaces.map((w) => w.name),
       });
     }),
+  );
+
+  server.registerTool(
+    {
+      name: "set_working_directory",
+      description:
+        "Set the working directory used by this MCP server. All subsequent project queries will reflect the new directory.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          directory: {
+            type: "string",
+            description: "Absolute path to the new working directory",
+          },
+        },
+        required: ["directory"],
+      },
+    },
+    ({ directory }) => {
+      setServerWorkingDirectory(directory as string);
+      const project = getServerProject();
+      return textResult({
+        directory,
+        project: project
+          ? {
+              name: project.name,
+              workspaces: project.workspaces.map((w) => w.name),
+            }
+          : null,
+      });
+    },
   );
 
   server.registerTool(

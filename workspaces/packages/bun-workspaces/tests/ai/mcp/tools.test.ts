@@ -287,6 +287,59 @@ describe("bw MCP tools", () => {
     });
   });
 
+  describe("set_working_directory", () => {
+    test("sets a valid project directory and returns project info", async () => {
+      const { result, isError } = await callTool(
+        null,
+        "set_working_directory",
+        { directory: getProjectRoot("fullProject") },
+      );
+      expect(isError).toBeUndefined();
+      const data = result as {
+        directory: string;
+        project: { name: string; workspaces: string[] } | null;
+      };
+      expect(data.directory).toBe(getProjectRoot("fullProject"));
+      expect(data.project).not.toBeNull();
+      expect(data.project?.workspaces).toContain("application-a");
+    });
+
+    test("returns project: null when directory is not a bun-workspaces project", async () => {
+      const { result, isError } = await callTool(
+        null,
+        "set_working_directory",
+        { directory: getProjectRoot("notAProject") },
+      );
+      expect(isError).toBeUndefined();
+      const data = result as { directory: string; project: null };
+      expect(data.project).toBeNull();
+    });
+
+    test("subsequent tool calls use the new directory", async () => {
+      await callTool(null, "set_working_directory", {
+        directory: getProjectRoot("fullProject"),
+      });
+      const { result, isError } = await callTool(null, "list_workspaces");
+      expect(isError).toBeUndefined();
+      expect((result as { name: string }[]).map((w) => w.name)).toContain(
+        "application-a",
+      );
+    });
+
+    test("switching directory changes the active project", async () => {
+      await callTool(null, "set_working_directory", {
+        directory: getProjectRoot("fullProject"),
+      });
+      await callTool(null, "set_working_directory", {
+        directory: getProjectRoot("workspaceTags"),
+      });
+      const { result } = await callTool(null, "list_workspaces");
+      const names = (result as { name: string }[]).map((w) => w.name);
+      expect(names).toContain("application-1a");
+      expect(names).not.toContain("application-a");
+    });
+  });
+
   describe("doctor", () => {
     test("returns diagnostic info with version fields", async () => {
       const { result, isError } = await callTool("fullProject", "doctor");

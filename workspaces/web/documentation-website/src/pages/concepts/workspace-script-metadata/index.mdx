@@ -1,18 +1,18 @@
 ---
 title: Concepts > Workspace Script Metadata
 titleSuffix: " | bun-workspaces"
-description: "Script Runtime Metadata | Concepts | Documentation for bun-workspaces: A CLI and API to help manage Bun monorepos"
+description: "Workspace Script Metadata | Concepts | Documentation for bun-workspaces: A CLI and API to help manage Bun monorepos"
 pageType: doc
 sidebar: false
 outline: true
 footer: false
 ---
 
-import { getScriptRuntimeMetadataConfig } from 'bw-common/runScript';
+import { getWorkspaceScriptMetadataConfig } from 'bw-common/runScript';
 import { SyntaxHighlighter } from '../../../lib/util/highlight';
 import { ConceptsHeader } from "../../../lib/concepts/ConceptsHeader";
 
-<ConceptsHeader activeHref="scriptRuntimeMetadata" />
+<ConceptsHeader activeHref="workspaceScriptMetadata" />
 
 When running scripts via the API or CLI, metadata is available via either environment variables within your scripts or interpolation
 in an [inline script](/concepts/inline-scripts) or appended args.
@@ -70,12 +70,12 @@ const workspaceRelativePath = getWorkspaceScriptMetadata("workspaceRelativePath"
 const scriptName = getWorkspaceScriptMetadata("scriptName");
 
 // Access via plain environment variables (same values as above)
-console.log(process.env.${getScriptRuntimeMetadataConfig("projectPath").envVarName});
-console.log(process.env.${getScriptRuntimeMetadataConfig("projectName").envVarName});
-console.log(process.env.${getScriptRuntimeMetadataConfig("workspaceName").envVarName});
-console.log(process.env.${getScriptRuntimeMetadataConfig("workspacePath").envVarName});
-console.log(process.env.${getScriptRuntimeMetadataConfig("workspaceRelativePath").envVarName});
-console.log(process.env.${getScriptRuntimeMetadataConfig("scriptName").envVarName});
+console.log(process.env.${getWorkspaceScriptMetadataConfig("projectPath").envVarName});
+console.log(process.env.${getWorkspaceScriptMetadataConfig("projectName").envVarName});
+console.log(process.env.${getWorkspaceScriptMetadataConfig("workspaceName").envVarName});
+console.log(process.env.${getWorkspaceScriptMetadataConfig("workspacePath").envVarName});
+console.log(process.env.${getWorkspaceScriptMetadataConfig("workspaceRelativePath").envVarName});
+console.log(process.env.${getWorkspaceScriptMetadataConfig("scriptName").envVarName});
 `.trim()}
 </SyntaxHighlighter>
 
@@ -84,35 +84,35 @@ console.log(process.env.${getScriptRuntimeMetadataConfig("scriptName").envVarNam
 #### Project Path
 The absolute path to the project root.<br/>
 
-In inline scripts and args: <code>{getScriptRuntimeMetadataConfig("projectPath").inlineName}</code><br/>
-Environment variable: <code>{getScriptRuntimeMetadataConfig("projectPath").envVarName}</code>
+In inline scripts and args: <code>{getWorkspaceScriptMetadataConfig("projectPath").inlineName}</code><br/>
+Environment variable: <code>{getWorkspaceScriptMetadataConfig("projectPath").envVarName}</code>
 
 #### Project Name
 The name of the project (as in its `package.json` `"name"` field).<br/>
 
-In inline scripts and args: <code>{getScriptRuntimeMetadataConfig("projectName").inlineName}</code><br/>
-Environment variable: <code>{getScriptRuntimeMetadataConfig("projectName").envVarName}</code>
+In inline scripts and args: <code>{getWorkspaceScriptMetadataConfig("projectName").inlineName}</code><br/>
+Environment variable: <code>{getWorkspaceScriptMetadataConfig("projectName").envVarName}</code>
 
 #### Workspace Name
 The name of the workspace (as in its `package.json` `"name"` field).<br/>
 
-In inline scripts and args: <code>{getScriptRuntimeMetadataConfig("workspaceName").inlineName}</code><br/>
-Environment variable: <code>{getScriptRuntimeMetadataConfig("workspaceName").envVarName}</code>
+In inline scripts and args: <code>{getWorkspaceScriptMetadataConfig("workspaceName").inlineName}</code><br/>
+Environment variable: <code>{getWorkspaceScriptMetadataConfig("workspaceName").envVarName}</code>
 
 #### Workspace Path
 The absolute path to the workspace.<br/>
 
-In inline scripts and args: <code>{getScriptRuntimeMetadataConfig("workspacePath").inlineName}</code><br/>
-Environment variable: <code>{getScriptRuntimeMetadataConfig("workspacePath").envVarName}</code>
+In inline scripts and args: <code>{getWorkspaceScriptMetadataConfig("workspacePath").inlineName}</code><br/>
+Environment variable: <code>{getWorkspaceScriptMetadataConfig("workspacePath").envVarName}</code>
 
 #### Workspace Relative Path
 The relative path to the workspace from the project root.<br/>
 
-In inline scripts and args: <code>{getScriptRuntimeMetadataConfig("workspaceRelativePath").inlineName}</code><br/>
-Environment variable: <code>{getScriptRuntimeMetadataConfig("workspaceRelativePath").envVarName}</code>
+In inline scripts and args: <code>{getWorkspaceScriptMetadataConfig("workspaceRelativePath").inlineName}</code><br/>
+Environment variable: <code>{getWorkspaceScriptMetadataConfig("workspaceRelativePath").envVarName}</code>
 
 #### Script Name
 The name of the script. This is an empty string when running as an inline script, unless a script name is [explicitly provided](/concepts/inline-scripts#script-name).<br/>
 
-In inline scripts and args: <code>{getScriptRuntimeMetadataConfig("scriptName").inlineName}</code><br/>
-Environment variable: <code>{getScriptRuntimeMetadataConfig("scriptName").envVarName}</code>
+In inline scripts and args: <code>{getWorkspaceScriptMetadataConfig("scriptName").inlineName}</code><br/>
+Environment variable: <code>{getWorkspaceScriptMetadataConfig("scriptName").envVarName}</code>

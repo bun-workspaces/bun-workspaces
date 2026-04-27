@@ -6,7 +6,7 @@ const LINKS = {
   workspaceDependencies: "/concepts/workspace-dependencies",
   parallelScripts: "/concepts/parallel-scripts",
   rootWorkspace: "/concepts/root-workspace",
-  scriptRuntimeMetadata: "/concepts/workspace-script-metadata",
+  workspaceScriptMetadata: "/concepts/workspace-script-metadata",
   scriptExecutionOrder: "/concepts/script-execution-order",
   inlineScripts: "/concepts/inline-scripts",
 } as const;
@@ -66,10 +66,10 @@ export const ConceptsHeader = ({
           Parallel Scripts
         </Link>
         <Link
-          href={LINKS.scriptRuntimeMetadata}
-          className={activeHref === "scriptRuntimeMetadata" ? "active" : ""}
+          href={LINKS.workspaceScriptMetadata}
+          className={activeHref === "workspaceScriptMetadata" ? "active" : ""}
         >
-          Script Runtime Metadata
+          Workspace Script Metadata
         </Link>
         <Link
           href={LINKS.scriptExecutionOrder}

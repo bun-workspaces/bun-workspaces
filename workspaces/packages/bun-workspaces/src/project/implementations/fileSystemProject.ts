@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import type { ScriptShellOption, ShellOption } from "bw-common/parameters";
 import { ROOT_WORKSPACE_SELECTOR } from "bw-common/project";
-import type { ScriptRuntimeMetadata } from "bw-common/runScript";
+import type { WorkspaceScriptMetadata } from "bw-common/runScript";
 import { loadRootConfig } from "../../config";
 import { getUserEnvVar } from "../../config/userEnvVars";
 import { parse, quote } from "../../internal/bundledDeps/shellQuote";
@@ -21,7 +21,7 @@ import {
   runScript,
   runScripts,
   createScriptRuntimeEnvVars,
-  interpolateScriptRuntimeMetadata,
+  interpolateWorkspaceScriptMetadata,
   type RunScriptsParallelOptions,
   type RunScriptsSummary,
   type RunScriptExit,
@@ -168,7 +168,7 @@ const quoteArg = (arg: string, shell: ScriptShellOption): string =>
 
 const serializeArgs = (
   args: string | string[] | undefined,
-  metadata: ScriptRuntimeMetadata,
+  metadata: WorkspaceScriptMetadata,
   shell: ScriptShellOption,
 ): string => {
   if (!args || args.length === 0) return "";
@@ -176,12 +176,19 @@ const serializeArgs = (
   if (Array.isArray(args)) {
     return args
       .map((arg) =>
-        quoteArg(interpolateScriptRuntimeMetadata(arg, metadata, shell), shell),
+        quoteArg(
+          interpolateWorkspaceScriptMetadata(arg, metadata, shell),
+          shell,
+        ),
       )
       .join(" ");
   }
 
-  const interpolated = interpolateScriptRuntimeMetadata(args, metadata, shell);
+  const interpolated = interpolateWorkspaceScriptMetadata(
+    args,
+    metadata,
+    shell,
+  );
   // Escape backslashes in interpolated values before POSIX parse on Windows,
   // so that path separators survive parse's escape processing (\\→\)
   const parseInput =
@@ -364,7 +371,7 @@ class _FileSystemProject extends ProjectBase implements Project {
         ? (options.inline?.scriptName ?? "")
         : "";
 
-    const scriptRuntimeMetadata: ScriptRuntimeMetadata = {
+    const workspaceScriptMetadata: WorkspaceScriptMetadata = {
       projectPath: this.rootDirectory,
       projectName: this.name,
       workspacePath: resolveWorkspacePath(this, workspace),
@@ -373,12 +380,12 @@ class _FileSystemProject extends ProjectBase implements Project {
       scriptName: options.inline ? inlineScriptName : options.script,
     };
 
-    const args = serializeArgs(options.args, scriptRuntimeMetadata, shell);
+    const args = serializeArgs(options.args, workspaceScriptMetadata, shell);
 
     const script = options.inline
-      ? interpolateScriptRuntimeMetadata(
+      ? interpolateWorkspaceScriptMetadata(
           options.script,
-          scriptRuntimeMetadata,
+          workspaceScriptMetadata,
           shell,
         ) + (args ? " " + args : "")
       : options.script;
@@ -405,7 +412,7 @@ class _FileSystemProject extends ProjectBase implements Project {
       metadata: {
         workspace,
       },
-      env: createScriptRuntimeEnvVars(scriptRuntimeMetadata),
+      env: createScriptRuntimeEnvVars(workspaceScriptMetadata),
       shell,
       ignoreOutput: options.ignoreOutput ?? false,
     });
@@ -584,7 +591,7 @@ class _FileSystemProject extends ProjectBase implements Project {
             ? (options.inline?.scriptName ?? "")
             : "";
 
-        const scriptRuntimeMetadata: ScriptRuntimeMetadata = {
+        const workspaceScriptMetadata: WorkspaceScriptMetadata = {
           projectPath: this.rootDirectory,
           projectName: this.name,
           workspacePath: resolveWorkspacePath(this, workspace),
@@ -593,12 +600,16 @@ class _FileSystemProject extends ProjectBase implements Project {
           scriptName: options.inline ? inlineScriptName : options.script,
         };
 
-        const args = serializeArgs(options.args, scriptRuntimeMetadata, shell);
+        const args = serializeArgs(
+          options.args,
+          workspaceScriptMetadata,
+          shell,
+        );
 
         const script = options.inline
-          ? interpolateScriptRuntimeMetadata(
+          ? interpolateWorkspaceScriptMetadata(
               options.script,
-              scriptRuntimeMetadata,
+              workspaceScriptMetadata,
               shell,
             ) + (args ? " " + args : "")
           : options.script;
@@ -622,7 +633,7 @@ class _FileSystemProject extends ProjectBase implements Project {
             workspace,
           },
           scriptCommand,
-          env: createScriptRuntimeEnvVars(scriptRuntimeMetadata),
+          env: createScriptRuntimeEnvVars(workspaceScriptMetadata),
           shell,
           dependsOn: options.dependencyOrder
             ? workspace.dependencies

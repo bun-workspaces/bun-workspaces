@@ -26,7 +26,7 @@ Patterns can include a wildcard to match only by workspace name: \`my-workspace-
 - Special root workspace selector: \`@root\`.
 - Any pattern can start with \`not:\` to negate the pattern. (e.g. "not:my-workspace-name", "not:tag:my-tag-\\*") This excludes workspaces that match any other present patterns from a result.
 
-### Script runtime metadata
+### Workspace Script Metadata
 
 Scripts ran via bw can access metadata via env vars. This same metadata can be interpolated into inline scripts and appended args.
 

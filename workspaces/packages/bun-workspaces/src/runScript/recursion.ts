@@ -1,13 +1,13 @@
-import { getScriptRuntimeMetadataConfig } from "bw-common/runScript";
+import { getWorkspaceScriptMetadataConfig } from "bw-common/runScript";
 
 export const checkIsRecursiveScript = (
   workspaceName: string,
   scriptName: string,
 ) => {
   const parentWorkspace =
-    process.env[getScriptRuntimeMetadataConfig("workspaceName").envVarName];
+    process.env[getWorkspaceScriptMetadataConfig("workspaceName").envVarName];
   const parentScript =
-    process.env[getScriptRuntimeMetadataConfig("scriptName").envVarName];
+    process.env[getWorkspaceScriptMetadataConfig("scriptName").envVarName];
   if (!parentWorkspace || !parentScript) {
     return false;
   }

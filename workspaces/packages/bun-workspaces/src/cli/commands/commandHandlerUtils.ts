@@ -21,6 +21,7 @@ export type GlobalCommandContext = {
   outputWriters: Required<WriteOutputOptions>;
   terminalWidth: number;
   terminalHeight: number;
+  workingDirectory: string;
 };
 
 export type ProjectCommandContext = GlobalCommandContext & {

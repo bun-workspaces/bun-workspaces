@@ -27,10 +27,26 @@ Patterns can include a wildcard to match only by workspace name: `my-workspace-*
 
 ### Workspace Script Metadata
 
-Scripts ran via bw can access metadata via env vars. This same metadata can be interpolated into inline scripts and appended args.
+Scripts ran via bun-workspaces can access metadata about the workspace, script, and project
+via env vars. This same metadata can also be interpolated into inline scripts and appended args.
 
 ```typescript
-// in a script
+// in a workspace's script invoked by bun-workspaces using a metadata function
+import { getWorkspaceScriptMetadata } from "bun-workspaces/script";
+
+// Use the helper within a script that was invoked via bun-workspaces
+const projectPath = getWorkspaceScriptMetadata("projectPath");
+const projectName = getWorkspaceScriptMetadata("projectName");
+const workspaceName = getWorkspaceScriptMetadata("workspaceName");
+const workspacePath = getWorkspaceScriptMetadata("workspacePath");
+const workspaceRelativePath = getWorkspaceScriptMetadata(
+  "workspaceRelativePath",
+);
+const scriptName = getWorkspaceScriptMetadata("scriptName");
+```
+
+```typescript
+// In a script, but accessing the same data via plain environment variables (same values as previous example)
 const projectPath = process.env.BW_PROJECT_PATH;
 const workspaceName = process.env.BW_WORKSPACE_NAME;
 const workspacePath = process.env.BW_WORKSPACE_PATH;

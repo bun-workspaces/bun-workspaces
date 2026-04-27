@@ -1,60 +1,54 @@
-import {
-  API_QUICKSTART,
-  CLI_QUICKSTART,
-  ROOT_CONFIG_QUICKSTART,
-  WORKSPACE_CONFIG_QUICKSTART,
-} from "bw-common/docs";
 import packageJson from "../../../package.json";
-import type { FileSystemProject } from "../../project/implementations/fileSystemProject";
 import { createMcpServer } from "./core";
 import { registerBwResources } from "./resources";
+import { setServerWorkingDirectory } from "./serverState";
 import { registerBwTools } from "./tools";
 
-const SERVER_INSTRUCTIONS = `
-bun-workspaces MCP server: tools to query Bun monorepo workspace metadata and documentation resources for the bun-workspaces CLI and TypeScript API.
+export const SERVER_INSTRUCTIONS = `
+bun-workspaces ${packageJson.version} MCP server: tools to query Bun monorepo workspace metadata and documentation resources for the bun-workspaces CLI and TypeScript API.
 
-bun-workspaces is an npm package that works on top of Bun's native workspaces. If this server is running, the project likely has bun-workspaces installed, or the user invokes it via bunx — often using the recommended alias "bw" for \`bunx bun-workspaces\`.
+bun-workspaces is an npm package that works on top of Bun's native workspaces. It has a CLI and TS API.
 
-Use the tools to understand the project's workspaces and scripts. Running scripts across workspaces is a core bw feature not exposed as a tool — use the CLI directly. See the bw://docs/cli resource for the full CLI reference.
+Files such as bw.workspace.ts and bw.root.ts may be present for configuration.
 
-There are optional configuration files for the bun-workspaces CLI and TypeScript API. See the bw://docs/config resource for the full configuration reference.
+Use resources for docs on the CLI and TS API, or get a project overview via bw://project.
+bw://docs/overview, bw://docs/concepts, bw://docs/cli, bw://docs/api, and bw://docs/config cover most functionality.
+
+Use the tools to get specific metadata about the project.
 
 ## CLI quickstart
-
 \`\`\`bash
-${CLI_QUICKSTART}
+$ alias bw="bunx bun-workspaces"
+$ bw --help # usage
+$ # run is an alias for run-script
+$ bw run lint # run the "lint" script for all workspaces that have it
+$ bw run "echo inline script" --inline # run an inline command via the Bun shell
+$ bw run lint my-workspace-a my-workspace-b # run for specific workspaces
+$ bw run lint --dep-order # run the lint script for all workspaces, waiting for all dependencies to complete
+$ bw run lint "my-workspace-*" # wildcard for workspace names
+$ bw run lint "alias:my-alias-*" "path:packages/**/*" "not:path:my-path/*" # use workspace patterns
 \`\`\`
 
-## API quickstart
-
-\`\`\`typescript
-${API_QUICKSTART}
-\`\`\`
-
-## Root config quickstart
-
-\`\`\`typescript
-${ROOT_CONFIG_QUICKSTART}
-\`\`\`
-
-## Workspace config quickstart
-
-\`\`\`typescript
-${WORKSPACE_CONFIG_QUICKSTART}
-\`\`\`
+(end bun-workspaces MCP instructions)
 `.trim();
 
+export interface BwMcpServerOptions {
+  initialWorkingDirectory: string;
+}
+
 export const startBwMcpServer = async (
-  project: FileSystemProject,
+  options: BwMcpServerOptions,
 ): Promise<void> => {
+  setServerWorkingDirectory(options.initialWorkingDirectory);
+
   const server = createMcpServer({
     name: "bun-workspaces",
     version: packageJson.version,
     instructions: SERVER_INSTRUCTIONS,
   });
 
-  registerBwTools(server, project);
-  registerBwResources(server, project);
+  registerBwTools(server);
+  registerBwResources(server);
 
   await server.start();
 };

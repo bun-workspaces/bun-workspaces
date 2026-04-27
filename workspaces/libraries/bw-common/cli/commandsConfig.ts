@@ -170,7 +170,7 @@ export const CLI_COMMANDS_CONFIG = {
   },
   mcpServer: {
     command: "mcp-server",
-    isGlobal: false,
+    isGlobal: true,
     aliases: [],
     description:
       "Start the bun-workspaces MCP (Model Context Protocol) server over stdio",

@@ -1,19 +1,21 @@
-import { describe, expect, test } from "bun:test";
+import { afterEach, describe, expect, test } from "bun:test";
 import { createMcpServer } from "../../../src/ai/mcp/core/server";
 import { createMemoryTransport } from "../../../src/ai/mcp/core/transport";
+import { setServerWorkingDirectory } from "../../../src/ai/mcp/serverState";
 import { registerBwTools } from "../../../src/ai/mcp/tools";
 import { BUN_WORKSPACES_VERSION } from "../../../src/internal/version";
-import { createFileSystemProject } from "../../../src/project";
 import { getProjectRoot } from "../../fixtures/testProjects";
 
+afterEach(() => setServerWorkingDirectory(null));
+
 const callTool = async (
-  projectName: "fullProject" | "workspaceTags",
+  projectName: "fullProject" | "workspaceTags" | null,
   toolName: string,
   args: Record<string, unknown> = {},
 ) => {
-  const project = createFileSystemProject({
-    rootDirectory: getProjectRoot(projectName),
-  });
+  if (projectName !== null) {
+    setServerWorkingDirectory(getProjectRoot(projectName));
+  }
   const transport = createMemoryTransport([
     {
       jsonrpc: "2.0",
@@ -23,7 +25,7 @@ const callTool = async (
     },
   ]);
   const server = createMcpServer({ name: "bun-workspaces", version: "0.0.0" });
-  registerBwTools(server, project);
+  registerBwTools(server);
   await server.start(transport);
   const response = transport.sent[0] as {
     result?: { content: { text: string }[]; isError?: boolean };
@@ -48,6 +50,14 @@ describe("bw MCP tools", () => {
         BUN_WORKSPACES_VERSION,
       );
     });
+
+    test("returns version even without a project", async () => {
+      const { result, isError } = await callTool(null, "version");
+      expect(isError).toBeUndefined();
+      expect((result as { version: string }).version).toBe(
+        BUN_WORKSPACES_VERSION,
+      );
+    });
   });
 
   describe("root_info", () => {
@@ -66,6 +76,11 @@ describe("bw MCP tools", () => {
         dependencies: [],
         dependents: [],
       });
+    });
+
+    test("returns error without a project", async () => {
+      const { isError } = await callTool(null, "root_info");
+      expect(isError).toBe(true);
     });
   });
 
@@ -118,6 +133,11 @@ describe("bw MCP tools", () => {
       });
       expect(result).toEqual([]);
     });
+
+    test("returns error without a project", async () => {
+      const { isError } = await callTool(null, "list_workspaces");
+      expect(isError).toBe(true);
+    });
   });
 
   describe("workspace_info", () => {
@@ -169,6 +189,13 @@ describe("bw MCP tools", () => {
       expect(isError).toBeUndefined();
       expect((result as { name: string }).name).toBe("library-1a");
     });
+
+    test("returns error without a project", async () => {
+      const { isError } = await callTool(null, "workspace_info", {
+        nameOrAlias: "library-a",
+      });
+      expect(isError).toBe(true);
+    });
   });
 
   describe("list_scripts", () => {
@@ -185,6 +212,11 @@ describe("bw MCP tools", () => {
         "library-b",
         "library-c",
       ]);
+    });
+
+    test("returns error without a project", async () => {
+      const { isError } = await callTool(null, "list_scripts");
+      expect(isError).toBe(true);
     });
   });
 
@@ -205,6 +237,13 @@ describe("bw MCP tools", () => {
       });
       expect(isError).toBe(true);
     });
+
+    test("returns error without a project", async () => {
+      const { isError } = await callTool(null, "script_info", {
+        script: "all-workspaces",
+      });
+      expect(isError).toBe(true);
+    });
   });
 
   describe("list_tags", () => {
@@ -216,6 +255,11 @@ describe("bw MCP tools", () => {
       expect(appTag?.workspaces).toEqual(["application-1a", "application-1b"]);
       const libTag = tags.find((t) => t.tag === "lib");
       expect(libTag?.workspaces).toEqual(["library-1a", "library-1b"]);
+    });
+
+    test("returns error without a project", async () => {
+      const { isError } = await callTool(null, "list_tags");
+      expect(isError).toBe(true);
     });
   });
 
@@ -236,6 +280,64 @@ describe("bw MCP tools", () => {
       });
       expect(isError).toBe(true);
     });
+
+    test("returns error without a project", async () => {
+      const { isError } = await callTool(null, "tag_info", { tag: "app" });
+      expect(isError).toBe(true);
+    });
+  });
+
+  describe("set_working_directory", () => {
+    test("sets a valid project directory and returns project info", async () => {
+      const { result, isError } = await callTool(
+        null,
+        "set_working_directory",
+        { directory: getProjectRoot("fullProject") },
+      );
+      expect(isError).toBeUndefined();
+      const data = result as {
+        directory: string;
+        project: { name: string; workspaces: string[] } | null;
+      };
+      expect(data.directory).toBe(getProjectRoot("fullProject"));
+      expect(data.project).not.toBeNull();
+      expect(data.project?.workspaces).toContain("application-a");
+    });
+
+    test("returns project: null when directory is not a bun-workspaces project", async () => {
+      const { result, isError } = await callTool(
+        null,
+        "set_working_directory",
+        { directory: getProjectRoot("notAProject") },
+      );
+      expect(isError).toBeUndefined();
+      const data = result as { directory: string; project: null };
+      expect(data.project).toBeNull();
+    });
+
+    test("subsequent tool calls use the new directory", async () => {
+      await callTool(null, "set_working_directory", {
+        directory: getProjectRoot("fullProject"),
+      });
+      const { result, isError } = await callTool(null, "list_workspaces");
+      expect(isError).toBeUndefined();
+      expect((result as { name: string }[]).map((w) => w.name)).toContain(
+        "application-a",
+      );
+    });
+
+    test("switching directory changes the active project", async () => {
+      await callTool(null, "set_working_directory", {
+        directory: getProjectRoot("fullProject"),
+      });
+      await callTool(null, "set_working_directory", {
+        directory: getProjectRoot("workspaceTags"),
+      });
+      const { result } = await callTool(null, "list_workspaces");
+      const names = (result as { name: string }[]).map((w) => w.name);
+      expect(names).toContain("application-1a");
+      expect(names).not.toContain("application-a");
+    });
   });
 
   describe("doctor", () => {
@@ -246,6 +348,12 @@ describe("bw MCP tools", () => {
       expect(typeof info.version).toBe("string");
       expect(typeof info.bunVersion).toBe("string");
       expect(typeof info.os).toBe("object");
+    });
+
+    test("returns diagnostic info even without a project", async () => {
+      const { result, isError } = await callTool(null, "doctor");
+      expect(isError).toBeUndefined();
+      expect(typeof (result as Record<string, unknown>).version).toBe("string");
     });
   });
 });

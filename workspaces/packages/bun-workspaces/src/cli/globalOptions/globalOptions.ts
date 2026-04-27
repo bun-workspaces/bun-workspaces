@@ -171,7 +171,7 @@ const applyGlobalOptions = (options: CliGlobalOptions) => {
     }) as unknown as FileSystemProject;
   }
 
-  return { project, projectError: error };
+  return { project, projectError: error, workingDirectory: options.cwd };
 };
 
 export const initializeWithGlobalOptions = (

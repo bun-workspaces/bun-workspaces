@@ -24,20 +24,25 @@ export const registerBwResources = (server: McpServer): void => {
     (uri) => {
       const project = getServerProject();
 
+      const data = project
+        ? {
+            available: true,
+            name: project.name,
+            rootDirectory: project.rootDirectory,
+            workspaces: project.workspaces,
+          }
+        : {
+            available: false,
+            message:
+              "No bun-workspaces project is available in the current directory.",
+          };
+
       return {
         contents: [
           {
             uri,
             mimeType: "application/json",
-            text: JSON.stringify(
-              {
-                name: project.name,
-                rootDirectory: project.rootDirectory,
-                workspaces: project.workspaces,
-              },
-              null,
-              2,
-            ),
+            text: JSON.stringify(data, null, 2),
           },
         ],
       };

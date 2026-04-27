@@ -1,6 +1,7 @@
 import { ROOT_WORKSPACE_SELECTOR } from "bw-common/project";
 import { getDoctorInfo } from "../../doctor";
 import { BUN_WORKSPACES_VERSION } from "../../internal/version";
+import type { FileSystemProject } from "../../project/implementations/fileSystemProject";
 import type { McpServer, CallToolResult } from "./core";
 import { getServerProject } from "./serverState";
 
@@ -12,6 +13,19 @@ const errorResult = (message: string): CallToolResult => ({
   content: [{ type: "text", text: message }],
   isError: true,
 });
+
+const NO_PROJECT_RESULT = errorResult(
+  "No bun-workspaces project is available in the current directory.",
+);
+
+const withProject =
+  <T extends Record<string, unknown>>(
+    handler: (project: FileSystemProject, input: T) => CallToolResult,
+  ) =>
+  (input: T): CallToolResult => {
+    const project = getServerProject();
+    return project ? handler(project, input) : NO_PROJECT_RESULT;
+  };
 
 export const registerBwTools = (server: McpServer): void => {
   server.registerTool(
@@ -40,15 +54,13 @@ export const registerBwTools = (server: McpServer): void => {
         },
       },
     },
-    ({ patterns }) => {
-      const project = getServerProject();
-
+    withProject((project, { patterns }) => {
       const workspaces =
         patterns && Array.isArray(patterns) && patterns.length > 0
           ? project.findWorkspacesByPattern(...(patterns as string[]))
           : project.workspaces;
       return textResult(workspaces);
-    },
+    }),
   );
 
   server.registerTool(
@@ -68,9 +80,7 @@ export const registerBwTools = (server: McpServer): void => {
         required: ["nameOrAlias"],
       },
     },
-    ({ nameOrAlias }) => {
-      const project = getServerProject();
-
+    withProject((project, { nameOrAlias }) => {
       const name = nameOrAlias as string;
       const workspace =
         name === ROOT_WORKSPACE_SELECTOR
@@ -82,7 +92,7 @@ export const registerBwTools = (server: McpServer): void => {
       }
 
       return textResult(workspace);
-    },
+    }),
   );
 
   server.registerTool(
@@ -91,10 +101,7 @@ export const registerBwTools = (server: McpServer): void => {
       description: "Get information about the root workspace",
       inputSchema: { type: "object" },
     },
-    () => {
-      const project = getServerProject();
-      return textResult(project.rootWorkspace);
-    },
+    withProject((project) => textResult(project.rootWorkspace)),
   );
 
   server.registerTool(
@@ -104,16 +111,14 @@ export const registerBwTools = (server: McpServer): void => {
         "List all scripts available across the project, with the workspaces that have each script.",
       inputSchema: { type: "object" },
     },
-    () => {
-      const project = getServerProject();
-
+    withProject((project) => {
       const scriptMap = project.mapScriptsToWorkspaces();
       const scripts = Object.values(scriptMap).map(({ name, workspaces }) => ({
         name,
         workspaces: workspaces.map((w) => w.name),
       }));
       return textResult(scripts);
-    },
+    }),
   );
 
   server.registerTool(
@@ -132,9 +137,7 @@ export const registerBwTools = (server: McpServer): void => {
         required: ["script"],
       },
     },
-    ({ script }) => {
-      const project = getServerProject();
-
+    withProject((project, { script }) => {
       const scriptMap = project.mapScriptsToWorkspaces();
       const scriptMetadata = scriptMap[script as string];
 
@@ -146,7 +149,7 @@ export const registerBwTools = (server: McpServer): void => {
         name: scriptMetadata.name,
         workspaces: scriptMetadata.workspaces.map((w) => w.name),
       });
-    },
+    }),
   );
 
   server.registerTool(
@@ -156,16 +159,14 @@ export const registerBwTools = (server: McpServer): void => {
         "List all tags defined across workspaces, with the workspaces that have each tag.",
       inputSchema: { type: "object" },
     },
-    () => {
-      const project = getServerProject();
-
+    withProject((project) => {
       const tagMap = project.mapTagsToWorkspaces();
       const tags = Object.entries(tagMap).map(([tag, workspaces]) => ({
         tag,
         workspaces: workspaces.map((w) => w.name),
       }));
       return textResult(tags);
-    },
+    }),
   );
 
   server.registerTool(
@@ -184,9 +185,7 @@ export const registerBwTools = (server: McpServer): void => {
         required: ["tag"],
       },
     },
-    ({ tag }) => {
-      const project = getServerProject();
-
+    withProject((project, { tag }) => {
       const tagMap = project.mapTagsToWorkspaces();
       const tagWorkspaces = tagMap[tag as string];
 
@@ -198,7 +197,7 @@ export const registerBwTools = (server: McpServer): void => {
         name: tag,
         workspaces: tagWorkspaces.map((w) => w.name),
       });
-    },
+    }),
   );
 
   server.registerTool(

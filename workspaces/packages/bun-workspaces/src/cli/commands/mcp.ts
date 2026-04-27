@@ -1,11 +1,11 @@
 import { startBwMcpServer } from "../../ai/mcp";
 import { logger } from "../../internal/logger";
-import { handleProjectCommand } from "./commandHandlerUtils";
+import { handleGlobalCommand } from "./commandHandlerUtils";
 
-export const mcpServer = handleProjectCommand(
+export const mcpServer = handleGlobalCommand(
   "mcpServer",
-  async ({ project }) => {
+  async ({ workingDirectory }) => {
     logger.printLevel = "silent";
-    await startBwMcpServer(project);
+    await startBwMcpServer({ initialWorkingDirectory: workingDirectory });
   },
 );

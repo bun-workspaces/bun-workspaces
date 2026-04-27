@@ -117,11 +117,8 @@ export const createCli = ({
         return;
       }
 
-      const { project, projectError } = initializeWithGlobalOptions(
-        program,
-        args,
-        middleware,
-      );
+      const { project, projectError, workingDirectory } =
+        initializeWithGlobalOptions(program, args, middleware);
 
       middleware.findProject({ ...defaultContext, project, projectError });
 
@@ -140,6 +137,7 @@ export const createCli = ({
         outputWriters,
         terminalWidth,
         terminalHeight,
+        workingDirectory,
       });
 
       defineGlobalCommands({
@@ -149,6 +147,7 @@ export const createCli = ({
         outputWriters,
         terminalWidth,
         terminalHeight,
+        workingDirectory,
       });
 
       logger.debug(`Commands initialized. Parsing args...`);

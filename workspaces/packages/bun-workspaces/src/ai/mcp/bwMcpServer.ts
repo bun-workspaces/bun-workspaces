@@ -45,12 +45,16 @@ ${WORKSPACE_CONFIG_QUICKSTART}
 \`\`\`
 `.trim();
 
+export interface BwMcpServerOptions {
+  initialWorkingDirectory: string;
+}
+
 export const startBwMcpServer = async (
-  initialWorkingDirectory: string,
+  options: BwMcpServerOptions,
 ): Promise<void> => {
   try {
     const project = createFileSystemProject({
-      rootDirectory: initialWorkingDirectory,
+      rootDirectory: options.initialWorkingDirectory,
     });
     setServerProject(project);
   } catch {

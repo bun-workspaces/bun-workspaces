@@ -5,7 +5,7 @@
     "": {
       "name": "sandbox-test-project",
       "dependencies": {
-        "bun-workspaces": "1.7.0",
+        "bun-workspaces": "1.8.0",
       },
     },
     "workspaces/parallel-max-a": {
@@ -37,7 +37,7 @@
     },
   },
   "packages": {
-    "bun-workspaces": ["bun-workspaces@1.7.0", "", { "bin": { "bun-workspaces": "bin/cli.js", "bw": "bin/cli.js" } }, "sha512-OnzauctYNAR/jno1KTCYmbmY0Z6YrrdPIEE+fq1iTFRCoz0YduvV7bBxmvbwzKp0mftJIc83HGVbNWiNXDSAHw=="],
+    "bun-workspaces": ["bun-workspaces@1.8.0", "", { "bin": { "bun-workspaces": "bin/cli.js", "bw": "bin/cli.js" } }, "sha512-d6pWj9BQLf6yrj2era+aL1Bo0kMX121b1Wkiiz6NWnIBGYhR1gJfHlNWliJQ6yiL1OgBEawqxQ5VVfGKV7U5PQ=="],
 
     "parallel-max-a": ["parallel-max-a@workspace:workspaces/parallel-max-a"],
 

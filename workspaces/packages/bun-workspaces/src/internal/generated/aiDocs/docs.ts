@@ -41,7 +41,7 @@ const projectName = getWorkspaceScriptMetadata("projectName");
 const workspaceName = getWorkspaceScriptMetadata("workspaceName");
 const workspacePath = getWorkspaceScriptMetadata("workspacePath");
 const workspaceRelativePath = getWorkspaceScriptMetadata(
-  "workspaceRelativePath"
+  "workspaceRelativePath",
 );
 const scriptName = getWorkspaceScriptMetadata("scriptName");
 \`\`\`

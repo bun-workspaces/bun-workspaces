@@ -1,9 +1,3 @@
-import {
-  API_QUICKSTART,
-  CLI_QUICKSTART,
-  ROOT_CONFIG_QUICKSTART,
-  WORKSPACE_CONFIG_QUICKSTART,
-} from "bw-common/docs";
 import packageJson from "../../../package.json";
 import { createMcpServer } from "./core";
 import { registerBwResources } from "./resources";
@@ -11,37 +5,39 @@ import { setServerWorkingDirectory } from "./serverState";
 import { registerBwTools } from "./tools";
 
 const SERVER_INSTRUCTIONS = `
-bun-workspaces MCP server: tools to query Bun monorepo workspace metadata and documentation resources for the bun-workspaces CLI and TypeScript API.
+bun-workspaces ${packageJson.version} MCP server: tools to query Bun monorepo workspace metadata and documentation resources for the bun-workspaces CLI and TypeScript API.
 
-bun-workspaces is an npm package that works on top of Bun's native workspaces. If this server is running, the project likely has bun-workspaces installed, or the user invokes it via bunx — often using the recommended alias "bw" for \`bunx bun-workspaces\`.
+bun-workspaces is an npm package that works on top of Bun's native workspaces. It has a CLI and TS API.
 
-Use the tools to understand the project's workspaces and scripts. Running scripts across workspaces is a core bw feature not exposed as a tool — use the CLI directly. See the bw://docs/cli resource for the full CLI reference.
+Files such as bw.workspace.ts and bw.root.ts may be present for configuration.
 
-There are optional configuration files for the bun-workspaces CLI and TypeScript API. See the bw://docs/config resource for the full configuration reference.
+Use resources to understand the CLI and TS API and get a project overview.
+
+Use the tools to get specific metadata about the project.
+
+Running scripts across workspaces is a core bw feature not exposed as a tool — use the CLI directly.
 
 ## CLI quickstart
 
 \`\`\`bash
-${CLI_QUICKSTART}
+$ alias bw="bunx bun-workspaces"
+$ bw --help
+$ bw ls --help # list workspaces 
+$ bw run-script --help # run a script across workspaces
+$ bw workspace-info --help # get info about a workspace
+$ bw script-info --help # get info about a script
+$ bw list-tags --help # list all tags
+$ bw tag-info --help # get info about a tag
+$
+$ # run is an alias for run-script
+$ bw run lint # run the lint script for all workspaces that have it
+$ bw run lint my-workspace-a my-workspace-b # run the lint script for specific workspaces
+$ bw run lint --dep-order # run the lint script for all workspaces, waiting for all dependencies to complete
+$ bw run lint "my-workspace-*" # run the lint script for workspaces using wildcard that matches the workspace name
+$ bw run lint "alias:my-alias-*" "path:packages/**/*" "not:path:my-path/*" # use workspace patterns
 \`\`\`
 
-## API quickstart
-
-\`\`\`typescript
-${API_QUICKSTART}
-\`\`\`
-
-## Root config quickstart
-
-\`\`\`typescript
-${ROOT_CONFIG_QUICKSTART}
-\`\`\`
-
-## Workspace config quickstart
-
-\`\`\`typescript
-${WORKSPACE_CONFIG_QUICKSTART}
-\`\`\`
+(end bun-workspaces MCP instructions)
 `.trim();
 
 export interface BwMcpServerOptions {

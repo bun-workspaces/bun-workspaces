@@ -12,7 +12,7 @@ This is a CLI and TypeScript API to enhance your monorepo development with Bun's
 - Get metadata about your monorepo 🤖
 - Orchestrate your workspaces' `package.json` scripts 📋
 - Run inline [Bun Shell](https://bun.com/docs/runtime/shell) scripts in workspaces 🐚
-  Use the [MCP server](https://bunworkspaces.com/ai/mcp) for your AI tooling to learn how to use `bun-workspaces` and add project metadata to context! 🛠️
+- Use the [MCP server](https://bunworkspaces.com/ai/mcp) for your AI tooling to learn how to use `bun-workspaces` and add project metadata to context! 🛠️
 
 This is a tool to help manage a Bun monorepo, offering features beyond what [Bun's --filter feature](https://bun.com/docs/pm/filter) can do. It can be used to get a variety of metadata about your project and run scripts across your workspaces with advanced control.
 

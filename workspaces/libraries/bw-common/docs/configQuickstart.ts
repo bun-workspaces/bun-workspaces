@@ -1,6 +1,8 @@
 export const ROOT_CONFIG_QUICKSTART = `
 // bw.root.ts — place in your project root directory
-// Also supported: bw.root.js, bw.root.json, bw.root.jsonc, or a "bw" key in package.json
+// Also supported: bw.root.js, bw.root.json, bw.root.jsonc, 
+// or a "bw-root" key in package.json
+
 import { defineRootConfig } from "bun-workspaces/config";
 
 export default defineRootConfig({
@@ -50,7 +52,8 @@ export default defineRootConfig({
 export const WORKSPACE_CONFIG_QUICKSTART = `
 // bw.workspace.ts — place in a workspace directory
 
-// Also supported: bw.workspace.js, bw.workspace.json, bw.workspace.jsonc, or a "bw" key in package.json
+// Also supported: bw.workspace.js, bw.workspace.json, bw.workspace.jsonc, 
+// or a "bw" key in package.json
 
 import { defineWorkspaceConfig } from "bun-workspaces/config";
 

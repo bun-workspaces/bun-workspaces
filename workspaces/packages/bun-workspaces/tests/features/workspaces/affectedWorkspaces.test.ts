@@ -1,8 +1,20 @@
 import { describe, expect, test } from "bun:test";
-import { getAffectedWorkspaces } from "../../../src/workspaces/affected";
+import type { Workspace } from "../../../src";
+import {
+  getAffectedWorkspaces,
+  type AffectedWorkspaceInput,
+} from "../../../src/workspaces/affected";
 import { makeTestWorkspace } from "../../util/testData";
 
 const ROOT_DIRECTORY = "/repo";
+
+const makeInput = (
+  data: Partial<AffectedWorkspaceInput> & { workspace: Workspace },
+): AffectedWorkspaceInput => ({
+  inputFilePatterns: [],
+  inputWorkspacePatterns: [],
+  ...data,
+});
 
 describe("getAffectedWorkspaces", () => {
   describe("file matching", () => {
@@ -14,7 +26,9 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
-        workspaceInputs: [{ workspace, inputFilePatterns: ["src/index.ts"] }],
+        workspaceInputs: [
+          makeInput({ workspace, inputFilePatterns: ["src/index.ts"] }),
+        ],
         changedFilePaths: [
           "packages/a/src/index.ts",
           "packages/a/src/other.ts",
@@ -43,7 +57,7 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
-        workspaceInputs: [{ workspace, inputFilePatterns: ["src"] }],
+        workspaceInputs: [makeInput({ workspace, inputFilePatterns: ["src"] })],
         changedFilePaths: [
           "packages/a/src/index.ts",
           "packages/a/src/nested/deep.ts",
@@ -64,7 +78,9 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
-        workspaceInputs: [{ workspace, inputFilePatterns: ["src/"] }],
+        workspaceInputs: [
+          makeInput({ workspace, inputFilePatterns: ["src/"] }),
+        ],
         changedFilePaths: ["packages/a/src/index.ts", "packages/a/other.ts"],
       });
 
@@ -78,7 +94,9 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
-        workspaceInputs: [{ workspace, inputFilePatterns: ["src/**/*.ts"] }],
+        workspaceInputs: [
+          makeInput({ workspace, inputFilePatterns: ["src/**/*.ts"] }),
+        ],
         changedFilePaths: [
           "packages/a/src/index.ts",
           "packages/a/src/nested/deep.ts",
@@ -104,7 +122,7 @@ describe("getAffectedWorkspaces", () => {
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
-          { workspace, inputFilePatterns: ["{src,lib}/**/*.ts"] },
+          makeInput({ workspace, inputFilePatterns: ["{src,lib}/**/*.ts"] }),
         ],
         changedFilePaths: [
           "packages/a/src/x.ts",
@@ -132,7 +150,7 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
-        workspaceInputs: [{ workspace, inputFilePatterns: ["src"] }],
+        workspaceInputs: [makeInput({ workspace, inputFilePatterns: ["src"] })],
         changedFilePaths: ["packages/b/src/index.ts", "other/file.ts"],
       });
 
@@ -149,8 +167,8 @@ describe("getAffectedWorkspaces", () => {
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
-          { workspace: a, inputFilePatterns: ["src"] },
-          { workspace: b, inputFilePatterns: ["src"] },
+          makeInput({ workspace: a, inputFilePatterns: ["src"] }),
+          makeInput({ workspace: b, inputFilePatterns: ["src"] }),
         ],
         changedFilePaths: ["packages/a/src/x.ts", "packages/b/src/y.ts"],
       });
@@ -169,10 +187,10 @@ describe("getAffectedWorkspaces", () => {
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
-          {
+          makeInput({
             workspace,
             inputFilePatterns: ["src/index.ts", "src/**/*.ts"],
-          },
+          }),
         ],
         changedFilePaths: ["packages/a/src/index.ts"],
       });
@@ -188,10 +206,10 @@ describe("getAffectedWorkspaces", () => {
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
-          {
+          makeInput({
             workspace,
             inputFilePatterns: ["src", "package.json", "config/*.ts"],
-          },
+          }),
         ],
         changedFilePaths: [
           "packages/a/src/x.ts",
@@ -215,7 +233,7 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
-        workspaceInputs: [{ workspace, inputFilePatterns: [""] }],
+        workspaceInputs: [makeInput({ workspace, inputFilePatterns: [""] })],
         changedFilePaths: [
           "packages/a/src/x.ts",
           "packages/a/README.md",
@@ -241,10 +259,10 @@ describe("getAffectedWorkspaces", () => {
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
-          {
+          makeInput({
             workspace: root,
             inputFilePatterns: ["package.json", "scripts/*.ts"],
-          },
+          }),
         ],
         changedFilePaths: [
           "package.json",
@@ -266,7 +284,7 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: "/repo",
-        workspaceInputs: [{ workspace, inputFilePatterns: ["src"] }],
+        workspaceInputs: [makeInput({ workspace, inputFilePatterns: ["src"] })],
         changedFilePaths: ["/repo/packages/a/src/index.ts"],
       });
 
@@ -280,7 +298,7 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: "/repo",
-        workspaceInputs: [{ workspace, inputFilePatterns: ["src"] }],
+        workspaceInputs: [makeInput({ workspace, inputFilePatterns: ["src"] })],
         changedFilePaths: ["/elsewhere/packages/a/src/index.ts"],
       });
 
@@ -292,7 +310,7 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: "/repo/",
-        workspaceInputs: [{ workspace, inputFilePatterns: ["src"] }],
+        workspaceInputs: [makeInput({ workspace, inputFilePatterns: ["src"] })],
         changedFilePaths: ["/repo/packages/a/src/index.ts"],
       });
 
@@ -302,8 +320,413 @@ describe("getAffectedWorkspaces", () => {
     });
   });
 
-  describe("dependency propagation", () => {
-    test("marks a workspace as affected via a direct dependency", async () => {
+  describe("file pattern negation with `!`", () => {
+    test("excludes files matched by a `!` pattern", async () => {
+      const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({
+            workspace,
+            inputFilePatterns: ["**/*", "!**/*.test.ts"],
+          }),
+        ],
+        changedFilePaths: [
+          "packages/a/src/index.ts",
+          "packages/a/src/index.test.ts",
+          "packages/a/lib/util.ts",
+          "packages/a/lib/util.test.ts",
+        ],
+      });
+
+      expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
+        [
+          { filePath: "packages/a/src/index.ts", inputPattern: "**/*" },
+          { filePath: "packages/a/lib/util.ts", inputPattern: "**/*" },
+        ],
+      );
+    });
+
+    test("excludes a directory subtree", async () => {
+      const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({
+            workspace,
+            inputFilePatterns: ["src", "!src/generated"],
+          }),
+        ],
+        changedFilePaths: [
+          "packages/a/src/index.ts",
+          "packages/a/src/generated/types.ts",
+          "packages/a/src/generated/api/x.ts",
+        ],
+      });
+
+      expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
+        [{ filePath: "packages/a/src/index.ts", inputPattern: "src" }],
+      );
+    });
+
+    test("matches nothing when only negation patterns are given", async () => {
+      const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({
+            workspace,
+            inputFilePatterns: ["!**/*.test.ts"],
+          }),
+        ],
+        changedFilePaths: [
+          "packages/a/src/index.ts",
+          "packages/a/src/index.test.ts",
+        ],
+      });
+
+      expect(result.affectedWorkspaces[0].isAffected).toBe(false);
+      expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
+        [],
+      );
+    });
+
+    test("supports multiple negation patterns", async () => {
+      const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({
+            workspace,
+            inputFilePatterns: [
+              "**/*",
+              "!**/*.test.ts",
+              "!**/*.snap",
+              "!fixtures",
+            ],
+          }),
+        ],
+        changedFilePaths: [
+          "packages/a/src/index.ts",
+          "packages/a/src/index.test.ts",
+          "packages/a/__snapshots__/x.snap",
+          "packages/a/fixtures/data.json",
+          "packages/a/README.md",
+        ],
+      });
+
+      expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
+        [
+          { filePath: "packages/a/src/index.ts", inputPattern: "**/*" },
+          { filePath: "packages/a/README.md", inputPattern: "**/*" },
+        ],
+      );
+    });
+
+    test("`!` exclusion overrides any include match", async () => {
+      const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({
+            workspace,
+            inputFilePatterns: ["src", "src/**/*.ts", "!src/excluded.ts"],
+          }),
+        ],
+        changedFilePaths: [
+          "packages/a/src/index.ts",
+          "packages/a/src/excluded.ts",
+        ],
+      });
+
+      expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
+        [{ filePath: "packages/a/src/index.ts", inputPattern: "src" }],
+      );
+    });
+
+    test("negation supports plain file paths", async () => {
+      const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({
+            workspace,
+            inputFilePatterns: ["src", "!src/excluded.ts"],
+          }),
+        ],
+        changedFilePaths: [
+          "packages/a/src/index.ts",
+          "packages/a/src/excluded.ts",
+        ],
+      });
+
+      expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
+        [{ filePath: "packages/a/src/index.ts", inputPattern: "src" }],
+      );
+    });
+  });
+
+  describe("input workspace patterns", () => {
+    test("matches an input workspace dependency by name", async () => {
+      const lib = makeTestWorkspace({ name: "lib", path: "packages/lib" });
+      const app = makeTestWorkspace({ name: "app", path: "packages/app" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({ workspace: lib, inputFilePatterns: ["src"] }),
+          makeInput({
+            workspace: app,
+            inputFilePatterns: ["src"],
+            inputWorkspacePatterns: ["lib"],
+          }),
+        ],
+        changedFilePaths: ["packages/lib/src/x.ts"],
+      });
+
+      expect(result.affectedWorkspaces[0].isAffected).toBe(true);
+      expect(result.affectedWorkspaces[1].isAffected).toBe(true);
+      expect(result.affectedWorkspaces[1].affectedReasons.dependencies).toEqual(
+        [
+          {
+            dependencyName: "lib",
+            chain: [
+              { workspaceName: "app" },
+              { workspaceName: "lib", edgeSource: "input" },
+            ],
+          },
+        ],
+      );
+    });
+
+    test("matches an input workspace dependency by alias", async () => {
+      const lib = makeTestWorkspace({
+        name: "lib",
+        path: "packages/lib",
+        aliases: ["my-lib"],
+      });
+      const app = makeTestWorkspace({ name: "app", path: "packages/app" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({ workspace: lib, inputFilePatterns: ["src"] }),
+          makeInput({
+            workspace: app,
+            inputWorkspacePatterns: ["my-lib"],
+          }),
+        ],
+        changedFilePaths: ["packages/lib/src/x.ts"],
+      });
+
+      expect(result.affectedWorkspaces[1].isAffected).toBe(true);
+      expect(result.affectedWorkspaces[1].affectedReasons.dependencies).toEqual(
+        [
+          {
+            dependencyName: "lib",
+            chain: [
+              { workspaceName: "app" },
+              { workspaceName: "lib", edgeSource: "input" },
+            ],
+          },
+        ],
+      );
+    });
+
+    test("matches an input workspace dependency by name glob", async () => {
+      const libA = makeTestWorkspace({
+        name: "lib-a",
+        path: "packages/lib-a",
+      });
+      const libB = makeTestWorkspace({
+        name: "lib-b",
+        path: "packages/lib-b",
+      });
+      const app = makeTestWorkspace({ name: "app", path: "packages/app" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({ workspace: libA, inputFilePatterns: ["src"] }),
+          makeInput({ workspace: libB, inputFilePatterns: ["src"] }),
+          makeInput({
+            workspace: app,
+            inputWorkspacePatterns: ["lib-*"],
+          }),
+        ],
+        changedFilePaths: ["packages/lib-a/src/x.ts"],
+      });
+
+      expect(result.affectedWorkspaces[2].affectedReasons.dependencies).toEqual(
+        [
+          {
+            dependencyName: "lib-a",
+            chain: [
+              { workspaceName: "app" },
+              { workspaceName: "lib-a", edgeSource: "input" },
+            ],
+          },
+        ],
+      );
+    });
+
+    test("matches an input workspace dependency by tag", async () => {
+      const libA = makeTestWorkspace({
+        name: "lib-a",
+        path: "packages/lib-a",
+        tags: ["lib"],
+      });
+      const app = makeTestWorkspace({ name: "app", path: "packages/app" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({ workspace: libA, inputFilePatterns: ["src"] }),
+          makeInput({
+            workspace: app,
+            inputWorkspacePatterns: ["tag:lib"],
+          }),
+        ],
+        changedFilePaths: ["packages/lib-a/src/x.ts"],
+      });
+
+      expect(result.affectedWorkspaces[1].isAffected).toBe(true);
+    });
+
+    test("matches an input workspace dependency by path glob", async () => {
+      const lib = makeTestWorkspace({
+        name: "lib",
+        path: "packages/lib",
+      });
+      const app = makeTestWorkspace({ name: "app", path: "applications/app" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({ workspace: lib, inputFilePatterns: ["src"] }),
+          makeInput({
+            workspace: app,
+            inputWorkspacePatterns: ["path:packages/**/*"],
+          }),
+        ],
+        changedFilePaths: ["packages/lib/src/x.ts"],
+      });
+
+      expect(result.affectedWorkspaces[1].isAffected).toBe(true);
+    });
+
+    test("excludes via `not:` negation", async () => {
+      const libA = makeTestWorkspace({
+        name: "lib-a",
+        path: "packages/lib-a",
+      });
+      const libB = makeTestWorkspace({
+        name: "lib-b",
+        path: "packages/lib-b",
+      });
+      const app = makeTestWorkspace({ name: "app", path: "packages/app" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({ workspace: libA, inputFilePatterns: ["src"] }),
+          makeInput({ workspace: libB, inputFilePatterns: ["src"] }),
+          makeInput({
+            workspace: app,
+            inputWorkspacePatterns: ["lib-*", "not:lib-b"],
+          }),
+        ],
+        changedFilePaths: [
+          "packages/lib-a/src/x.ts",
+          "packages/lib-b/src/y.ts",
+        ],
+      });
+
+      expect(result.affectedWorkspaces[2].affectedReasons.dependencies).toEqual(
+        [
+          {
+            dependencyName: "lib-a",
+            chain: [
+              { workspaceName: "app" },
+              { workspaceName: "lib-a", edgeSource: "input" },
+            ],
+          },
+        ],
+      );
+    });
+
+    test("excludes via `!` shorthand negation", async () => {
+      const libA = makeTestWorkspace({
+        name: "lib-a",
+        path: "packages/lib-a",
+      });
+      const libB = makeTestWorkspace({
+        name: "lib-b",
+        path: "packages/lib-b",
+      });
+      const app = makeTestWorkspace({ name: "app", path: "packages/app" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({ workspace: libA, inputFilePatterns: ["src"] }),
+          makeInput({ workspace: libB, inputFilePatterns: ["src"] }),
+          makeInput({
+            workspace: app,
+            inputWorkspacePatterns: ["lib-*", "!lib-b"],
+          }),
+        ],
+        changedFilePaths: [
+          "packages/lib-a/src/x.ts",
+          "packages/lib-b/src/y.ts",
+        ],
+      });
+
+      expect(result.affectedWorkspaces[2].affectedReasons.dependencies).toEqual(
+        [
+          {
+            dependencyName: "lib-a",
+            chain: [
+              { workspaceName: "app" },
+              { workspaceName: "lib-a", edgeSource: "input" },
+            ],
+          },
+        ],
+      );
+    });
+
+    test("does not include the starting workspace as a self-input", async () => {
+      const a = makeTestWorkspace({ name: "a", path: "packages/a" });
+      const b = makeTestWorkspace({ name: "b", path: "packages/b" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({
+            workspace: a,
+            inputFilePatterns: ["src"],
+            inputWorkspacePatterns: ["*"],
+          }),
+          makeInput({ workspace: b, inputFilePatterns: ["src"] }),
+        ],
+        changedFilePaths: ["packages/a/src/x.ts"],
+      });
+
+      // a is affected via its own files, not a self-input chain
+      expect(result.affectedWorkspaces[0].affectedReasons.dependencies).toEqual(
+        [],
+      );
+    });
+  });
+
+  describe("package dependency propagation", () => {
+    test("marks a workspace as affected via a direct package dependency", async () => {
       const dep = makeTestWorkspace({
         name: "dep",
         path: "packages/dep",
@@ -318,8 +741,8 @@ describe("getAffectedWorkspaces", () => {
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
-          { workspace: dep, inputFilePatterns: ["src"] },
-          { workspace: app, inputFilePatterns: ["src"] },
+          makeInput({ workspace: dep, inputFilePatterns: ["src"] }),
+          makeInput({ workspace: app, inputFilePatterns: ["src"] }),
         ],
         changedFilePaths: ["packages/dep/src/x.ts"],
       });
@@ -340,13 +763,21 @@ describe("getAffectedWorkspaces", () => {
           isAffected: true,
           affectedReasons: {
             changedFiles: [],
-            dependencies: [{ dependencyName: "dep", chain: ["app", "dep"] }],
+            dependencies: [
+              {
+                dependencyName: "dep",
+                chain: [
+                  { workspaceName: "app" },
+                  { workspaceName: "dep", edgeSource: "package" },
+                ],
+              },
+            ],
           },
         },
       ]);
     });
 
-    test("propagates affected status through transitive dependencies with full chain", async () => {
+    test("propagates through transitive package dependencies with full chain", async () => {
       const c = makeTestWorkspace({
         name: "c",
         path: "packages/c",
@@ -367,9 +798,9 @@ describe("getAffectedWorkspaces", () => {
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
-          { workspace: a, inputFilePatterns: ["src"] },
-          { workspace: b, inputFilePatterns: ["src"] },
-          { workspace: c, inputFilePatterns: ["src"] },
+          makeInput({ workspace: a, inputFilePatterns: ["src"] }),
+          makeInput({ workspace: b, inputFilePatterns: ["src"] }),
+          makeInput({ workspace: c, inputFilePatterns: ["src"] }),
         ],
         changedFilePaths: ["packages/c/src/x.ts"],
       });
@@ -379,18 +810,35 @@ describe("getAffectedWorkspaces", () => {
         isAffected: true,
         affectedReasons: {
           changedFiles: [],
-          dependencies: [{ dependencyName: "c", chain: ["a", "b", "c"] }],
+          dependencies: [
+            {
+              dependencyName: "c",
+              chain: [
+                { workspaceName: "a" },
+                { workspaceName: "b", edgeSource: "package" },
+                { workspaceName: "c", edgeSource: "package" },
+              ],
+            },
+          ],
         },
       });
       expect(result.affectedWorkspaces[1].affectedReasons.dependencies).toEqual(
-        [{ dependencyName: "c", chain: ["b", "c"] }],
+        [
+          {
+            dependencyName: "c",
+            chain: [
+              { workspaceName: "b" },
+              { workspaceName: "c", edgeSource: "package" },
+            ],
+          },
+        ],
       );
       expect(result.affectedWorkspaces[2].affectedReasons.dependencies).toEqual(
         [],
       );
     });
 
-    test("includes every directly-affected dependency reachable from the workspace", async () => {
+    test("includes every directly-affected dep reachable from a workspace", async () => {
       const c = makeTestWorkspace({
         name: "c",
         path: "packages/c",
@@ -410,22 +858,34 @@ describe("getAffectedWorkspaces", () => {
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
-          { workspace: a, inputFilePatterns: ["src"] },
-          { workspace: c, inputFilePatterns: ["src"] },
-          { workspace: d, inputFilePatterns: ["src"] },
+          makeInput({ workspace: a, inputFilePatterns: ["src"] }),
+          makeInput({ workspace: c, inputFilePatterns: ["src"] }),
+          makeInput({ workspace: d, inputFilePatterns: ["src"] }),
         ],
         changedFilePaths: ["packages/c/src/x.ts", "packages/d/src/y.ts"],
       });
 
       expect(result.affectedWorkspaces[0].affectedReasons.dependencies).toEqual(
         [
-          { dependencyName: "c", chain: ["a", "c"] },
-          { dependencyName: "d", chain: ["a", "d"] },
+          {
+            dependencyName: "c",
+            chain: [
+              { workspaceName: "a" },
+              { workspaceName: "c", edgeSource: "package" },
+            ],
+          },
+          {
+            dependencyName: "d",
+            chain: [
+              { workspaceName: "a" },
+              { workspaceName: "d", edgeSource: "package" },
+            ],
+          },
         ],
       );
     });
 
-    test("only lists dependencies whose own files changed, not unaffected intermediate links", async () => {
+    test("lists each transitively-changed dep separately along the chain", async () => {
       const c = makeTestWorkspace({
         name: "c",
         path: "packages/c",
@@ -446,44 +906,31 @@ describe("getAffectedWorkspaces", () => {
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
-          { workspace: a, inputFilePatterns: ["src"] },
-          { workspace: b, inputFilePatterns: ["src"] },
-          { workspace: c, inputFilePatterns: ["src"] },
+          makeInput({ workspace: a, inputFilePatterns: ["src"] }),
+          makeInput({ workspace: b, inputFilePatterns: ["src"] }),
+          makeInput({ workspace: c, inputFilePatterns: ["src"] }),
         ],
-        changedFilePaths: ["packages/c/src/x.ts"],
+        changedFilePaths: ["packages/b/src/x.ts", "packages/c/src/y.ts"],
       });
 
       expect(result.affectedWorkspaces[0].affectedReasons.dependencies).toEqual(
-        [{ dependencyName: "c", chain: ["a", "b", "c"] }],
-      );
-    });
-
-    test("ignoreDependencies skips dependency propagation", async () => {
-      const dep = makeTestWorkspace({
-        name: "dep",
-        path: "packages/dep",
-        dependents: ["app"],
-      });
-      const app = makeTestWorkspace({
-        name: "app",
-        path: "packages/app",
-        dependencies: ["dep"],
-      });
-
-      const result = await getAffectedWorkspaces({
-        rootDirectory: ROOT_DIRECTORY,
-        workspaceInputs: [
-          { workspace: dep, inputFilePatterns: ["src"] },
-          { workspace: app, inputFilePatterns: ["src"] },
+        [
+          {
+            dependencyName: "b",
+            chain: [
+              { workspaceName: "a" },
+              { workspaceName: "b", edgeSource: "package" },
+            ],
+          },
+          {
+            dependencyName: "c",
+            chain: [
+              { workspaceName: "a" },
+              { workspaceName: "b", edgeSource: "package" },
+              { workspaceName: "c", edgeSource: "package" },
+            ],
+          },
         ],
-        changedFilePaths: ["packages/dep/src/x.ts"],
-        ignorePackageDependencies: true,
-      });
-
-      expect(result.affectedWorkspaces[0].isAffected).toBe(true);
-      expect(result.affectedWorkspaces[1].isAffected).toBe(false);
-      expect(result.affectedWorkspaces[1].affectedReasons.dependencies).toEqual(
-        [],
       );
     });
 
@@ -510,22 +957,19 @@ describe("getAffectedWorkspaces", () => {
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
-          { workspace: a, inputFilePatterns: ["src"] },
-          { workspace: b, inputFilePatterns: ["src"] },
-          { workspace: c, inputFilePatterns: ["src"] },
+          makeInput({ workspace: a, inputFilePatterns: ["src"] }),
+          makeInput({ workspace: b, inputFilePatterns: ["src"] }),
+          makeInput({ workspace: c, inputFilePatterns: ["src"] }),
         ],
         changedFilePaths: ["packages/b/src/x.ts"],
       });
 
-      expect(result.affectedWorkspaces[0].affectedReasons.dependencies).toEqual(
-        [{ dependencyName: "b", chain: ["a", "b"] }],
-      );
-      expect(result.affectedWorkspaces[1].affectedReasons.dependencies).toEqual(
-        [],
-      );
-      expect(result.affectedWorkspaces[2].affectedReasons.dependencies).toEqual(
-        [{ dependencyName: "b", chain: ["c", "a", "b"] }],
-      );
+      // All three workspaces are affected because the cycle propagates through dependents
+      expect(result.affectedWorkspaces.map((w) => w.isAffected)).toEqual([
+        true,
+        true,
+        true,
+      ]);
     });
 
     test("dependencies that are not in workspaceInputs are skipped", async () => {
@@ -537,13 +981,411 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
-        workspaceInputs: [{ workspace: app, inputFilePatterns: ["src"] }],
+        workspaceInputs: [
+          makeInput({ workspace: app, inputFilePatterns: ["src"] }),
+        ],
         changedFilePaths: ["packages/app/src/x.ts"],
       });
 
       expect(result.affectedWorkspaces[0].isAffected).toBe(true);
       expect(result.affectedWorkspaces[0].affectedReasons.dependencies).toEqual(
         [],
+      );
+    });
+  });
+
+  describe("input workspace dependency propagation", () => {
+    test("propagates through a chain of pure input deps", async () => {
+      const c = makeTestWorkspace({ name: "c", path: "packages/c" });
+      const b = makeTestWorkspace({ name: "b", path: "packages/b" });
+      const a = makeTestWorkspace({ name: "a", path: "packages/a" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({
+            workspace: a,
+            inputWorkspacePatterns: ["b"],
+          }),
+          makeInput({
+            workspace: b,
+            inputWorkspacePatterns: ["c"],
+          }),
+          makeInput({ workspace: c, inputFilePatterns: ["src"] }),
+        ],
+        changedFilePaths: ["packages/c/src/x.ts"],
+      });
+
+      expect(result.affectedWorkspaces.map((w) => w.isAffected)).toEqual([
+        true,
+        true,
+        true,
+      ]);
+
+      expect(result.affectedWorkspaces[0].affectedReasons.dependencies).toEqual(
+        [
+          {
+            dependencyName: "b",
+            chain: [
+              { workspaceName: "a" },
+              { workspaceName: "b", edgeSource: "input" },
+            ],
+          },
+          {
+            dependencyName: "c",
+            chain: [
+              { workspaceName: "a" },
+              { workspaceName: "b", edgeSource: "input" },
+              { workspaceName: "c", edgeSource: "input" },
+            ],
+          },
+        ],
+      );
+    });
+
+    test("input deps respect aliases when matching", async () => {
+      const c = makeTestWorkspace({
+        name: "c",
+        path: "packages/c",
+        aliases: ["lib-c"],
+      });
+      const a = makeTestWorkspace({
+        name: "a",
+        path: "packages/a",
+      });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({
+            workspace: a,
+            inputWorkspacePatterns: ["alias:lib-c"],
+          }),
+          makeInput({ workspace: c, inputFilePatterns: ["src"] }),
+        ],
+        changedFilePaths: ["packages/c/src/x.ts"],
+      });
+
+      expect(result.affectedWorkspaces[0].isAffected).toBe(true);
+    });
+
+    test("input dep propagation does not require a starting workspace to have file inputs", async () => {
+      const lib = makeTestWorkspace({ name: "lib", path: "packages/lib" });
+      const app = makeTestWorkspace({ name: "app", path: "packages/app" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({ workspace: lib, inputFilePatterns: ["src"] }),
+          makeInput({
+            workspace: app,
+            inputWorkspacePatterns: ["lib"],
+          }),
+        ],
+        changedFilePaths: ["packages/lib/src/x.ts"],
+      });
+
+      expect(result.affectedWorkspaces[1].isAffected).toBe(true);
+    });
+  });
+
+  describe("mixed input + package dependency chains", () => {
+    test("an input edge followed by a package edge produces a mixed chain", async () => {
+      // app --input--> lib --package--> shared, shared changes
+      const shared = makeTestWorkspace({
+        name: "shared",
+        path: "packages/shared",
+        dependents: ["lib"],
+      });
+      const lib = makeTestWorkspace({
+        name: "lib",
+        path: "packages/lib",
+        dependencies: ["shared"],
+      });
+      const app = makeTestWorkspace({ name: "app", path: "packages/app" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({ workspace: shared, inputFilePatterns: ["src"] }),
+          makeInput({ workspace: lib, inputFilePatterns: ["src"] }),
+          makeInput({
+            workspace: app,
+            inputWorkspacePatterns: ["lib"],
+          }),
+        ],
+        changedFilePaths: ["packages/shared/src/x.ts"],
+      });
+
+      expect(result.affectedWorkspaces.map((w) => w.isAffected)).toEqual([
+        true,
+        true,
+        true,
+      ]);
+
+      expect(result.affectedWorkspaces[2].affectedReasons.dependencies).toEqual(
+        [
+          {
+            dependencyName: "lib",
+            chain: [
+              { workspaceName: "app" },
+              { workspaceName: "lib", edgeSource: "input" },
+            ],
+          },
+          {
+            dependencyName: "shared",
+            chain: [
+              { workspaceName: "app" },
+              { workspaceName: "lib", edgeSource: "input" },
+              { workspaceName: "shared", edgeSource: "package" },
+            ],
+          },
+        ],
+      );
+    });
+
+    test("a package edge followed by an input edge produces a mixed chain", async () => {
+      // app --package--> mid --input--> data, data changes
+      const data = makeTestWorkspace({ name: "data", path: "packages/data" });
+      const mid = makeTestWorkspace({
+        name: "mid",
+        path: "packages/mid",
+        dependents: ["app"],
+      });
+      const app = makeTestWorkspace({
+        name: "app",
+        path: "packages/app",
+        dependencies: ["mid"],
+      });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({ workspace: data, inputFilePatterns: ["src"] }),
+          makeInput({
+            workspace: mid,
+            inputWorkspacePatterns: ["data"],
+          }),
+          makeInput({ workspace: app }),
+        ],
+        changedFilePaths: ["packages/data/src/x.ts"],
+      });
+
+      expect(result.affectedWorkspaces.map((w) => w.isAffected)).toEqual([
+        true,
+        true,
+        true,
+      ]);
+
+      expect(result.affectedWorkspaces[2].affectedReasons.dependencies).toEqual(
+        [
+          {
+            dependencyName: "mid",
+            chain: [
+              { workspaceName: "app" },
+              { workspaceName: "mid", edgeSource: "package" },
+            ],
+          },
+          {
+            dependencyName: "data",
+            chain: [
+              { workspaceName: "app" },
+              { workspaceName: "mid", edgeSource: "package" },
+              { workspaceName: "data", edgeSource: "input" },
+            ],
+          },
+        ],
+      );
+    });
+
+    test("input edge wins over package edge when both reach the same dep", async () => {
+      const shared = makeTestWorkspace({
+        name: "shared",
+        path: "packages/shared",
+        dependents: ["app"],
+      });
+      const app = makeTestWorkspace({
+        name: "app",
+        path: "packages/app",
+        dependencies: ["shared"],
+      });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({ workspace: shared, inputFilePatterns: ["src"] }),
+          makeInput({
+            workspace: app,
+            inputWorkspacePatterns: ["shared"],
+          }),
+        ],
+        changedFilePaths: ["packages/shared/src/x.ts"],
+      });
+
+      expect(result.affectedWorkspaces[1].affectedReasons.dependencies).toEqual(
+        [
+          {
+            dependencyName: "shared",
+            chain: [
+              { workspaceName: "app" },
+              { workspaceName: "shared", edgeSource: "input" },
+            ],
+          },
+        ],
+      );
+    });
+  });
+
+  describe("ignorePackageDependencies", () => {
+    test("disables propagation through package edges", async () => {
+      const dep = makeTestWorkspace({
+        name: "dep",
+        path: "packages/dep",
+        dependents: ["app"],
+      });
+      const app = makeTestWorkspace({
+        name: "app",
+        path: "packages/app",
+        dependencies: ["dep"],
+      });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({ workspace: dep, inputFilePatterns: ["src"] }),
+          makeInput({ workspace: app, inputFilePatterns: ["src"] }),
+        ],
+        changedFilePaths: ["packages/dep/src/x.ts"],
+        ignorePackageDependencies: true,
+      });
+
+      expect(result.affectedWorkspaces[0].isAffected).toBe(true);
+      expect(result.affectedWorkspaces[1].isAffected).toBe(false);
+      expect(result.affectedWorkspaces[1].affectedReasons.dependencies).toEqual(
+        [],
+      );
+    });
+
+    test("input edges still propagate when package deps are ignored", async () => {
+      const c = makeTestWorkspace({
+        name: "c",
+        path: "packages/c",
+      });
+      const b = makeTestWorkspace({
+        name: "b",
+        path: "packages/b",
+      });
+      const a = makeTestWorkspace({ name: "a", path: "packages/a" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({
+            workspace: a,
+            inputWorkspacePatterns: ["b"],
+          }),
+          makeInput({
+            workspace: b,
+            inputWorkspacePatterns: ["c"],
+          }),
+          makeInput({ workspace: c, inputFilePatterns: ["src"] }),
+        ],
+        changedFilePaths: ["packages/c/src/x.ts"],
+        ignorePackageDependencies: true,
+      });
+
+      expect(result.affectedWorkspaces.map((w) => w.isAffected)).toEqual([
+        true,
+        true,
+        true,
+      ]);
+      expect(result.affectedWorkspaces[0].affectedReasons.dependencies).toEqual(
+        [
+          {
+            dependencyName: "b",
+            chain: [
+              { workspaceName: "a" },
+              { workspaceName: "b", edgeSource: "input" },
+            ],
+          },
+          {
+            dependencyName: "c",
+            chain: [
+              { workspaceName: "a" },
+              { workspaceName: "b", edgeSource: "input" },
+              { workspaceName: "c", edgeSource: "input" },
+            ],
+          },
+        ],
+      );
+    });
+
+    test("with ignorePackageDependencies, package transitivity through an input dep is dropped", async () => {
+      // app --input--> lib --package--> shared, shared changes
+      const shared = makeTestWorkspace({
+        name: "shared",
+        path: "packages/shared",
+        dependents: ["lib"],
+      });
+      const lib = makeTestWorkspace({
+        name: "lib",
+        path: "packages/lib",
+        dependencies: ["shared"],
+      });
+      const app = makeTestWorkspace({ name: "app", path: "packages/app" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({ workspace: shared, inputFilePatterns: ["src"] }),
+          makeInput({ workspace: lib, inputFilePatterns: ["src"] }),
+          makeInput({
+            workspace: app,
+            inputWorkspacePatterns: ["lib"],
+          }),
+        ],
+        changedFilePaths: ["packages/shared/src/x.ts"],
+        ignorePackageDependencies: true,
+      });
+
+      // shared: directly changed
+      expect(result.affectedWorkspaces[0].isAffected).toBe(true);
+      // lib: would have been affected via package dep on shared, but package is ignored
+      expect(result.affectedWorkspaces[1].isAffected).toBe(false);
+      // app: input dep on lib (which is not affected) -> not affected
+      expect(result.affectedWorkspaces[2].isAffected).toBe(false);
+    });
+
+    test("with ignorePackageDependencies, all chain edges are `input`", async () => {
+      const c = makeTestWorkspace({ name: "c", path: "packages/c" });
+      const b = makeTestWorkspace({ name: "b", path: "packages/b" });
+      const a = makeTestWorkspace({ name: "a", path: "packages/a" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({
+            workspace: a,
+            inputWorkspacePatterns: ["b"],
+          }),
+          makeInput({
+            workspace: b,
+            inputWorkspacePatterns: ["c"],
+          }),
+          makeInput({ workspace: c, inputFilePatterns: ["src"] }),
+        ],
+        changedFilePaths: ["packages/c/src/x.ts"],
+        ignorePackageDependencies: true,
+      });
+
+      const chainEdges =
+        result.affectedWorkspaces[0].affectedReasons.dependencies
+          .flatMap((dep) => dep.chain)
+          .map((entry) => entry.edgeSource)
+          .filter((edgeSource) => edgeSource !== undefined);
+
+      expect(chainEdges.every((edgeSource) => edgeSource === "input")).toBe(
+        true,
       );
     });
   });
@@ -564,7 +1406,7 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
-        workspaceInputs: [{ workspace, inputFilePatterns: ["src"] }],
+        workspaceInputs: [makeInput({ workspace, inputFilePatterns: ["src"] })],
         changedFilePaths: [],
       });
 
@@ -578,12 +1420,12 @@ describe("getAffectedWorkspaces", () => {
       });
     });
 
-    test("a workspace with empty inputPatterns is not directly affected by file changes", async () => {
+    test("a workspace with empty inputs is not directly affected by file changes", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
-        workspaceInputs: [{ workspace, inputFilePatterns: [] }],
+        workspaceInputs: [makeInput({ workspace })],
         changedFilePaths: ["packages/a/src/x.ts"],
       });
 
@@ -593,30 +1435,33 @@ describe("getAffectedWorkspaces", () => {
       );
     });
 
-    test("a workspace with empty inputPatterns can still be affected via dependencies", async () => {
-      const dep = makeTestWorkspace({
-        name: "dep",
-        path: "packages/dep",
-        dependents: ["app"],
-      });
-      const app = makeTestWorkspace({
-        name: "app",
-        path: "packages/app",
-        dependencies: ["dep"],
-      });
+    test("a workspace with empty file inputs can still be affected via input deps", async () => {
+      const dep = makeTestWorkspace({ name: "dep", path: "packages/dep" });
+      const app = makeTestWorkspace({ name: "app", path: "packages/app" });
 
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
-          { workspace: dep, inputFilePatterns: ["src"] },
-          { workspace: app, inputFilePatterns: [] },
+          makeInput({ workspace: dep, inputFilePatterns: ["src"] }),
+          makeInput({
+            workspace: app,
+            inputWorkspacePatterns: ["dep"],
+          }),
         ],
         changedFilePaths: ["packages/dep/src/x.ts"],
       });
 
       expect(result.affectedWorkspaces[1].isAffected).toBe(true);
       expect(result.affectedWorkspaces[1].affectedReasons.dependencies).toEqual(
-        [{ dependencyName: "dep", chain: ["app", "dep"] }],
+        [
+          {
+            dependencyName: "dep",
+            chain: [
+              { workspaceName: "app" },
+              { workspaceName: "dep", edgeSource: "input" },
+            ],
+          },
+        ],
       );
     });
 
@@ -626,13 +1471,77 @@ describe("getAffectedWorkspaces", () => {
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
-          { workspace, inputFilePatterns: ["src/**/*.ts", "src"] },
+          makeInput({
+            workspace,
+            inputFilePatterns: ["src/**/*.ts", "src"],
+          }),
         ],
         changedFilePaths: ["packages/a/src/x.ts"],
       });
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
         [{ filePath: "packages/a/src/x.ts", inputPattern: "src/**/*.ts" }],
+      );
+    });
+
+    test("an input workspace pattern matching no workspace is a no-op", async () => {
+      const a = makeTestWorkspace({ name: "a", path: "packages/a" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({
+            workspace: a,
+            inputFilePatterns: ["src"],
+            inputWorkspacePatterns: ["nonexistent-*"],
+          }),
+        ],
+        changedFilePaths: ["packages/a/src/x.ts"],
+      });
+
+      expect(result.affectedWorkspaces[0].isAffected).toBe(true);
+      expect(result.affectedWorkspaces[0].affectedReasons.dependencies).toEqual(
+        [],
+      );
+    });
+
+    test("a directly changed workspace still reports its affected dependencies in the chain", async () => {
+      const dep = makeTestWorkspace({
+        name: "dep",
+        path: "packages/dep",
+      });
+      const app = makeTestWorkspace({
+        name: "app",
+        path: "packages/app",
+      });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({ workspace: dep, inputFilePatterns: ["src"] }),
+          makeInput({
+            workspace: app,
+            inputFilePatterns: ["src"],
+            inputWorkspacePatterns: ["dep"],
+          }),
+        ],
+        changedFilePaths: ["packages/dep/src/x.ts", "packages/app/src/x.ts"],
+      });
+
+      expect(result.affectedWorkspaces[1].isAffected).toBe(true);
+      expect(result.affectedWorkspaces[1].affectedReasons.changedFiles).toEqual(
+        [{ filePath: "packages/app/src/x.ts", inputPattern: "src" }],
+      );
+      expect(result.affectedWorkspaces[1].affectedReasons.dependencies).toEqual(
+        [
+          {
+            dependencyName: "dep",
+            chain: [
+              { workspaceName: "app" },
+              { workspaceName: "dep", edgeSource: "input" },
+            ],
+          },
+        ],
       );
     });
   });

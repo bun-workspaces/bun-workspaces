@@ -18,13 +18,24 @@ export type WorkspacePattern = {
 
 export const WORKSPACE_PATTERN_NEGATION_PREFIX = "not:";
 
+export const WORKSPACE_PATTERN_NEGATION_SHORT_PREFIX = "!";
+
+export const WORKSPACE_PATTERN_NEGATION_PREFIXES = [
+  WORKSPACE_PATTERN_NEGATION_PREFIX,
+  WORKSPACE_PATTERN_NEGATION_SHORT_PREFIX,
+] as const;
+
 export const WORKSPACE_PATTERN_SEPARATOR = ":";
 
 export const parseWorkspacePattern = (pattern: string): WorkspacePattern => {
-  const isNegated = pattern.startsWith(WORKSPACE_PATTERN_NEGATION_PREFIX);
+  const negationPrefix = WORKSPACE_PATTERN_NEGATION_PREFIXES.find((prefix) =>
+    pattern.startsWith(prefix),
+  );
 
-  const patternValue = isNegated
-    ? pattern.slice(WORKSPACE_PATTERN_NEGATION_PREFIX.length)
+  const isNegated = !!negationPrefix;
+
+  const patternValue = negationPrefix
+    ? pattern.slice(negationPrefix.length)
     : pattern;
 
   const target = TARGETS.find((target) =>

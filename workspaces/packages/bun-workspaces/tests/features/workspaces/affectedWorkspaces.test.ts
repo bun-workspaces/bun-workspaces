@@ -14,7 +14,7 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
-        workspaceInputs: [{ workspace, inputPatterns: ["src/index.ts"] }],
+        workspaceInputs: [{ workspace, inputFilePatterns: ["src/index.ts"] }],
         changedFilePaths: [
           "packages/a/src/index.ts",
           "packages/a/src/other.ts",
@@ -43,7 +43,7 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
-        workspaceInputs: [{ workspace, inputPatterns: ["src"] }],
+        workspaceInputs: [{ workspace, inputFilePatterns: ["src"] }],
         changedFilePaths: [
           "packages/a/src/index.ts",
           "packages/a/src/nested/deep.ts",
@@ -64,7 +64,7 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
-        workspaceInputs: [{ workspace, inputPatterns: ["src/"] }],
+        workspaceInputs: [{ workspace, inputFilePatterns: ["src/"] }],
         changedFilePaths: ["packages/a/src/index.ts", "packages/a/other.ts"],
       });
 
@@ -78,7 +78,7 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
-        workspaceInputs: [{ workspace, inputPatterns: ["src/**/*.ts"] }],
+        workspaceInputs: [{ workspace, inputFilePatterns: ["src/**/*.ts"] }],
         changedFilePaths: [
           "packages/a/src/index.ts",
           "packages/a/src/nested/deep.ts",
@@ -103,7 +103,9 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
-        workspaceInputs: [{ workspace, inputPatterns: ["{src,lib}/**/*.ts"] }],
+        workspaceInputs: [
+          { workspace, inputFilePatterns: ["{src,lib}/**/*.ts"] },
+        ],
         changedFilePaths: [
           "packages/a/src/x.ts",
           "packages/a/lib/y.ts",
@@ -130,7 +132,7 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
-        workspaceInputs: [{ workspace, inputPatterns: ["src"] }],
+        workspaceInputs: [{ workspace, inputFilePatterns: ["src"] }],
         changedFilePaths: ["packages/b/src/index.ts", "other/file.ts"],
       });
 
@@ -147,8 +149,8 @@ describe("getAffectedWorkspaces", () => {
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
-          { workspace: a, inputPatterns: ["src"] },
-          { workspace: b, inputPatterns: ["src"] },
+          { workspace: a, inputFilePatterns: ["src"] },
+          { workspace: b, inputFilePatterns: ["src"] },
         ],
         changedFilePaths: ["packages/a/src/x.ts", "packages/b/src/y.ts"],
       });
@@ -169,7 +171,7 @@ describe("getAffectedWorkspaces", () => {
         workspaceInputs: [
           {
             workspace,
-            inputPatterns: ["src/index.ts", "src/**/*.ts"],
+            inputFilePatterns: ["src/index.ts", "src/**/*.ts"],
           },
         ],
         changedFilePaths: ["packages/a/src/index.ts"],
@@ -188,7 +190,7 @@ describe("getAffectedWorkspaces", () => {
         workspaceInputs: [
           {
             workspace,
-            inputPatterns: ["src", "package.json", "config/*.ts"],
+            inputFilePatterns: ["src", "package.json", "config/*.ts"],
           },
         ],
         changedFilePaths: [
@@ -213,7 +215,7 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
-        workspaceInputs: [{ workspace, inputPatterns: [""] }],
+        workspaceInputs: [{ workspace, inputFilePatterns: [""] }],
         changedFilePaths: [
           "packages/a/src/x.ts",
           "packages/a/README.md",
@@ -239,7 +241,10 @@ describe("getAffectedWorkspaces", () => {
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
-          { workspace: root, inputPatterns: ["package.json", "scripts/*.ts"] },
+          {
+            workspace: root,
+            inputFilePatterns: ["package.json", "scripts/*.ts"],
+          },
         ],
         changedFilePaths: [
           "package.json",
@@ -261,7 +266,7 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: "/repo",
-        workspaceInputs: [{ workspace, inputPatterns: ["src"] }],
+        workspaceInputs: [{ workspace, inputFilePatterns: ["src"] }],
         changedFilePaths: ["/repo/packages/a/src/index.ts"],
       });
 
@@ -275,7 +280,7 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: "/repo",
-        workspaceInputs: [{ workspace, inputPatterns: ["src"] }],
+        workspaceInputs: [{ workspace, inputFilePatterns: ["src"] }],
         changedFilePaths: ["/elsewhere/packages/a/src/index.ts"],
       });
 
@@ -287,7 +292,7 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: "/repo/",
-        workspaceInputs: [{ workspace, inputPatterns: ["src"] }],
+        workspaceInputs: [{ workspace, inputFilePatterns: ["src"] }],
         changedFilePaths: ["/repo/packages/a/src/index.ts"],
       });
 
@@ -313,8 +318,8 @@ describe("getAffectedWorkspaces", () => {
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
-          { workspace: dep, inputPatterns: ["src"] },
-          { workspace: app, inputPatterns: ["src"] },
+          { workspace: dep, inputFilePatterns: ["src"] },
+          { workspace: app, inputFilePatterns: ["src"] },
         ],
         changedFilePaths: ["packages/dep/src/x.ts"],
       });
@@ -362,9 +367,9 @@ describe("getAffectedWorkspaces", () => {
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
-          { workspace: a, inputPatterns: ["src"] },
-          { workspace: b, inputPatterns: ["src"] },
-          { workspace: c, inputPatterns: ["src"] },
+          { workspace: a, inputFilePatterns: ["src"] },
+          { workspace: b, inputFilePatterns: ["src"] },
+          { workspace: c, inputFilePatterns: ["src"] },
         ],
         changedFilePaths: ["packages/c/src/x.ts"],
       });
@@ -405,9 +410,9 @@ describe("getAffectedWorkspaces", () => {
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
-          { workspace: a, inputPatterns: ["src"] },
-          { workspace: c, inputPatterns: ["src"] },
-          { workspace: d, inputPatterns: ["src"] },
+          { workspace: a, inputFilePatterns: ["src"] },
+          { workspace: c, inputFilePatterns: ["src"] },
+          { workspace: d, inputFilePatterns: ["src"] },
         ],
         changedFilePaths: ["packages/c/src/x.ts", "packages/d/src/y.ts"],
       });
@@ -441,9 +446,9 @@ describe("getAffectedWorkspaces", () => {
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
-          { workspace: a, inputPatterns: ["src"] },
-          { workspace: b, inputPatterns: ["src"] },
-          { workspace: c, inputPatterns: ["src"] },
+          { workspace: a, inputFilePatterns: ["src"] },
+          { workspace: b, inputFilePatterns: ["src"] },
+          { workspace: c, inputFilePatterns: ["src"] },
         ],
         changedFilePaths: ["packages/c/src/x.ts"],
       });
@@ -468,8 +473,8 @@ describe("getAffectedWorkspaces", () => {
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
-          { workspace: dep, inputPatterns: ["src"] },
-          { workspace: app, inputPatterns: ["src"] },
+          { workspace: dep, inputFilePatterns: ["src"] },
+          { workspace: app, inputFilePatterns: ["src"] },
         ],
         changedFilePaths: ["packages/dep/src/x.ts"],
         ignoreDependencies: true,
@@ -505,9 +510,9 @@ describe("getAffectedWorkspaces", () => {
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
-          { workspace: a, inputPatterns: ["src"] },
-          { workspace: b, inputPatterns: ["src"] },
-          { workspace: c, inputPatterns: ["src"] },
+          { workspace: a, inputFilePatterns: ["src"] },
+          { workspace: b, inputFilePatterns: ["src"] },
+          { workspace: c, inputFilePatterns: ["src"] },
         ],
         changedFilePaths: ["packages/b/src/x.ts"],
       });
@@ -532,7 +537,7 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
-        workspaceInputs: [{ workspace: app, inputPatterns: ["src"] }],
+        workspaceInputs: [{ workspace: app, inputFilePatterns: ["src"] }],
         changedFilePaths: ["packages/app/src/x.ts"],
       });
 
@@ -559,7 +564,7 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
-        workspaceInputs: [{ workspace, inputPatterns: ["src"] }],
+        workspaceInputs: [{ workspace, inputFilePatterns: ["src"] }],
         changedFilePaths: [],
       });
 
@@ -578,7 +583,7 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
-        workspaceInputs: [{ workspace, inputPatterns: [] }],
+        workspaceInputs: [{ workspace, inputFilePatterns: [] }],
         changedFilePaths: ["packages/a/src/x.ts"],
       });
 
@@ -603,8 +608,8 @@ describe("getAffectedWorkspaces", () => {
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
-          { workspace: dep, inputPatterns: ["src"] },
-          { workspace: app, inputPatterns: [] },
+          { workspace: dep, inputFilePatterns: ["src"] },
+          { workspace: app, inputFilePatterns: [] },
         ],
         changedFilePaths: ["packages/dep/src/x.ts"],
       });
@@ -620,7 +625,9 @@ describe("getAffectedWorkspaces", () => {
 
       const result = await getAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
-        workspaceInputs: [{ workspace, inputPatterns: ["src/**/*.ts", "src"] }],
+        workspaceInputs: [
+          { workspace, inputFilePatterns: ["src/**/*.ts", "src"] },
+        ],
         changedFilePaths: ["packages/a/src/x.ts"],
       });
 

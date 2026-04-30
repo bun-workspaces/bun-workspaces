@@ -5,8 +5,11 @@ import type { Workspace } from "../workspace";
 export interface AffectedWorkspaceInput {
   workspace: Workspace;
   /** File paths, directories, or glob patterns relative to the workspace's path */
-  inputPatterns: string[];
+  inputFilePatterns: string[];
+  /** Workspace names or glob patterns to also treat as dependencies */
+  inputWorkspacePatterns: string[];
 }
+
 export interface AffectedFileResult {
   /** The path to the file in the workspace */
   filePath: string;
@@ -198,7 +201,10 @@ export const getAffectedWorkspaces = async ({
   );
 
   const changedFilesByName = new Map<string, AffectedFileResult[]>();
-  for (const { workspace, inputPatterns } of workspaceInputs) {
+  for (const {
+    workspace,
+    inputFilePatterns: inputPatterns,
+  } of workspaceInputs) {
     changedFilesByName.set(
       workspace.name,
       matchChangedFilesForWorkspace({

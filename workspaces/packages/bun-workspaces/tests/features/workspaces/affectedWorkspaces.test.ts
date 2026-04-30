@@ -477,7 +477,7 @@ describe("getAffectedWorkspaces", () => {
           { workspace: app, inputFilePatterns: ["src"] },
         ],
         changedFilePaths: ["packages/dep/src/x.ts"],
-        ignoreDependencies: true,
+        ignorePackageDependencies: true,
       });
 
       expect(result.affectedWorkspaces[0].isAffected).toBe(true);

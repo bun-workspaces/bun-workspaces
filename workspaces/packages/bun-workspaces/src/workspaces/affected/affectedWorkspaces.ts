@@ -41,8 +41,8 @@ export interface GetAffectedWorkspacesOptions {
   workspaceInputs: AffectedWorkspaceInput[];
   /** The paths of all files that are considered changed */
   changedFilePaths: string[];
-  /** Whether to ignore dependencies when determining affected workspaces */
-  ignoreDependencies?: boolean;
+  /** Whether to ignore the package.json dependencies when determining affected workspaces */
+  ignorePackageDependencies?: boolean;
 }
 
 export interface GetAffectedWorkspacesResult {
@@ -188,7 +188,7 @@ export const getAffectedWorkspaces = async ({
   rootDirectory,
   workspaceInputs,
   changedFilePaths,
-  ignoreDependencies = false,
+  ignorePackageDependencies: ignoreDependencies = false,
 }: GetAffectedWorkspacesOptions): Promise<GetAffectedWorkspacesResult> => {
   const normalizedChangedFilePaths = changedFilePaths.map((filePath) =>
     normalizeChangedFilePath({ rootDirectory, filePath }),

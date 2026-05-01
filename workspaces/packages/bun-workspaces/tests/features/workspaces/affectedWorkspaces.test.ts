@@ -318,6 +318,20 @@ describe("getAffectedWorkspaces", () => {
         [{ filePath: "packages/a/src/index.ts", inputPattern: "src" }],
       );
     });
+
+    test("normalizes backslashes in changed file paths to forward slashes", async () => {
+      const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [makeInput({ workspace, inputFilePatterns: ["src"] })],
+        changedFilePaths: ["packages\\a\\src\\index.ts"],
+      });
+
+      expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
+        [{ filePath: "packages/a/src/index.ts", inputPattern: "src" }],
+      );
+    });
   });
 
   describe("project-relative input patterns (leading `/`)", () => {
@@ -674,6 +688,36 @@ describe("getAffectedWorkspaces", () => {
           makeInput({
             workspace: app,
             inputWorkspacePatterns: ["my-lib"],
+          }),
+        ],
+        changedFilePaths: ["packages/lib/src/x.ts"],
+      });
+
+      expect(result.affectedWorkspaces[1].isAffected).toBe(true);
+      expect(result.affectedWorkspaces[1].affectedReasons.dependencies).toEqual(
+        [
+          {
+            dependencyName: "lib",
+            chain: [
+              { workspaceName: "app" },
+              { workspaceName: "lib", edgeSource: "input" },
+            ],
+          },
+        ],
+      );
+    });
+
+    test("matches an input workspace dependency by `name:` prefix", async () => {
+      const lib = makeTestWorkspace({ name: "lib", path: "packages/lib" });
+      const app = makeTestWorkspace({ name: "app", path: "packages/app" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({ workspace: lib, inputFilePatterns: ["src"] }),
+          makeInput({
+            workspace: app,
+            inputWorkspacePatterns: ["name:lib"],
           }),
         ],
         changedFilePaths: ["packages/lib/src/x.ts"],
@@ -1228,6 +1272,32 @@ describe("getAffectedWorkspaces", () => {
       });
 
       expect(result.affectedWorkspaces[0].isAffected).toBe(true);
+    });
+
+    test("input dependency cycles do not cause infinite recursion", async () => {
+      const a = makeTestWorkspace({ name: "a", path: "packages/a" });
+      const b = makeTestWorkspace({ name: "b", path: "packages/b" });
+      const c = makeTestWorkspace({ name: "c", path: "packages/c" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({ workspace: a, inputWorkspacePatterns: ["b"] }),
+          makeInput({ workspace: b, inputWorkspacePatterns: ["c"] }),
+          makeInput({
+            workspace: c,
+            inputFilePatterns: ["src"],
+            inputWorkspacePatterns: ["a"],
+          }),
+        ],
+        changedFilePaths: ["packages/c/src/x.ts"],
+      });
+
+      expect(result.affectedWorkspaces.map((w) => w.isAffected)).toEqual([
+        true,
+        true,
+        true,
+      ]);
     });
 
     test("input dep propagation does not require a starting workspace to have file inputs", async () => {

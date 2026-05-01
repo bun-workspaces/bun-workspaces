@@ -80,7 +80,7 @@ const normalizeChangedFilePath = ({
 }) => {
   const posixFilePath = toPosixPath(filePath);
   if (!path.isAbsolute(filePath)) {
-    return stripLeadingSlashes(posixFilePath);
+    return posixFilePath;
   }
   const posixRoot = stripTrailingSlashes(toPosixPath(rootDirectory));
   if (posixFilePath === posixRoot) {

@@ -1,9 +1,10 @@
-import { describe, expect, test } from "bun:test";
+import { afterAll, beforeAll, describe, expect, spyOn, test } from "bun:test";
 import type { Workspace } from "../../../src";
 import {
   getAffectedWorkspaces,
   type AffectedWorkspaceInput,
 } from "../../../src/workspaces/affected";
+import { setLogLevel } from "../../../src/internal/logger";
 import { makeTestWorkspace } from "../../util/testData";
 
 const ROOT_DIRECTORY = "/repo";
@@ -485,6 +486,186 @@ describe("getAffectedWorkspaces", () => {
           },
         ],
       );
+    });
+  });
+
+  describe("parent-segment (`..`) handling", () => {
+    beforeAll(() => {
+      setLogLevel("warn");
+    });
+    afterAll(() => {
+      setLogLevel("silent");
+    });
+
+    test("workspace-relative `..` resolves to a sibling within the project", async () => {
+      const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({ workspace, inputFilePatterns: ["../shared"] }),
+        ],
+        changedFilePaths: [
+          "packages/shared/src/x.ts",
+          "packages/a/src/x.ts",
+          "other/x.ts",
+        ],
+      });
+
+      expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
+        [{ filePath: "packages/shared/src/x.ts", inputPattern: "../shared" }],
+      );
+    });
+
+    test("workspace-relative `..` alone resolves to the parent directory", async () => {
+      const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [makeInput({ workspace, inputFilePatterns: [".."] })],
+        changedFilePaths: ["packages/b/x.ts", "other/x.ts"],
+      });
+
+      expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
+        [{ filePath: "packages/b/x.ts", inputPattern: ".." }],
+      );
+    });
+
+    test("workspace-relative `..` works in a glob that stays inside the project", async () => {
+      const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({ workspace, inputFilePatterns: ["../shared/**/*.ts"] }),
+        ],
+        changedFilePaths: [
+          "packages/shared/src/x.ts",
+          "packages/shared/lib/y.ts",
+          "packages/shared/x.css",
+        ],
+      });
+
+      expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
+        [
+          {
+            filePath: "packages/shared/src/x.ts",
+            inputPattern: "../shared/**/*.ts",
+          },
+          {
+            filePath: "packages/shared/lib/y.ts",
+            inputPattern: "../shared/**/*.ts",
+          },
+        ],
+      );
+    });
+
+    test("project-relative pattern with internal `..` collapses within the project", async () => {
+      const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({ workspace, inputFilePatterns: ["/foo/../bar"] }),
+        ],
+        changedFilePaths: ["bar/x.ts", "foo/x.ts"],
+      });
+
+      expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
+        [{ filePath: "bar/x.ts", inputPattern: "/foo/../bar" }],
+      );
+    });
+
+    test("workspace-relative pattern that escapes the project is ignored and warned", async () => {
+      const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
+      const stderrSpy = spyOn(process.stderr, "write").mockImplementation(
+        () => true,
+      );
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({
+            workspace,
+            inputFilePatterns: ["../../../external", "src"],
+          }),
+        ],
+        changedFilePaths: ["packages/a/src/x.ts", "external/x.ts"],
+      });
+
+      expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
+        [{ filePath: "packages/a/src/x.ts", inputPattern: "src" }],
+      );
+
+      const warnings = stderrSpy.mock.calls
+        .map((call) => Bun.stripANSI(call[0] as string))
+        .filter((message) => message.includes("[bun-workspaces WARN]"));
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0]).toContain("../../../external");
+      expect(warnings[0]).toContain('workspace "a"');
+      expect(warnings[0]).toContain("outside the project root");
+
+      stderrSpy.mockRestore();
+    });
+
+    test("project-relative pattern that escapes the project is ignored and warned", async () => {
+      const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
+      const stderrSpy = spyOn(process.stderr, "write").mockImplementation(
+        () => true,
+      );
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({
+            workspace,
+            inputFilePatterns: ["/../external", "src"],
+          }),
+        ],
+        changedFilePaths: ["packages/a/src/x.ts", "external/x.ts"],
+      });
+
+      expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
+        [{ filePath: "packages/a/src/x.ts", inputPattern: "src" }],
+      );
+
+      const warnings = stderrSpy.mock.calls
+        .map((call) => Bun.stripANSI(call[0] as string))
+        .filter((message) => message.includes("[bun-workspaces WARN]"));
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0]).toContain("/../external");
+
+      stderrSpy.mockRestore();
+    });
+
+    test("`!`-prefixed exclusion that escapes the project is ignored and warned", async () => {
+      const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
+      const stderrSpy = spyOn(process.stderr, "write").mockImplementation(
+        () => true,
+      );
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({
+            workspace,
+            inputFilePatterns: ["src", "!../../../external"],
+          }),
+        ],
+        changedFilePaths: ["packages/a/src/x.ts"],
+      });
+
+      expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
+        [{ filePath: "packages/a/src/x.ts", inputPattern: "src" }],
+      );
+
+      const warnings = stderrSpy.mock.calls
+        .map((call) => Bun.stripANSI(call[0] as string))
+        .filter((message) => message.includes("[bun-workspaces WARN]"));
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0]).toContain("!../../../external");
+
+      stderrSpy.mockRestore();
     });
   });
 

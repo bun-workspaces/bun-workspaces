@@ -1,5 +1,6 @@
 import path from "path";
 import bun from "bun";
+import { logger } from "../../internal/logger";
 import type { Workspace } from "../workspace";
 import { matchWorkspacesByPatterns } from "../workspacePattern";
 
@@ -94,6 +95,8 @@ const normalizeChangedFilePath = ({
 
 const PROJECT_RELATIVE_PREFIX = "/";
 
+const PARENT_SEGMENT = "..";
+
 const resolveInputPattern = ({
   workspacePath,
   inputPattern,
@@ -103,23 +106,34 @@ const resolveInputPattern = ({
 }) => {
   const posixPattern = toPosixPath(inputPattern);
 
+  let rawJoined: string;
   if (posixPattern.startsWith(PROJECT_RELATIVE_PREFIX)) {
-    return stripTrailingSlashes(stripLeadingSlashes(posixPattern));
+    rawJoined = stripLeadingSlashes(posixPattern);
+  } else {
+    const normalizedWorkspacePath = stripTrailingSlashes(
+      toPosixPath(workspacePath),
+    );
+    const stripped = stripTrailingSlashes(posixPattern);
+
+    if (!normalizedWorkspacePath || normalizedWorkspacePath === ".") {
+      rawJoined = stripped;
+    } else if (!stripped || stripped === ".") {
+      rawJoined = normalizedWorkspacePath;
+    } else {
+      rawJoined = `${normalizedWorkspacePath}/${stripped}`;
+    }
   }
 
-  const normalizedWorkspacePath = stripTrailingSlashes(
-    toPosixPath(workspacePath),
-  );
-  const normalizedPattern = stripTrailingSlashes(posixPattern);
+  if (!rawJoined) return "";
 
-  if (!normalizedWorkspacePath || normalizedWorkspacePath === ".") {
-    return normalizedPattern;
-  }
-  if (!normalizedPattern || normalizedPattern === ".") {
-    return normalizedWorkspacePath;
-  }
-  return `${normalizedWorkspacePath}/${normalizedPattern}`;
+  const normalized = path.posix.normalize(rawJoined);
+  if (normalized === ".") return "";
+  return stripTrailingSlashes(normalized);
 };
+
+const isPatternOutsideProject = (resolvedPattern: string): boolean =>
+  resolvedPattern === PARENT_SEGMENT ||
+  resolvedPattern.startsWith(`${PARENT_SEGMENT}/`);
 
 const matchesResolvedPattern = ({
   filePath,
@@ -157,6 +171,40 @@ const splitFilePatterns = (patterns: string[]): SplitFilePatterns => {
   return { includes, excludes };
 };
 
+type ResolvedFilePattern = {
+  inputPattern: string;
+  resolvedPattern: string;
+};
+
+const resolveFilePatterns = ({
+  workspace,
+  patterns,
+  isExclude,
+}: {
+  workspace: Workspace;
+  patterns: string[];
+  isExclude: boolean;
+}): ResolvedFilePattern[] => {
+  const resolved: ResolvedFilePattern[] = [];
+  for (const inputPattern of patterns) {
+    const resolvedPattern = resolveInputPattern({
+      workspacePath: workspace.path,
+      inputPattern,
+    });
+    if (isPatternOutsideProject(resolvedPattern)) {
+      const displayPattern = isExclude
+        ? `${FILE_PATTERN_NEGATION_PREFIX}${inputPattern}`
+        : inputPattern;
+      logger.warn(
+        `Input pattern ${JSON.stringify(displayPattern)} for workspace "${workspace.name}" resolves outside the project root and will be ignored.`,
+      );
+      continue;
+    }
+    resolved.push({ inputPattern, resolvedPattern });
+  }
+  return resolved;
+};
+
 const matchChangedFilesForWorkspace = ({
   workspace,
   inputFilePatterns,
@@ -168,35 +216,37 @@ const matchChangedFilesForWorkspace = ({
 }): AffectedFileResult[] => {
   const { includes, excludes } = splitFilePatterns(inputFilePatterns);
 
+  const resolvedIncludes = resolveFilePatterns({
+    workspace,
+    patterns: includes,
+    isExclude: false,
+  });
+  const resolvedExcludes = resolveFilePatterns({
+    workspace,
+    patterns: excludes,
+    isExclude: true,
+  });
+
   const matchedFiles: AffectedFileResult[] = [];
   const matchedFilePaths = new Set<string>();
 
   for (const filePath of changedFilePaths) {
     if (matchedFilePaths.has(filePath)) continue;
 
-    let matchingInclude: string | undefined;
-    for (const include of includes) {
-      const resolvedPattern = resolveInputPattern({
-        workspacePath: workspace.path,
-        inputPattern: include,
-      });
-      if (matchesResolvedPattern({ filePath, resolvedPattern })) {
-        matchingInclude = include;
-        break;
-      }
-    }
-    if (matchingInclude === undefined) continue;
+    const matchingInclude = resolvedIncludes.find(({ resolvedPattern }) =>
+      matchesResolvedPattern({ filePath, resolvedPattern }),
+    );
+    if (!matchingInclude) continue;
 
-    const isExcluded = excludes.some((exclude) => {
-      const resolvedPattern = resolveInputPattern({
-        workspacePath: workspace.path,
-        inputPattern: exclude,
-      });
-      return matchesResolvedPattern({ filePath, resolvedPattern });
-    });
+    const isExcluded = resolvedExcludes.some(({ resolvedPattern }) =>
+      matchesResolvedPattern({ filePath, resolvedPattern }),
+    );
     if (isExcluded) continue;
 
-    matchedFiles.push({ filePath, inputPattern: matchingInclude });
+    matchedFiles.push({
+      filePath,
+      inputPattern: matchingInclude.inputPattern,
+    });
     matchedFilePaths.add(filePath);
   }
 

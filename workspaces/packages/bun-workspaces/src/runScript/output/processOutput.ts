@@ -40,11 +40,7 @@ export interface ProcessOutput<Metadata extends object = object> {
   text(): TextOutput<Metadata>;
 }
 
-const ERRORS = defineErrors(
-  BunWorkspacesError,
-  "OutputStreamStarted",
-  "OutputStreamDone",
-);
+const ERRORS = defineErrors(BunWorkspacesError, "OutputStreamStarted");
 
 class _ProcessOutput<
   Metadata extends object = object,
@@ -138,11 +134,6 @@ class _ProcessOutput<
   }
 
   #onStart(): void {
-    if (this.#isDone) {
-      throw new ERRORS.OutputStreamDone(
-        "The output stream has already been closed.",
-      );
-    }
     if (this.#isStarted) {
       throw new ERRORS.OutputStreamStarted(
         "Only one stream can be opened via .bytes() or .text(). This stream has already been opened.",

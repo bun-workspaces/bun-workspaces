@@ -92,6 +92,8 @@ const normalizeChangedFilePath = ({
   return posixFilePath;
 };
 
+const PROJECT_RELATIVE_PREFIX = "/";
+
 const resolveInputPattern = ({
   workspacePath,
   inputPattern,
@@ -99,12 +101,16 @@ const resolveInputPattern = ({
   workspacePath: string;
   inputPattern: string;
 }) => {
+  const posixPattern = toPosixPath(inputPattern);
+
+  if (posixPattern.startsWith(PROJECT_RELATIVE_PREFIX)) {
+    return stripTrailingSlashes(stripLeadingSlashes(posixPattern));
+  }
+
   const normalizedWorkspacePath = stripTrailingSlashes(
     toPosixPath(workspacePath),
   );
-  const normalizedPattern = stripLeadingSlashes(
-    stripTrailingSlashes(toPosixPath(inputPattern)),
-  );
+  const normalizedPattern = stripTrailingSlashes(posixPattern);
 
   if (!normalizedWorkspacePath || normalizedWorkspacePath === ".") {
     return normalizedPattern;

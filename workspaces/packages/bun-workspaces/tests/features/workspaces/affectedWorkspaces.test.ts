@@ -320,6 +320,160 @@ describe("getAffectedWorkspaces", () => {
     });
   });
 
+  describe("project-relative input patterns (leading `/`)", () => {
+    test("matches a top-level file from a nested workspace", async () => {
+      const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({
+            workspace,
+            inputFilePatterns: ["src", "/bun.lock"],
+          }),
+        ],
+        changedFilePaths: ["bun.lock"],
+      });
+
+      expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
+        [{ filePath: "bun.lock", inputPattern: "/bun.lock" }],
+      );
+    });
+
+    test("matches a project-relative directory subtree", async () => {
+      const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({
+            workspace,
+            inputFilePatterns: ["/scripts"],
+          }),
+        ],
+        changedFilePaths: [
+          "scripts/build.ts",
+          "scripts/nested/deep.ts",
+          "packages/a/scripts/local.ts",
+        ],
+      });
+
+      expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
+        [
+          { filePath: "scripts/build.ts", inputPattern: "/scripts" },
+          { filePath: "scripts/nested/deep.ts", inputPattern: "/scripts" },
+        ],
+      );
+    });
+
+    test("matches a project-relative glob", async () => {
+      const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({
+            workspace,
+            inputFilePatterns: ["/scripts/**/*.ts"],
+          }),
+        ],
+        changedFilePaths: [
+          "scripts/build.ts",
+          "scripts/nested/deep.ts",
+          "scripts/build.js",
+          "packages/a/scripts/local.ts",
+        ],
+      });
+
+      expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
+        [
+          { filePath: "scripts/build.ts", inputPattern: "/scripts/**/*.ts" },
+          {
+            filePath: "scripts/nested/deep.ts",
+            inputPattern: "/scripts/**/*.ts",
+          },
+        ],
+      );
+    });
+
+    test("does not prefix the workspace path on project-relative patterns", async () => {
+      const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({
+            workspace,
+            inputFilePatterns: ["/tsconfig.base.json"],
+          }),
+        ],
+        changedFilePaths: [
+          "tsconfig.base.json",
+          "packages/a/tsconfig.base.json",
+        ],
+      });
+
+      expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
+        [
+          {
+            filePath: "tsconfig.base.json",
+            inputPattern: "/tsconfig.base.json",
+          },
+        ],
+      );
+    });
+
+    test("supports `!`-prefixed project-relative exclusions", async () => {
+      const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({
+            workspace,
+            inputFilePatterns: ["/scripts", "!/scripts/legacy"],
+          }),
+        ],
+        changedFilePaths: ["scripts/build.ts", "scripts/legacy/old.ts"],
+      });
+
+      expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
+        [{ filePath: "scripts/build.ts", inputPattern: "/scripts" }],
+      );
+    });
+
+    test("mixes workspace-relative and project-relative patterns in the same input list", async () => {
+      const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
+
+      const result = await getAffectedWorkspaces({
+        rootDirectory: ROOT_DIRECTORY,
+        workspaceInputs: [
+          makeInput({
+            workspace,
+            inputFilePatterns: ["src", "/bun.lock", "/tsconfig.base.json"],
+          }),
+        ],
+        changedFilePaths: [
+          "packages/a/src/x.ts",
+          "bun.lock",
+          "tsconfig.base.json",
+          "packages/b/src/y.ts",
+        ],
+      });
+
+      expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
+        [
+          { filePath: "packages/a/src/x.ts", inputPattern: "src" },
+          { filePath: "bun.lock", inputPattern: "/bun.lock" },
+          {
+            filePath: "tsconfig.base.json",
+            inputPattern: "/tsconfig.base.json",
+          },
+        ],
+      );
+    });
+  });
+
   describe("file pattern negation with `!`", () => {
     test("excludes files matched by a `!` pattern", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
@@ -811,6 +965,13 @@ describe("getAffectedWorkspaces", () => {
         affectedReasons: {
           changedFiles: [],
           dependencies: [
+            {
+              dependencyName: "b",
+              chain: [
+                { workspaceName: "a" },
+                { workspaceName: "b", edgeSource: "package" },
+              ],
+            },
             {
               dependencyName: "c",
               chain: [

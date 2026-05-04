@@ -45,6 +45,7 @@ describe("getFileAffectedWorkspaces", () => {
               {
                 filePath: "packages/a/src/index.ts",
                 inputPattern: "src/index.ts",
+                fileMetadata: undefined,
               },
             ],
             dependencies: [],
@@ -68,8 +69,16 @@ describe("getFileAffectedWorkspaces", () => {
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
         [
-          { filePath: "packages/a/src/index.ts", inputPattern: "src" },
-          { filePath: "packages/a/src/nested/deep.ts", inputPattern: "src" },
+          {
+            filePath: "packages/a/src/index.ts",
+            inputPattern: "src",
+            fileMetadata: undefined,
+          },
+          {
+            filePath: "packages/a/src/nested/deep.ts",
+            inputPattern: "src",
+            fileMetadata: undefined,
+          },
         ],
       );
     });
@@ -86,7 +95,13 @@ describe("getFileAffectedWorkspaces", () => {
       });
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
-        [{ filePath: "packages/a/src/index.ts", inputPattern: "src/" }],
+        [
+          {
+            filePath: "packages/a/src/index.ts",
+            inputPattern: "src/",
+            fileMetadata: undefined,
+          },
+        ],
       );
     });
 
@@ -108,10 +123,15 @@ describe("getFileAffectedWorkspaces", () => {
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
         [
-          { filePath: "packages/a/src/index.ts", inputPattern: "src/**/*.ts" },
+          {
+            filePath: "packages/a/src/index.ts",
+            inputPattern: "src/**/*.ts",
+            fileMetadata: undefined,
+          },
           {
             filePath: "packages/a/src/nested/deep.ts",
             inputPattern: "src/**/*.ts",
+            fileMetadata: undefined,
           },
         ],
       );
@@ -137,10 +157,12 @@ describe("getFileAffectedWorkspaces", () => {
           {
             filePath: "packages/a/src/x.ts",
             inputPattern: "{src,lib}/**/*.ts",
+            fileMetadata: undefined,
           },
           {
             filePath: "packages/a/lib/y.ts",
             inputPattern: "{src,lib}/**/*.ts",
+            fileMetadata: undefined,
           },
         ],
       );
@@ -175,10 +197,22 @@ describe("getFileAffectedWorkspaces", () => {
       });
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
-        [{ filePath: "packages/a/src/x.ts", inputPattern: "src" }],
+        [
+          {
+            filePath: "packages/a/src/x.ts",
+            inputPattern: "src",
+            fileMetadata: undefined,
+          },
+        ],
       );
       expect(result.affectedWorkspaces[1].affectedReasons.changedFiles).toEqual(
-        [{ filePath: "packages/b/src/y.ts", inputPattern: "src" }],
+        [
+          {
+            filePath: "packages/b/src/y.ts",
+            inputPattern: "src",
+            fileMetadata: undefined,
+          },
+        ],
       );
     });
 
@@ -197,7 +231,13 @@ describe("getFileAffectedWorkspaces", () => {
       });
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
-        [{ filePath: "packages/a/src/index.ts", inputPattern: "src/index.ts" }],
+        [
+          {
+            filePath: "packages/a/src/index.ts",
+            inputPattern: "src/index.ts",
+            fileMetadata: undefined,
+          },
+        ],
       );
     });
 
@@ -222,9 +262,21 @@ describe("getFileAffectedWorkspaces", () => {
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
         [
-          { filePath: "packages/a/src/x.ts", inputPattern: "src" },
-          { filePath: "packages/a/package.json", inputPattern: "package.json" },
-          { filePath: "packages/a/config/dev.ts", inputPattern: "config/*.ts" },
+          {
+            filePath: "packages/a/src/x.ts",
+            inputPattern: "src",
+            fileMetadata: undefined,
+          },
+          {
+            filePath: "packages/a/package.json",
+            inputPattern: "package.json",
+            fileMetadata: undefined,
+          },
+          {
+            filePath: "packages/a/config/dev.ts",
+            inputPattern: "config/*.ts",
+            fileMetadata: undefined,
+          },
         ],
       );
     });
@@ -244,8 +296,16 @@ describe("getFileAffectedWorkspaces", () => {
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
         [
-          { filePath: "packages/a/src/x.ts", inputPattern: "" },
-          { filePath: "packages/a/README.md", inputPattern: "" },
+          {
+            filePath: "packages/a/src/x.ts",
+            inputPattern: "",
+            fileMetadata: undefined,
+          },
+          {
+            filePath: "packages/a/README.md",
+            inputPattern: "",
+            fileMetadata: undefined,
+          },
         ],
       );
     });
@@ -274,8 +334,16 @@ describe("getFileAffectedWorkspaces", () => {
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
         [
-          { filePath: "package.json", inputPattern: "package.json" },
-          { filePath: "scripts/build.ts", inputPattern: "scripts/*.ts" },
+          {
+            filePath: "package.json",
+            inputPattern: "package.json",
+            fileMetadata: undefined,
+          },
+          {
+            filePath: "scripts/build.ts",
+            inputPattern: "scripts/*.ts",
+            fileMetadata: undefined,
+          },
         ],
       );
     });
@@ -290,7 +358,13 @@ describe("getFileAffectedWorkspaces", () => {
       });
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
-        [{ filePath: "packages/a/src/index.ts", inputPattern: "src" }],
+        [
+          {
+            filePath: "packages/a/src/index.ts",
+            inputPattern: "src",
+            fileMetadata: undefined,
+          },
+        ],
       );
     });
 
@@ -316,7 +390,13 @@ describe("getFileAffectedWorkspaces", () => {
       });
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
-        [{ filePath: "packages/a/src/index.ts", inputPattern: "src" }],
+        [
+          {
+            filePath: "packages/a/src/index.ts",
+            inputPattern: "src",
+            fileMetadata: undefined,
+          },
+        ],
       );
     });
 
@@ -330,7 +410,13 @@ describe("getFileAffectedWorkspaces", () => {
       });
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
-        [{ filePath: "packages/a/src/index.ts", inputPattern: "src" }],
+        [
+          {
+            filePath: "packages/a/src/index.ts",
+            inputPattern: "src",
+            fileMetadata: undefined,
+          },
+        ],
       );
     });
   });
@@ -351,7 +437,13 @@ describe("getFileAffectedWorkspaces", () => {
       });
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
-        [{ filePath: "bun.lock", inputPattern: "/bun.lock" }],
+        [
+          {
+            filePath: "bun.lock",
+            inputPattern: "/bun.lock",
+            fileMetadata: undefined,
+          },
+        ],
       );
     });
 
@@ -375,8 +467,16 @@ describe("getFileAffectedWorkspaces", () => {
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
         [
-          { filePath: "scripts/build.ts", inputPattern: "/scripts" },
-          { filePath: "scripts/nested/deep.ts", inputPattern: "/scripts" },
+          {
+            filePath: "scripts/build.ts",
+            inputPattern: "/scripts",
+            fileMetadata: undefined,
+          },
+          {
+            filePath: "scripts/nested/deep.ts",
+            inputPattern: "/scripts",
+            fileMetadata: undefined,
+          },
         ],
       );
     });
@@ -402,10 +502,15 @@ describe("getFileAffectedWorkspaces", () => {
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
         [
-          { filePath: "scripts/build.ts", inputPattern: "/scripts/**/*.ts" },
+          {
+            filePath: "scripts/build.ts",
+            inputPattern: "/scripts/**/*.ts",
+            fileMetadata: undefined,
+          },
           {
             filePath: "scripts/nested/deep.ts",
             inputPattern: "/scripts/**/*.ts",
+            fileMetadata: undefined,
           },
         ],
       );
@@ -433,6 +538,7 @@ describe("getFileAffectedWorkspaces", () => {
           {
             filePath: "tsconfig.base.json",
             inputPattern: "/tsconfig.base.json",
+            fileMetadata: undefined,
           },
         ],
       );
@@ -453,7 +559,13 @@ describe("getFileAffectedWorkspaces", () => {
       });
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
-        [{ filePath: "scripts/build.ts", inputPattern: "/scripts" }],
+        [
+          {
+            filePath: "scripts/build.ts",
+            inputPattern: "/scripts",
+            fileMetadata: undefined,
+          },
+        ],
       );
     });
 
@@ -478,11 +590,20 @@ describe("getFileAffectedWorkspaces", () => {
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
         [
-          { filePath: "packages/a/src/x.ts", inputPattern: "src" },
-          { filePath: "bun.lock", inputPattern: "/bun.lock" },
+          {
+            filePath: "packages/a/src/x.ts",
+            inputPattern: "src",
+            fileMetadata: undefined,
+          },
+          {
+            filePath: "bun.lock",
+            inputPattern: "/bun.lock",
+            fileMetadata: undefined,
+          },
           {
             filePath: "tsconfig.base.json",
             inputPattern: "/tsconfig.base.json",
+            fileMetadata: undefined,
           },
         ],
       );
@@ -513,7 +634,13 @@ describe("getFileAffectedWorkspaces", () => {
       });
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
-        [{ filePath: "packages/shared/src/x.ts", inputPattern: "../shared" }],
+        [
+          {
+            filePath: "packages/shared/src/x.ts",
+            inputPattern: "../shared",
+            fileMetadata: undefined,
+          },
+        ],
       );
     });
 
@@ -527,7 +654,13 @@ describe("getFileAffectedWorkspaces", () => {
       });
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
-        [{ filePath: "packages/b/x.ts", inputPattern: ".." }],
+        [
+          {
+            filePath: "packages/b/x.ts",
+            inputPattern: "..",
+            fileMetadata: undefined,
+          },
+        ],
       );
     });
 
@@ -551,10 +684,12 @@ describe("getFileAffectedWorkspaces", () => {
           {
             filePath: "packages/shared/src/x.ts",
             inputPattern: "../shared/**/*.ts",
+            fileMetadata: undefined,
           },
           {
             filePath: "packages/shared/lib/y.ts",
             inputPattern: "../shared/**/*.ts",
+            fileMetadata: undefined,
           },
         ],
       );
@@ -572,7 +707,13 @@ describe("getFileAffectedWorkspaces", () => {
       });
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
-        [{ filePath: "bar/x.ts", inputPattern: "/foo/../bar" }],
+        [
+          {
+            filePath: "bar/x.ts",
+            inputPattern: "/foo/../bar",
+            fileMetadata: undefined,
+          },
+        ],
       );
     });
 
@@ -594,7 +735,13 @@ describe("getFileAffectedWorkspaces", () => {
       });
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
-        [{ filePath: "packages/a/src/x.ts", inputPattern: "src" }],
+        [
+          {
+            filePath: "packages/a/src/x.ts",
+            inputPattern: "src",
+            fileMetadata: undefined,
+          },
+        ],
       );
 
       const warnings = stderrSpy.mock.calls
@@ -626,7 +773,13 @@ describe("getFileAffectedWorkspaces", () => {
       });
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
-        [{ filePath: "packages/a/src/x.ts", inputPattern: "src" }],
+        [
+          {
+            filePath: "packages/a/src/x.ts",
+            inputPattern: "src",
+            fileMetadata: undefined,
+          },
+        ],
       );
 
       const warnings = stderrSpy.mock.calls
@@ -656,7 +809,13 @@ describe("getFileAffectedWorkspaces", () => {
       });
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
-        [{ filePath: "packages/a/src/x.ts", inputPattern: "src" }],
+        [
+          {
+            filePath: "packages/a/src/x.ts",
+            inputPattern: "src",
+            fileMetadata: undefined,
+          },
+        ],
       );
 
       const warnings = stderrSpy.mock.calls
@@ -691,8 +850,16 @@ describe("getFileAffectedWorkspaces", () => {
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
         [
-          { filePath: "packages/a/src/index.ts", inputPattern: "**/*" },
-          { filePath: "packages/a/lib/util.ts", inputPattern: "**/*" },
+          {
+            filePath: "packages/a/src/index.ts",
+            inputPattern: "**/*",
+            fileMetadata: undefined,
+          },
+          {
+            filePath: "packages/a/lib/util.ts",
+            inputPattern: "**/*",
+            fileMetadata: undefined,
+          },
         ],
       );
     });
@@ -716,7 +883,13 @@ describe("getFileAffectedWorkspaces", () => {
       });
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
-        [{ filePath: "packages/a/src/index.ts", inputPattern: "src" }],
+        [
+          {
+            filePath: "packages/a/src/index.ts",
+            inputPattern: "src",
+            fileMetadata: undefined,
+          },
+        ],
       );
     });
 
@@ -770,8 +943,16 @@ describe("getFileAffectedWorkspaces", () => {
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
         [
-          { filePath: "packages/a/src/index.ts", inputPattern: "**/*" },
-          { filePath: "packages/a/README.md", inputPattern: "**/*" },
+          {
+            filePath: "packages/a/src/index.ts",
+            inputPattern: "**/*",
+            fileMetadata: undefined,
+          },
+          {
+            filePath: "packages/a/README.md",
+            inputPattern: "**/*",
+            fileMetadata: undefined,
+          },
         ],
       );
     });
@@ -794,7 +975,13 @@ describe("getFileAffectedWorkspaces", () => {
       });
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
-        [{ filePath: "packages/a/src/index.ts", inputPattern: "src" }],
+        [
+          {
+            filePath: "packages/a/src/index.ts",
+            inputPattern: "src",
+            fileMetadata: undefined,
+          },
+        ],
       );
     });
 
@@ -816,7 +1003,13 @@ describe("getFileAffectedWorkspaces", () => {
       });
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
-        [{ filePath: "packages/a/src/index.ts", inputPattern: "src" }],
+        [
+          {
+            filePath: "packages/a/src/index.ts",
+            inputPattern: "src",
+            fileMetadata: undefined,
+          },
+        ],
       );
     });
   });
@@ -1132,7 +1325,11 @@ describe("getFileAffectedWorkspaces", () => {
           isAffected: true,
           affectedReasons: {
             changedFiles: [
-              { filePath: "packages/dep/src/x.ts", inputPattern: "src" },
+              {
+                filePath: "packages/dep/src/x.ts",
+                inputPattern: "src",
+                fileMetadata: undefined,
+              },
             ],
             dependencies: [],
           },
@@ -1892,7 +2089,13 @@ describe("getFileAffectedWorkspaces", () => {
       });
 
       expect(result.affectedWorkspaces[0].affectedReasons.changedFiles).toEqual(
-        [{ filePath: "packages/a/src/x.ts", inputPattern: "src/**/*.ts" }],
+        [
+          {
+            filePath: "packages/a/src/x.ts",
+            inputPattern: "src/**/*.ts",
+            fileMetadata: undefined,
+          },
+        ],
       );
     });
 
@@ -1942,7 +2145,13 @@ describe("getFileAffectedWorkspaces", () => {
 
       expect(result.affectedWorkspaces[1].isAffected).toBe(true);
       expect(result.affectedWorkspaces[1].affectedReasons.changedFiles).toEqual(
-        [{ filePath: "packages/app/src/x.ts", inputPattern: "src" }],
+        [
+          {
+            filePath: "packages/app/src/x.ts",
+            inputPattern: "src",
+            fileMetadata: undefined,
+          },
+        ],
       );
       expect(result.affectedWorkspaces[1].affectedReasons.dependencies).toEqual(
         [

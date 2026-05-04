@@ -22,13 +22,15 @@ export interface AffectedWorkspaceInput {
   inputWorkspacePatterns: string[];
 }
 
-export interface AffectedFileResult<FileMetadata extends object = object> {
+export interface AffectedFileResult<
+  FileMetadata extends object | undefined = undefined,
+> {
   /** The path to the file in the workspace */
   filePath: string;
   /** The matched input path of the file */
   inputPattern: string;
   /** Extra metadata about the file */
-  fileMetadata?: FileMetadata;
+  fileMetadata: FileMetadata;
 }
 
 export interface AffectedDependencyResult {
@@ -37,12 +39,16 @@ export interface AffectedDependencyResult {
   chain: AffectedDependencyChainEntry[];
 }
 
-export interface AffectedReasonMap<FileMetadata extends object = object> {
+export interface AffectedReasonMap<
+  FileMetadata extends object | undefined = undefined,
+> {
   changedFiles: AffectedFileResult<FileMetadata>[];
   dependencies: AffectedDependencyResult[];
 }
 
-export interface AffectedWorkspaceResult<FileMetadata extends object = object> {
+export interface AffectedWorkspaceResult<
+  FileMetadata extends object | undefined = undefined,
+> {
   workspace: Workspace;
   isAffected: boolean;
   affectedReasons: AffectedReasonMap<FileMetadata>;
@@ -60,7 +66,7 @@ export interface FileAffectedWorkspacesOptions {
 }
 
 export interface FileAffectedWorkspacesResult<
-  FileMetadata extends object = object,
+  FileMetadata extends object | undefined = undefined,
 > {
   affectedWorkspaces: AffectedWorkspaceResult<FileMetadata>[];
 }
@@ -248,6 +254,7 @@ const matchChangedFilesForWorkspace = ({
 
     matchedFiles.push({
       filePath,
+      fileMetadata: undefined,
       inputPattern: matchingInclude.inputPattern,
     });
     matchedFilePaths.add(filePath);

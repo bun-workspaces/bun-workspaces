@@ -69,7 +69,7 @@
     "type-check": "bw run type-check -P --",
     "generate-cursor-rules": "bw run generate-cursor-rules meta -o plain --",
     "generate-readme": "bw run generate-readme meta -o plain --",
-    "prepare": "BW_PROJECT_PATH=$PWD bun  --cwd=workspaces/packages/bun-workspaces run generate-modules && bun  --cwd=workspaces/libraries/bw-common run build:dts"
+    "prepare": "touch USER.md && BW_PROJECT_PATH=$PWD bun  --cwd=workspaces/packages/bun-workspaces run generate-modules && bun  --cwd=workspaces/libraries/bw-common run build:dts"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

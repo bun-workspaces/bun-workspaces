@@ -21,6 +21,10 @@ import type {
 import type { Workspace } from "../../../../workspaces";
 import type { WriteOutputOptions } from "../../../createCli";
 import { generatePlainOutputLines } from "./renderPlainOutput";
+import {
+  initializeTuiTerminalState,
+  resetTuiTerminalState,
+} from "./tuiTerminal";
 
 type ScriptEvent = TypedEvent<
   ScriptEventName,
@@ -141,8 +145,10 @@ export const renderGroupedOutput = async (
     }
     isInitialized = true;
     logger.debug("Initializing TUI state");
-    outputWriters.stdout(cursorOps.hide());
-    process.stdin.setRawMode?.(true);
+    initializeTuiTerminalState({
+      stdout: outputWriters.stdout,
+      stdin: process.stdin,
+    });
   };
 
   let isReset = false;
@@ -152,9 +158,10 @@ export const renderGroupedOutput = async (
     }
     isReset = true;
     logger.debug("Resetting TUI state");
-    outputWriters.stdout(cursorOps.show());
-    process.stdin.unref?.();
-    process.stdin.setRawMode?.(false);
+    resetTuiTerminalState({
+      stdout: outputWriters.stdout,
+      stdin: process.stdin,
+    });
   };
 
   let previousHeight = 0;

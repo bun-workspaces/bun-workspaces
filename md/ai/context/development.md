@@ -94,3 +94,25 @@ Except when unreasonably complex to test, generally speaking, all feature additi
 Testing both and API feature and the CLI version of it is necessary to ensure that arguments etc. are handled correctly in both places. It may often make sense to do the most exhaustive behavior testing on the API and then ensure the CLI passes all options correctly to this API more simply, but without making too much assumption that the CLI "must be fine" just because the API does.
 
 Sometimes important internals (like the generic `runScripts` function) are tested to ensure the core logic driving features work, even if they aren't exposed publicly, which can help with diagnosing issues and making more focused logic tests that require less boilerplate/setup.
+
+#### Test cases
+
+Test cases should be written at the very minimum for the following:
+
+- CLI feature:
+  - At least one case per form of command (e.g. if short form is provided)
+  - At least one case per positional or flag option, again with at least one per arg/option form
+  - If option takes specific values, one case per value, and at least one case of an unsupported value error
+  - If option takes multiple types (e.g. number or freeform string), one per type, and at least one for an invalid type
+  - Any command strings that would result in a CLI-specific error for the feature
+  - When many options/args possible, the different combinations of how these could be passed together
+
+- API feature:
+  - Similar to CLI: at least one case per arg/option, cases per arg value and/or type, cases per invalid arg, and cases for combinations of args/options
+  - Cases for errors thrown when args/options are passed that violate a TS type are only needed for public APIs (internal utilities can rely on source TS compile check, while public surface could be used by JS package user)
+
+- Other (general):
+  - Array-like arguments/options: cases for empty array, single item array, multi-item array (2 and more). When items can be multiple types, similar cases for different types and combinations of different types
+  - Cases using real test projects that change behavior or surface potential edge cases
+  - There don't need to necessarily be combinations/permutations of every single case requirement described here, just enough for confidence in each situation.
+  - Since most features are developed in the API followed by the CLI acting as a wrapper over the API, the API surface can be used to put a feature through the wringer the most, while the CLI should be as complete as described above but can be tested just to the point of confirmation of successful API passthrough of all options.

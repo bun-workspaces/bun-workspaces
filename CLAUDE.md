@@ -4,3 +4,7 @@
 @md/ai/context/apiExamples.md
 @md/ai/context/config.md
 @md/ai/context/development.md
+
+<!-- Local gitignored instructions may or may not be included: -->
+
+@USER.md

@@ -1,10 +1,10 @@
 import { afterAll, beforeAll, describe, expect, spyOn, test } from "bun:test";
 import type { Workspace } from "../../../src";
+import { setLogLevel } from "../../../src/internal/logger";
 import {
   getAffectedWorkspaces,
   type AffectedWorkspaceInput,
 } from "../../../src/workspaces/affected";
-import { setLogLevel } from "../../../src/internal/logger";
 import { makeTestWorkspace } from "../../util/testData";
 
 const ROOT_DIRECTORY = "/repo";

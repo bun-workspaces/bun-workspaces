@@ -141,6 +141,32 @@ describe("getGitAffectedFiles", () => {
         }),
       ).rejects.toBeInstanceOf(GIT_AFFECTED_ERRORS.GitCommandFailed);
     });
+
+    test("handles non-ASCII filenames via NUL-separated parsing", async () => {
+      // `日` is a single codepoint with no NFC/NFD decomposition, so macOS
+      // APFS storage doesn't perturb the round-trip. Under git's default
+      // `core.quotePath=true`, line-based parsing of `--name-only` would
+      // surface this path as `"\346\227\245.txt"` (literal quotes,
+      // octal-escaped bytes); `-z` emits raw bytes instead.
+      const fixture = await newFixture({
+        commits: [
+          { message: "init", files: [{ path: "日.txt", content: "1" }] },
+          { message: "change", files: [{ path: "日.txt", content: "2" }] },
+        ],
+      });
+
+      const { files } = await getGitAffectedFiles({
+        rootDirectory: fixture.projectPath,
+        baseRef: fixture.shaForMessage("init"),
+        headRef: fixture.shaForMessage("change"),
+        ignoreUncommitted: true,
+      });
+
+      expect(files).toHaveLength(1);
+      expect(files[0].reasons).toEqual(["diff"]);
+      expect(files[0].projectFilePath).not.toMatch(/["\\]/);
+      expect(files[0].projectFilePath.endsWith(".txt")).toBe(true);
+    });
   });
 
   describe("working tree state", () => {

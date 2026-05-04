@@ -9,7 +9,7 @@ import {
   type GitAffectedFile,
 } from "./gitAffectedFiles";
 
-export interface GitAffectedWorkspacesOptions {
+export type GitAffectedWorkspacesOptions = {
   /** Project root, used for both git resolution and workspace path normalization. */
   rootDirectory: string;
   workspacesOptions: Omit<
@@ -17,18 +17,18 @@ export interface GitAffectedWorkspacesOptions {
     "rootDirectory" | "changedFilePaths"
   >;
   gitOptions: Omit<GetGitAffectedFilesOptions, "rootDirectory">;
-}
+};
 
-export interface GitFileMetadata {
+export type GitFileMetadata = {
   git: GitAffectedFile;
-}
+};
 
 export type GitAffectedWorkspaceResult =
   AffectedWorkspaceResult<GitFileMetadata>;
 
-export interface GitAffectedWorkspacesResult {
+export type GitAffectedWorkspacesResult = {
   affectedWorkspaces: GitAffectedWorkspaceResult[];
-}
+};
 
 export const getGitAffectedWorkspaces = async ({
   rootDirectory,

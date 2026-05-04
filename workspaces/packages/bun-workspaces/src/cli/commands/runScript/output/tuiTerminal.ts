@@ -32,18 +32,18 @@ export const resetTuiTerminalState = ({ stdout, stdin }: TuiTerminalDeps) => {
   try {
     stdout(SHOW_CURSOR_SEQUENCE);
   } catch (error) {
-    logger.debug("Failed to show cursor during TUI reset", error);
+    logger.debug("Failed to show cursor during TUI reset", { error });
   }
   try {
     stdin.setRawMode?.(false);
   } catch (error) {
-    logger.debug("Failed to reset raw mode during TUI reset", error);
+    logger.debug("Failed to reset raw mode during TUI reset", { error });
   }
   try {
     stdin.pause();
     stdin.unref?.();
   } catch (error) {
-    logger.debug("Failed to detach stdin during TUI reset", error);
+    logger.debug("Failed to detach stdin during TUI reset", { error });
   }
 };
 

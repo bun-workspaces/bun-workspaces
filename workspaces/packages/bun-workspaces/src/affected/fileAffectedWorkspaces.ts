@@ -22,11 +22,13 @@ export interface AffectedWorkspaceInput {
   inputWorkspacePatterns: string[];
 }
 
-export interface AffectedFileResult {
+export interface AffectedFileResult<FileMetadata extends object = object> {
   /** The path to the file in the workspace */
   filePath: string;
   /** The matched input path of the file */
   inputPattern: string;
+  /** Extra metadata about the file */
+  fileMetadata?: FileMetadata;
 }
 
 export interface AffectedDependencyResult {
@@ -35,18 +37,18 @@ export interface AffectedDependencyResult {
   chain: AffectedDependencyChainEntry[];
 }
 
-export interface AffectedReasonMap {
-  changedFiles: AffectedFileResult[];
+export interface AffectedReasonMap<FileMetadata extends object = object> {
+  changedFiles: AffectedFileResult<FileMetadata>[];
   dependencies: AffectedDependencyResult[];
 }
 
-export interface AffectedWorkspaceResult {
+export interface AffectedWorkspaceResult<FileMetadata extends object = object> {
   workspace: Workspace;
   isAffected: boolean;
-  affectedReasons: AffectedReasonMap;
+  affectedReasons: AffectedReasonMap<FileMetadata>;
 }
 
-export interface GetAffectedWorkspacesOptions {
+export interface FileAffectedWorkspacesOptions {
   /** For resolving relative workspace paths */
   rootDirectory: string;
   /** The workspaces and their given inputs */
@@ -57,8 +59,10 @@ export interface GetAffectedWorkspacesOptions {
   ignorePackageDependencies?: boolean;
 }
 
-export interface GetAffectedWorkspacesResult {
-  affectedWorkspaces: AffectedWorkspaceResult[];
+export interface FileAffectedWorkspacesResult<
+  FileMetadata extends object = object,
+> {
+  affectedWorkspaces: AffectedWorkspaceResult<FileMetadata>[];
 }
 
 const FILE_PATTERN_NEGATION_PREFIX = "!";
@@ -394,12 +398,12 @@ const collectAffectedDependencies = ({
   return results;
 };
 
-export const getAffectedWorkspaces = async ({
+export const getFileAffectedWorkspaces = async ({
   rootDirectory,
   workspaceInputs,
   changedFilePaths,
   ignorePackageDependencies = false,
-}: GetAffectedWorkspacesOptions): Promise<GetAffectedWorkspacesResult> => {
+}: FileAffectedWorkspacesOptions): Promise<FileAffectedWorkspacesResult> => {
   const normalizedChangedFilePaths = changedFilePaths.map((filePath) =>
     normalizeChangedFilePath({ rootDirectory, filePath }),
   );

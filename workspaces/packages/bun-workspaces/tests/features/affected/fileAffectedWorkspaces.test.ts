@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, spyOn, test } from "bun:test";
 import type { Workspace } from "../../../src";
 import {
-  getAffectedWorkspaces,
+  getFileAffectedWorkspaces,
   type AffectedWorkspaceInput,
 } from "../../../src/affected";
 import { setLogLevel } from "../../../src/internal/logger";
@@ -17,7 +17,7 @@ const makeInput = (
   ...data,
 });
 
-describe("getAffectedWorkspaces", () => {
+describe("getFileAffectedWorkspaces", () => {
   describe("file matching", () => {
     test("matches an exact file path", async () => {
       const workspace = makeTestWorkspace({
@@ -25,7 +25,7 @@ describe("getAffectedWorkspaces", () => {
         path: "packages/a",
       });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace, inputFilePatterns: ["src/index.ts"] }),
@@ -56,7 +56,7 @@ describe("getAffectedWorkspaces", () => {
     test("matches a directory without a trailing slash as a prefix", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [makeInput({ workspace, inputFilePatterns: ["src"] })],
         changedFilePaths: [
@@ -77,7 +77,7 @@ describe("getAffectedWorkspaces", () => {
     test("matches a directory with a trailing slash as a prefix", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace, inputFilePatterns: ["src/"] }),
@@ -93,7 +93,7 @@ describe("getAffectedWorkspaces", () => {
     test("matches a glob pattern", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace, inputFilePatterns: ["src/**/*.ts"] }),
@@ -120,7 +120,7 @@ describe("getAffectedWorkspaces", () => {
     test("matches a brace expansion glob", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace, inputFilePatterns: ["{src,lib}/**/*.ts"] }),
@@ -149,7 +149,7 @@ describe("getAffectedWorkspaces", () => {
     test("does not match files outside the workspace path", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [makeInput({ workspace, inputFilePatterns: ["src"] })],
         changedFilePaths: ["packages/b/src/index.ts", "other/file.ts"],
@@ -165,7 +165,7 @@ describe("getAffectedWorkspaces", () => {
       const a = makeTestWorkspace({ name: "a", path: "packages/a" });
       const b = makeTestWorkspace({ name: "b", path: "packages/b" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: a, inputFilePatterns: ["src"] }),
@@ -185,7 +185,7 @@ describe("getAffectedWorkspaces", () => {
     test("uses the first matching pattern when multiple patterns match a file", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -204,7 +204,7 @@ describe("getAffectedWorkspaces", () => {
     test("supports multiple input patterns per workspace", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -232,7 +232,7 @@ describe("getAffectedWorkspaces", () => {
     test("treats an empty input pattern as the entire workspace path", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [makeInput({ workspace, inputFilePatterns: [""] })],
         changedFilePaths: [
@@ -257,7 +257,7 @@ describe("getAffectedWorkspaces", () => {
         path: "",
       });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -283,7 +283,7 @@ describe("getAffectedWorkspaces", () => {
     test("converts absolute changed file paths to root-relative", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: "/repo",
         workspaceInputs: [makeInput({ workspace, inputFilePatterns: ["src"] })],
         changedFilePaths: ["/repo/packages/a/src/index.ts"],
@@ -297,7 +297,7 @@ describe("getAffectedWorkspaces", () => {
     test("ignores absolute changed file paths outside the root directory", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: "/repo",
         workspaceInputs: [makeInput({ workspace, inputFilePatterns: ["src"] })],
         changedFilePaths: ["/elsewhere/packages/a/src/index.ts"],
@@ -309,7 +309,7 @@ describe("getAffectedWorkspaces", () => {
     test("handles a trailing slash on the root directory", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: "/repo/",
         workspaceInputs: [makeInput({ workspace, inputFilePatterns: ["src"] })],
         changedFilePaths: ["/repo/packages/a/src/index.ts"],
@@ -323,7 +323,7 @@ describe("getAffectedWorkspaces", () => {
     test("normalizes backslashes in changed file paths to forward slashes", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [makeInput({ workspace, inputFilePatterns: ["src"] })],
         changedFilePaths: ["packages\\a\\src\\index.ts"],
@@ -339,7 +339,7 @@ describe("getAffectedWorkspaces", () => {
     test("matches a top-level file from a nested workspace", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -358,7 +358,7 @@ describe("getAffectedWorkspaces", () => {
     test("matches a project-relative directory subtree", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -384,7 +384,7 @@ describe("getAffectedWorkspaces", () => {
     test("matches a project-relative glob", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -414,7 +414,7 @@ describe("getAffectedWorkspaces", () => {
     test("does not prefix the workspace path on project-relative patterns", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -441,7 +441,7 @@ describe("getAffectedWorkspaces", () => {
     test("supports `!`-prefixed project-relative exclusions", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -460,7 +460,7 @@ describe("getAffectedWorkspaces", () => {
     test("mixes workspace-relative and project-relative patterns in the same input list", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -500,7 +500,7 @@ describe("getAffectedWorkspaces", () => {
     test("workspace-relative `..` resolves to a sibling within the project", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace, inputFilePatterns: ["../shared"] }),
@@ -520,7 +520,7 @@ describe("getAffectedWorkspaces", () => {
     test("workspace-relative `..` alone resolves to the parent directory", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [makeInput({ workspace, inputFilePatterns: [".."] })],
         changedFilePaths: ["packages/b/x.ts", "other/x.ts"],
@@ -534,7 +534,7 @@ describe("getAffectedWorkspaces", () => {
     test("workspace-relative `..` works in a glob that stays inside the project", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace, inputFilePatterns: ["../shared/**/*.ts"] }),
@@ -563,7 +563,7 @@ describe("getAffectedWorkspaces", () => {
     test("project-relative pattern with internal `..` collapses within the project", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace, inputFilePatterns: ["/foo/../bar"] }),
@@ -582,7 +582,7 @@ describe("getAffectedWorkspaces", () => {
         () => true,
       );
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -614,7 +614,7 @@ describe("getAffectedWorkspaces", () => {
         () => true,
       );
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -644,7 +644,7 @@ describe("getAffectedWorkspaces", () => {
         () => true,
       );
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -673,7 +673,7 @@ describe("getAffectedWorkspaces", () => {
     test("excludes files matched by a `!` pattern", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -700,7 +700,7 @@ describe("getAffectedWorkspaces", () => {
     test("excludes a directory subtree", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -723,7 +723,7 @@ describe("getAffectedWorkspaces", () => {
     test("matches nothing when only negation patterns are given", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -746,7 +746,7 @@ describe("getAffectedWorkspaces", () => {
     test("supports multiple negation patterns", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -779,7 +779,7 @@ describe("getAffectedWorkspaces", () => {
     test("`!` exclusion overrides any include match", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -801,7 +801,7 @@ describe("getAffectedWorkspaces", () => {
     test("negation supports plain file paths", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -826,7 +826,7 @@ describe("getAffectedWorkspaces", () => {
       const lib = makeTestWorkspace({ name: "lib", path: "packages/lib" });
       const app = makeTestWorkspace({ name: "app", path: "packages/app" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: lib, inputFilePatterns: ["src"] }),
@@ -862,7 +862,7 @@ describe("getAffectedWorkspaces", () => {
       });
       const app = makeTestWorkspace({ name: "app", path: "packages/app" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: lib, inputFilePatterns: ["src"] }),
@@ -892,7 +892,7 @@ describe("getAffectedWorkspaces", () => {
       const lib = makeTestWorkspace({ name: "lib", path: "packages/lib" });
       const app = makeTestWorkspace({ name: "app", path: "packages/app" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: lib, inputFilePatterns: ["src"] }),
@@ -929,7 +929,7 @@ describe("getAffectedWorkspaces", () => {
       });
       const app = makeTestWorkspace({ name: "app", path: "packages/app" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: libA, inputFilePatterns: ["src"] }),
@@ -963,7 +963,7 @@ describe("getAffectedWorkspaces", () => {
       });
       const app = makeTestWorkspace({ name: "app", path: "packages/app" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: libA, inputFilePatterns: ["src"] }),
@@ -985,7 +985,7 @@ describe("getAffectedWorkspaces", () => {
       });
       const app = makeTestWorkspace({ name: "app", path: "applications/app" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: lib, inputFilePatterns: ["src"] }),
@@ -1011,7 +1011,7 @@ describe("getAffectedWorkspaces", () => {
       });
       const app = makeTestWorkspace({ name: "app", path: "packages/app" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: libA, inputFilePatterns: ["src"] }),
@@ -1051,7 +1051,7 @@ describe("getAffectedWorkspaces", () => {
       });
       const app = makeTestWorkspace({ name: "app", path: "packages/app" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: libA, inputFilePatterns: ["src"] }),
@@ -1084,7 +1084,7 @@ describe("getAffectedWorkspaces", () => {
       const a = makeTestWorkspace({ name: "a", path: "packages/a" });
       const b = makeTestWorkspace({ name: "b", path: "packages/b" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -1117,7 +1117,7 @@ describe("getAffectedWorkspaces", () => {
         dependencies: ["dep"],
       });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: dep, inputFilePatterns: ["src"] }),
@@ -1174,7 +1174,7 @@ describe("getAffectedWorkspaces", () => {
         dependencies: ["b"],
       });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: a, inputFilePatterns: ["src"] }),
@@ -1241,7 +1241,7 @@ describe("getAffectedWorkspaces", () => {
         dependencies: ["c", "d"],
       });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: a, inputFilePatterns: ["src"] }),
@@ -1289,7 +1289,7 @@ describe("getAffectedWorkspaces", () => {
         dependencies: ["b"],
       });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: a, inputFilePatterns: ["src"] }),
@@ -1340,7 +1340,7 @@ describe("getAffectedWorkspaces", () => {
         dependents: ["b"],
       });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: a, inputFilePatterns: ["src"] }),
@@ -1365,7 +1365,7 @@ describe("getAffectedWorkspaces", () => {
         dependencies: ["external-not-in-inputs"],
       });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: app, inputFilePatterns: ["src"] }),
@@ -1386,7 +1386,7 @@ describe("getAffectedWorkspaces", () => {
       const b = makeTestWorkspace({ name: "b", path: "packages/b" });
       const a = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -1440,7 +1440,7 @@ describe("getAffectedWorkspaces", () => {
         path: "packages/a",
       });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -1460,7 +1460,7 @@ describe("getAffectedWorkspaces", () => {
       const b = makeTestWorkspace({ name: "b", path: "packages/b" });
       const c = makeTestWorkspace({ name: "c", path: "packages/c" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: a, inputWorkspacePatterns: ["b"] }),
@@ -1485,7 +1485,7 @@ describe("getAffectedWorkspaces", () => {
       const lib = makeTestWorkspace({ name: "lib", path: "packages/lib" });
       const app = makeTestWorkspace({ name: "app", path: "packages/app" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: lib, inputFilePatterns: ["src"] }),
@@ -1516,7 +1516,7 @@ describe("getAffectedWorkspaces", () => {
       });
       const app = makeTestWorkspace({ name: "app", path: "packages/app" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: shared, inputFilePatterns: ["src"] }),
@@ -1570,7 +1570,7 @@ describe("getAffectedWorkspaces", () => {
         dependencies: ["mid"],
       });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: data, inputFilePatterns: ["src"] }),
@@ -1622,7 +1622,7 @@ describe("getAffectedWorkspaces", () => {
         dependencies: ["shared"],
       });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: shared, inputFilePatterns: ["src"] }),
@@ -1661,7 +1661,7 @@ describe("getAffectedWorkspaces", () => {
         dependencies: ["dep"],
       });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: dep, inputFilePatterns: ["src"] }),
@@ -1689,7 +1689,7 @@ describe("getAffectedWorkspaces", () => {
       });
       const a = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -1746,7 +1746,7 @@ describe("getAffectedWorkspaces", () => {
       });
       const app = makeTestWorkspace({ name: "app", path: "packages/app" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: shared, inputFilePatterns: ["src"] }),
@@ -1773,7 +1773,7 @@ describe("getAffectedWorkspaces", () => {
       const b = makeTestWorkspace({ name: "b", path: "packages/b" });
       const a = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -1804,7 +1804,7 @@ describe("getAffectedWorkspaces", () => {
 
   describe("edge cases", () => {
     test("returns an empty result for empty workspaceInputs", async () => {
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [],
         changedFilePaths: ["packages/a/src/x.ts"],
@@ -1816,7 +1816,7 @@ describe("getAffectedWorkspaces", () => {
     test("returns isAffected=false when there are no changed files", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [makeInput({ workspace, inputFilePatterns: ["src"] })],
         changedFilePaths: [],
@@ -1835,7 +1835,7 @@ describe("getAffectedWorkspaces", () => {
     test("a workspace with empty inputs is not directly affected by file changes", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [makeInput({ workspace })],
         changedFilePaths: ["packages/a/src/x.ts"],
@@ -1851,7 +1851,7 @@ describe("getAffectedWorkspaces", () => {
       const dep = makeTestWorkspace({ name: "dep", path: "packages/dep" });
       const app = makeTestWorkspace({ name: "app", path: "packages/app" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: dep, inputFilePatterns: ["src"] }),
@@ -1880,7 +1880,7 @@ describe("getAffectedWorkspaces", () => {
     test("dedupes a file matched by multiple patterns into a single entry", async () => {
       const workspace = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -1899,7 +1899,7 @@ describe("getAffectedWorkspaces", () => {
     test("an input workspace pattern matching no workspace is a no-op", async () => {
       const a = makeTestWorkspace({ name: "a", path: "packages/a" });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({
@@ -1927,7 +1927,7 @@ describe("getAffectedWorkspaces", () => {
         path: "packages/app",
       });
 
-      const result = await getAffectedWorkspaces({
+      const result = await getFileAffectedWorkspaces({
         rootDirectory: ROOT_DIRECTORY,
         workspaceInputs: [
           makeInput({ workspace: dep, inputFilePatterns: ["src"] }),

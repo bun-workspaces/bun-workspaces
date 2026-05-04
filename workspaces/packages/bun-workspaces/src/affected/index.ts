@@ -1,2 +1,2 @@
-export * from "./affectedWorkspaces";
-export * from "./gitAffected";
+export * from "./fileAffectedWorkspaces";
+export * from "./gitAffectedFiles";

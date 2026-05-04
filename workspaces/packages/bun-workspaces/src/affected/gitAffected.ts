@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { defineErrors } from "../../internal/core";
-import { createSubprocess } from "../../runScript/subprocesses";
+import { defineErrors } from "../internal/core";
+import { createSubprocess } from "../runScript/subprocesses";
 
 export const GIT_AFFECTED_ERRORS = defineErrors(
   "NoGitRepository",

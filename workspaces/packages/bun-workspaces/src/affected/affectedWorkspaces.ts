@@ -1,8 +1,7 @@
 import path from "path";
 import bun from "bun";
-import { logger } from "../../internal/logger";
-import type { Workspace } from "../workspace";
-import { matchWorkspacesByPatterns } from "../workspacePattern";
+import { logger } from "../internal/logger";
+import { matchWorkspacesByPatterns, type Workspace } from "../workspaces";
 
 export type AffectedDependencyEdgeSource = "input" | "package";
 

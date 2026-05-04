@@ -20,12 +20,19 @@ export interface GetGitAffectedFilesOptions {
   ignoreUncommitted?: boolean;
 }
 
+export type GitAffectedFileReason =
+  | "diff"
+  | "staged"
+  | "unstaged"
+  | "untracked";
+
 export interface GitAffectedFile {
   /** File path relative to the project root */
   projectFilePath: string;
+  /** The reason for the file being affected */
+  reason: GitAffectedFileReason;
 }
 
 export interface GetGitAffectedFilesResult {
-  /** Absolute changed file paths */
-  filePaths: string[];
+  files: GitAffectedFile[];
 }

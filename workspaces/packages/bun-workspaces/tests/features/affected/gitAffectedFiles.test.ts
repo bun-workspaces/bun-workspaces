@@ -5,7 +5,7 @@ import { afterEach, describe, expect, test } from "bun:test";
 import {
   GIT_AFFECTED_ERRORS,
   getGitAffectedFiles,
-} from "../../../src/workspaces/affected/gitAffected";
+} from "../../../src/affected/gitAffectedFiles";
 import { createGitFixture, type GitFixture } from "../../util/gitFixtures";
 
 const fixtures: GitFixture[] = [];

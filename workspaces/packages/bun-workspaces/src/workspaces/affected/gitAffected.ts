@@ -132,8 +132,12 @@ export const getGitAffectedFiles = async (
     ignoreUncommitted,
   } = options;
 
-  const gitRoot = fs.realpathSync(await resolveGitRoot(rootDirectory));
-  const absoluteProjectRoot = fs.realpathSync(path.resolve(rootDirectory));
+  const gitRoot = fs.realpathSync.native(
+    path.resolve(await resolveGitRoot(rootDirectory)),
+  );
+  const absoluteProjectRoot = fs.realpathSync.native(
+    path.resolve(rootDirectory),
+  );
 
   const includeStaged = !ignoreUncommitted && !ignoreStaged;
   const includeUnstaged = !ignoreUncommitted && !ignoreUnstaged;

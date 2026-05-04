@@ -21,6 +21,10 @@ import type {
 import type { Workspace } from "../../../../workspaces";
 import type { WriteOutputOptions } from "../../../createCli";
 import { generatePlainOutputLines } from "./renderPlainOutput";
+import {
+  initializeTuiTerminalState,
+  resetTuiTerminalState,
+} from "./tuiTerminal";
 
 type ScriptEvent = TypedEvent<
   ScriptEventName,
@@ -141,8 +145,10 @@ export const renderGroupedOutput = async (
     }
     isInitialized = true;
     logger.debug("Initializing TUI state");
-    outputWriters.stdout(cursorOps.hide());
-    process.stdin.setRawMode?.(true);
+    initializeTuiTerminalState({
+      stdout: outputWriters.stdout,
+      stdin: process.stdin,
+    });
   };
 
   let isReset = false;
@@ -152,9 +158,10 @@ export const renderGroupedOutput = async (
     }
     isReset = true;
     logger.debug("Resetting TUI state");
-    outputWriters.stdout(cursorOps.show());
-    process.stdin.unref?.();
-    process.stdin.setRawMode?.(false);
+    resetTuiTerminalState({
+      stdout: outputWriters.stdout,
+      stdin: process.stdin,
+    });
   };
 
   let previousHeight = 0;
@@ -384,8 +391,16 @@ export const renderGroupedOutput = async (
   process.stdin.on("data", (data) => {
     // Send to the entire process group (pid=0) so child processes also receive
     // the signal — raw mode prevents the terminal from doing this automatically.
-    if (data[0] === 0x03) process.kill(0, "SIGINT");
-    if (data[0] === 0x1c) process.kill(0, "SIGQUIT");
+    const signal =
+      data[0] === 0x03 ? "SIGINT" : data[0] === 0x1c ? "SIGQUIT" : null;
+    if (!signal) return;
+    // Restore the tty before fanning the signal: once SIGINT lands across
+    // the process group, child cleanup races with our own tcsetattr and
+    // setRawMode reliably returns EIO, leaving the user's terminal stuck
+    // in raw mode. Doing it here, synchronously, while we still own the
+    // tty cleanly, is the only place this can run before the race.
+    resetTuiTerminal();
+    process.kill(0, signal);
   });
 
   runOnExit((reason) => {

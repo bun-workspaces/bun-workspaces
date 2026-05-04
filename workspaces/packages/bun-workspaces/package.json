@@ -1,6 +1,6 @@
 {
   "name": "bun-workspaces",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "exports": {
     ".": "./src/index.ts",
     "./cli": "./src/cli/index.ts",
@@ -38,7 +38,7 @@
     "cli:build": "bun  run dist/bin/cli.js",
     "ajv": "bun  run scripts/ajv.ts",
     "generate-mcp-docs": "bun  run scripts/generateMcpDocs.ts",
-    "test": "rm -rf dist.test && bun  test --timeout 10000",
+    "test": "rm -rf dist.test && bun test --timeout 10000",
     "test:clean": "rm -rf tests/fixtures/testProjects/**/node_modules && rm -rf tests/fixtures/testProjects/**/bun.lock && bun run test",
     "test:concurrent": "rm -rf dist.test && bun  test --concurrent --timeout 10000",
     "lint": "eslint src",

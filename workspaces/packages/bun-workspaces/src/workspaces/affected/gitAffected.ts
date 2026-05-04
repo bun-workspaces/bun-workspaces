@@ -1,3 +1,4 @@
+import fs from "fs";
 import path from "path";
 import { defineErrors } from "../../internal/core";
 import { createSubprocess } from "../../runScript/subprocesses";
@@ -131,8 +132,8 @@ export const getGitAffectedFiles = async (
     ignoreUncommitted,
   } = options;
 
-  const gitRoot = await resolveGitRoot(rootDirectory);
-  const absoluteProjectRoot = path.resolve(rootDirectory);
+  const gitRoot = fs.realpathSync(await resolveGitRoot(rootDirectory));
+  const absoluteProjectRoot = fs.realpathSync(path.resolve(rootDirectory));
 
   const includeStaged = !ignoreUncommitted && !ignoreStaged;
   const includeUnstaged = !ignoreUncommitted && !ignoreUnstaged;

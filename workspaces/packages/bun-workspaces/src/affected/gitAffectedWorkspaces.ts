@@ -23,3 +23,9 @@ export type GitAffectedWorkspaceResult =
 export interface GitAffectedWorkspacesResult {
   affectedWorkspaces: GitAffectedWorkspaceResult[];
 }
+
+export const getGitAffectedWorkspaces = async ({
+  rootDirectory,
+  workspacesOptions,
+  gitOptions,
+}: GitAffectedWorkspacesOptions): Promise<GitAffectedWorkspacesResult> => {};

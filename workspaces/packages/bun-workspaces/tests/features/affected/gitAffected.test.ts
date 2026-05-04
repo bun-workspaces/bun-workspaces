@@ -1,3 +1,6 @@
+import fs from "fs";
+import os from "os";
+import path from "path";
 import { afterEach, describe, expect, test } from "bun:test";
 import {
   GIT_AFFECTED_ERRORS,
@@ -108,9 +111,7 @@ describe("getGitAffectedFiles", () => {
         initialBranch: "main",
       });
       await fixture.runGit(["checkout", "-b", "feature"]);
-      const { writeFileSync } = await import("fs");
-      const path = await import("path");
-      writeFileSync(path.join(fixture.repoPath, "a.txt"), "2");
+      fs.writeFileSync(path.join(fixture.repoPath, "a.txt"), "2");
       await fixture.runGit(["add", "-A"]);
       await fixture.runGit(["commit", "-m", "feature change"]);
 
@@ -161,9 +162,7 @@ describe("getGitAffectedFiles", () => {
       });
 
       // Add an untracked file after the fixture is built
-      const { writeFileSync } = await import("fs");
-      const path = await import("path");
-      writeFileSync(path.join(fixture.repoPath, "new-untracked.txt"), "new");
+      fs.writeFileSync(path.join(fixture.repoPath, "new-untracked.txt"), "new");
 
       const { files } = await getGitAffectedFiles({
         rootDirectory: fixture.projectPath,
@@ -230,6 +229,31 @@ describe("getGitAffectedFiles", () => {
       ]);
     });
 
+    test("a file with diff, staged, and unstaged changes reports all three reasons", async () => {
+      const fixture = await newFixture({
+        commits: [
+          { message: "init", files: [{ path: "a.txt", content: "1" }] },
+          { message: "change", files: [{ path: "a.txt", content: "2" }] },
+        ],
+        workingState: {
+          partiallyStage: [{ path: "a.txt", staged: "3", working: "4" }],
+        },
+      });
+
+      const { files } = await getGitAffectedFiles({
+        rootDirectory: fixture.projectPath,
+        baseRef: fixture.shaForMessage("init"),
+        headRef: fixture.shaForMessage("change"),
+      });
+
+      expect(files).toEqual([
+        {
+          projectFilePath: "a.txt",
+          reasons: ["diff", "staged", "unstaged"],
+        },
+      ]);
+    });
+
     test("untracked respects gitignore", async () => {
       const fixture = await newFixture({
         commits: [
@@ -243,10 +267,8 @@ describe("getGitAffectedFiles", () => {
         ],
       });
 
-      const { writeFileSync } = await import("fs");
-      const path = await import("path");
-      writeFileSync(path.join(fixture.repoPath, "ignored.txt"), "x");
-      writeFileSync(path.join(fixture.repoPath, "visible.txt"), "x");
+      fs.writeFileSync(path.join(fixture.repoPath, "ignored.txt"), "x");
+      fs.writeFileSync(path.join(fixture.repoPath, "visible.txt"), "x");
 
       const { files } = await getGitAffectedFiles({
         rootDirectory: fixture.projectPath,
@@ -270,9 +292,7 @@ describe("getGitAffectedFiles", () => {
         },
       });
 
-      const { writeFileSync } = await import("fs");
-      const path = await import("path");
-      writeFileSync(path.join(fixture.repoPath, "untracked.txt"), "u");
+      fs.writeFileSync(path.join(fixture.repoPath, "untracked.txt"), "u");
 
       const { files } = await getGitAffectedFiles({
         rootDirectory: fixture.projectPath,
@@ -341,15 +361,19 @@ describe("getGitAffectedFiles", () => {
         },
       });
       // Add an unstaged change to a previously committed file
-      const { writeFileSync } = await import("fs");
-      const path = await import("path");
-      writeFileSync(path.join(fixture.repoPath, "tracked-modified.txt"), "m");
+      fs.writeFileSync(
+        path.join(fixture.repoPath, "tracked-modified.txt"),
+        "m",
+      );
       // Pre-commit it so it has history, then modify
       await fixture.runGit(["add", "tracked-modified.txt"]);
       await fixture.runGit(["commit", "-m", "track tracked-modified"]);
-      writeFileSync(path.join(fixture.repoPath, "tracked-modified.txt"), "m2");
+      fs.writeFileSync(
+        path.join(fixture.repoPath, "tracked-modified.txt"),
+        "m2",
+      );
       // Add an untracked file we expect to be ignored
-      writeFileSync(path.join(fixture.repoPath, "untracked.txt"), "u");
+      fs.writeFileSync(path.join(fixture.repoPath, "untracked.txt"), "u");
 
       const { files } = await getGitAffectedFiles({
         rootDirectory: fixture.projectPath,
@@ -376,9 +400,7 @@ describe("getGitAffectedFiles", () => {
           modify: [{ path: "a.txt", content: "3" }],
         },
       });
-      const { writeFileSync } = await import("fs");
-      const path = await import("path");
-      writeFileSync(path.join(fixture.repoPath, "untracked.txt"), "u");
+      fs.writeFileSync(path.join(fixture.repoPath, "untracked.txt"), "u");
 
       const { files } = await getGitAffectedFiles({
         rootDirectory: fixture.projectPath,
@@ -431,9 +453,7 @@ describe("getGitAffectedFiles", () => {
         },
       });
 
-      const { writeFileSync } = await import("fs");
-      const path = await import("path");
-      writeFileSync(path.join(fixture.repoPath, "untracked.txt"), "u");
+      fs.writeFileSync(path.join(fixture.repoPath, "untracked.txt"), "u");
 
       const { files } = await getGitAffectedFiles({
         rootDirectory: fixture.projectPath,
@@ -499,10 +519,7 @@ describe("getGitAffectedFiles", () => {
     });
 
     test("throws NoGitRepository when run outside a git repo", async () => {
-      const { mkdtempSync, rmSync } = await import("fs");
-      const path = await import("path");
-      const os = await import("os");
-      const dir = mkdtempSync(path.join(os.tmpdir(), "bw-not-git-"));
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), "bw-not-git-"));
       try {
         await expect(
           getGitAffectedFiles({
@@ -512,7 +529,7 @@ describe("getGitAffectedFiles", () => {
           }),
         ).rejects.toBeInstanceOf(GIT_AFFECTED_ERRORS.NoGitRepository);
       } finally {
-        rmSync(dir, { force: true, recursive: true });
+        fs.rmSync(dir, { force: true, recursive: true });
       }
     });
   });

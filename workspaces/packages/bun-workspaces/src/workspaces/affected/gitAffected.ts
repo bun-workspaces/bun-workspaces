@@ -20,7 +20,14 @@ export type GitAffectedFileReason = (typeof GIT_AFFECTED_FILE_REASONS)[number];
 export interface GetGitAffectedFilesOptions {
   /** Project root */
   rootDirectory: string;
+  /**
+   * Base of the committed-range diff. Should be a single revision (commit
+   * SHA, branch name, tag, or `HEAD~n`), not a range expression like
+   * `main..feature` or `main...feature` — the two refs are passed as the
+   * two endpoints of `git diff`, which is already a two-dot diff.
+   */
   baseRef: string;
+  /** Head of the committed-range diff. Same constraints as `baseRef`. */
   headRef: string;
   /** Exclude untracked files */
   ignoreUntracked?: boolean;
@@ -77,11 +84,13 @@ const runGitOrThrow = async (args: string[], cwd: string): Promise<string> => {
   return stdout;
 };
 
-const parseLines = (output: string): string[] =>
-  output
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
+/**
+ * Git's `-z` flag emits paths separated by NUL bytes with no quoting or
+ * escaping, which is the only safe way to parse output containing paths
+ * with spaces, newlines, or non-ASCII characters under `core.quotePath`.
+ */
+const parseNullSeparated = (output: string): string[] =>
+  output.split("\0").filter(Boolean);
 
 const resolveGitRoot = async (rootDirectory: string): Promise<string> => {
   let result: RunGitResult;
@@ -145,32 +154,36 @@ export const getGitAffectedFiles = async (
 
   type Bucket = { reason: GitAffectedFileReason; paths: string[] };
   const collectors: Promise<Bucket>[] = [
-    runGitOrThrow(["diff", "--name-only", baseRef, headRef], gitRoot).then(
-      (out) => ({ reason: "diff", paths: parseLines(out) }),
-    ),
+    runGitOrThrow(
+      ["diff", "--name-only", "-z", baseRef, headRef],
+      gitRoot,
+    ).then((out) => ({ reason: "diff", paths: parseNullSeparated(out) })),
   ];
 
   if (includeStaged) {
     collectors.push(
-      runGitOrThrow(["diff", "--cached", "--name-only"], gitRoot).then(
-        (out) => ({ reason: "staged", paths: parseLines(out) }),
+      runGitOrThrow(["diff", "--cached", "--name-only", "-z"], gitRoot).then(
+        (out) => ({ reason: "staged", paths: parseNullSeparated(out) }),
       ),
     );
   }
   if (includeUnstaged) {
     collectors.push(
-      runGitOrThrow(["diff", "--name-only"], gitRoot).then((out) => ({
+      runGitOrThrow(["diff", "--name-only", "-z"], gitRoot).then((out) => ({
         reason: "unstaged",
-        paths: parseLines(out),
+        paths: parseNullSeparated(out),
       })),
     );
   }
   if (includeUntracked) {
     collectors.push(
       runGitOrThrow(
-        ["ls-files", "--others", "--exclude-standard"],
+        ["ls-files", "--others", "--exclude-standard", "-z"],
         gitRoot,
-      ).then((out) => ({ reason: "untracked", paths: parseLines(out) })),
+      ).then((out) => ({
+        reason: "untracked",
+        paths: parseNullSeparated(out),
+      })),
     );
   }
 

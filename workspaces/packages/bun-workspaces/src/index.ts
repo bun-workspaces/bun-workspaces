@@ -29,7 +29,7 @@ export {
   type BaseAffectedWorkspacesOptions,
   type GitAffectedWorkspacesOptions,
   type FileListAffectedWorkspacesOptions,
-  type GetAffectedWorkspacesOptions,
+  type DetermineAffectedWorkspacesOptions as GetAffectedWorkspacesOptions,
   type AffectedDependencyChainEntry,
   type AffectedDependencyEdgeSource,
   type GitAffectedFileReason,

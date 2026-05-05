@@ -129,12 +129,14 @@ export type FileListAffectedWorkspacesOptions<
   changedFiles: string[];
 };
 
-export type GetAffectedWorkspacesOptions<AcceptScript extends boolean = true> =
+export type DetermineAffectedWorkspacesOptions<
+  AcceptScript extends boolean = true,
+> =
   | GitAffectedWorkspacesOptions<AcceptScript>
   | FileListAffectedWorkspacesOptions<AcceptScript>;
 
 export const isOptionsForDiffSource = <DiffSource extends AffectedDiffSource>(
-  options: GetAffectedWorkspacesOptions,
+  options: DetermineAffectedWorkspacesOptions,
   diffSource: DiffSource,
 ): options is DiffSource extends "git"
   ? GitAffectedWorkspacesOptions
@@ -309,9 +311,9 @@ const toAffectedWorkspaceResult = (
   },
 });
 
-export const getAffectedWorkspaces = async (
+export const determineAffectedWorkspaces = async (
   project: FileSystemProject,
-  options: GetAffectedWorkspacesOptions<true>,
+  options: DetermineAffectedWorkspacesOptions<true>,
 ): Promise<AffectedWorkspacesResult> => {
   const ignorePackageDependencies = options.ignorePackageDependencies ?? false;
   const { inputs: workspaceInputs, effectiveInputsByName } =

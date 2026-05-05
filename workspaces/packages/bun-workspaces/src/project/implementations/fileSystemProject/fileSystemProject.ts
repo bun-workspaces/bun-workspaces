@@ -48,10 +48,10 @@ import {
   resolveWorkspacePath,
 } from "../projectBase";
 import {
-  getAffectedWorkspaces,
+  determineAffectedWorkspaces,
   type AffectedWorkspacesResult,
   type FileListAffectedWorkspacesOptions,
-  type GetAffectedWorkspacesOptions,
+  type DetermineAffectedWorkspacesOptions,
 } from "./affectedWorkspaces";
 
 /** Arguments for {@link createFileSystemProject} */
@@ -177,7 +177,7 @@ export type RunAffectedWorkspaceScriptOptions = {
    * script name when running inline, the script name otherwise) so that
    * inputs resolution always tracks the script being run.
    */
-  affectedOptions: GetAffectedWorkspacesOptions<false>;
+  affectedOptions: DetermineAffectedWorkspacesOptions<false>;
   scriptOptions: Omit<RunScriptAcrossWorkspacesOptions, "workspacePatterns">;
 };
 
@@ -722,8 +722,8 @@ class _FileSystemProject extends ProjectBase implements Project {
    * Returns a summary of all workspaces, whether they are affected or not,
    * and the reasons why they are affected.
    */
-  async getAffectedWorkspaces(
-    options: GetAffectedWorkspacesOptions,
+  async determineAffectedWorkspaces(
+    options: DetermineAffectedWorkspacesOptions,
   ): Promise<AffectedWorkspacesResult> {
     validateJSTypes(
       {
@@ -812,7 +812,7 @@ class _FileSystemProject extends ProjectBase implements Project {
       );
     }
 
-    return getAffectedWorkspaces(this, options);
+    return determineAffectedWorkspaces(this, options);
   }
 
   /**
@@ -824,7 +824,7 @@ class _FileSystemProject extends ProjectBase implements Project {
     affectedOptions,
     scriptOptions,
   }: RunAffectedWorkspaceScriptOptions): Promise<RunScriptAcrossWorkspacesResult> {
-    const { workspaceResults } = await this.getAffectedWorkspaces({
+    const { workspaceResults } = await this.determineAffectedWorkspaces({
       ...affectedOptions,
       script: resolveInputsLookupScriptName(scriptOptions),
     });

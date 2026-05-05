@@ -82,7 +82,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
     test("throws for non-string diffSource", () => {
       const project = makeProject();
       expect(() =>
-        project.getAffectedWorkspaces({
+        project.determineAffectedWorkspaces({
           diffSource: 123 as unknown as "git",
         }),
       ).toThrow(InvalidJSTypeError);
@@ -91,7 +91,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
     test("throws for unknown diffSource value", () => {
       const project = makeProject();
       expect(() =>
-        project.getAffectedWorkspaces({
+        project.determineAffectedWorkspaces({
           diffSource: "other" as unknown as "git",
         }),
       ).toThrow(InvalidJSTypeError);
@@ -100,7 +100,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
     test("throws for non-boolean ignorePackageDependencies", () => {
       const project = makeProject();
       expect(() =>
-        project.getAffectedWorkspaces({
+        project.determineAffectedWorkspaces({
           diffSource: "fileList",
           changedFiles: [],
           ignorePackageDependencies: "yes" as unknown as boolean,
@@ -111,7 +111,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
     test("throws for non-array fileList changedFiles", () => {
       const project = makeProject();
       expect(() =>
-        project.getAffectedWorkspaces({
+        project.determineAffectedWorkspaces({
           diffSource: "fileList",
           changedFiles: "x" as unknown as string[],
         }),
@@ -121,7 +121,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
     test("throws for non-string item in fileList changedFiles", () => {
       const project = makeProject();
       expect(() =>
-        project.getAffectedWorkspaces({
+        project.determineAffectedWorkspaces({
           diffSource: "fileList",
           changedFiles: [123 as unknown as string],
         }),
@@ -131,7 +131,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
     test("throws for missing fileList changedFiles", () => {
       const project = makeProject();
       expect(() =>
-        project.getAffectedWorkspaces({
+        project.determineAffectedWorkspaces({
           diffSource: "fileList",
         } as unknown as { diffSource: "fileList"; changedFiles: string[] }),
       ).toThrow(InvalidJSTypeError);
@@ -140,7 +140,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
     test("throws for non-object git diffOptions", () => {
       const project = makeProject();
       expect(() =>
-        project.getAffectedWorkspaces({
+        project.determineAffectedWorkspaces({
           diffSource: "git",
           diffOptions: 5 as unknown as undefined,
         }),
@@ -150,7 +150,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
     test("throws for non-string git baseRef", () => {
       const project = makeProject();
       expect(() =>
-        project.getAffectedWorkspaces({
+        project.determineAffectedWorkspaces({
           diffSource: "git",
           diffOptions: { baseRef: 5 as unknown as string },
         }),
@@ -160,7 +160,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
     test("throws for non-string git headRef", () => {
       const project = makeProject();
       expect(() =>
-        project.getAffectedWorkspaces({
+        project.determineAffectedWorkspaces({
           diffSource: "git",
           diffOptions: { headRef: 5 as unknown as string },
         }),
@@ -170,7 +170,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
     test("throws for non-boolean git ignoreUntracked", () => {
       const project = makeProject();
       expect(() =>
-        project.getAffectedWorkspaces({
+        project.determineAffectedWorkspaces({
           diffSource: "git",
           diffOptions: { ignoreUntracked: "no" as unknown as boolean },
         }),
@@ -180,7 +180,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
     test("throws for non-boolean git ignoreStaged", () => {
       const project = makeProject();
       expect(() =>
-        project.getAffectedWorkspaces({
+        project.determineAffectedWorkspaces({
           diffSource: "git",
           diffOptions: { ignoreStaged: "no" as unknown as boolean },
         }),
@@ -190,7 +190,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
     test("throws for non-boolean git ignoreUnstaged", () => {
       const project = makeProject();
       expect(() =>
-        project.getAffectedWorkspaces({
+        project.determineAffectedWorkspaces({
           diffSource: "git",
           diffOptions: { ignoreUnstaged: "no" as unknown as boolean },
         }),
@@ -200,7 +200,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
     test("throws for non-boolean git ignoreUncommitted", () => {
       const project = makeProject();
       expect(() =>
-        project.getAffectedWorkspaces({
+        project.determineAffectedWorkspaces({
           diffSource: "git",
           diffOptions: { ignoreUncommitted: "no" as unknown as boolean },
         }),
@@ -210,7 +210,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
     test("throws for non-string script option", () => {
       const project = makeProject();
       expect(() =>
-        project.getAffectedWorkspaces({
+        project.determineAffectedWorkspaces({
           diffSource: "fileList",
           changedFiles: [],
           script: 123 as unknown as string,
@@ -222,7 +222,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
   describe("fileList diffSource", () => {
     test("returns metadata.diffSource = 'fileList' and no git metadata", async () => {
       const project = makeProject(getProjectRoot("withDependenciesSimple"));
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: [],
       });
@@ -231,7 +231,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
 
     test("includes a result for every workspace in the project", async () => {
       const project = makeProject(getProjectRoot("withDependenciesSimple"));
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: [],
       });
@@ -245,7 +245,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
 
     test("a file inside a workspace marks that workspace affected", async () => {
       const project = makeProject(getProjectRoot("withDependenciesSimple"));
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["packages/e/src/index.ts"],
       });
@@ -260,7 +260,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
 
     test("dependency cascade marks dependents affected", async () => {
       const project = makeProject(getProjectRoot("withDependenciesSimple"));
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["packages/e/src/index.ts"],
       });
@@ -277,7 +277,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
 
     test("ignorePackageDependencies disables dependency cascade", async () => {
       const project = makeProject(getProjectRoot("withDependenciesSimple"));
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["packages/e/src/index.ts"],
         ignorePackageDependencies: true,
@@ -297,7 +297,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
 
     test("dependency chain is recorded for transitively affected workspaces", async () => {
       const project = makeProject(getProjectRoot("withDependenciesSimple"));
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["packages/e/src/index.ts"],
       });
@@ -316,7 +316,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
 
     test("file outside any workspace affects no workspaces", async () => {
       const project = makeProject(getProjectRoot("withDependenciesSimple"));
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["docs/README.md"],
       });
@@ -333,7 +333,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
       // entry should expand to its files. We need actual files on disk for the
       // dir walk, so we use the project package.json paths instead:
       // pass the project's "packages/a" dir which contains package.json + bw.workspace.json
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["packages/a"],
       });
@@ -344,7 +344,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
 
     test("expands a glob pattern to matching files", async () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["packages/*/package.json"],
       });
@@ -356,7 +356,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
 
     test("'!' exclusions remove files from the include set", async () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["packages/*/package.json", "!packages/d/package.json"],
       });
@@ -366,7 +366,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
 
     test("non-existent literal paths pass through (treated as deleted)", async () => {
       const project = makeProject(getProjectRoot("withDependenciesSimple"));
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["packages/e/src/deleted.ts"],
       });
@@ -375,7 +375,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
 
     test("'.' literal expands to every file under the project root", async () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["."],
       });
@@ -387,7 +387,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
 
     test("'./' prefixed paths are stripped before matching", async () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["./packages/a/src/index.ts"],
       });
@@ -402,7 +402,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
       // 'a' has defaultInputs.files = ["src/**/*"]
       // A file outside src/ in package 'a' (and outside implicit triggers)
       // should not affect it.
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["packages/a/other/file.ts"],
       });
@@ -411,7 +411,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
 
     test("matches when file falls inside the configured input", async () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["packages/a/src/index.ts"],
       });
@@ -420,7 +420,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
 
     test("result.inputs reflects the effective inputs used (configured + implicit)", async () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: [],
       });
@@ -437,7 +437,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
 
     test("result.inputs omits implicit patterns when ignorePackageDependencies is true", async () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: [],
         ignorePackageDependencies: true,
@@ -453,7 +453,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
       // 'e' has defaultInputs.files = ["package.json", "/package.json"]
       // which exactly overlaps the implicit triggers. Effective files
       // should appear once each, in the original order.
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: [],
       });
@@ -468,7 +468,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
       // c has defaultInputs.workspacePatterns = ["d"]; d has no inputs config
       // changing a file in d (which becomes affected via implicit package.json)
       // should also propagate to c via input workspace dependency.
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["packages/d/package.json"],
       });
@@ -490,7 +490,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
       // Workspace 'a' has narrow defaultInputs.files=["src/**/*"], so
       // package.json hits only via the implicit pattern.
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["packages/a/package.json"],
       });
@@ -499,7 +499,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
 
     test("changing the root package.json marks every workspace affected", async () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["package.json"],
       });
@@ -510,7 +510,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
 
     test("ignorePackageDependencies disables implicit package.json triggers", async () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["packages/a/package.json", "package.json"],
         ignorePackageDependencies: true,
@@ -526,7 +526,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
       // 'a' has scripts.build.inputs.files = ["build/**/*"]
       // packages/a/build/x.ts matches the build script's inputs
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["packages/a/build/x.ts"],
         script: "build",
@@ -538,7 +538,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
       // With script="build", 'a' uses build/**/* (not src/**/*).
       // A file under src/ should no longer match for 'a'.
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["packages/a/src/index.ts"],
         script: "build",
@@ -551,7 +551,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
       // 'b' has only defaultInputs.files=["src/**/*"], no scripts.build.inputs.
       // With script="build", 'b' should use defaultInputs.
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["packages/b/src/index.ts"],
         script: "build",
@@ -562,7 +562,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
 
     test("result.inputs reflects script-level inputs when used", async () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: [],
         script: "build",
@@ -589,7 +589,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
       // packages/a/build/x.ts matches script-level but NOT defaultInputs.
       // Without script option, 'a' should not be affected.
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["packages/a/build/x.ts"],
         ignorePackageDependencies: true,
@@ -601,7 +601,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
       // 'a' has scripts.build but no scripts.lint config.
       // With script="lint", 'a' uses defaultInputs.files=["src/**/*"].
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["packages/a/src/index.ts"],
         script: "lint",
@@ -625,7 +625,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
       const project = makeProject(fixture.projectPath);
       const baseSha = fixture.shaForMessage("init");
       const headSha = fixture.shaForMessage("change");
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "git",
         diffOptions: {
           baseRef: baseSha,
@@ -651,7 +651,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
         initialBranch: "main",
       });
       const project = makeProject(fixture.projectPath);
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "git",
         diffOptions: { ignoreUncommitted: true },
       });
@@ -669,7 +669,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
         ],
       });
       const project = makeProject(fixture.projectPath);
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "git",
         diffOptions: {
           baseRef: fixture.shaForMessage("init"),
@@ -696,7 +696,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
         },
       });
       const project = makeProject(fixture.projectPath);
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "git",
         diffOptions: {
           baseRef: fixture.headSha,
@@ -715,7 +715,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
         },
       });
       const project = makeProject(fixture.projectPath);
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "git",
         diffOptions: {
           baseRef: fixture.headSha,
@@ -741,7 +741,7 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
         ],
       });
       const project = makeProject(fixture.projectPath);
-      const result = await project.getAffectedWorkspaces({
+      const result = await project.determineAffectedWorkspaces({
         diffSource: "git",
         diffOptions: {
           baseRef: fixture.shaForMessage("init"),

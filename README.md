@@ -2,9 +2,11 @@
 <img src="./workspaces/web/documentation-website/src/pages/public/images/png/bwunster-bg-banner-wide_3000x900.png" alt="bun-workspaces" width="100%" />
 </a>
 
-#### Full Documentation: [_https://bunworkspaces.com_](https://bunworkspaces.com)
+<br/>
 
-#### Changelog: [GitHub Releases](https://github.com/bun-workspaces/bun-workspaces/releases)
+Full Documentation: [https://bunworkspaces.com](https://bunworkspaces.com)
+
+Changelog: [GitHub Releases](https://github.com/bun-workspaces/bun-workspaces/releases)
 
 # bun-workspaces
 

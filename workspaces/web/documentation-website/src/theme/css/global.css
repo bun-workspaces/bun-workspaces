@@ -189,6 +189,10 @@ pre {
   display: none;
 }
 
+.rspress-scrollbar nav {
+  margin-top: 1rem;
+}
+
 .pixel-art-image {
   image-rendering: pixelated;
 }

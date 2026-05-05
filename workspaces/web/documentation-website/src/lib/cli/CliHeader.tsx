@@ -1,40 +1,9 @@
 import { Link } from "rspress/theme";
 import { RequiredBunVersion } from "../components/RequiredBunVersion";
 
-const LINKS = {
-  home: "/cli",
-  globalOptions: "/cli/global-options",
-  commands: "/cli/commands",
-  examples: "/cli/examples",
-} as const;
-
-export interface CliHeaderProps {
-  activeHref: keyof typeof LINKS;
-}
-
-export const CliHeader = ({ activeHref }: CliHeaderProps) => {
+export const CliHeader = () => {
   return (
     <div className="sub-header">
-      <div className="sub-header-links">
-        <Link
-          href={LINKS.home}
-          className={activeHref === "home" ? "active" : ""}
-        >
-          Quick Start
-        </Link>
-        <Link
-          href={LINKS.globalOptions}
-          className={activeHref === "globalOptions" ? "active" : ""}
-        >
-          Global Options
-        </Link>
-        <Link
-          href={LINKS.commands}
-          className={activeHref === "commands" ? "active" : ""}
-        >
-          Commands
-        </Link>
-      </div>
       <p className="note" style={{ marginTop: "1rem" }}>
         Try the{" "}
         <Link className="inline-link" href="/web-cli">
@@ -71,7 +40,6 @@ export const CliHeader = ({ activeHref }: CliHeaderProps) => {
         truth.
       </p>
       <RequiredBunVersion className="bun-version sub-header-bun-version" />
-      <hr />
     </div>
   );
 };

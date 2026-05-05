@@ -419,5 +419,27 @@ export default defineConfig({
         tag: TAG_ICONS.blog,
       },
     ],
+    sidebar: {
+      "/cli": [
+        {
+          text: "Quick Start",
+          link: "/cli",
+        },
+        {
+          text: "Reference",
+          collapsible: false,
+          items: [
+            {
+              text: "Global Options",
+              link: "/cli/global-options",
+            },
+            {
+              text: "Commands",
+              link: "/cli/commands",
+            },
+          ],
+        },
+      ],
+    },
   },
 });

@@ -316,6 +316,7 @@ export default defineConfig({
           {
             text: "General",
             link: "/config",
+            activeMatch: "/config$",
           },
           {
             text: "Root Configuration",
@@ -473,6 +474,50 @@ export default defineConfig({
             {
               text: "setLogLevel",
               link: "/api/reference#setloglevel",
+            },
+          ],
+        },
+      ],
+      "/config": [
+        {
+          text: "General",
+          link: "/config",
+          items: [
+            {
+              text: "Quick Examples",
+              link: "/config#quick-examples",
+            },
+            {
+              text: "Config Locations / File Types",
+              link: "/config#config-locations--file-types",
+            },
+          ],
+        },
+        {
+          text: "Workspace Configuration",
+          link: "/config/workspace",
+          items: [
+            {
+              text: "Workspace Config File",
+              link: "/config/workspace",
+            },
+          ],
+        },
+        {
+          text: "Project Configuration",
+          link: "/config/root",
+          items: [
+            {
+              text: "Root Config File",
+              link: "/config/root",
+            },
+            {
+              text: "Environment Variables",
+              link: "/config/env-vars",
+            },
+            {
+              text: "Workspace Pattern Configs",
+              link: "/config/workspace-pattern-configs",
             },
           ],
         },

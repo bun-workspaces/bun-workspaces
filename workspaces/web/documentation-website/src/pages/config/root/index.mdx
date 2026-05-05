@@ -3,7 +3,7 @@ title: Root Configuration
 titleSuffix: " | bun-workspaces"
 description: "Root configuration documentation for bun-workspaces | Documentation for bun-workspaces: A CLI and API to help manage Bun monorepos"
 pageType: doc
-sidebar: false
+sidebar: true
 outline: true
 footer: false
 ---
@@ -14,8 +14,8 @@ import { SyntaxHighlighter } from "../../../lib/util/highlight";
 import { ROOT_CONFIG_TYPE } from "../../../lib/config/configTypes";
 import { CONFIG_DEFAULTS_KEY } from "../../../lib/config/envVars";
 
-# Configuration > Root
-
+# Configuration: Root Config File
+ 
 ## Project Root Configuration
 
 The optional root configuration is the general configuration for a [project](/concepts/glossary#project) at a file such as <code>{createConfigLocationPath("jsonFile", ROOT_CONFIG_FILE_NAME, ROOT_CONFIG_PACKAGE_JSON_KEY)}</code> or in its `package.json` file.

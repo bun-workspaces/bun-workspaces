@@ -50,7 +50,6 @@ import {
 import {
   determineAffectedWorkspaces,
   type AffectedWorkspacesResult,
-  type FileListAffectedWorkspacesOptions,
   type DetermineAffectedWorkspacesOptions,
 } from "./affectedWorkspaces";
 

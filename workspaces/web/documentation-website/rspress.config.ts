@@ -567,18 +567,8 @@ export default defineConfig({
           collapsible: false,
           items: [
             {
-              text: "Overview",
+              text: "Overview & Quick Examples",
               link: "/config",
-              items: [
-                {
-                  text: "Quick Examples",
-                  link: "/config#quick-examples",
-                },
-                {
-                  text: "Config Locations / File Types",
-                  link: "/config#config-locations--file-types",
-                },
-              ],
             },
             {
               text: "Workspace Configuration",

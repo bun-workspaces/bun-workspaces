@@ -314,7 +314,7 @@ export default defineConfig({
         tag: TAG_ICONS.config,
         items: [
           {
-            text: "General",
+            text: "Overview",
             link: "/config",
             activeMatch: "/config$",
           },
@@ -567,7 +567,7 @@ export default defineConfig({
           collapsible: false,
           items: [
             {
-              text: "General",
+              text: "Overview",
               link: "/config",
               items: [
                 {
@@ -635,24 +635,6 @@ export default defineConfig({
             {
               text: "Glossary",
               link: "/concepts/glossary",
-              items: [
-                {
-                  text: "Project",
-                  link: "/concepts/glossary#project",
-                },
-                {
-                  text: "Workspace",
-                  link: "/concepts/glossary#workspace",
-                },
-                {
-                  text: "Script",
-                  link: "/concepts/glossary#script",
-                },
-                {
-                  text: "Terms in Action",
-                  link: "/concepts/glossary#terms-in-action",
-                },
-              ],
             },
             {
               text: "Workspaces",

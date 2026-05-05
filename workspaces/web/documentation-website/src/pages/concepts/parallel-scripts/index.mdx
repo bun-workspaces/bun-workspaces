@@ -13,10 +13,13 @@ import { CLI_PARALLEL_SCRIPTS_EXAMPLE } from '../../../lib/cli/cliExamples';
 import { API_PARALLEL_SCRIPTS_EXAMPLE } from '../../../lib/api/apiExamples';
 import { ENV_VARS_METADATA } from '../../../lib/config/envVars';
 
+# Concept:  Parallel Scripts
+
+## Overview
+
+Scripts run in parallel by default (disabled via `--parallel=false` in the CLI or `parallel: false` in the API), and you have control over how many concurrent scripts can run at the same time.
 
 ## Parallel Max Value
-
-Scripts run in parallel by default, and you have control over how many concurrent scripts can run at the same time.
 
 You can pass a number value, a percentage value (e.g. `50%`), or one of the keywords `"auto"`, `"default"`, or `"unbounded"`
 to the parallel max option.

@@ -15,6 +15,10 @@ import { API_INLINE_NAME_EXAMPLE, API_INLINE_SHELL_EXAMPLE } from '../../../lib/
 import { ENV_VARS_METADATA } from '../../../lib/config/envVars';
 import { Link } from 'rspress/theme';
 
+# Concept:  Inline Scripts
+
+## Overview
+
 Normally, a ["script"](/concepts/glossary#script) in bun-workspaces references one of the entries found in a workspace's `"scripts"` field in its `package.json` file.
 
 However, it's possible to run a one-off shell command from a workspace's directory, an "inline script", such as via `bw run "echo 'hello'" --inline` in the CLI.

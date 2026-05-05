@@ -12,9 +12,13 @@ import { getWorkspaceScriptMetadataConfig } from 'bw-common/runScript';
 import { SyntaxHighlighter } from '../../../lib/util/highlight';
 import { exampleWorkspaceConfigArray, exampleWorkspaceConfigSimple } from '../../../lib/config/exampleConfig';
 
-## Workspace Dependencies - Overview
+# Concept: Workspace Dependencies
+
+## Overview
 
 [Workspaces](/concepts/glossary#workspace) can depend on other workspaces and import/export code between them. This is a native capability of workspaces in Bun.
+
+### Setting up Dependencies - Example
 
 For example, this might be some workspace's `package.json` file, where `my-workspace-b` depends on `my-workspace-a`:
 

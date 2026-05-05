@@ -19,9 +19,21 @@ export {
   type RunScriptAcrossWorkspacesSummary,
   type RunScriptAcrossWorkspacesOutput as RunScriptAcrossWorkspacesProcessOutput,
   type RunScriptAcrossWorkspacesResult,
+  type RunAffectedWorkspaceScriptOptions,
   type ParallelOption,
   type ScriptEventMetadata,
   type OnScriptEventCallback,
+  type AffectedDiffSource,
+  type AffectedWorkspaceResult,
+  type AffectedWorkspacesResult,
+  type BaseAffectedWorkspacesOptions,
+  type GitAffectedWorkspacesOptions,
+  type FileListAffectedWorkspacesOptions,
+  type GetAffectedWorkspacesOptions,
+  type AffectedDependencyChainEntry,
+  type AffectedDependencyEdgeSource,
+  type GitAffectedFileReason,
+  isOptionsForDiffSource,
 } from "./project";
 export * from "./config/public";
 export {

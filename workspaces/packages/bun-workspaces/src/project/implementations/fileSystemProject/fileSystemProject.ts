@@ -682,6 +682,88 @@ class _FileSystemProject extends ProjectBase implements Project {
   async getAffectedWorkspaces(
     options: GetAffectedWorkspacesOptions,
   ): Promise<AffectedWorkspacesResult> {
+    validateJSTypes(
+      {
+        "diffSource option": {
+          value: options.diffSource,
+          typeofName: "string",
+        },
+        "ignorePackageDependencies option": {
+          value: options.ignorePackageDependencies,
+          typeofName: "boolean",
+          optional: true,
+        },
+      },
+      { throw: true },
+    );
+
+    if (options.diffSource !== "git" && options.diffSource !== "fileList") {
+      throw new InvalidJSTypeError(
+        `Type error: diffSource option expects "git" | "fileList", received ${JSON.stringify((options as { diffSource: unknown }).diffSource)}`,
+      );
+    }
+
+    if (options.diffSource === "git") {
+      validateJSTypes(
+        {
+          "diffOptions option": {
+            value: options.diffOptions,
+            typeofName: "object",
+            optional: true,
+          },
+        },
+        { throw: true },
+      );
+      if (options.diffOptions !== undefined) {
+        validateJSTypes(
+          {
+            "diffOptions.baseRef option": {
+              value: options.diffOptions.baseRef,
+              typeofName: "string",
+              optional: true,
+            },
+            "diffOptions.headRef option": {
+              value: options.diffOptions.headRef,
+              typeofName: "string",
+              optional: true,
+            },
+            "diffOptions.ignoreUntracked option": {
+              value: options.diffOptions.ignoreUntracked,
+              typeofName: "boolean",
+              optional: true,
+            },
+            "diffOptions.ignoreStaged option": {
+              value: options.diffOptions.ignoreStaged,
+              typeofName: "boolean",
+              optional: true,
+            },
+            "diffOptions.ignoreUnstaged option": {
+              value: options.diffOptions.ignoreUnstaged,
+              typeofName: "boolean",
+              optional: true,
+            },
+            "diffOptions.ignoreUncommitted option": {
+              value: options.diffOptions.ignoreUncommitted,
+              typeofName: "boolean",
+              optional: true,
+            },
+          },
+          { throw: true },
+        );
+      }
+    } else {
+      validateJSTypes(
+        {
+          "changedFiles option": {
+            value: options.changedFiles,
+            array: true,
+            itemOptions: { typeofName: "string" },
+          },
+        },
+        { throw: true },
+      );
+    }
+
     return getAffectedWorkspaces(this, options);
   }
 

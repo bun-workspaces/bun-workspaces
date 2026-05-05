@@ -436,11 +436,69 @@ export default defineConfig({
               items: [
                 {
                   text: "Global Options",
+                  collapsed: true,
                   link: "/cli/global-options",
+                  items: [
+                    {
+                      text: "--cwd (-d)",
+                      link: "/cli/global-options#working-directory",
+                    },
+                    {
+                      text: "--workspace-root (-w)",
+                      link: "/cli/global-options#run-from-workspace-root",
+                    },
+                    {
+                      text: "--include-root (-r)",
+                      link: "/cli/global-options#include-root",
+                    },
+                    {
+                      text: "--log-level (-l)",
+                      link: "/cli/global-options#log-level",
+                    },
+                  ],
                 },
                 {
                   text: "Commands",
                   link: "/cli/commands",
+                  collapsed: true,
+                  items: [
+                    {
+                      text: "list-workspaces (ls)",
+                      link: "/cli/commands#list-workspaces",
+                    },
+                    {
+                      text: "workspace-info (info)",
+                      link: "/cli/commands#workspace-info",
+                    },
+                    {
+                      text: "list-scripts (ls-scripts)",
+                      link: "/cli/commands#list-scripts",
+                    },
+                    {
+                      text: "script-info",
+                      link: "/cli/commands#script-info",
+                    },
+                    {
+                      text: "list-tags (ls-tags)",
+                      link: "/cli/commands#list-tags",
+                    },
+                    {
+                      text: "tag-info",
+                      link: "/cli/commands#tag-info",
+                    },
+                    {
+                      text: "run-script (run)",
+                      link: "/cli/commands#run-script",
+                    },
+                    {
+                      text: "mcp-server",
+                      link: "/cli/commands#mcp-server",
+                    },
+                    {
+                      text: "doctor",
+                      link: "/cli/commands#doctor",
+                    },
+                  ],
                 },
               ],
             },

@@ -423,101 +423,191 @@ export default defineConfig({
     sidebar: {
       "/cli": [
         {
-          text: "Quick Start",
-          link: "/cli",
-        },
-        {
-          text: "Reference",
+          text: "CLI",
           collapsible: false,
           items: [
             {
-              text: "Global Options",
-              link: "/cli/global-options",
+              text: "Quick Start",
+              link: "/cli",
             },
             {
-              text: "Commands",
-              link: "/cli/commands",
+              text: "Reference",
+              collapsible: false,
+              items: [
+                {
+                  text: "Global Options",
+                  link: "/cli/global-options",
+                },
+                {
+                  text: "Commands",
+                  link: "/cli/commands",
+                },
+              ],
             },
           ],
         },
       ],
       "/api": [
         {
-          text: "Quick Start",
-          link: "/api",
-        },
-        {
-          text: "Reference",
-          link: "/api/reference",
-          collapsed: false,
+          text: "API",
+          collapsible: false,
           items: [
             {
-              text: "Workspace",
-              link: "/api/reference#workspace",
+              text: "Quick Start",
+              link: "/api",
             },
             {
-              text: "Project",
-              link: "/api/reference#project",
-            },
-            {
-              text: "FileSystemProject",
-              link: "/api/reference#filesystemproject",
-            },
-            {
-              text: "createFileSystemProject",
-              link: "/api/reference#createfilesystemproject",
-            },
-            {
-              text: "createMemoryProject",
-              link: "/api/reference#creatememoryproject",
-            },
-            {
-              text: "setLogLevel",
-              link: "/api/reference#setloglevel",
+              text: "Reference",
+              link: "/api/reference",
+              collapsed: false,
+              items: [
+                {
+                  text: "Workspace",
+                  link: "/api/reference#workspace",
+                },
+                {
+                  text: "Project",
+                  link: "/api/reference#project",
+                },
+                {
+                  text: "FileSystemProject",
+                  link: "/api/reference#filesystemproject",
+                },
+                {
+                  text: "createFileSystemProject",
+                  link: "/api/reference#createfilesystemproject",
+                },
+                {
+                  text: "createMemoryProject",
+                  link: "/api/reference#creatememoryproject",
+                },
+                {
+                  text: "setLogLevel",
+                  link: "/api/reference#setloglevel",
+                },
+              ],
             },
           ],
         },
       ],
       "/config": [
         {
-          text: "General",
-          link: "/config",
+          text: "Config",
+          collapsible: false,
           items: [
             {
-              text: "Quick Examples",
-              link: "/config#quick-examples",
+              text: "General",
+              link: "/config",
+              items: [
+                {
+                  text: "Quick Examples",
+                  link: "/config#quick-examples",
+                },
+                {
+                  text: "Config Locations / File Types",
+                  link: "/config#config-locations--file-types",
+                },
+              ],
             },
             {
-              text: "Config Locations / File Types",
-              link: "/config#config-locations--file-types",
-            },
-          ],
-        },
-        {
-          text: "Workspace Configuration",
-          link: "/config/workspace",
-          items: [
-            {
-              text: "Workspace Config File",
+              text: "Workspace Configuration",
               link: "/config/workspace",
+              items: [
+                {
+                  text: "Workspace Config File",
+                  link: "/config/workspace",
+                },
+              ],
+            },
+            {
+              text: "Project Configuration",
+              link: "/config/root",
+              items: [
+                {
+                  text: "Root Config File",
+                  link: "/config/root",
+                },
+                {
+                  text: "Environment Variables",
+                  link: "/config/env-vars",
+                },
+                {
+                  text: "Workspace Pattern Configs",
+                  link: "/config/workspace-pattern-configs",
+                },
+              ],
             },
           ],
         },
+      ],
+      "/concepts": [
         {
-          text: "Project Configuration",
-          link: "/config/root",
+          text: "Concepts",
+          collapsible: false,
           items: [
             {
-              text: "Root Config File",
-              link: "/config/root",
+              text: "Glossary",
+              link: "/concepts/glossary",
+              items: [
+                {
+                  text: "Project",
+                  link: "/concepts/glossary#project",
+                },
+                {
+                  text: "Workspace",
+                  link: "/concepts/glossary#workspace",
+                },
+                {
+                  text: "Script",
+                  link: "/concepts/glossary#script",
+                },
+                {
+                  text: "Terms in Action",
+                  link: "/concepts/glossary#terms-in-action",
+                },
+              ],
             },
             {
-              text: "Environment Variables",
-              link: "/config/env-vars",
+              text: "Workspaces",
+              items: [
+                {
+                  text: "Workspace Aliases",
+                  link: "/concepts/workspace-aliases",
+                },
+                {
+                  text: "Workspace Patterns",
+                  link: "/concepts/workspace-patterns",
+                },
+                {
+                  text: "Workspace Dependencies",
+                  link: "/concepts/workspace-dependencies",
+                },
+                {
+                  text: "Root Workspace",
+                  link: "/concepts/root-workspace",
+                },
+              ],
             },
             {
-              text: "Workspace Pattern Configs",
-              link: "/config/workspace-pattern-configs",
+              text: "Scripts",
+              items: [
+                {
+                  text: "Inline Scripts",
+                  link: "/concepts/inline-scripts",
+                },
+                {
+                  text: "Parallel Scripts",
+                  link: "/concepts/parallel-scripts",
+                },
+                {
+                  text: "Workspace Script Metadata",
+                  link: "/concepts/workspace-script-metadata",
+                },
+                {
+                  text: "Script Execution Order",
+                  link: "/concepts/script-execution-order",
+                },
+              ],
             },
           ],
         },

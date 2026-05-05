@@ -485,10 +485,26 @@ export default defineConfig({
             },
           ],
         },
+        {
+          text: "TS/JS API",
+          link: "/api",
+        },
+        {
+          text: "Configuration",
+          link: "/config",
+        },
+        {
+          text: "Concepts",
+          link: "/concepts/glossary",
+        },
       ],
       "/api": [
         {
-          text: "API",
+          text: "CLI",
+          link: "/cli",
+        },
+        {
+          text: "TS/JS API",
           collapsible: false,
           items: [
             {
@@ -528,8 +544,24 @@ export default defineConfig({
             },
           ],
         },
+        {
+          text: "Configuration",
+          link: "/config",
+        },
+        {
+          text: "Concepts",
+          link: "/concepts/glossary",
+        },
       ],
       "/config": [
+        {
+          text: "CLI",
+          link: "/cli",
+        },
+        {
+          text: "TS/JS API",
+          link: "/api",
+        },
         {
           text: "Configuration",
           collapsible: false,
@@ -578,8 +610,24 @@ export default defineConfig({
             },
           ],
         },
+        {
+          text: "Concepts",
+          link: "/concepts/glossary",
+        },
       ],
       "/concepts": [
+        {
+          text: "CLI",
+          link: "/cli",
+        },
+        {
+          text: "TS/JS API",
+          link: "/api",
+        },
+        {
+          text: "Configuration",
+          link: "/config",
+        },
         {
           text: "Concepts",
           collapsible: false,

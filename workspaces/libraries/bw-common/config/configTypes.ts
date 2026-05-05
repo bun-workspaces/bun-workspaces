@@ -110,6 +110,7 @@ export type ResolvedWorkspaceConfig = {
   tags: string[];
   scripts: Record<string, ScriptConfig>;
   rules: WorkspaceRules;
+  defaultInputs?: WorkspaceInputsConfig;
 };
 
 /** Static workspace context passed to a {@link WorkspacePatternConfigFactory}.

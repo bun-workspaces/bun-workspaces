@@ -44,14 +44,14 @@ export type WorkspaceInputsConfig = {
    *
    * Paths with a leading `/` are considered project-root-relative.
    */
-  files: string[];
+  files?: string[];
   /**
    * Matched workspaces are treated as inputs for the script.
    *
    * For example, when workspaces are provided here, they will
    * be treated like dependencies in the affected workspace resolution.
    */
-  workspacePatterns: string[];
+  workspacePatterns?: string[];
 };
 
 /** Configuration that applies to a specific package.json script */

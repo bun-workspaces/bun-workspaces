@@ -693,6 +693,11 @@ class _FileSystemProject extends ProjectBase implements Project {
           typeofName: "boolean",
           optional: true,
         },
+        "script option": {
+          value: options.script,
+          typeofName: "string",
+          optional: true,
+        },
       },
       { throw: true },
     );
@@ -776,8 +781,12 @@ class _FileSystemProject extends ProjectBase implements Project {
     affectedOptions,
     scriptOptions,
   }: RunAffectedWorkspaceScriptOptions): Promise<RunScriptAcrossWorkspacesResult> {
-    const { workspaceResults } =
-      await this.getAffectedWorkspaces(affectedOptions);
+    const { workspaceResults } = await this.getAffectedWorkspaces({
+      ...affectedOptions,
+      script:
+        affectedOptions.script ??
+        (scriptOptions.inline ? undefined : scriptOptions.script),
+    });
 
     return this.runScriptAcrossWorkspaces({
       ...scriptOptions,

@@ -59,6 +59,14 @@ export type AffectedWorkspacesResult = {
 
 export type BaseAffectedWorkspacesOptions = {
   ignorePackageDependencies?: boolean;
+  /**
+   * The name of a workspace script. When provided, each workspace's
+   * script-level `inputs` (from `scripts[script].inputs` in workspace config)
+   * are used when present, falling back to `defaultInputs` otherwise.
+   *
+   * When omitted, only `defaultInputs` is used.
+   */
+  script?: string;
 };
 
 export type GitAffectedWorkspacesOptions = BaseAffectedWorkspacesOptions & {
@@ -135,9 +143,11 @@ const SKIPPED_DIR_NAMES = new Set(["node_modules", ".git"]);
 const buildWorkspaceInputs = ({
   project,
   ignorePackageDependencies,
+  script,
 }: {
   project: FileSystemProject;
   ignorePackageDependencies: boolean;
+  script: string | undefined;
 }): {
   inputs: AffectedWorkspaceInput[];
   resolvedInputsByName: Map<string, WorkspaceInputsConfig>;
@@ -147,16 +157,19 @@ const buildWorkspaceInputs = ({
     : [...IMPLICIT_PACKAGE_JSON_INPUT_PATTERNS];
   const resolvedInputsByName = new Map<string, WorkspaceInputsConfig>();
   const inputs = project.workspaces.map<AffectedWorkspaceInput>((workspace) => {
-    const defaultInputs =
-      project.config.workspaces[workspace.name]?.defaultInputs ?? {};
-    resolvedInputsByName.set(workspace.name, defaultInputs);
+    const workspaceConfig = project.config.workspaces[workspace.name];
+    const scriptInputs = script
+      ? workspaceConfig?.scripts[script]?.inputs
+      : undefined;
+    const resolvedInputs = scriptInputs ?? workspaceConfig?.defaultInputs ?? {};
+    resolvedInputsByName.set(workspace.name, resolvedInputs);
     return {
       workspace,
       inputFilePatterns: [
-        ...(defaultInputs.files ?? [DEFAULT_INPUT_FILE_PATTERN]),
+        ...(resolvedInputs.files ?? [DEFAULT_INPUT_FILE_PATTERN]),
         ...implicitPatterns,
       ],
-      inputWorkspacePatterns: defaultInputs.workspacePatterns ?? [],
+      inputWorkspacePatterns: resolvedInputs.workspacePatterns ?? [],
     };
   });
   return { inputs, resolvedInputsByName };
@@ -264,7 +277,11 @@ export const getAffectedWorkspaces = async (
 ): Promise<AffectedWorkspacesResult> => {
   const ignorePackageDependencies = options.ignorePackageDependencies ?? false;
   const { inputs: workspaceInputs, resolvedInputsByName } =
-    buildWorkspaceInputs({ project, ignorePackageDependencies });
+    buildWorkspaceInputs({
+      project,
+      ignorePackageDependencies,
+      script: options.script,
+    });
 
   if (isOptionsForDiffSource(options, "git")) {
     const baseRef =

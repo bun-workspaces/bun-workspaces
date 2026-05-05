@@ -206,6 +206,17 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
         }),
       ).toThrow(InvalidJSTypeError);
     });
+
+    test("throws for non-string script option", () => {
+      const project = makeProject();
+      expect(() =>
+        project.getAffectedWorkspaces({
+          diffSource: "fileList",
+          changedFiles: [],
+          script: 123 as unknown as string,
+        }),
+      ).toThrow(InvalidJSTypeError);
+    });
   });
 
   describe("fileList diffSource", () => {
@@ -453,6 +464,90 @@ describe("FileSystemProject.getAffectedWorkspaces", () => {
       // 'a' has narrow files=["src/**/*"], so without implicit triggers
       // package.json edits don't mark it affected.
       expect(findResult(result.workspaceResults, "a").isAffected).toBe(false);
+    });
+  });
+
+  describe("script option", () => {
+    test("uses script-level inputs when configured for that script", async () => {
+      const project = makeProject(getProjectRoot("affectedWithInputs"));
+      // 'a' has scripts.build.inputs.files = ["build/**/*"]
+      // packages/a/build/x.ts matches the build script's inputs
+      const result = await project.getAffectedWorkspaces({
+        diffSource: "fileList",
+        changedFiles: ["packages/a/build/x.ts"],
+        script: "build",
+      });
+      expect(findResult(result.workspaceResults, "a").isAffected).toBe(true);
+    });
+
+    test("script-level inputs replace defaultInputs.files for matching", async () => {
+      const project = makeProject(getProjectRoot("affectedWithInputs"));
+      // With script="build", 'a' uses build/**/* (not src/**/*).
+      // A file under src/ should no longer match for 'a'.
+      const result = await project.getAffectedWorkspaces({
+        diffSource: "fileList",
+        changedFiles: ["packages/a/src/index.ts"],
+        script: "build",
+        ignorePackageDependencies: true,
+      });
+      expect(findResult(result.workspaceResults, "a").isAffected).toBe(false);
+    });
+
+    test("falls back to defaultInputs when workspace has no inputs for that script", async () => {
+      const project = makeProject(getProjectRoot("affectedWithInputs"));
+      // 'b' has only defaultInputs.files=["src/**/*"], no scripts.build.inputs.
+      // With script="build", 'b' should use defaultInputs.
+      const result = await project.getAffectedWorkspaces({
+        diffSource: "fileList",
+        changedFiles: ["packages/b/src/index.ts"],
+        script: "build",
+        ignorePackageDependencies: true,
+      });
+      expect(findResult(result.workspaceResults, "b").isAffected).toBe(true);
+    });
+
+    test("result.inputs reflects script-level inputs when used", async () => {
+      const project = makeProject(getProjectRoot("affectedWithInputs"));
+      const result = await project.getAffectedWorkspaces({
+        diffSource: "fileList",
+        changedFiles: [],
+        script: "build",
+      });
+      // 'a' has script-level inputs for "build"
+      expect(findResult(result.workspaceResults, "a").inputs).toEqual({
+        files: ["build/**/*"],
+      });
+      // 'b' falls back to defaultInputs
+      expect(findResult(result.workspaceResults, "b").inputs).toEqual({
+        files: ["src/**/*"],
+      });
+      // 'd' has no config → empty
+      expect(findResult(result.workspaceResults, "d").inputs).toEqual({});
+    });
+
+    test("without script option, only defaultInputs is used (script-level inputs ignored)", async () => {
+      const project = makeProject(getProjectRoot("affectedWithInputs"));
+      // packages/a/build/x.ts matches script-level but NOT defaultInputs.
+      // Without script option, 'a' should not be affected.
+      const result = await project.getAffectedWorkspaces({
+        diffSource: "fileList",
+        changedFiles: ["packages/a/build/x.ts"],
+        ignorePackageDependencies: true,
+      });
+      expect(findResult(result.workspaceResults, "a").isAffected).toBe(false);
+    });
+
+    test("falls back to defaultInputs when the named script has no per-script config", async () => {
+      const project = makeProject(getProjectRoot("affectedWithInputs"));
+      // 'a' has scripts.build but no scripts.lint config.
+      // With script="lint", 'a' uses defaultInputs.files=["src/**/*"].
+      const result = await project.getAffectedWorkspaces({
+        diffSource: "fileList",
+        changedFiles: ["packages/a/src/index.ts"],
+        script: "lint",
+        ignorePackageDependencies: true,
+      });
+      expect(findResult(result.workspaceResults, "a").isAffected).toBe(true);
     });
   });
 

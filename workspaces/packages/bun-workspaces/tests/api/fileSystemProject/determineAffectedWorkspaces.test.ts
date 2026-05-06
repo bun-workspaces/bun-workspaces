@@ -97,13 +97,24 @@ describe("FileSystemProject.determineAffectedWorkspaces", () => {
       ).toThrow(InvalidJSTypeError);
     });
 
-    test("throws for non-boolean ignorePackageDependencies", () => {
+    test("throws for non-boolean ignoreWorkspaceDependencies", () => {
       const project = makeProject();
       expect(() =>
         project.determineAffectedWorkspaces({
           diffSource: "fileList",
           changedFiles: [],
-          ignorePackageDependencies: "yes" as unknown as boolean,
+          ignoreWorkspaceDependencies: "yes" as unknown as boolean,
+        }),
+      ).toThrow(InvalidJSTypeError);
+    });
+
+    test("throws for non-boolean ignoreExternalDependencies", () => {
+      const project = makeProject();
+      expect(() =>
+        project.determineAffectedWorkspaces({
+          diffSource: "fileList",
+          changedFiles: [],
+          ignoreExternalDependencies: "yes" as unknown as boolean,
         }),
       ).toThrow(InvalidJSTypeError);
     });
@@ -280,7 +291,7 @@ describe("FileSystemProject.determineAffectedWorkspaces", () => {
       const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["packages/e/src/index.ts"],
-        ignorePackageDependencies: true,
+        ignoreWorkspaceDependencies: true,
       });
       expect(findResult(result.workspaceResults, "e").isAffected).toBe(true);
       for (const name of [
@@ -329,17 +340,17 @@ describe("FileSystemProject.determineAffectedWorkspaces", () => {
   describe("changedFiles pattern expansion", () => {
     test("expands a directory entry to all its files", async () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
-      // packages/a/src/** is the configured input; "packages/a/src" as a dir
-      // entry should expand to its files. We need actual files on disk for the
-      // dir walk, so we use the project package.json paths instead:
-      // pass the project's "packages/a" dir which contains package.json + bw.workspace.json
+      // 'd' has no workspace config so its input falls back to '.'. Listing
+      // its directory should expand to packages/d/package.json which 'd's
+      // input matches.
       const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
-        changedFiles: ["packages/a"],
+        changedFiles: ["packages/d"],
       });
-      // packages/a contains package.json + bw.workspace.json. With implicit
-      // package.json input, "a" is affected via package.json.
-      expect(findResult(result.workspaceResults, "a").isAffected).toBe(true);
+      expect(findResult(result.workspaceResults, "d").isAffected).toBe(true);
+      // 'a' has narrow src/**/* input — package.json under packages/a/ does
+      // not match (and 'a' has no path under packages/d).
+      expect(findResult(result.workspaceResults, "a").isAffected).toBe(false);
     });
 
     test("expands a glob pattern to matching files", async () => {
@@ -348,20 +359,25 @@ describe("FileSystemProject.determineAffectedWorkspaces", () => {
         diffSource: "fileList",
         changedFiles: ["packages/*/package.json"],
       });
-      // every workspace's package.json matches → all workspaces affected
-      for (const name of ["a", "b", "c", "d", "e"]) {
-        expect(findResult(result.workspaceResults, name).isAffected).toBe(true);
-      }
+      // 'e' explicitly lists package.json in its inputs → directly affected
+      expect(findResult(result.workspaceResults, "e").isAffected).toBe(true);
+      // 'd' has '.' default input → its package.json matches → affected
+      expect(findResult(result.workspaceResults, "d").isAffected).toBe(true);
+      // 'a' has src/**/* — package.json doesn't match. No package.json edit
+      // for 'a's deps either, so not affected.
+      expect(findResult(result.workspaceResults, "a").isAffected).toBe(false);
     });
 
     test("'!' exclusions remove files from the include set", async () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
       const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
-        changedFiles: ["packages/*/package.json", "!packages/d/package.json"],
+        changedFiles: ["packages/*/package.json", "!packages/e/package.json"],
       });
-      expect(findResult(result.workspaceResults, "a").isAffected).toBe(true);
-      expect(findResult(result.workspaceResults, "d").isAffected).toBe(false);
+      // 'e's package.json was excluded so its only matching file is gone
+      expect(findResult(result.workspaceResults, "e").isAffected).toBe(false);
+      // 'd' still affected via '.' input matching its own package.json
+      expect(findResult(result.workspaceResults, "d").isAffected).toBe(true);
     });
 
     test("non-existent literal paths pass through (treated as deleted)", async () => {
@@ -379,10 +395,15 @@ describe("FileSystemProject.determineAffectedWorkspaces", () => {
         diffSource: "fileList",
         changedFiles: ["."],
       });
-      // every workspace's files end up in the expansion → all affected
-      for (const name of ["a", "b", "c", "d", "e"]) {
-        expect(findResult(result.workspaceResults, name).isAffected).toBe(true);
-      }
+      // 'd' (input='.'), 'e' (package.json input), and 'c' (workspacePatterns
+      // includes 'd') are affected via the broad expansion.
+      expect(findResult(result.workspaceResults, "d").isAffected).toBe(true);
+      expect(findResult(result.workspaceResults, "e").isAffected).toBe(true);
+      expect(findResult(result.workspaceResults, "c").isAffected).toBe(true);
+      // 'a' and 'b' have narrow src/**/* inputs — fixture has no src files,
+      // so nothing matches and the workspace dep chain doesn't trigger them.
+      expect(findResult(result.workspaceResults, "a").isAffected).toBe(false);
+      expect(findResult(result.workspaceResults, "b").isAffected).toBe(false);
     });
 
     test("'./' prefixed paths are stripped before matching", async () => {
@@ -418,47 +439,19 @@ describe("FileSystemProject.determineAffectedWorkspaces", () => {
       expect(findResult(result.workspaceResults, "a").isAffected).toBe(true);
     });
 
-    test("result.inputs reflects the effective inputs used (configured + implicit)", async () => {
+    test("result.inputs reflects configured inputs verbatim", async () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
       const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: [],
-      });
-      expect(findResult(result.workspaceResults, "a").inputs).toEqual({
-        files: ["src/**/*", "package.json", "/package.json"],
-        workspacePatterns: [],
-      });
-      // 'd' has no bw.workspace.json → falls back to default "." pattern + implicit
-      expect(findResult(result.workspaceResults, "d").inputs).toEqual({
-        files: [".", "package.json", "/package.json"],
-        workspacePatterns: [],
-      });
-    });
-
-    test("result.inputs omits implicit patterns when ignorePackageDependencies is true", async () => {
-      const project = makeProject(getProjectRoot("affectedWithInputs"));
-      const result = await project.determineAffectedWorkspaces({
-        diffSource: "fileList",
-        changedFiles: [],
-        ignorePackageDependencies: true,
       });
       expect(findResult(result.workspaceResults, "a").inputs).toEqual({
         files: ["src/**/*"],
         workspacePatterns: [],
       });
-    });
-
-    test("effective input files are deduped when configured patterns overlap implicits", async () => {
-      const project = makeProject(getProjectRoot("affectedWithInputs"));
-      // 'e' has defaultInputs.files = ["package.json", "/package.json"]
-      // which exactly overlaps the implicit triggers. Effective files
-      // should appear once each, in the original order.
-      const result = await project.determineAffectedWorkspaces({
-        diffSource: "fileList",
-        changedFiles: [],
-      });
-      expect(findResult(result.workspaceResults, "e").inputs).toEqual({
-        files: ["package.json", "/package.json"],
+      // 'd' has no bw.workspace.json → falls back to default "." pattern
+      expect(findResult(result.workspaceResults, "d").inputs).toEqual({
+        files: ["."],
         workspacePatterns: [],
       });
     });
@@ -466,8 +459,8 @@ describe("FileSystemProject.determineAffectedWorkspaces", () => {
     test("workspacePatterns inputs treat matched workspaces as input dependencies", async () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
       // c has defaultInputs.workspacePatterns = ["d"]; d has no inputs config
-      // changing a file in d (which becomes affected via implicit package.json)
-      // should also propagate to c via input workspace dependency.
+      // (default "." input). Changing a file under packages/d affects 'd'
+      // which propagates to 'c' via the input workspace dependency.
       const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["packages/d/package.json"],
@@ -485,39 +478,32 @@ describe("FileSystemProject.determineAffectedWorkspaces", () => {
     });
   });
 
-  describe("implicit package.json inputs", () => {
-    test("changing a workspace's own package.json marks it affected", async () => {
-      const project = makeProject(getProjectRoot("affectedWithInputs"));
-      // Workspace 'a' has narrow defaultInputs.files=["src/**/*"], so
-      // package.json hits only via the implicit pattern.
-      const result = await project.determineAffectedWorkspaces({
-        diffSource: "fileList",
-        changedFiles: ["packages/a/package.json"],
-      });
-      expect(findResult(result.workspaceResults, "a").isAffected).toBe(true);
-    });
-
-    test("changing the root package.json marks every workspace affected", async () => {
+  describe("bun.lock as a fileList signal", () => {
+    test("bun.lock in changedFiles flags workspaces with non-empty externalDependencies", async () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
       const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
-        changedFiles: ["package.json"],
+        changedFiles: ["bun.lock"],
       });
+      // The fixture's workspaces have no external deps in package.json so
+      // none should be marked affected by lockfile alone (smoke test).
       for (const name of ["a", "b", "c", "d", "e"]) {
-        expect(findResult(result.workspaceResults, name).isAffected).toBe(true);
+        expect(findResult(result.workspaceResults, name).isAffected).toBe(
+          false,
+        );
       }
     });
 
-    test("ignorePackageDependencies disables implicit package.json triggers", async () => {
+    test("ignoreExternalDependencies suppresses the bun.lock signal in fileList mode", async () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));
       const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
-        changedFiles: ["packages/a/package.json", "package.json"],
-        ignorePackageDependencies: true,
+        changedFiles: ["bun.lock"],
+        ignoreExternalDependencies: true,
       });
-      // 'a' has narrow files=["src/**/*"], so without implicit triggers
-      // package.json edits don't mark it affected.
-      expect(findResult(result.workspaceResults, "a").isAffected).toBe(false);
+      for (const ws of result.workspaceResults) {
+        expect(ws.affectedReasons.externalDependencies).toEqual([]);
+      }
     });
   });
 
@@ -542,7 +528,7 @@ describe("FileSystemProject.determineAffectedWorkspaces", () => {
         diffSource: "fileList",
         changedFiles: ["packages/a/src/index.ts"],
         script: "build",
-        ignorePackageDependencies: true,
+        ignoreWorkspaceDependencies: true,
       });
       expect(findResult(result.workspaceResults, "a").isAffected).toBe(false);
     });
@@ -555,7 +541,7 @@ describe("FileSystemProject.determineAffectedWorkspaces", () => {
         diffSource: "fileList",
         changedFiles: ["packages/b/src/index.ts"],
         script: "build",
-        ignorePackageDependencies: true,
+        ignoreWorkspaceDependencies: true,
       });
       expect(findResult(result.workspaceResults, "b").isAffected).toBe(true);
     });
@@ -566,7 +552,7 @@ describe("FileSystemProject.determineAffectedWorkspaces", () => {
         diffSource: "fileList",
         changedFiles: [],
         script: "build",
-        ignorePackageDependencies: true,
+        ignoreWorkspaceDependencies: true,
       });
       // 'a' has script-level inputs for "build"
       expect(findResult(result.workspaceResults, "a").inputs).toEqual({
@@ -592,7 +578,7 @@ describe("FileSystemProject.determineAffectedWorkspaces", () => {
       const result = await project.determineAffectedWorkspaces({
         diffSource: "fileList",
         changedFiles: ["packages/a/build/x.ts"],
-        ignorePackageDependencies: true,
+        ignoreWorkspaceDependencies: true,
       });
       expect(findResult(result.workspaceResults, "a").isAffected).toBe(false);
     });
@@ -605,7 +591,7 @@ describe("FileSystemProject.determineAffectedWorkspaces", () => {
         diffSource: "fileList",
         changedFiles: ["packages/a/src/index.ts"],
         script: "lint",
-        ignorePackageDependencies: true,
+        ignoreWorkspaceDependencies: true,
       });
       expect(findResult(result.workspaceResults, "a").isAffected).toBe(true);
     });
@@ -789,6 +775,245 @@ describe("FileSystemProject.determineAffectedWorkspaces", () => {
       });
       // 'b' depends on 'a' → cascades
       expect(findResult(result.workspaceResults, "b").isAffected).toBe(true);
+    });
+  });
+
+  describe("git diffSource with external dependency tracking", () => {
+    const buildExternalDepLockfile = (lodashVersion: string): string =>
+      JSON.stringify({
+        lockfileVersion: 1,
+        configVersion: 1,
+        workspaces: {
+          "": { name: "test-root" },
+          "packages/a": {
+            name: "a",
+            dependencies: { lodash: "^4.17.0" },
+          },
+          "packages/b": { name: "b" },
+        },
+        packages: {
+          a: ["a@workspace:packages/a"],
+          b: ["b@workspace:packages/b"],
+          lodash: [`lodash@${lodashVersion}`, {}, "<sha>"],
+        },
+      });
+
+    const EXTERNAL_DEP_FILES = [
+      {
+        path: "package.json",
+        content: JSON.stringify({
+          name: "test-root",
+          workspaces: ["packages/*"],
+        }),
+      },
+      {
+        path: "packages/a/package.json",
+        content: JSON.stringify({
+          name: "a",
+          dependencies: { lodash: "^4.17.0" },
+        }),
+      },
+      {
+        path: "packages/b/package.json",
+        content: JSON.stringify({ name: "b" }),
+      },
+    ];
+
+    test("a lockfile-only version bump for an external dep flags the workspace", async () => {
+      const fixture = await newFixture({
+        commits: [
+          {
+            message: "init",
+            files: [
+              ...EXTERNAL_DEP_FILES,
+              {
+                path: "bun.lock",
+                content: buildExternalDepLockfile("4.17.21"),
+              },
+            ],
+          },
+          {
+            message: "bump",
+            files: [
+              {
+                path: "bun.lock",
+                content: buildExternalDepLockfile("4.17.22"),
+              },
+            ],
+          },
+        ],
+      });
+      const project = makeProject(fixture.projectPath);
+      const result = await project.determineAffectedWorkspaces({
+        diffSource: "git",
+        diffOptions: {
+          baseRef: fixture.shaForMessage("init"),
+          headRef: fixture.shaForMessage("bump"),
+          ignoreUncommitted: true,
+        },
+      });
+      const a = findResult(result.workspaceResults, "a");
+      expect(a.isAffected).toBe(true);
+      expect(a.affectedReasons.externalDependencies).toEqual([
+        {
+          name: "lodash",
+          dev: false,
+          baseVersion: "4.17.21",
+          headVersion: "4.17.22",
+        },
+      ]);
+      // 'b' has no external deps, no source files changed → not affected
+      expect(findResult(result.workspaceResults, "b").isAffected).toBe(false);
+    });
+
+    test("ignoreExternalDependencies suppresses lockfile-based tracking entirely", async () => {
+      const fixture = await newFixture({
+        commits: [
+          {
+            message: "init",
+            files: [
+              ...EXTERNAL_DEP_FILES,
+              {
+                path: "bun.lock",
+                content: buildExternalDepLockfile("4.17.21"),
+              },
+            ],
+          },
+          {
+            message: "bump",
+            files: [
+              {
+                path: "bun.lock",
+                content: buildExternalDepLockfile("4.17.22"),
+              },
+            ],
+          },
+        ],
+      });
+      const project = makeProject(fixture.projectPath);
+      const result = await project.determineAffectedWorkspaces({
+        diffSource: "git",
+        diffOptions: {
+          baseRef: fixture.shaForMessage("init"),
+          headRef: fixture.shaForMessage("bump"),
+          ignoreUncommitted: true,
+        },
+        ignoreExternalDependencies: true,
+      });
+      // Lockfile in changed files won't match 'a's defaults — and external
+      // tracking is disabled — so 'a' is not affected.
+      const a = findResult(result.workspaceResults, "a");
+      expect(a.isAffected).toBe(false);
+      expect(a.affectedReasons.externalDependencies).toEqual([]);
+    });
+
+    test("an external dep change cascades through workspace deps unless ignored", async () => {
+      const cascadeProjectFiles = [
+        {
+          path: "package.json",
+          content: JSON.stringify({
+            name: "test-root",
+            workspaces: ["packages/*"],
+          }),
+        },
+        {
+          path: "bun.lock",
+          content: JSON.stringify({
+            lockfileVersion: 1,
+            configVersion: 1,
+            workspaces: {
+              "": { name: "test-root" },
+              "packages/a": {
+                name: "a",
+                dependencies: { lodash: "^4.17.0" },
+              },
+              "packages/b": {
+                name: "b",
+                dependencies: { a: "workspace:*" },
+              },
+            },
+            packages: {
+              a: ["a@workspace:packages/a"],
+              b: ["b@workspace:packages/b"],
+              lodash: ["lodash@4.17.21", {}, "<sha>"],
+            },
+          }),
+        },
+        {
+          path: "packages/a/package.json",
+          content: JSON.stringify({
+            name: "a",
+            dependencies: { lodash: "^4.17.0" },
+          }),
+        },
+        {
+          path: "packages/b/package.json",
+          content: JSON.stringify({
+            name: "b",
+            dependencies: { a: "workspace:*" },
+          }),
+        },
+      ];
+      const fixture = await newFixture({
+        commits: [
+          { message: "init", files: cascadeProjectFiles },
+          {
+            message: "bump",
+            files: [
+              {
+                path: "bun.lock",
+                content: JSON.stringify({
+                  lockfileVersion: 1,
+                  configVersion: 1,
+                  workspaces: {
+                    "": { name: "test-root" },
+                    "packages/a": {
+                      name: "a",
+                      dependencies: { lodash: "^4.17.0" },
+                    },
+                    "packages/b": {
+                      name: "b",
+                      dependencies: { a: "workspace:*" },
+                    },
+                  },
+                  packages: {
+                    a: ["a@workspace:packages/a"],
+                    b: ["b@workspace:packages/b"],
+                    lodash: ["lodash@4.17.22", {}, "<sha>"],
+                  },
+                }),
+              },
+            ],
+          },
+        ],
+      });
+      const project = makeProject(fixture.projectPath);
+      const result = await project.determineAffectedWorkspaces({
+        diffSource: "git",
+        diffOptions: {
+          baseRef: fixture.shaForMessage("init"),
+          headRef: fixture.shaForMessage("bump"),
+          ignoreUncommitted: true,
+        },
+      });
+      // 'a' directly affected via lodash version change; 'b' cascades via dep
+      expect(findResult(result.workspaceResults, "a").isAffected).toBe(true);
+      expect(findResult(result.workspaceResults, "b").isAffected).toBe(true);
+
+      // With ignoreWorkspaceDependencies, the cascade is dropped
+      const noCascade = await project.determineAffectedWorkspaces({
+        diffSource: "git",
+        diffOptions: {
+          baseRef: fixture.shaForMessage("init"),
+          headRef: fixture.shaForMessage("bump"),
+          ignoreUncommitted: true,
+        },
+        ignoreWorkspaceDependencies: true,
+      });
+      expect(findResult(noCascade.workspaceResults, "a").isAffected).toBe(true);
+      expect(findResult(noCascade.workspaceResults, "b").isAffected).toBe(
+        false,
+      );
     });
   });
 

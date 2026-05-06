@@ -219,6 +219,15 @@ export const CLI_COMMANDS_CONFIG = {
         description:
           "Exclude all uncommitted changes (staged, unstaged, untracked)",
       },
+      ignoreWorkspaceDeps: {
+        flags: ["--ignore-workspace-deps"],
+        description:
+          "Skip cascading affected workspaces through `workspace:*` dependencies",
+      },
+      ignoreExternalDeps: {
+        flags: ["--ignore-external-deps"],
+        description: "Skip lockfile-based external dependency version tracking",
+      },
       explain: {
         flags: ["-e", "--explain"],
         description:

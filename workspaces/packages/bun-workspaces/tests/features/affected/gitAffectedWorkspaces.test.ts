@@ -382,7 +382,7 @@ describe("getGitAffectedWorkspaces", () => {
       ]);
     });
 
-    test("forwards ignorePackageDependencies to file-affected logic", async () => {
+    test("forwards ignoreWorkspaceDependencies to file-affected logic", async () => {
       const fixture = await newFixture({
         commits: [
           {
@@ -422,7 +422,7 @@ describe("getGitAffectedWorkspaces", () => {
               inputWorkspacePatterns: [],
             },
           ],
-          ignorePackageDependencies: true,
+          ignoreWorkspaceDependencies: true,
         },
         gitOptions: {
           baseRef: fixture.shaForMessage("init"),

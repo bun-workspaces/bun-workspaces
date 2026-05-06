@@ -5,6 +5,7 @@ import type {
   AffectedWorkspaceResult,
   AffectedWorkspacesMetadata,
   DetermineAffectedWorkspacesOptions,
+  ExternalDependencyChange,
 } from "../../project";
 import {
   commandOutputLogger,
@@ -36,6 +37,20 @@ const formatDependencyChain = (dependency: AffectedDependency): string => {
   return segments.join(" ");
 };
 
+const formatExternalDepEntryShort = (
+  change: ExternalDependencyChange,
+): string => `${change.name}${change.dev ? " (dev)" : ""}`;
+
+const formatExternalDepEntryDetailed = (
+  change: ExternalDependencyChange,
+): string => {
+  const versions =
+    change.baseVersion === null && change.headVersion === null
+      ? "lockfile changed; precise diff unavailable"
+      : `${change.baseVersion ?? "(absent)"} -> ${change.headVersion ?? "(absent)"}`;
+  return `${change.name}${change.dev ? " (dev)" : ""} \x1b[90m[${versions}]\x1b[0m`;
+};
+
 const createWorkspaceSummaryLines = (
   result: AffectedWorkspaceResult,
 ): string[] => {
@@ -52,6 +67,15 @@ const createWorkspaceSummaryLines = (
     );
   } else {
     lines.push(`\x1b[96mAffected dependencies:\x1b[0m (none)`);
+  }
+  if (affectedReasons.externalDependencies.length) {
+    lines.push(
+      `\x1b[96mChanged external dependencies:\x1b[0m ${affectedReasons.externalDependencies
+        .map(formatExternalDepEntryShort)
+        .join(", ")}`,
+    );
+  } else {
+    lines.push(`\x1b[96mChanged external dependencies:\x1b[0m (none)`);
   }
   return lines;
 };
@@ -83,6 +107,14 @@ const createWorkspaceDetailedLines = (
   } else {
     lines.push("\x1b[96mAffected dependencies:\x1b[0m (none)");
   }
+  if (affectedReasons.externalDependencies.length) {
+    lines.push("\x1b[96mChanged external dependencies:\x1b[0m");
+    for (const change of affectedReasons.externalDependencies) {
+      lines.push(` - ${formatExternalDepEntryDetailed(change)}`);
+    }
+  } else {
+    lines.push("\x1b[96mChanged external dependencies:\x1b[0m (none)");
+  }
   return lines;
 };
 
@@ -99,6 +131,8 @@ export const listAffected = handleProjectCommand(
       ignoreUnstaged: boolean;
       ignoreStaged: boolean;
       ignoreUncommitted: boolean;
+      ignoreWorkspaceDeps: boolean;
+      ignoreExternalDeps: boolean;
       explain: boolean;
       detailed: boolean;
       json: boolean;
@@ -127,10 +161,16 @@ export const listAffected = handleProjectCommand(
             diffSource: "fileList",
             changedFiles: splitWorkspacePatterns(options.files),
             script: options.script,
+            ignoreWorkspaceDependencies:
+              options.ignoreWorkspaceDeps || undefined,
+            ignoreExternalDependencies: options.ignoreExternalDeps || undefined,
           }
         : {
             diffSource: "git",
             script: options.script,
+            ignoreWorkspaceDependencies:
+              options.ignoreWorkspaceDeps || undefined,
+            ignoreExternalDependencies: options.ignoreExternalDeps || undefined,
             diffOptions: {
               baseRef: options.base,
               headRef: options.head,

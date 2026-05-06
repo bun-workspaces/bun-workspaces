@@ -730,8 +730,13 @@ class _FileSystemProject extends ProjectBase implements Project {
           value: options.diffSource,
           typeofName: "string",
         },
-        "ignorePackageDependencies option": {
-          value: options.ignorePackageDependencies,
+        "ignoreWorkspaceDependencies option": {
+          value: options.ignoreWorkspaceDependencies,
+          typeofName: "boolean",
+          optional: true,
+        },
+        "ignoreExternalDependencies option": {
+          value: options.ignoreExternalDependencies,
           typeofName: "boolean",
           optional: true,
         },

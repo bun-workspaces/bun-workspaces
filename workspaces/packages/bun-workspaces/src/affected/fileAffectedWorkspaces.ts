@@ -2,6 +2,10 @@ import path from "path";
 import bun from "bun";
 import { logger } from "../internal/logger";
 import { matchWorkspacesByPatterns, type Workspace } from "../workspaces";
+import type {
+  ExternalDependencyChange,
+  ExternalDependencyChangesByWorkspace,
+} from "./externalDependencyChanges";
 
 export type AffectedDependencyEdgeSource = "input" | "package";
 
@@ -49,6 +53,7 @@ export interface AffectedReasons<
 > {
   changedFiles: AffectedFileResult<FileMetadata>[];
   dependencies: AffectedDependencyResult[];
+  externalDependencies: ExternalDependencyChange[];
 }
 
 export interface AffectedWorkspaceResult<
@@ -66,8 +71,10 @@ export interface FileAffectedWorkspacesOptions {
   workspaceInputs: AffectedWorkspaceInput[];
   /** The paths of all files that are considered changed */
   changedFilePaths: string[];
-  /** Whether to ignore the package.json dependencies when determining affected workspaces */
-  ignorePackageDependencies?: boolean;
+  /** Per-workspace external dep version deltas (from a lockfile compare) */
+  externalDepChangesByWorkspace?: ExternalDependencyChangesByWorkspace;
+  /** Whether to ignore cascade through workspace `workspace:*` dependencies */
+  ignoreWorkspaceDependencies?: boolean;
 }
 
 export interface FileAffectedWorkspacesResult<
@@ -303,14 +310,16 @@ const computeAffectedWorkspaceSet = ({
   workspaceInputs,
   workspaceByName,
   changedFilesByName,
+  externalDepChangesByWorkspace,
   inputDependenciesByName,
-  ignorePackageDependencies,
+  ignoreWorkspaceDependencies,
 }: {
   workspaceInputs: AffectedWorkspaceInput[];
   workspaceByName: Map<string, Workspace>;
   changedFilesByName: Map<string, AffectedFileResult[]>;
+  externalDepChangesByWorkspace: ExternalDependencyChangesByWorkspace;
   inputDependenciesByName: Map<string, string[]>;
-  ignorePackageDependencies: boolean;
+  ignoreWorkspaceDependencies: boolean;
 }): Set<string> => {
   const inputDependentsByName = new Map<string, string[]>();
   for (const [workspaceName, dependencyNames] of inputDependenciesByName) {
@@ -328,7 +337,11 @@ const computeAffectedWorkspaceSet = ({
   const queue: string[] = [];
 
   for (const { workspace } of workspaceInputs) {
-    if ((changedFilesByName.get(workspace.name)?.length ?? 0) > 0) {
+    const hasChangedFiles =
+      (changedFilesByName.get(workspace.name)?.length ?? 0) > 0;
+    const hasExternalDepChanges =
+      (externalDepChangesByWorkspace.get(workspace.name)?.length ?? 0) > 0;
+    if (hasChangedFiles || hasExternalDepChanges) {
       affected.add(workspace.name);
       queue.push(workspace.name);
     }
@@ -340,7 +353,7 @@ const computeAffectedWorkspaceSet = ({
 
     const dependents = [
       ...(inputDependentsByName.get(currentName) ?? []),
-      ...(!ignorePackageDependencies && currentWorkspace
+      ...(!ignoreWorkspaceDependencies && currentWorkspace
         ? currentWorkspace.dependents
         : []),
     ];
@@ -361,13 +374,13 @@ const collectAffectedDependencies = ({
   workspaceByName,
   inputDependenciesByName,
   affectedSet,
-  ignorePackageDependencies,
+  ignoreWorkspaceDependencies,
 }: {
   startingWorkspace: Workspace;
   workspaceByName: Map<string, Workspace>;
   inputDependenciesByName: Map<string, string[]>;
   affectedSet: Set<string>;
-  ignorePackageDependencies: boolean;
+  ignoreWorkspaceDependencies: boolean;
 }): AffectedDependencyResult[] => {
   const results: AffectedDependencyResult[] = [];
   const visited = new Set<string>([startingWorkspace.name]);
@@ -388,7 +401,7 @@ const collectAffectedDependencies = ({
       []) {
       edges.push({ dependencyName, edgeSource: "input" });
     }
-    if (!ignorePackageDependencies) {
+    if (!ignoreWorkspaceDependencies) {
       for (const dependencyName of currentWorkspace.dependencies) {
         edges.push({ dependencyName, edgeSource: "package" });
       }
@@ -420,7 +433,8 @@ export const getFileAffectedWorkspaces = async ({
   rootDirectory,
   workspaceInputs,
   changedFilePaths,
-  ignorePackageDependencies = false,
+  externalDepChangesByWorkspace = new Map(),
+  ignoreWorkspaceDependencies = false,
 }: FileAffectedWorkspacesOptions): Promise<FileAffectedWorkspacesResult> => {
   const normalizedChangedFilePaths = changedFilePaths.map((filePath) =>
     normalizeChangedFilePath({ rootDirectory, filePath }),
@@ -452,24 +466,27 @@ export const getFileAffectedWorkspaces = async ({
     workspaceInputs,
     workspaceByName,
     changedFilesByName,
+    externalDepChangesByWorkspace,
     inputDependenciesByName,
-    ignorePackageDependencies,
+    ignoreWorkspaceDependencies,
   });
 
   const affectedWorkspaces = workspaceInputs.map(({ workspace }) => {
     const changedFiles = changedFilesByName.get(workspace.name) ?? [];
+    const externalDependencies =
+      externalDepChangesByWorkspace.get(workspace.name) ?? [];
     const dependencies = collectAffectedDependencies({
       startingWorkspace: workspace,
       workspaceByName,
       inputDependenciesByName,
       affectedSet,
-      ignorePackageDependencies,
+      ignoreWorkspaceDependencies,
     });
 
     return {
       workspace,
       isAffected: affectedSet.has(workspace.name),
-      affectedReasons: { changedFiles, dependencies },
+      affectedReasons: { changedFiles, dependencies, externalDependencies },
     };
   });
 

@@ -49,6 +49,7 @@ describe("getFileAffectedWorkspaces", () => {
               },
             ],
             dependencies: [],
+            externalDependencies: [],
           },
         },
       ]);
@@ -1332,6 +1333,7 @@ describe("getFileAffectedWorkspaces", () => {
               },
             ],
             dependencies: [],
+            externalDependencies: [],
           },
         },
         {
@@ -1348,6 +1350,7 @@ describe("getFileAffectedWorkspaces", () => {
                 ],
               },
             ],
+            externalDependencies: [],
           },
         },
       ]);
@@ -1403,6 +1406,7 @@ describe("getFileAffectedWorkspaces", () => {
               ],
             },
           ],
+          externalDependencies: [],
         },
       });
       expect(result.affectedWorkspaces[1].affectedReasons.dependencies).toEqual(
@@ -1845,7 +1849,7 @@ describe("getFileAffectedWorkspaces", () => {
     });
   });
 
-  describe("ignorePackageDependencies", () => {
+  describe("ignoreWorkspaceDependencies", () => {
     test("disables propagation through package edges", async () => {
       const dep = makeTestWorkspace({
         name: "dep",
@@ -1865,7 +1869,7 @@ describe("getFileAffectedWorkspaces", () => {
           makeInput({ workspace: app, inputFilePatterns: ["src"] }),
         ],
         changedFilePaths: ["packages/dep/src/x.ts"],
-        ignorePackageDependencies: true,
+        ignoreWorkspaceDependencies: true,
       });
 
       expect(result.affectedWorkspaces[0].isAffected).toBe(true);
@@ -1900,7 +1904,7 @@ describe("getFileAffectedWorkspaces", () => {
           makeInput({ workspace: c, inputFilePatterns: ["src"] }),
         ],
         changedFilePaths: ["packages/c/src/x.ts"],
-        ignorePackageDependencies: true,
+        ignoreWorkspaceDependencies: true,
       });
 
       expect(result.affectedWorkspaces.map((w) => w.isAffected)).toEqual([
@@ -1929,7 +1933,7 @@ describe("getFileAffectedWorkspaces", () => {
       );
     });
 
-    test("with ignorePackageDependencies, package transitivity through an input dep is dropped", async () => {
+    test("with ignoreWorkspaceDependencies, package transitivity through an input dep is dropped", async () => {
       // app --input--> lib --package--> shared, shared changes
       const shared = makeTestWorkspace({
         name: "shared",
@@ -1954,7 +1958,7 @@ describe("getFileAffectedWorkspaces", () => {
           }),
         ],
         changedFilePaths: ["packages/shared/src/x.ts"],
-        ignorePackageDependencies: true,
+        ignoreWorkspaceDependencies: true,
       });
 
       // shared: directly changed
@@ -1965,7 +1969,7 @@ describe("getFileAffectedWorkspaces", () => {
       expect(result.affectedWorkspaces[2].isAffected).toBe(false);
     });
 
-    test("with ignorePackageDependencies, all chain edges are `input`", async () => {
+    test("with ignoreWorkspaceDependencies, all chain edges are `input`", async () => {
       const c = makeTestWorkspace({ name: "c", path: "packages/c" });
       const b = makeTestWorkspace({ name: "b", path: "packages/b" });
       const a = makeTestWorkspace({ name: "a", path: "packages/a" });
@@ -1984,7 +1988,7 @@ describe("getFileAffectedWorkspaces", () => {
           makeInput({ workspace: c, inputFilePatterns: ["src"] }),
         ],
         changedFilePaths: ["packages/c/src/x.ts"],
-        ignorePackageDependencies: true,
+        ignoreWorkspaceDependencies: true,
       });
 
       const chainEdges =
@@ -2025,6 +2029,7 @@ describe("getFileAffectedWorkspaces", () => {
         affectedReasons: {
           changedFiles: [],
           dependencies: [],
+          externalDependencies: [],
         },
       });
     });

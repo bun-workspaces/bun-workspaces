@@ -62,6 +62,47 @@ describe("findWorkspaces with dependencies", () => {
   });
 });
 
+describe("Workspace.externalDependencies", () => {
+  test("captures dependencies and devDependencies with the dev flag set correctly", () => {
+    const { workspaces } = findWorkspaces({
+      rootDirectory: getProjectRoot("withDependenciesWithExternal"),
+    });
+    const a = workspaces.find((w) => w.name === "a")!;
+    expect(a.externalDependencies).toEqual([
+      { name: "lodash", dev: false },
+      { name: "typescript", dev: true },
+    ]);
+  });
+
+  test("includes peerDependencies and optionalDependencies as runtime (dev=false)", () => {
+    const { workspaces } = findWorkspaces({
+      rootDirectory: getProjectRoot("withDependenciesWithExternal"),
+    });
+    const c = workspaces.find((w) => w.name === "c")!;
+    expect(c.externalDependencies).toEqual([
+      { name: "fsevents", dev: false },
+      { name: "react", dev: false },
+    ]);
+  });
+
+  test("excludes workspace:* dependencies from externalDependencies", () => {
+    const { workspaces } = findWorkspaces({
+      rootDirectory: getProjectRoot("withDependenciesSimple"),
+    });
+    for (const workspace of workspaces) {
+      expect(workspace.externalDependencies).toEqual([]);
+    }
+  });
+
+  test("workspaces with no external deps have an empty array", () => {
+    const { workspaces } = findWorkspaces({
+      rootDirectory: getProjectRoot("withDependenciesWithExternal"),
+    });
+    const d = workspaces.find((w) => w.name === "d")!;
+    expect(d.externalDependencies).toEqual([]);
+  });
+});
+
 describe("preventDependencyCycles", () => {
   test("returns workspaces and empty cycles when no cycles exist", () => {
     const workspaces = [

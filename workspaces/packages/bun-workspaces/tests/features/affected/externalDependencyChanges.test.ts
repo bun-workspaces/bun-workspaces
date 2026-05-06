@@ -71,13 +71,13 @@ describe("computeExternalDependencyChanges", () => {
     makeTestWorkspace({
       name: "a",
       externalDependencies: [
-        { name: "lodash", dev: false },
-        { name: "typescript", dev: true },
+        { name: "lodash", version: "^4.17.0", dev: false },
+        { name: "typescript", version: "^5.0.0", dev: true },
       ],
     }),
     makeTestWorkspace({
       name: "b",
-      externalDependencies: [{ name: "react", dev: false }],
+      externalDependencies: [{ name: "react", version: "^18.0.0", dev: false }],
     }),
   ];
 
@@ -195,11 +195,15 @@ describe("computeExternalDependencyChanges", () => {
     test("prefers `<workspaceName>/<dep>` key when present, falls back to bare key", () => {
       const a = makeTestWorkspace({
         name: "pkg-a",
-        externalDependencies: [{ name: "react", dev: false }],
+        externalDependencies: [
+          { name: "react", version: "^18.0.0", dev: false },
+        ],
       });
       const b = makeTestWorkspace({
         name: "pkg-b",
-        externalDependencies: [{ name: "react", dev: false }],
+        externalDependencies: [
+          { name: "react", version: "^18.0.0", dev: false },
+        ],
       });
       // Mirrors the actual bun.lock shape for divergent versions:
       // pkg-a uses the hoisted version; pkg-b has a workspace-scoped entry
@@ -231,11 +235,15 @@ describe("computeExternalDependencyChanges", () => {
     test("a hoisted bump only affects the workspace using the hoist", () => {
       const a = makeTestWorkspace({
         name: "pkg-a",
-        externalDependencies: [{ name: "react", dev: false }],
+        externalDependencies: [
+          { name: "react", version: "^18.0.0", dev: false },
+        ],
       });
       const b = makeTestWorkspace({
         name: "pkg-b",
-        externalDependencies: [{ name: "react", dev: false }],
+        externalDependencies: [
+          { name: "react", version: "^18.0.0", dev: false },
+        ],
       });
       // pkg-a uses the hoisted version; pkg-b is locally pinned. Only the
       // hoisted version moves.
@@ -266,7 +274,9 @@ describe("computeExternalDependencyChanges", () => {
     test("scoped dep names work in the namespaced key (e.g. `<workspace>/@scope/foo`)", () => {
       const b = makeTestWorkspace({
         name: "pkg-b",
-        externalDependencies: [{ name: "@types/node", dev: true }],
+        externalDependencies: [
+          { name: "@types/node", version: "^20.0.0", dev: true },
+        ],
       });
       const baseLock = new Map([
         ["@types/node", "18.0.0"],

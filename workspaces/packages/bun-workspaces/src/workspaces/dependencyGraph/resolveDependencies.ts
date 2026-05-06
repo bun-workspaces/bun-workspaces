@@ -4,7 +4,11 @@ import {
   type BunCatalogSet,
   type ResolvedPackageJsonContent,
 } from "../packageJson";
-import type { Workspace } from "../workspace";
+import type {
+  ExternalDependency,
+  ExternalDependencyCatalog,
+  Workspace,
+} from "../workspace";
 
 export type WorkspaceMap = {
   [workspaceName: string]: {
@@ -12,6 +16,19 @@ export type WorkspaceMap = {
     config: ResolvedWorkspaceConfig;
     packageJson: ResolvedPackageJsonContent;
   };
+};
+
+type ExternalDependencyAccumulator = {
+  dev: boolean;
+  version: string;
+  catalog?: ExternalDependencyCatalog;
+};
+
+const parseCatalogRef = (
+  rawVersion: string,
+): ExternalDependencyCatalog | undefined => {
+  if (!rawVersion.startsWith("catalog:")) return undefined;
+  return { name: rawVersion.slice("catalog:".length) };
 };
 
 export const resolveWorkspaceDependencies = (
@@ -25,7 +42,10 @@ export const resolveWorkspaceDependencies = (
 
   const workspacesWithDependencies = workspacePackages.map(
     ({ workspace, packageJson }) => {
-      const externalDevOnly = new Map<string, boolean>();
+      const externalAccumulator = new Map<
+        string,
+        ExternalDependencyAccumulator
+      >();
       const dependencyMaps: { map: Record<string, string>; isDev: boolean }[] =
         [
           { map: packageJson.dependencies, isDev: false },
@@ -35,8 +55,9 @@ export const resolveWorkspaceDependencies = (
         ];
       for (const { map, isDev } of dependencyMaps) {
         for (const [dependencyName, dependencyVersion] of Object.entries(map)) {
+          const catalog = parseCatalogRef(dependencyVersion);
           const resolvedVersion =
-            catalogs && dependencyVersion.startsWith("catalog:")
+            catalogs && catalog
               ? (resolveCatalogDependencyVersion(
                   dependencyName,
                   dependencyVersion,
@@ -54,16 +75,27 @@ export const resolveWorkspaceDependencies = (
           }
           // External dep — record. dev: true sticks unless we see a non-dev
           // entry for the same name (in which case it becomes runtime).
-          const existingDevOnly = externalDevOnly.get(dependencyName);
-          if (existingDevOnly === undefined) {
-            externalDevOnly.set(dependencyName, isDev);
-          } else if (existingDevOnly && !isDev) {
-            externalDevOnly.set(dependencyName, false);
+          // Version/catalog reflect the last entry seen for the name.
+          const existing = externalAccumulator.get(dependencyName);
+          if (!existing) {
+            externalAccumulator.set(dependencyName, {
+              dev: isDev,
+              version: resolvedVersion,
+              catalog,
+            });
+          } else {
+            existing.version = resolvedVersion;
+            existing.catalog = catalog;
+            if (existing.dev && !isDev) existing.dev = false;
           }
         }
       }
-      workspace.externalDependencies = [...externalDevOnly.entries()]
-        .map(([name, dev]) => ({ name, dev }))
+      workspace.externalDependencies = [...externalAccumulator.entries()]
+        .map(([name, { dev, version, catalog }]): ExternalDependency => {
+          const entry: ExternalDependency = { name, version, dev };
+          if (catalog) entry.catalog = catalog;
+          return entry;
+        })
         .sort((a, b) => a.name.localeCompare(b.name));
       return workspace;
     },

@@ -69,8 +69,8 @@ describe("Workspace.externalDependencies", () => {
     });
     const a = workspaces.find((w) => w.name === "a")!;
     expect(a.externalDependencies).toEqual([
-      { name: "lodash", dev: false },
-      { name: "typescript", dev: true },
+      { name: "lodash", version: "^4.17.0", dev: false },
+      { name: "typescript", version: "^5.0.0", dev: true },
     ]);
   });
 
@@ -80,8 +80,8 @@ describe("Workspace.externalDependencies", () => {
     });
     const c = workspaces.find((w) => w.name === "c")!;
     expect(c.externalDependencies).toEqual([
-      { name: "fsevents", dev: false },
-      { name: "react", dev: false },
+      { name: "fsevents", version: "^2.0.0", dev: false },
+      { name: "react", version: "^18.0.0", dev: false },
     ]);
   });
 
@@ -100,6 +100,73 @@ describe("Workspace.externalDependencies", () => {
     });
     const d = workspaces.find((w) => w.name === "d")!;
     expect(d.externalDependencies).toEqual([]);
+  });
+
+  describe("catalog references", () => {
+    test("default `catalog:` resolves to the catalog version with `catalog: { name: '' }`", () => {
+      const { workspaces } = findWorkspaces({
+        rootDirectory: getProjectRoot("withDependenciesWithExternalCatalog"),
+      });
+      const a = workspaces.find((w) => w.name === "a")!;
+      expect(a.externalDependencies).toEqual([
+        {
+          name: "lodash",
+          version: "^4.17.0",
+          dev: false,
+          catalog: { name: "" },
+        },
+      ]);
+    });
+
+    test("named `catalog:<name>` resolves to the named catalog version with the catalog name", () => {
+      const { workspaces } = findWorkspaces({
+        rootDirectory: getProjectRoot("withDependenciesWithExternalCatalog"),
+      });
+      const b = workspaces.find((w) => w.name === "b")!;
+      expect(b.externalDependencies).toEqual([
+        {
+          name: "react",
+          version: "^17.0.0",
+          dev: false,
+          catalog: { name: "react17" },
+        },
+      ]);
+    });
+
+    test("unresolvable catalog refs preserve the literal `catalog:<name>` as version while still tagging the catalog name", () => {
+      const { workspaces } = findWorkspaces({
+        rootDirectory: getProjectRoot("withDependenciesWithExternalCatalog"),
+      });
+      const c = workspaces.find((w) => w.name === "c")!;
+      expect(c.externalDependencies).toEqual([
+        {
+          name: "typescript",
+          version: "catalog:nope",
+          dev: true,
+          catalog: { name: "nope" },
+        },
+      ]);
+    });
+
+    test("non-catalog deps in the same workspace do not get a catalog field", () => {
+      const { workspaces } = findWorkspaces({
+        rootDirectory: getProjectRoot("withDependenciesWithExternalCatalog"),
+      });
+      const d = workspaces.find((w) => w.name === "d")!;
+      expect(d.externalDependencies).toEqual([
+        {
+          name: "left-pad",
+          version: "^1.3.0",
+          dev: false,
+        },
+        {
+          name: "lodash",
+          version: "^4.17.0",
+          dev: false,
+          catalog: { name: "" },
+        },
+      ]);
+    });
   });
 });
 

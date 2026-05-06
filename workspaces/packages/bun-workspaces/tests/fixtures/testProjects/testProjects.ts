@@ -79,6 +79,8 @@ const TEST_PROJECTS = {
   withDependenciesCatalogDependencies:
     "withDependencies/withCatalogDependencies",
   withDependenciesWithExternal: "withDependencies/withExternalDependencies",
+  withDependenciesWithExternalCatalog:
+    "withDependencies/withExternalDependenciesCatalog",
   withDependencyRulesDenyDirect:
     "withDependencies/withDependencyRulesDenyDirect",
   withDependencyRulesDenyIndirect:

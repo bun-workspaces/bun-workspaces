@@ -51,7 +51,11 @@ export {
   type WorkspaceScriptCommandMethod,
   type RunScriptsParallelOptions,
 } from "./runScript";
-export { type Workspace, type ExternalDependency } from "./workspaces";
+export {
+  type Workspace,
+  type ExternalDependency,
+  type ExternalDependencyCatalog,
+} from "./workspaces";
 export { type SimpleAsyncIterable, BunWorkspacesError } from "./internal/core";
 export { type LogLevelSetting } from "bw-common/logging";
 export { setLogLevel } from "./internal/logger";

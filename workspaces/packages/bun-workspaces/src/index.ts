@@ -36,6 +36,7 @@ export {
   type AffectedChangedFile,
   type AffectedDependency,
   type AffectedWorkspacesMetadata,
+  type ExternalDependencyChange,
   isOptionsForDiffSource,
 } from "./project";
 export * from "./config/public";
@@ -50,7 +51,11 @@ export {
   type WorkspaceScriptCommandMethod,
   type RunScriptsParallelOptions,
 } from "./runScript";
-export { type Workspace } from "./workspaces";
+export {
+  type Workspace,
+  type ExternalDependency,
+  type ExternalDependencyCatalog,
+} from "./workspaces";
 export { type SimpleAsyncIterable, BunWorkspacesError } from "./internal/core";
 export { type LogLevelSetting } from "bw-common/logging";
 export { setLogLevel } from "./internal/logger";

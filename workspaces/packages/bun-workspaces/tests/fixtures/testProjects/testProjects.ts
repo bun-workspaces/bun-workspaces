@@ -78,6 +78,9 @@ const TEST_PROJECTS = {
   withDependenciesIndirectCycleMixed: "withDependencies/withIndirectCycleMixed",
   withDependenciesCatalogDependencies:
     "withDependencies/withCatalogDependencies",
+  withDependenciesWithExternal: "withDependencies/withExternalDependencies",
+  withDependenciesWithExternalCatalog:
+    "withDependencies/withExternalDependenciesCatalog",
   withDependencyRulesDenyDirect:
     "withDependencies/withDependencyRulesDenyDirect",
   withDependencyRulesDenyIndirect:

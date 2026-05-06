@@ -32,7 +32,7 @@ describe("FileSystemProject.runAffectedWorkspaceScript", () => {
         // 'a' has defaultInputs.files=["src/**/*"], so this hits 'a'
         // and via package dependency, 'b' too.
         changedFiles: ["packages/a/src/index.ts"],
-        ignorePackageDependencies: false,
+        ignoreWorkspaceDependencies: false,
       },
       scriptOptions: { script: SCRIPT_NAME },
     });
@@ -68,7 +68,7 @@ describe("FileSystemProject.runAffectedWorkspaceScript", () => {
       affectedOptions: {
         diffSource: "fileList",
         changedFiles: ["packages/a/build/x.ts"],
-        ignorePackageDependencies: true,
+        ignoreWorkspaceDependencies: true,
       },
       scriptOptions: {
         script: "echo running",
@@ -87,7 +87,7 @@ describe("FileSystemProject.runAffectedWorkspaceScript", () => {
       affectedOptions: {
         diffSource: "fileList",
         changedFiles: ["packages/a/build/x.ts"],
-        ignorePackageDependencies: true,
+        ignoreWorkspaceDependencies: true,
       },
       scriptOptions: {
         script: "echo running",

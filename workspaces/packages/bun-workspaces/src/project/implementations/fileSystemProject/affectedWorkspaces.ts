@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import bun from "bun";
 import type { WorkspaceInputsConfig } from "bw-common";
+import type { ExternalDependencyChange } from "../../../affected/externalDependencyChanges";
 import {
   getFileAffectedWorkspaces,
   type AffectedDependencyChainEntry,
@@ -20,6 +21,7 @@ import type { FileSystemProject } from "./fileSystemProject";
 export type {
   AffectedDependencyChainEntry,
   AffectedDependencyEdgeSource,
+  ExternalDependencyChange,
   GitAffectedFileReason,
 };
 
@@ -46,6 +48,13 @@ export type AffectedWorkspaceResult = {
   affectedReasons: {
     changedFiles: AffectedChangedFile[];
     dependencies: AffectedDependency[];
+    /**
+     * External (non-workspace) dependency version deltas. In `git` mode the
+     * `baseVersion`/`headVersion` carry resolved versions from `bun.lock` at
+     * each ref. In `fileList` mode where `bun.lock` was listed as changed,
+     * both fields are `null` since no version comparison is possible.
+     */
+    externalDependencies: ExternalDependencyChange[];
   };
 };
 
@@ -57,8 +66,14 @@ export type AffectedWorkspacesMetadata = {
   diffSource: AffectedDiffSource;
   /** When `diffSource` is "git" */
   git?: {
+    /** The base ref as provided (or the resolved default) */
     baseRef: string;
+    /** The head ref as provided (or the resolved default) */
     headRef: string;
+    /** The full SHA `baseRef` resolves to */
+    baseSha: string;
+    /** The full SHA `headRef` resolves to */
+    headSha: string;
   };
 };
 
@@ -72,7 +87,15 @@ export type AffectedWorkspacesResult = {
 export type BaseAffectedWorkspacesOptions<
   AcceptsScript extends boolean = true,
 > = {
-  ignorePackageDependencies?: boolean;
+  /** Skip cascading affected workspaces through `workspace:*` dependencies */
+  ignoreWorkspaceDependencies?: boolean;
+  /**
+   * Skip lockfile-based external dependency version tracking. In `git` mode
+   * this prevents reading `bun.lock` at base and head refs. In `fileList`
+   * mode this prevents `bun.lock` (when present in `changedFiles`) from
+   * triggering external-dep workspaces.
+   */
+  ignoreExternalDependencies?: boolean;
 } & (AcceptsScript extends true
   ? {
       script?: string;
@@ -146,16 +169,7 @@ const DEFAULT_INPUT_FILE_PATTERN = ".";
 
 const DEFAULT_HEAD_REF = "HEAD";
 
-/**
- * Patterns added to every workspace's input file patterns when package
- * dependencies are not ignored. The workspace's own `package.json` and the
- * root `package.json` both act as triggers since they declare workspace
- * dependencies and other behavior that affects the workspace.
- */
-const IMPLICIT_PACKAGE_JSON_INPUT_PATTERNS = [
-  "package.json",
-  "/package.json",
-] as const;
+const BUN_LOCK_PROJECT_RELATIVE_PATH = "bun.lock";
 
 const FILE_PATTERN_NEGATION_PREFIX = "!";
 
@@ -165,19 +179,14 @@ const SKIPPED_DIR_NAMES = new Set(["node_modules", ".git"]);
 
 const buildWorkspaceInputs = ({
   project,
-  ignorePackageDependencies,
   script,
 }: {
   project: FileSystemProject;
-  ignorePackageDependencies: boolean;
   script: string | undefined;
 }): {
   inputs: AffectedWorkspaceInput[];
   effectiveInputsByName: Map<string, WorkspaceInputsConfig>;
 } => {
-  const implicitPatterns = ignorePackageDependencies
-    ? []
-    : [...IMPLICIT_PACKAGE_JSON_INPUT_PATTERNS];
   const effectiveInputsByName = new Map<string, WorkspaceInputsConfig>();
   const inputs = project.workspaces.map<AffectedWorkspaceInput>((workspace) => {
     const workspaceConfig = project.config.workspaces[workspace.name];
@@ -185,12 +194,7 @@ const buildWorkspaceInputs = ({
       ? workspaceConfig?.scripts[script]?.inputs
       : undefined;
     const sourceInputs = scriptInputs ?? workspaceConfig?.defaultInputs ?? {};
-    const effectiveFiles = [
-      ...new Set([
-        ...(sourceInputs.files ?? [DEFAULT_INPUT_FILE_PATTERN]),
-        ...implicitPatterns,
-      ]),
-    ];
+    const effectiveFiles = sourceInputs.files ?? [DEFAULT_INPUT_FILE_PATTERN];
     const effectiveWorkspacePatterns = sourceInputs.workspacePatterns ?? [];
     effectiveInputsByName.set(workspace.name, {
       files: effectiveFiles,
@@ -203,6 +207,25 @@ const buildWorkspaceInputs = ({
     };
   });
   return { inputs, effectiveInputsByName };
+};
+
+const buildLockfileChangeSyntheticEntries = (
+  workspaces: Workspace[],
+): Map<string, ExternalDependencyChange[]> => {
+  const result = new Map<string, ExternalDependencyChange[]>();
+  for (const workspace of workspaces) {
+    if (!workspace.externalDependencies.length) continue;
+    result.set(
+      workspace.name,
+      workspace.externalDependencies.map(({ name, dev }) => ({
+        name,
+        dev,
+        baseVersion: null,
+        headVersion: null,
+      })),
+    );
+  }
+  return result;
 };
 
 const normalizeChangedFilesPattern = (pattern: string): string => {
@@ -308,6 +331,7 @@ const toAffectedWorkspaceResult = (
       }),
     })),
     dependencies: internal.affectedReasons.dependencies,
+    externalDependencies: internal.affectedReasons.externalDependencies,
   },
 });
 
@@ -315,11 +339,13 @@ export const determineAffectedWorkspaces = async (
   project: FileSystemProject,
   options: DetermineAffectedWorkspacesOptions<true>,
 ): Promise<AffectedWorkspacesResult> => {
-  const ignorePackageDependencies = options.ignorePackageDependencies ?? false;
+  const ignoreWorkspaceDependencies =
+    options.ignoreWorkspaceDependencies ?? false;
+  const ignoreExternalDependencies =
+    options.ignoreExternalDependencies ?? false;
   const { inputs: workspaceInputs, effectiveInputsByName } =
     buildWorkspaceInputs({
       project,
-      ignorePackageDependencies,
       script: options.script,
     });
 
@@ -329,26 +355,29 @@ export const determineAffectedWorkspaces = async (
       project.config.root.defaults.affectedBaseRef;
     const headRef = options.diffOptions?.headRef ?? DEFAULT_HEAD_REF;
 
-    const { affectedWorkspaces } = await getGitAffectedWorkspaces({
-      rootDirectory: project.rootDirectory,
-      workspacesOptions: {
-        workspaceInputs,
-        ignorePackageDependencies,
-      },
-      gitOptions: {
-        baseRef,
-        headRef,
-        ignoreUntracked: options.diffOptions?.ignoreUntracked,
-        ignoreStaged: options.diffOptions?.ignoreStaged,
-        ignoreUnstaged: options.diffOptions?.ignoreUnstaged,
-        ignoreUncommitted: options.diffOptions?.ignoreUncommitted,
-      },
-    });
+    const { affectedWorkspaces, baseSha, headSha } =
+      await getGitAffectedWorkspaces({
+        rootDirectory: project.rootDirectory,
+        workspacesOptions: {
+          workspaceInputs,
+          workspaces: project.workspaces,
+          ignoreWorkspaceDependencies,
+          ignoreExternalDependencies,
+        },
+        gitOptions: {
+          baseRef,
+          headRef,
+          ignoreUntracked: options.diffOptions?.ignoreUntracked,
+          ignoreStaged: options.diffOptions?.ignoreStaged,
+          ignoreUnstaged: options.diffOptions?.ignoreUnstaged,
+          ignoreUncommitted: options.diffOptions?.ignoreUncommitted,
+        },
+      });
 
     return {
       metadata: {
         diffSource: "git",
-        git: { baseRef, headRef },
+        git: { baseRef, headRef, baseSha, headSha },
       },
       workspaceResults: affectedWorkspaces.map((result) =>
         toAffectedWorkspaceResult(result, effectiveInputsByName),
@@ -356,14 +385,24 @@ export const determineAffectedWorkspaces = async (
     };
   }
 
+  const expandedChangedFilePaths = expandChangedFilesPatterns({
+    rootDirectory: project.rootDirectory,
+    patterns: options.changedFiles,
+  });
+  const lockfileInChangedFiles = expandedChangedFilePaths.includes(
+    BUN_LOCK_PROJECT_RELATIVE_PATH,
+  );
+  const externalDepChangesByWorkspace =
+    !ignoreExternalDependencies && lockfileInChangedFiles
+      ? buildLockfileChangeSyntheticEntries(project.workspaces)
+      : new Map();
+
   const { affectedWorkspaces } = await getFileAffectedWorkspaces({
     rootDirectory: project.rootDirectory,
     workspaceInputs,
-    changedFilePaths: expandChangedFilesPatterns({
-      rootDirectory: project.rootDirectory,
-      patterns: options.changedFiles,
-    }),
-    ignorePackageDependencies,
+    changedFilePaths: expandedChangedFilePaths,
+    externalDepChangesByWorkspace,
+    ignoreWorkspaceDependencies,
   });
 
   return {

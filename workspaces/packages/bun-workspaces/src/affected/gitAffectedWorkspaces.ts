@@ -28,6 +28,10 @@ export type GitAffectedWorkspaceResult =
 
 export type GitAffectedWorkspacesResult = {
   affectedWorkspaces: GitAffectedWorkspaceResult[];
+  /** The full SHA the `baseRef` resolves to */
+  baseSha: string;
+  /** The full SHA the `headRef` resolves to */
+  headSha: string;
 };
 
 export const getGitAffectedWorkspaces = async ({
@@ -35,7 +39,11 @@ export const getGitAffectedWorkspaces = async ({
   workspacesOptions,
   gitOptions,
 }: GitAffectedWorkspacesOptions): Promise<GitAffectedWorkspacesResult> => {
-  const { files: gitFiles } = await getGitAffectedFiles({
+  const {
+    files: gitFiles,
+    baseSha,
+    headSha,
+  } = await getGitAffectedFiles({
     rootDirectory,
     ...gitOptions,
   });
@@ -64,5 +72,5 @@ export const getGitAffectedWorkspaces = async ({
       },
     }));
 
-  return { affectedWorkspaces: annotatedWorkspaces };
+  return { affectedWorkspaces: annotatedWorkspaces, baseSha, headSha };
 };

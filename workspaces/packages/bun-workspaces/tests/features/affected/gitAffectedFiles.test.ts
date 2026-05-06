@@ -125,6 +125,34 @@ describe("getGitAffectedFiles", () => {
       expect(files).toEqual([{ projectFilePath: "a.txt", reasons: ["diff"] }]);
     });
 
+    test("returns the resolved baseSha and headSha for the given refs", async () => {
+      const fixture = await newFixture({
+        commits: [
+          {
+            message: "init",
+            files: [{ path: "a.txt", content: "1" }],
+          },
+          {
+            message: "change",
+            files: [{ path: "a.txt", content: "2" }],
+          },
+        ],
+        initialBranch: "main",
+      });
+      const initSha = fixture.shaForMessage("init");
+      const changeSha = fixture.shaForMessage("change");
+
+      const { baseSha, headSha } = await getGitAffectedFiles({
+        rootDirectory: fixture.projectPath,
+        baseRef: "HEAD~1",
+        headRef: "main",
+        ignoreUncommitted: true,
+      });
+
+      expect(baseSha).toBe(initSha);
+      expect(headSha).toBe(changeSha);
+    });
+
     test("invalid base ref throws GitCommandFailed", async () => {
       const fixture = await newFixture({
         commits: [

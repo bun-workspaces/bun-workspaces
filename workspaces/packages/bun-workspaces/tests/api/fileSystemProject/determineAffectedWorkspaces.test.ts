@@ -635,7 +635,12 @@ describe("FileSystemProject.determineAffectedWorkspaces", () => {
       });
       expect(result.metadata).toEqual({
         diffSource: "git",
-        git: { baseRef: baseSha, headRef: headSha },
+        git: {
+          baseRef: baseSha,
+          headRef: headSha,
+          baseSha,
+          headSha,
+        },
       });
     });
 
@@ -655,7 +660,40 @@ describe("FileSystemProject.determineAffectedWorkspaces", () => {
         diffSource: "git",
         diffOptions: { ignoreUncommitted: true },
       });
-      expect(result.metadata.git).toEqual({ baseRef: "main", headRef: "HEAD" });
+      expect(result.metadata.git).toEqual({
+        baseRef: "main",
+        headRef: "HEAD",
+        baseSha: fixture.headSha,
+        headSha: fixture.headSha,
+      });
+    });
+
+    test("metadata.git includes baseSha and headSha resolved from named refs", async () => {
+      const fixture = await newFixture({
+        commits: [
+          { message: "init", files: TWO_WORKSPACE_PROJECT_FILES },
+          {
+            message: "change",
+            files: [{ path: "packages/a/src/index.ts", content: "1" }],
+          },
+        ],
+        initialBranch: "main",
+      });
+      const project = makeProject(fixture.projectPath);
+      const result = await project.determineAffectedWorkspaces({
+        diffSource: "git",
+        diffOptions: {
+          baseRef: "HEAD~1",
+          headRef: "HEAD",
+          ignoreUncommitted: true,
+        },
+      });
+      expect(result.metadata.git).toEqual({
+        baseRef: "HEAD~1",
+        headRef: "HEAD",
+        baseSha: fixture.shaForMessage("init"),
+        headSha: fixture.shaForMessage("change"),
+      });
     });
 
     test("changed files are populated with gitReasons", async () => {

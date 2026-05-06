@@ -52,6 +52,10 @@ export interface GitAffectedFile {
 
 export interface GetGitAffectedFilesResult {
   files: GitAffectedFile[];
+  /** The full SHA the `baseRef` resolves to */
+  baseSha: string;
+  /** The full SHA the `headRef` resolves to */
+  headSha: string;
 }
 
 interface RunGitResult {
@@ -152,6 +156,11 @@ export const getGitAffectedFiles = async (
   const includeUnstaged = !ignoreUncommitted && !ignoreUnstaged;
   const includeUntracked = !ignoreUncommitted && !ignoreUntracked;
 
+  const [baseSha, headSha] = await Promise.all([
+    runGitOrThrow(["rev-parse", baseRef], gitRoot).then((out) => out.trim()),
+    runGitOrThrow(["rev-parse", headRef], gitRoot).then((out) => out.trim()),
+  ]);
+
   type Bucket = { reason: GitAffectedFileReason; paths: string[] };
   const collectors: Promise<Bucket>[] = [
     runGitOrThrow(
@@ -214,5 +223,5 @@ export const getGitAffectedFiles = async (
     }))
     .sort((a, b) => a.projectFilePath.localeCompare(b.projectFilePath));
 
-  return { files };
+  return { files, baseSha, headSha };
 };

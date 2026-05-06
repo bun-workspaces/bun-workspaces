@@ -57,8 +57,14 @@ export type AffectedWorkspacesMetadata = {
   diffSource: AffectedDiffSource;
   /** When `diffSource` is "git" */
   git?: {
+    /** The base ref as provided (or the resolved default) */
     baseRef: string;
+    /** The head ref as provided (or the resolved default) */
     headRef: string;
+    /** The full SHA `baseRef` resolves to */
+    baseSha: string;
+    /** The full SHA `headRef` resolves to */
+    headSha: string;
   };
 };
 
@@ -329,26 +335,27 @@ export const determineAffectedWorkspaces = async (
       project.config.root.defaults.affectedBaseRef;
     const headRef = options.diffOptions?.headRef ?? DEFAULT_HEAD_REF;
 
-    const { affectedWorkspaces } = await getGitAffectedWorkspaces({
-      rootDirectory: project.rootDirectory,
-      workspacesOptions: {
-        workspaceInputs,
-        ignorePackageDependencies,
-      },
-      gitOptions: {
-        baseRef,
-        headRef,
-        ignoreUntracked: options.diffOptions?.ignoreUntracked,
-        ignoreStaged: options.diffOptions?.ignoreStaged,
-        ignoreUnstaged: options.diffOptions?.ignoreUnstaged,
-        ignoreUncommitted: options.diffOptions?.ignoreUncommitted,
-      },
-    });
+    const { affectedWorkspaces, baseSha, headSha } =
+      await getGitAffectedWorkspaces({
+        rootDirectory: project.rootDirectory,
+        workspacesOptions: {
+          workspaceInputs,
+          ignorePackageDependencies,
+        },
+        gitOptions: {
+          baseRef,
+          headRef,
+          ignoreUntracked: options.diffOptions?.ignoreUntracked,
+          ignoreStaged: options.diffOptions?.ignoreStaged,
+          ignoreUnstaged: options.diffOptions?.ignoreUnstaged,
+          ignoreUncommitted: options.diffOptions?.ignoreUncommitted,
+        },
+      });
 
     return {
       metadata: {
         diffSource: "git",
-        git: { baseRef, headRef },
+        git: { baseRef, headRef, baseSha, headSha },
       },
       workspaceResults: affectedWorkspaces.map((result) =>
         toAffectedWorkspaceResult(result, effectiveInputsByName),

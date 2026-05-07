@@ -58,7 +58,10 @@ const createWorkspaceSummaryLines = (
   result: AffectedWorkspaceResult,
 ): string[] => {
   const { workspace, affectedReasons } = result;
-  const lines: string[] = [`\x1b[1mWorkspace: ${workspace.name}\x1b[0m`];
+  const lines: string[] = [
+    `\x1b[1mWorkspace: ${workspace.name}\x1b[0m`,
+    `Path: ${workspace.path}`,
+  ];
   lines.push(
     `\x1b[96mChanged input files:\x1b[0m ${affectedReasons.changedFiles.length}`,
   );
@@ -87,7 +90,10 @@ const createWorkspaceDetailedLines = (
   result: AffectedWorkspaceResult,
 ): string[] => {
   const { workspace, affectedReasons } = result;
-  const lines: string[] = [`\x1b[1mWorkspace: ${workspace.name}\x1b[0m`];
+  const lines: string[] = [
+    `\x1b[1mWorkspace: ${workspace.name}\x1b[0m`,
+    `Path: ${workspace.path}`,
+  ];
   if (affectedReasons.changedFiles.length) {
     lines.push("\x1b[96mChanged input files:\x1b[0m");
     for (const file of affectedReasons.changedFiles) {

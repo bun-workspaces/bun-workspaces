@@ -319,12 +319,16 @@ export default defineConfig({
             activeMatch: "/config$",
           },
           {
-            text: "Root Configuration",
+            text: "Project Root Configuration",
             link: "/config/root",
           },
           {
             text: "Workspace Configuration",
             link: "/config/workspace",
+          },
+          {
+            text: "Workspace Pattern Configs",
+            link: "/config/workspace-pattern-configs",
           },
           {
             text: "Environment Variables",

@@ -10,6 +10,7 @@ export const exampleRootConfigSimple1: RootConfig = {
     parallelMax: 4,
     shell: "system",
     includeRootWorkspace: false,
+    affectedBaseRef: "my-branch",
   },
   workspacePatternConfigs: [
     {
@@ -26,6 +27,7 @@ export const exampleRootConfigSimple2: RootConfig = {
     parallelMax: "50%",
     shell: "system",
     includeRootWorkspace: true,
+    affectedBaseRef: "my-branch",
   },
 };
 

@@ -23,6 +23,12 @@ const rootDisplay: ValueToDisplay<RequiredDeep<RootConfig>> = {
       primitive: true,
       types: ["boolean"],
     },
+    affectedBaseRef: {
+      comment:
+        "The default git base ref for affected workspace resolution (default: main)",
+      primitive: true,
+      types: ["string"],
+    },
   },
   workspacePatternConfigs: {
     array: true,

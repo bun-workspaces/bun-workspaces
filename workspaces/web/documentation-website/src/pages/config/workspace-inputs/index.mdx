@@ -29,7 +29,7 @@ The default inputs when not provided are all git-trackable files in a workspace'
 effectively making `"."` the default input pattern for a workspace's files.
 
 Other implicit inputs by default are all [workspace dependencies](/config/workspace#workspace-dependencies), 
-and all other dependencies in `"dependencies"` and `"devDependencies"` in the workspace's `package.json`.
+and all other dependencies in the workspace's `package.json`.
 There are ways to further customize these implicit inputs, as described below.
 
 ## Files
@@ -72,11 +72,14 @@ you can also specify [workspace patterns](/concepts/workspace-patterns) to be co
 
 ## External Dependencies
 
-By default, all other dependencies in `"dependencies"` and `"devDependencies"` are considered
+By default, all other dependencies in a workspace's `package.json` are considered
 inputs to a workspace. The resolved version in `bun.lock` is used to determine if
 an external dependency has changed.
 
 You can also specify only specific package names as inputs to a workspace.
+
+When not provided, all external dependencies are considered inputs. When provided, only the specified dependencies are considered inputs,
+so an empty array means no external dependencies are considered inputs.
 
 [Workspace configuration](/config/workspace) example:
 <SyntaxHighlighter language="json">

@@ -99,7 +99,7 @@ const createWorkspaceDetailedLines = (
       );
     }
   } else {
-    lines.push("\x1b[96mChanged input files: (none)\x1b[0m");
+    lines.push("\x1b[96mChanged input files:\x1b[0m (none)");
   }
   if (affectedReasons.dependencies.length) {
     lines.push("\x1b[96mAffected dependencies:\x1b[0m");

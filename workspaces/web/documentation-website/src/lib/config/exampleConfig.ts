@@ -175,12 +175,18 @@ export default defineRootConfig({
 export const INPUTS_FILES_EXAMPLE = `
 {
   "defaultInputs": {
-    "files": ["src/**/*.ts", "!src/**/*.test.ts"],
+    "files": [
+      "src/**/*.ts", 
+      "!src/**/*.test.ts",
+      "/tsconfig.json" // relative to project root
+    ],
   },
   "scripts": {
     "test": {
       "inputs": {
-        "files": ["src/**/*.ts"],
+        "files": [
+          "src/**/*.ts"
+        ],
       },
     },
   },

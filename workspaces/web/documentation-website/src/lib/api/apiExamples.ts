@@ -252,3 +252,58 @@ project.runScriptAcrossWorkspaces({
   script: "lint",
 });
 `.trim();
+
+export const API_DETERMINE_AFFECTED_GIT_EXAMPLE = `
+// Workspace results contain details about each workspace,
+// including whether it is affected and why
+const { workspaceResults } = await project.determineAffectedWorkspaces({
+  // Optional, the script to run to determine affected workspaces
+  // When not provided, based on workspaces' default inputs
+  script: "my-script",
+  diffSource: "git",
+  diffOptions: {
+    // Optional, defaults to main if default base ref not configured
+    baseRef: "my-branch-a",
+    // Optional, defaults to current HEAD if not provided
+    headRef: "my-branch-b",
+
+    // Optional means of ignoring uncommitted changes
+    // gitignored files are never included in a diff
+    ignoreUntracked: false, // files that may be tracked but aren't
+    ignoreStaged: false,
+    ignoreUnstaged: false,
+    // Ignores untracked, staged, and unstaged
+    ignoreUncommitted: false,
+  },
+  // Ignore workspace dependencies when determining affected workspaces
+  ignoreWorkspaceDependencies: false,
+  // Ignore changes external dependencies (e.g. react, lodash) lock versions
+  ignoreExternalDependencies: false,
+});
+`.trim();
+
+export const API_DETERMINE_AFFECTED_FILE_LIST_EXAMPLE = `
+const { workspaceResults } = await project.determineAffectedWorkspaces({
+  // Bypass git and pass a list of changed files instead that match workspace inputs
+  diffSource: "fileList",
+  changedFiles: ["src/**/*.ts", "something.txt"],
+});
+`.trim();
+
+export const API_DETERMINE_AFFECTED_OPTIONS_EXAMPLE = `
+// Returns the same output and summary as project.runScriptAcrossWorkspaces
+const { output, summary } = await project.runAffectedWorkspaceScript({
+  // About the same options as project.determineAffectedWorkspaces
+  affectedOptions: {
+    diffSource: "git",
+    diffOptions: {
+      baseRef: "my-branch-a",
+      headRef: "my-branch-b",
+    },
+  },
+  // About the same options as project.runScriptAcrossWorkspaces
+  scriptOptions: {
+    script: "my-script",
+  },
+});
+`.trim();

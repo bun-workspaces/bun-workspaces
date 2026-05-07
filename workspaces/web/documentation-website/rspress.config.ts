@@ -364,6 +364,10 @@ export default defineConfig({
             link: "/concepts/affected",
           },
           {
+            text: "Workspace Inputs",
+            link: "/concepts/workspace-inputs",
+          },
+          {
             text: "Inline Scripts",
             link: "/concepts/inline-scripts",
           },
@@ -660,6 +664,10 @@ export default defineConfig({
                 {
                   text: "Affected Workspaces",
                   link: "/concepts/affected",
+                },
+                {
+                  text: "Workspace Inputs",
+                  link: "/concepts/workspace-inputs",
                 },
               ],
             },

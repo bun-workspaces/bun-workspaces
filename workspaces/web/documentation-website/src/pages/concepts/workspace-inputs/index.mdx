@@ -1,0 +1,87 @@
+---
+title: Concepts > Workspace Inputs
+titleSuffix: " | bun-workspaces"
+description: "Workspace Inputs | Concepts | Documentation for bun-workspaces: A CLI and API to help manage Bun monorepos"
+pageType: doc
+sidebar: true
+outline: true
+footer: false
+---
+
+import { SyntaxHighlighter } from "../../../lib/util/highlight";
+
+# Concept: Workspace Inputs
+
+## Overview
+
+Workspace inputs are the files and workspace patterns that are considered inputs for a script.
+
+These are set by [workspace config](/config/workspace) options, which can be set at
+the workspace level (`defaultInputs`) or at the script level (`scripts[name].inputs`).
+
+The default inputs when not provided are all git-tracked files in a workspace's directory,
+effectively making `"."` the default input pattern for a workspace's files.
+
+Other implicit inputs by default are all [workspace dependencies](/config/workspace#workspace-dependencies), 
+and all other dependencies in `"dependencies"` and `"devDependencies"` in the workspace's `package.json`.
+There are ways to further customize these implicit inputs, as described below.
+
+Inputs are used to determine whether changes to files in the project are considered
+changes to a particular workspace, which is used for determining [affected workspaces](/concepts/affected).
+
+## Files
+
+Files are specified as paths relative to the workspace's directory.
+
+Paths with a leading `/` are considered project-root-relative.
+
+Prefix with `!` to exclude.
+
+<SyntaxHighlighter language="json">
+  {`
+  TODO
+  "defaultInputs": {
+    "files": ["src/**/*.ts", "!src/**/*.test.ts"],
+  },
+  `}
+</SyntaxHighlighter>
+
+## Workspace Patterns
+
+In cases such as determining [affected workspaces](/concepts/affected),
+[workspace dependencies](/config/workspace#workspace-dependencies) (dependencies
+using `"workspace:*"` in a workspace's `package.json`) are considered
+inputs to a workspace by default.
+
+**`bun-workspaces` does not perform source code analysis.** This keeps determining
+the graph of workspaces computationally fast and cheap, relying instead on explicit
+`package.json` dependencies.
+
+When you need to treat other workspaces that aren't true dependencies like dependencies to a workspace, 
+you can also specify workspace patterns to be considered inputs to a workspace via the inputs:
+
+<SyntaxHighlighter language="json">
+  {`
+  TODO
+  "defaultInputs": {
+    "workspacePatterns": ["my-workspace-pattern-*"],
+  },
+  `}
+</SyntaxHighlighter>
+
+## External Dependencies
+
+By default, all other dependencies in `"dependencies"` and `"devDependencies"` are considered
+inputs to a workspace. The resolved version in `bun.lock` is used to determine if
+an external dependency has changed.
+
+You can also specify only specific package names as inputs to a workspace.
+
+<SyntaxHighlighter language="json">
+  {`
+  TODO
+  "defaultInputs": {
+    "externalDependencies": ["react"],
+  },
+  `}
+</SyntaxHighlighter>

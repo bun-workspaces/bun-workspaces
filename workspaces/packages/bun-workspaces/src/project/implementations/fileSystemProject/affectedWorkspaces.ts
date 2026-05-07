@@ -196,14 +196,21 @@ const buildWorkspaceInputs = ({
     const sourceInputs = scriptInputs ?? workspaceConfig?.defaultInputs ?? {};
     const effectiveFiles = sourceInputs.files ?? [DEFAULT_INPUT_FILE_PATTERN];
     const effectiveWorkspacePatterns = sourceInputs.workspacePatterns ?? [];
+    const effectiveExternalDependencies = sourceInputs.externalDependencies;
     effectiveInputsByName.set(workspace.name, {
       files: effectiveFiles,
       workspacePatterns: effectiveWorkspacePatterns,
+      ...(effectiveExternalDependencies !== undefined && {
+        externalDependencies: effectiveExternalDependencies,
+      }),
     });
     return {
       workspace,
       inputFilePatterns: effectiveFiles,
       inputWorkspacePatterns: effectiveWorkspacePatterns,
+      ...(effectiveExternalDependencies !== undefined && {
+        inputExternalDependencyNames: effectiveExternalDependencies,
+      }),
     };
   });
   return { inputs, effectiveInputsByName };

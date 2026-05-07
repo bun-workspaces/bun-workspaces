@@ -29,6 +29,17 @@ export interface AffectedWorkspaceInput {
   inputFilePatterns: string[];
   /** Workspace patterns to also treat as dependencies, matched against all workspaces in `workspaceInputs` */
   inputWorkspacePatterns: string[];
+  /**
+   * Filter on which of the workspace's declared external dependencies
+   * participate in lockfile-change detection.
+   *
+   * - `undefined`: no filter — every declared external dep participates.
+   * - empty array: no external deps participate.
+   * - non-empty list: only entries with names in this list participate.
+   *   Names not present in the workspace's actual `externalDependencies`
+   *   are silently ignored.
+   */
+  inputExternalDependencyNames?: string[];
 }
 
 export interface AffectedFileResult<
@@ -306,6 +317,33 @@ const resolveInputWorkspaceDependencies = ({
   return inputDependenciesByName;
 };
 
+type AffectedDependencyEdge = {
+  dependencyName: string;
+  edgeSource: AffectedDependencyEdgeSource;
+};
+
+const collectDirectEdges = ({
+  workspace,
+  inputDependenciesByName,
+  ignoreWorkspaceDependencies,
+}: {
+  workspace: Workspace;
+  inputDependenciesByName: Map<string, string[]>;
+  ignoreWorkspaceDependencies: boolean;
+}): AffectedDependencyEdge[] => {
+  const edges: AffectedDependencyEdge[] = [];
+  for (const dependencyName of inputDependenciesByName.get(workspace.name) ??
+    []) {
+    edges.push({ dependencyName, edgeSource: "input" });
+  }
+  if (!ignoreWorkspaceDependencies) {
+    for (const dependencyName of workspace.dependencies) {
+      edges.push({ dependencyName, edgeSource: "package" });
+    }
+  }
+  return edges;
+};
+
 const computeAffectedWorkspaceSet = ({
   workspaceInputs,
   workspaceByName,
@@ -369,6 +407,70 @@ const computeAffectedWorkspaceSet = ({
   return affected;
 };
 
+/**
+ * Walk forward from `directDependencyName` through the affected dep graph,
+ * appending each next affected dep edge to the chain until we run out of
+ * affected dep edges to follow. Stops on:
+ *   - no further affected dep edges,
+ *   - revisiting a workspace already in the chain (cycle).
+ *
+ * Branching is broken deterministically by edge insertion order
+ * (input edges before package edges, declaration order within each).
+ */
+const extendChainThroughAffectedDeps = ({
+  startingWorkspaceName,
+  directDependencyName,
+  directEdgeSource,
+  workspaceByName,
+  inputDependenciesByName,
+  affectedSet,
+  ignoreWorkspaceDependencies,
+}: {
+  startingWorkspaceName: string;
+  directDependencyName: string;
+  directEdgeSource: AffectedDependencyEdgeSource;
+  workspaceByName: Map<string, Workspace>;
+  inputDependenciesByName: Map<string, string[]>;
+  affectedSet: Set<string>;
+  ignoreWorkspaceDependencies: boolean;
+}): AffectedDependencyChainEntry[] => {
+  const chain: AffectedDependencyChainEntry[] = [
+    { workspaceName: startingWorkspaceName },
+    { workspaceName: directDependencyName, edgeSource: directEdgeSource },
+  ];
+  const visited = new Set<string>([
+    startingWorkspaceName,
+    directDependencyName,
+  ]);
+
+  let currentName = directDependencyName;
+  while (true) {
+    const currentWorkspace = workspaceByName.get(currentName);
+    if (!currentWorkspace) break;
+
+    const nextEdge = collectDirectEdges({
+      workspace: currentWorkspace,
+      inputDependenciesByName,
+      ignoreWorkspaceDependencies,
+    }).find(
+      ({ dependencyName }) =>
+        !visited.has(dependencyName) &&
+        workspaceByName.has(dependencyName) &&
+        affectedSet.has(dependencyName),
+    );
+    if (!nextEdge) break;
+
+    chain.push({
+      workspaceName: nextEdge.dependencyName,
+      edgeSource: nextEdge.edgeSource,
+    });
+    visited.add(nextEdge.dependencyName);
+    currentName = nextEdge.dependencyName;
+  }
+
+  return chain;
+};
+
 const collectAffectedDependencies = ({
   startingWorkspace,
   workspaceByName,
@@ -383,50 +485,58 @@ const collectAffectedDependencies = ({
   ignoreWorkspaceDependencies: boolean;
 }): AffectedDependencyResult[] => {
   const results: AffectedDependencyResult[] = [];
-  const visited = new Set<string>([startingWorkspace.name]);
+  const seen = new Set<string>([startingWorkspace.name]);
 
-  const visit = (
-    currentName: string,
-    chain: AffectedDependencyChainEntry[],
-  ) => {
-    const currentWorkspace = workspaceByName.get(currentName);
-    if (!currentWorkspace) return;
+  const directEdges = collectDirectEdges({
+    workspace: startingWorkspace,
+    inputDependenciesByName,
+    ignoreWorkspaceDependencies,
+  });
 
-    const edges: {
-      dependencyName: string;
-      edgeSource: AffectedDependencyEdgeSource;
-    }[] = [];
+  for (const { dependencyName, edgeSource } of directEdges) {
+    if (seen.has(dependencyName)) continue;
+    if (!workspaceByName.has(dependencyName)) continue;
+    seen.add(dependencyName);
+    if (!affectedSet.has(dependencyName)) continue;
 
-    for (const dependencyName of inputDependenciesByName.get(currentName) ??
-      []) {
-      edges.push({ dependencyName, edgeSource: "input" });
-    }
-    if (!ignoreWorkspaceDependencies) {
-      for (const dependencyName of currentWorkspace.dependencies) {
-        edges.push({ dependencyName, edgeSource: "package" });
-      }
-    }
+    results.push({
+      dependencyName,
+      chain: extendChainThroughAffectedDeps({
+        startingWorkspaceName: startingWorkspace.name,
+        directDependencyName: dependencyName,
+        directEdgeSource: edgeSource,
+        workspaceByName,
+        inputDependenciesByName,
+        affectedSet,
+        ignoreWorkspaceDependencies,
+      }),
+    });
+  }
 
-    for (const { dependencyName, edgeSource } of edges) {
-      if (visited.has(dependencyName)) continue;
-      if (!workspaceByName.has(dependencyName)) continue;
-      visited.add(dependencyName);
-
-      const dependencyChain: AffectedDependencyChainEntry[] = [
-        ...chain,
-        { workspaceName: dependencyName, edgeSource },
-      ];
-
-      if (affectedSet.has(dependencyName)) {
-        results.push({ dependencyName, chain: dependencyChain });
-      }
-
-      visit(dependencyName, dependencyChain);
-    }
-  };
-
-  visit(startingWorkspace.name, [{ workspaceName: startingWorkspace.name }]);
   return results;
+};
+
+const filterExternalDepChangesByInputs = ({
+  changesByWorkspace,
+  workspaceInputs,
+}: {
+  changesByWorkspace: ExternalDependencyChangesByWorkspace;
+  workspaceInputs: AffectedWorkspaceInput[];
+}): ExternalDependencyChangesByWorkspace => {
+  const filtered: ExternalDependencyChangesByWorkspace = new Map();
+  for (const { workspace, inputExternalDependencyNames } of workspaceInputs) {
+    const changes = changesByWorkspace.get(workspace.name);
+    if (!changes?.length) continue;
+    if (inputExternalDependencyNames === undefined) {
+      filtered.set(workspace.name, changes);
+      continue;
+    }
+    if (inputExternalDependencyNames.length === 0) continue;
+    const allowed = new Set(inputExternalDependencyNames);
+    const matched = changes.filter((change) => allowed.has(change.name));
+    if (matched.length) filtered.set(workspace.name, matched);
+  }
+  return filtered;
 };
 
 export const getFileAffectedWorkspaces = async ({
@@ -458,6 +568,11 @@ export const getFileAffectedWorkspaces = async ({
     );
   }
 
+  const filteredExternalDepChanges = filterExternalDepChangesByInputs({
+    changesByWorkspace: externalDepChangesByWorkspace,
+    workspaceInputs,
+  });
+
   const inputDependenciesByName = resolveInputWorkspaceDependencies({
     workspaceInputs,
   });
@@ -466,7 +581,7 @@ export const getFileAffectedWorkspaces = async ({
     workspaceInputs,
     workspaceByName,
     changedFilesByName,
-    externalDepChangesByWorkspace,
+    externalDepChangesByWorkspace: filteredExternalDepChanges,
     inputDependenciesByName,
     ignoreWorkspaceDependencies,
   });
@@ -474,7 +589,7 @@ export const getFileAffectedWorkspaces = async ({
   const affectedWorkspaces = workspaceInputs.map(({ workspace }) => {
     const changedFiles = changedFilesByName.get(workspace.name) ?? [];
     const externalDependencies =
-      externalDepChangesByWorkspace.get(workspace.name) ?? [];
+      filteredExternalDepChanges.get(workspace.name) ?? [];
     const dependencies = collectAffectedDependencies({
       startingWorkspace: workspace,
       workspaceByName,

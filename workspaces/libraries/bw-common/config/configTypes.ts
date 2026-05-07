@@ -52,6 +52,18 @@ export type WorkspaceInputsConfig = {
    * be treated like dependencies in the affected workspace resolution.
    */
   workspacePatterns?: string[];
+  /**
+   * Filters which of the workspace's declared external (non-workspace) deps
+   * participate in lockfile-change detection.
+   *
+   * - When omitted, every declared external dep participates (default).
+   * - When set to an empty array, no external deps participate (the workspace
+   *   will not be flagged from a lockfile change unless something else makes it so).
+   * - When set to a non-empty list of package names, only the listed names
+   *   participate. Names not present in the workspace's actual
+   *   `externalDependencies` are silently ignored.
+   */
+  externalDependencies?: string[];
 };
 
 /** Configuration that applies to a specific package.json script */

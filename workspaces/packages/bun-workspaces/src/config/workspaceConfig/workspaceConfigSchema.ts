@@ -13,6 +13,10 @@ const WORKSPACE_INPUTS_CONFIG_SCHEMA = {
       type: "array",
       items: { type: "string" },
     },
+    externalDependencies: {
+      type: "array",
+      items: { type: "string" },
+    },
   },
 } as const satisfies JSONSchema;
 

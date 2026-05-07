@@ -519,6 +519,83 @@ describe("FileSystemProject.determineAffectedWorkspaces", () => {
     });
   });
 
+  describe("inputs.externalDependencies filter", () => {
+    test("non-empty filter limits affectedReasons to listed deps and excludes others", async () => {
+      const project = makeProject(
+        getProjectRoot("affectedWithExternalDepInputs"),
+      );
+      const result = await project.determineAffectedWorkspaces({
+        diffSource: "fileList",
+        changedFiles: ["bun.lock"],
+      });
+      const a = findResult(result.workspaceResults, "a-filtered");
+      // a-filtered has externals lodash + typescript (dev) but the
+      // workspace's defaultInputs.externalDependencies = ["lodash"], so
+      // typescript is filtered out from both the affected trigger and the
+      // reported reasons.
+      expect(a.isAffected).toBe(true);
+      expect(a.affectedReasons.externalDependencies).toEqual([
+        { name: "lodash", dev: false, baseVersion: null, headVersion: null },
+      ]);
+    });
+
+    test("empty array filter excludes the workspace from the lockfile signal", async () => {
+      const project = makeProject(
+        getProjectRoot("affectedWithExternalDepInputs"),
+      );
+      const result = await project.determineAffectedWorkspaces({
+        diffSource: "fileList",
+        changedFiles: ["bun.lock"],
+      });
+      const b = findResult(result.workspaceResults, "b-empty");
+      // b-empty has externals react + lodash but defaultInputs.externalDependencies = []
+      // silences lockfile-driven affectedness for this workspace.
+      expect(b.isAffected).toBe(false);
+      expect(b.affectedReasons.externalDependencies).toEqual([]);
+    });
+
+    test("undefined filter (no config) lets every declared external participate", async () => {
+      const project = makeProject(
+        getProjectRoot("affectedWithExternalDepInputs"),
+      );
+      const result = await project.determineAffectedWorkspaces({
+        diffSource: "fileList",
+        changedFiles: ["bun.lock"],
+      });
+      const c = findResult(result.workspaceResults, "c-default");
+      // c-default has no bw.workspace.json → no filter → react participates.
+      expect(c.isAffected).toBe(true);
+      expect(c.affectedReasons.externalDependencies).toEqual([
+        { name: "react", dev: false, baseVersion: null, headVersion: null },
+      ]);
+    });
+
+    test("result.inputs reflects configured externalDependencies field", async () => {
+      const project = makeProject(
+        getProjectRoot("affectedWithExternalDepInputs"),
+      );
+      const result = await project.determineAffectedWorkspaces({
+        diffSource: "fileList",
+        changedFiles: [],
+      });
+      expect(findResult(result.workspaceResults, "a-filtered").inputs).toEqual({
+        files: ["."],
+        workspacePatterns: [],
+        externalDependencies: ["lodash"],
+      });
+      expect(findResult(result.workspaceResults, "b-empty").inputs).toEqual({
+        files: ["."],
+        workspacePatterns: [],
+        externalDependencies: [],
+      });
+      // No config → externalDependencies field omitted from result.inputs
+      expect(findResult(result.workspaceResults, "c-default").inputs).toEqual({
+        files: ["."],
+        workspacePatterns: [],
+      });
+    });
+  });
+
   describe("script option", () => {
     test("uses script-level inputs when configured for that script", async () => {
       const project = makeProject(getProjectRoot("affectedWithInputs"));

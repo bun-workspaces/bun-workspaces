@@ -2,11 +2,14 @@ import fs from "fs";
 import path from "path";
 import Ajv from "ajv";
 import standaloneCode from "ajv/dist/standalone";
+import { createScriptLogger } from "bw-meta/util";
 import { ROOT_CONFIG_JSON_SCHEMA } from "../src/config/rootConfig/rootConfigSchema";
 import { WORKSPACE_CONFIG_JSON_SCHEMA } from "../src/config/workspaceConfig/workspaceConfigSchema";
 
+const logger = createScriptLogger({ name: "AJV" });
+
 if (import.meta.main) {
-  console.log("Compiling AJV scripts...");
+  logger.info("Compiling AJV scripts...");
 
   const ajv = new Ajv({
     code: { source: true, esm: true },
@@ -21,12 +24,16 @@ if (import.meta.main) {
     "../src/internal/generated/ajv/validateWorkspaceConfig.js",
   );
 
+  logger.debug(`workspaceFilePath: ${workspaceFilePath}`);
+
   const rootFilePath = path.join(
     __dirname,
     "../src/internal/generated/ajv/validateRootConfig.js",
   );
 
-  console.log(
+  logger.debug(`rootFilePath: ${rootFilePath}`);
+
+  logger.info(
     `Writing ${path.relative(path.join(process.cwd(), "../../"), workspaceFilePath)}`,
   );
   fs.writeFileSync(
@@ -34,10 +41,10 @@ if (import.meta.main) {
     standaloneCode(ajv, validateWorkspaceConfig),
   );
 
-  console.log(
+  logger.info(
     `Writing ${path.relative(path.join(process.cwd(), "../../"), rootFilePath)}`,
   );
   fs.writeFileSync(rootFilePath, standaloneCode(ajv, validateRootConfig));
 
-  console.log("Finished AJV generation");
+  logger.info("Finished AJV generation");
 }

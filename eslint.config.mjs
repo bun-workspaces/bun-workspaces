@@ -96,7 +96,7 @@ export default defineConfig([
     name: "scripts",
     files: ["**/scripts/**/*.{js,mjs,cjs,ts,mts,cts,tsx}"],
     rules: {
-      "no-console": "off",
+      "no-console": "warn",
     },
   },
   {

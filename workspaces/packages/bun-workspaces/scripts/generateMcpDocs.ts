@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { createScriptLogger } from "bw-meta/util";
 
 const MD_FILES: Array<{ name: string; file: string }> = [
   { name: "DOC_OVERVIEW", file: "md/ai/context/overview.md" },
@@ -14,8 +15,10 @@ const escapeForTemplateLiteral = (content: string): string =>
 
 const root = process.env.BW_PROJECT_PATH as string;
 
+const logger = createScriptLogger({ name: "MCP Docs" });
+
 if (import.meta.main) {
-  console.log("Generating MCP docs...");
+  logger.info("Generating MCP docs...");
 
   const outDir = path.resolve(__dirname, "../src/internal/generated/aiDocs");
 
@@ -23,7 +26,7 @@ if (import.meta.main) {
 
   const constants = MD_FILES.map(({ name, file }) => {
     const filePath = path.join(root, file);
-    console.log(`Reading ${path.relative(root, filePath)}`);
+    logger.info(`Reading ${path.relative(root, filePath)}`);
     const content = fs.readFileSync(filePath, "utf8").trimEnd();
     return `export const ${name} = \`${escapeForTemplateLiteral(content)}\`;`;
   });
@@ -36,8 +39,11 @@ if (import.meta.main) {
   ].join("\n");
 
   const outPath = path.join(outDir, "docs.ts");
-  fs.writeFileSync(outPath, output);
-  console.log(`Written to ${path.relative(root, outPath)}`);
 
-  console.log("Finished MCP docs generation");
+  logger.debug(`Writing ${outPath}...`);
+
+  fs.writeFileSync(outPath, output);
+  logger.info(`Written to ${path.relative(root, outPath)}`);
+
+  logger.info("Finished MCP docs generation");
 }

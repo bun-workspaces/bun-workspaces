@@ -12,6 +12,7 @@ import path from "path";
 import { createRslib, mergeRslibConfig, type RslibConfig } from "@rslib/core";
 import { $ } from "bun";
 import { createFileSystemProject } from "bun-workspaces";
+import { createScriptLogger } from "bw-meta/util";
 import { generateDtsBundle } from "dts-bundle-generator";
 
 import rsLibConfigRaw, { IS_TEST_BUILD, DIST_PATH } from "../rslib.config.ts";
@@ -22,6 +23,8 @@ const ROOT_PACKAGE_JSON_PATH = path.resolve(
   process.env.BW_PROJECT_PATH as string,
   "package.json",
 );
+
+const logger = createScriptLogger({ name: "Build" });
 
 const processPackageJson = () => {
   const {
@@ -95,7 +98,11 @@ export const runBuild = async () => {
   const { outputPackageJson, inputPackageJson, dependencies } =
     processPackageJson();
 
-  console.log("Creating rslib build...");
+  logger.debug(`inputPackageJson: ${JSON.stringify(inputPackageJson)}`);
+  logger.debug(`outputPackageJson: ${JSON.stringify(outputPackageJson)}`);
+  logger.debug(`dependencies: ${JSON.stringify(dependencies)}`);
+
+  logger.info("Creating rslib build...");
 
   const project = createFileSystemProject({
     rootDirectory: process.env.BW_PROJECT_PATH as string,
@@ -125,6 +132,8 @@ export const runBuild = async () => {
     [] as string[],
   );
 
+  logger.debug(`bundledDependencies: ${JSON.stringify(bundledDependencies)}`);
+
   const rsLibConfig = mergeRslibConfig(rsLibConfigRaw, {
     output: {
       externals: Object.fromEntries(
@@ -133,6 +142,8 @@ export const runBuild = async () => {
     },
   }) as RslibConfig;
 
+  logger.debug(`rsLibConfig: ${JSON.stringify(rsLibConfig)}`);
+
   const rslib = await createRslib({
     config: rsLibConfig,
   });
@@ -140,7 +151,7 @@ export const runBuild = async () => {
   await rslib.build();
 
   if (!IS_TEST_BUILD) {
-    console.log("Bundling DTS...");
+    logger.info("DTS: Bundling DTS...");
 
     const dtsEntries = Object.values(inputPackageJson.exports) as string[];
 
@@ -156,20 +167,22 @@ export const runBuild = async () => {
 
     for (let i = 0; i < fileContents.length; i++) {
       const fileContent = fileContents[i];
-      writeFileSync(
-        path.resolve(DIST_PATH, dtsEntries[i].replace(".ts", ".d.ts")),
-        fileContent,
+      const filePath = path.resolve(
+        DIST_PATH,
+        dtsEntries[i].replace(".ts", ".d.ts"),
       );
+      logger.debug(`DTS: Writing ${filePath}`);
+      writeFileSync(filePath, fileContent);
     }
   }
 
-  console.log("Writing package.json...");
+  logger.info("Writing package.json...");
   writeFileSync(
     path.resolve(DIST_PATH, "package.json"),
     JSON.stringify(outputPackageJson, null, 2),
   );
 
-  console.log("Writing .prettierignore...");
+  logger.info("Writing .prettierignore...");
   writeFileSync(
     path.resolve(DIST_PATH, ".prettierignore"),
     "**/tests/**/*.json",
@@ -177,6 +190,7 @@ export const runBuild = async () => {
 
   await $`cd ${path.resolve(__dirname, IS_TEST_BUILD ? "../dist.test" : "../dist")} && bunx prettier --write . > /dev/null`;
 
+  logger.debug("Cleaning up...");
   rmSync(path.resolve(DIST_PATH, ".prettierignore"));
   rmSync(path.resolve(DIST_PATH, "node_modules"), {
     recursive: true,
@@ -187,13 +201,15 @@ export const runBuild = async () => {
     force: true,
   });
 
-  mkdirSync(path.resolve(DIST_PATH, "src/internal/generated/ajv"), {
-    recursive: true,
-  });
+  const ajvDir = path.resolve(DIST_PATH, "src/internal/generated/ajv");
+  logger.debug(`Creating ${ajvDir}...`);
+  mkdirSync(ajvDir, { recursive: true });
 
   for (const file of new Bun.Glob(
     path.resolve(__dirname, "../src/internal/generated/ajv/*"),
   ).scanSync()) {
+    logger.debug(`Copying ${file} to ${ajvDir}...`);
+
     copyFileSync(
       file,
       path.resolve(
@@ -202,6 +218,7 @@ export const runBuild = async () => {
         path.basename(file),
       ),
     );
+
     renameSync(
       path.resolve(
         DIST_PATH,
@@ -218,6 +235,8 @@ export const runBuild = async () => {
   }
 
   if (IS_TEST_BUILD) {
+    logger.debug(`Copying tests to ${DIST_PATH}/tests...`);
+
     cpSync(
       path.resolve(__dirname, "../tests"),
       path.resolve(DIST_PATH, "tests"),

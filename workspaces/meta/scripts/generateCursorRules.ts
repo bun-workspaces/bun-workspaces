@@ -1,9 +1,12 @@
 import path from "path";
+import { createScriptLogger } from "../util";
 
 const root = process.env.BW_PROJECT_PATH as string;
 
+const logger = createScriptLogger({ name: "Cursor Rules" });
+
 if (import.meta.main) {
-  console.log("Generating Cursor rules...");
+  logger.info("Generating Cursor rules...");
 
   let content = "";
   for (const contextFile of [
@@ -15,13 +18,16 @@ if (import.meta.main) {
     "md/ai/context/development.md",
   ]) {
     const contextFilePath = path.resolve(root, contextFile);
-    console.log(`Reading ${contextFilePath}`);
+    logger.info(`Reading ${contextFile}`);
     content += await Bun.file(contextFilePath).text();
   }
-  console.log("All files read");
+  logger.info("All files read");
 
   const outputPath = path.resolve(root, ".cursor/rules/context.md");
 
-  console.log(`Writing to ${outputPath}`);
+  logger.debug(`Writing to ${outputPath}`);
   await Bun.write(outputPath, content);
+  logger.info(
+    `Cursor rules generated successfully at ${path.relative(root, outputPath)}`,
+  );
 }

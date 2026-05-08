@@ -6,15 +6,18 @@ import {
   ROOT_CONFIG_QUICKSTART,
   WORKSPACE_CONFIG_QUICKSTART,
 } from "bw-common/docs";
+import { createScriptLogger } from "../util";
 
 const root = process.env.BW_PROJECT_PATH as string;
 
+const logger = createScriptLogger({ name: "README" });
+
 if (import.meta.main) {
-  console.log("Generating README...");
+  logger.info("Generating README...");
 
   const readmeTemplatePath = path.resolve(root, "md/public/README_TEMPLATE.md");
 
-  console.log(`Reading ${readmeTemplatePath}`);
+  logger.debug(`Reading ${readmeTemplatePath}`);
   const readmeTemplate = await Bun.file(readmeTemplatePath).text();
 
   const content = readmeTemplate
@@ -25,8 +28,8 @@ if (import.meta.main) {
 
   const readmePath = path.resolve(root, "README.md");
 
-  console.log(`Writing to ${readmePath}`);
+  logger.debug(`Writing to ${readmePath}`);
   await Bun.write(readmePath, content);
 
-  console.log("README generated successfully");
+  logger.info("README generated successfully");
 }

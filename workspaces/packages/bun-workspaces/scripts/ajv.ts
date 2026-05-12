@@ -6,7 +6,7 @@ import { createScriptLogger } from "bw-meta/util";
 import { ROOT_CONFIG_JSON_SCHEMA } from "../src/config/rootConfig/rootConfigSchema";
 import { WORKSPACE_CONFIG_JSON_SCHEMA } from "../src/config/workspaceConfig/workspaceConfigSchema";
 
-const logger = createScriptLogger({ name: "AJV" });
+const logger = createScriptLogger({ name: "bw:AJV" });
 
 if (import.meta.main) {
   logger.info("Compiling AJV scripts...");

@@ -10,10 +10,10 @@ import { createScriptLogger } from "../util";
 
 const root = process.env.BW_PROJECT_PATH as string;
 
-const logger = createScriptLogger({ name: "README" });
+const logger = createScriptLogger({ name: "README.md" });
 
 if (import.meta.main) {
-  logger.info("Generating README...");
+  logger.info("Creating README...");
 
   const readmeTemplatePath = path.resolve(root, "md/public/README_TEMPLATE.md");
 

@@ -7,7 +7,7 @@ if (!BW_PROJECT_PATH) {
   throw new Error("BW_PROJECT_PATH must be set");
 }
 
-export interface GenerateAgentDocsOptions {
+export interface CreateAgentDocsOptions {
   includeDevDocs?: boolean;
   scriptName: string;
 }
@@ -20,12 +20,12 @@ export type AgentDocFileName =
   | "config"
   | "development";
 
-export const generateAgentDocs = async (options: GenerateAgentDocsOptions) => {
+export const createAgentDocs = async (options: CreateAgentDocsOptions) => {
   const logger = createScriptLogger({
     name: options.scriptName,
   });
 
-  logger.info("Generating Agent docs...");
+  logger.info("Creating Agent docs...");
 
   const contextFiles: { path: string; name: AgentDocFileName }[] = [
     { path: "md/ai/context/overview.md", name: "overview" },

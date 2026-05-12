@@ -93,7 +93,7 @@ const processPackageJson = () => {
 
 export const runBuild = async () => {
   await $`bun run ajv`;
-  await $`bun run generate-public-agent-docs`;
+  await $`bun run create-public-agent-docs`;
 
   const { outputPackageJson, inputPackageJson, dependencies } =
     processPackageJson();

@@ -1,8 +1,8 @@
 import path from "path";
-import { generateAgentDocs } from "../util/agentDocs";
+import { createAgentDocs } from "../util/agentDocs";
 
 if (import.meta.main) {
-  const { logger, combinedContent } = await generateAgentDocs({
+  const { logger, combinedContent } = await createAgentDocs({
     scriptName: "AGENTS.md",
     includeDevDocs: true,
   });

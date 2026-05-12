@@ -68,10 +68,10 @@
     "format-check": "prettier --check .",
     "test": "bw run test && bw run build:test",
     "type-check": "bw run type-check -P --",
-    "generate-agents-md": "bw -l warn run generate-agents-md meta -o plain",
-    "generate-readme": "bw -l warn run generate-readme meta -o plain",
-    "init-bw-package": "BW_PROJECT_PATH=$PWD bun --cwd=workspaces/packages/bun-workspaces run generate-modules && bun --cwd=workspaces/libraries/bw-common run build:dts",
-    "prepare": "touch USER.md && bun init-bw-package && bun generate-readme && bun generate-agents-md"
+    "create-agents-md": "bw -l warn run create-agents-md meta -o plain",
+    "create-readme": "bw -l warn run create-readme meta -o plain",
+    "init-bw-package": "BW_PROJECT_PATH=$PWD bun --cwd=workspaces/packages/bun-workspaces run create-modules && bun --cwd=workspaces/libraries/bw-common run build:dts",
+    "prepare": "touch USER.md && bun init-bw-package && bun create-readme && bun create-agents-md"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

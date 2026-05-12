@@ -44,7 +44,14 @@ if (import.meta.main) {
 
   const agentsMdPath = path.join(process.cwd(), "AGENTS.md");
   logger.info(`Writing ${path.relative(process.cwd(), agentsMdPath)}...`);
-  fs.writeFileSync(agentsMdPath, combinedContent);
+  fs.writeFileSync(
+    agentsMdPath,
+    `
+<!-- bun-workspaces (npm package) agent documentation begin -->
+${combinedContent}
+<!-- bun-workspaces (npm package) agent documentation end -->
+`.trim(),
+  );
 
   logger.info("Success");
 }

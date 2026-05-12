@@ -71,7 +71,7 @@
     "create-agents-md": "bw -l warn run create-agents-md meta -o plain",
     "create-readme": "bw -l warn run create-readme meta -o plain",
     "init-bw-package": "BW_PROJECT_PATH=$PWD bun --cwd=workspaces/packages/bun-workspaces run create-modules && bun --cwd=workspaces/libraries/bw-common run build:dts",
-    "prepare": "touch USER.md && bun init-bw-package && bun create-readme && bun create-agents-md"
+    "prepare": "bun init-bw-package && bun create-readme && bun create-agents-md"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

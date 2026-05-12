@@ -20,7 +20,7 @@ A [monorepo](http://sonarsource.com/resources/library/monorepo/) tool that enhan
 - Determine **affected workspaces** based on changed files 🕸️
 - AI: Provides an [AGENTS.md](https://bunworkspaces.com/ai/agents) file and an [MCP server](https://bunworkspaces.com/ai/mcp)! 🛠️
 
-To get started, all you need is a repo using Bun's workspaces feature for nested JavaScript/TypeScript packages. This adds enhanced features on top of plaisn workspaces.
+To get started, all you need is a repo using Bun's workspaces feature for nested JavaScript/TypeScript packages. This adds enhanced features on top of plain workspaces.
 
 Start running some [CLI commands](https://bunworkspaces.com/cli) right away in your repo, or take full advantage of the [TypeScript API](https://bunworkspaces.com/api) and its features.
 

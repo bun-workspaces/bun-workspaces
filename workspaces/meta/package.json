@@ -1,8 +1,8 @@
 {
   "name": "bw-meta",
   "scripts": {
-    "generate-cursor-rules": "bun scripts/generateCursorRules.ts",
-    "generate-readme": "bun scripts/generateReadme.ts",
+    "create-agents-md": "bun scripts/createAgentsMd.ts",
+    "create-readme": "bun scripts/createReadme.ts",
     "lint": "eslint .",
     "type-check": "tsc --noEmit"
   },

@@ -93,7 +93,7 @@ const processPackageJson = () => {
 
 export const runBuild = async () => {
   await $`bun run ajv`;
-  await $`bun run generate-mcp-docs`;
+  await $`bun run create-public-agent-docs`;
 
   const { outputPackageJson, inputPackageJson, dependencies } =
     processPackageJson();
@@ -233,6 +233,11 @@ export const runBuild = async () => {
       ),
     );
   }
+
+  copyFileSync(
+    path.resolve(__dirname, "../AGENTS.md"),
+    path.resolve(DIST_PATH, "AGENTS.md"),
+  );
 
   if (IS_TEST_BUILD) {
     logger.debug(`Copying tests to ${DIST_PATH}/tests...`);

@@ -1,6 +1,7 @@
 **/tests/**/*.json
 **/tests/**/*.jsonc
 **/*.d.ts
+AGENTS.md
 
 **/generated/**/*.js
 

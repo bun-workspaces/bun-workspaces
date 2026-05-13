@@ -1,5 +1,5 @@
 <a href="https://bunworkspaces.com">
-<img src="./workspaces/web/documentation-website/src/pages/public/images/png/bwunster-bg-banner-wide_3000x900.png" alt="bun-workspaces" width="100%" />
+<img src="./workspaces/web/documentation-website/src/pages/public/images/png/bwunster-bg-rect-title-wide_3000x900.png" alt="bun-workspaces" width="100%" />
 </a>
 
 <br/>
@@ -7,6 +7,8 @@
 Full Documentation: [https://bunworkspaces.com](https://bunworkspaces.com)
 
 Changelog: [GitHub Releases](https://github.com/bun-workspaces/bun-workspaces/releases)
+
+Example Projects: [Repository](https://github.com/bun-workspaces/bun-workspaces-examples)
 
 # bun-workspaces
 

@@ -171,6 +171,10 @@ export const HEADER_NAV_LINKS: NavItem[] = [
         link: BW_BLOG_URL,
       },
       {
+        text: "Example Projects",
+        link: "https://github.com/bun-workspaces/bun-workspaces-examples",
+      },
+      {
         text: "Roadmap",
         link: "/roadmap",
       },

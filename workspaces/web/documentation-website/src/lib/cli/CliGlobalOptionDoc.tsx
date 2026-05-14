@@ -22,8 +22,13 @@ export const CliGlobalOptionDoc = ({
         </div>
       ) : null}
       <p>
-        Usage: <code>{content.mainOption}</code> |{" "}
-        <code>{content.shortOption}</code>{" "}
+        Usage: <code>{content.mainOption}</code>
+        {content.shortOption ? (
+          <>
+            {" "}
+            | <code>{content.shortOption}</code>
+          </>
+        ) : null}
       </p>
       {content.values?.length ? (
         <p>

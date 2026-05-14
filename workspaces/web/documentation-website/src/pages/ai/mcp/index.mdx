@@ -74,3 +74,10 @@ Add the following to your `.mcp.json` file for a directory you're working in.
 <SyntaxHighlighter language="json">
 {JSON.stringify(CLAUDE_CODE_MCP_CONFIG, null, 2)}
 </SyntaxHighlighter>
+
+#### Executable Config Files (TS/JS)
+
+By default, the MCP server does not load TS/JS configuration files (e.g. `bw.workspace.ts`) for agent security reasons,
+preventing executing TS/JS in untrusted contexts on CLI initialization if an agent was pointed to a compromised repository.
+
+If you want to enable this feature, add `--no-disable-executable-configs` after the `mcp-server` command.

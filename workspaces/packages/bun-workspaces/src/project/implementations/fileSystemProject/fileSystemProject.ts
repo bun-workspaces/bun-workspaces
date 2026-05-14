@@ -4,7 +4,7 @@ import type { ScriptShellOption, ShellOption } from "bw-common/parameters";
 import { ROOT_WORKSPACE_SELECTOR } from "bw-common/project";
 import type { WorkspaceScriptMetadata } from "bw-common/runScript";
 import { loadRootConfig } from "../../../config";
-import { getUserEnvVar } from "../../../config/userEnvVars";
+import { getUserBoolEnvVar, getUserEnvVar } from "../../../config/userEnvVars";
 import { parse, quote } from "../../../internal/bundledDeps/shellQuote";
 import type { Simplify } from "../../../internal/core";
 import {
@@ -65,6 +65,17 @@ export type CreateFileSystemProjectOptions = {
   name?: string;
   /** Whether to include the root workspace as a normal workspace. This overrides any config or env var settings. */
   includeRootWorkspace?: boolean;
+  /**
+   * When true, skip discovery of `.ts`/`.js` config files (`bw.root.{ts,js}`,
+   * `bw.workspace.{ts,js}`) so no executable code is loaded from the project,
+   * for untrusted contexts.
+   *
+   * `.jsonc`/`.json` configs and the `package.json` `bw` key still resolve.
+   *
+   * When omitted, the `BW_DISABLE_EXECUTABLE_CONFIGS_DEFAULT` user env var is
+   * consulted (`"true"` or `"false"`). If neither is set, defaults to false.
+   */
+  disableExecutableConfigs?: boolean;
 };
 
 export type InlineScriptOptions = {
@@ -229,18 +240,19 @@ const serializeArgs = (
     return args
       .map((arg) =>
         quoteArg(
-          interpolateWorkspaceScriptMetadata(arg, metadata, shell),
+          interpolateWorkspaceScriptMetadata({ text: arg, metadata, shell }),
           shell,
         ),
       )
       .join(" ");
   }
 
-  const interpolated = interpolateWorkspaceScriptMetadata(
-    args,
+  const interpolated = interpolateWorkspaceScriptMetadata({
+    text: args,
     metadata,
     shell,
-  );
+    quoteValues: true,
+  });
   // Escape backslashes in interpolated values before POSIX parse on Windows,
   // so that path separators survive parse's escape processing (\\→\)
   const parseInput =
@@ -291,6 +303,11 @@ class _FileSystemProject extends ProjectBase implements Project {
           typeofName: "boolean",
           optional: true,
         },
+        "disableExecutableConfigs option": {
+          value: options.disableExecutableConfigs,
+          typeofName: "boolean",
+          optional: true,
+        },
       },
       { throw: true },
     );
@@ -305,7 +322,17 @@ class _FileSystemProject extends ProjectBase implements Project {
       expandHomePath(options.rootDirectory ?? ""),
     );
 
-    const rootConfig = loadRootConfig(this.rootDirectory);
+    // Root config can't supply a default for this — the config file itself
+    // is what we're deciding whether to evaluate. Precedence is therefore
+    // option > BW_DISABLE_EXECUTABLE_CONFIGS_DEFAULT env var > false.
+    const loadConfigOptions = {
+      disableExecutableConfigs:
+        options.disableExecutableConfigs ??
+        getUserBoolEnvVar("disableExecutableConfigsDefault") ??
+        false,
+    };
+
+    const rootConfig = loadRootConfig(this.rootDirectory, loadConfigOptions);
 
     const { workspaces, workspaceMap, rootWorkspace } = findWorkspaces({
       rootDirectory: this.rootDirectory,
@@ -314,6 +341,7 @@ class _FileSystemProject extends ProjectBase implements Project {
         rootConfig.defaults.includeRootWorkspace ??
         getUserEnvVar("includeRootWorkspaceDefault") === "true",
       workspacePatternConfigs: rootConfig.workspacePatternConfigs,
+      loadConfigOptions,
     });
 
     this.rootWorkspace = rootWorkspace;
@@ -435,11 +463,12 @@ class _FileSystemProject extends ProjectBase implements Project {
     const args = serializeArgs(options.args, workspaceScriptMetadata, shell);
 
     const script = options.inline
-      ? interpolateWorkspaceScriptMetadata(
-          options.script,
-          workspaceScriptMetadata,
+      ? interpolateWorkspaceScriptMetadata({
+          text: options.script,
+          metadata: workspaceScriptMetadata,
           shell,
-        ) + (args ? " " + args : "")
+          quoteValues: true,
+        }) + (args ? " " + args : "")
       : options.script;
 
     if (!options.inline && checkIsRecursiveScript(workspace.name, script)) {
@@ -659,11 +688,12 @@ class _FileSystemProject extends ProjectBase implements Project {
         );
 
         const script = options.inline
-          ? interpolateWorkspaceScriptMetadata(
-              options.script,
-              workspaceScriptMetadata,
+          ? interpolateWorkspaceScriptMetadata({
+              text: options.script,
+              metadata: workspaceScriptMetadata,
               shell,
-            ) + (args ? " " + args : "")
+              quoteValues: true,
+            }) + (args ? " " + args : "")
           : options.script;
 
         const scriptCommand = options.inline

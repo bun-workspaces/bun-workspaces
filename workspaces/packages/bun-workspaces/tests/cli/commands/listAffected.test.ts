@@ -534,7 +534,7 @@ describe("List Affected", () => {
       // Staged change to packages/a/src/index.ts also surfaces as unstaged
       // because staged content differs from working tree only when file is
       // overwritten — but here writing then add leaves working == index.
-      // So the unstaged collector sees no change either; only --ignore-staged
+      // So the unstaged collector sees no change either. Only --ignore-staged
       // filters but unstaged is blank → no affected.
       assertOutputMatches(result.stdout.sanitized, "No affected workspaces");
     });

@@ -129,6 +129,107 @@ describe("Test project root config", () => {
     });
   });
 
+  describe("disableExecutableConfigs", () => {
+    test("loadRootConfig skips bw.root.ts when disabled, falling through to jsonc", () => {
+      expect(
+        loadRootConfig(getProjectRoot("rootConfigTsPrecedence"), {
+          disableExecutableConfigs: true,
+        }),
+      ).toEqual({
+        defaults: {
+          parallelMax: 5,
+          shell: resolveScriptShell("default"),
+          includeRootWorkspace: false,
+          affectedBaseRef: "main",
+        },
+        workspacePatternConfigs: [],
+      });
+    });
+
+    test("loadRootConfig still loads jsonc-only fixtures when disabled", () => {
+      expect(
+        loadRootConfig(getProjectRoot("rootConfigJsoncFile"), {
+          disableExecutableConfigs: true,
+        }),
+      ).toEqual({
+        defaults: {
+          parallelMax: 5,
+          shell: "system",
+          includeRootWorkspace: true,
+          affectedBaseRef: "main",
+        },
+        workspacePatternConfigs: [],
+      });
+    });
+
+    test("createFileSystemProject with disableExecutableConfigs ignores bw.root.ts", () => {
+      const project = createFileSystemProject({
+        rootDirectory: getProjectRoot("rootConfigTsPrecedence"),
+        disableExecutableConfigs: true,
+      });
+      expect(project.config.root.defaults.parallelMax).toBe(5);
+    });
+
+    test("createFileSystemProject without disableExecutableConfigs honors bw.root.ts", () => {
+      const project = createFileSystemProject({
+        rootDirectory: getProjectRoot("rootConfigTsPrecedence"),
+      });
+      expect(project.config.root.defaults.parallelMax).toBe(3);
+    });
+
+    describe("BW_DISABLE_EXECUTABLE_CONFIGS_DEFAULT env var fallback", () => {
+      const envName = getUserEnvVarName("disableExecutableConfigsDefault");
+      const original = process.env[envName];
+
+      afterEach(() => {
+        if (original === undefined) delete process.env[envName];
+        else process.env[envName] = original;
+      });
+
+      test("env=true skips bw.root.ts when option is unset", () => {
+        process.env[envName] = "true";
+        const project = createFileSystemProject({
+          rootDirectory: getProjectRoot("rootConfigTsPrecedence"),
+        });
+        expect(project.config.root.defaults.parallelMax).toBe(5);
+      });
+
+      test("env=false honors bw.root.ts when option is unset", () => {
+        process.env[envName] = "false";
+        const project = createFileSystemProject({
+          rootDirectory: getProjectRoot("rootConfigTsPrecedence"),
+        });
+        expect(project.config.root.defaults.parallelMax).toBe(3);
+      });
+
+      test("option explicitly set overrides env=true", () => {
+        process.env[envName] = "true";
+        const project = createFileSystemProject({
+          rootDirectory: getProjectRoot("rootConfigTsPrecedence"),
+          disableExecutableConfigs: false,
+        });
+        expect(project.config.root.defaults.parallelMax).toBe(3);
+      });
+
+      test("option explicitly set overrides env=false", () => {
+        process.env[envName] = "false";
+        const project = createFileSystemProject({
+          rootDirectory: getProjectRoot("rootConfigTsPrecedence"),
+          disableExecutableConfigs: true,
+        });
+        expect(project.config.root.defaults.parallelMax).toBe(5);
+      });
+
+      test("env=garbage is ignored and falls through to default false", () => {
+        process.env[envName] = "yes";
+        const project = createFileSystemProject({
+          rootDirectory: getProjectRoot("rootConfigTsPrecedence"),
+        });
+        expect(project.config.root.defaults.parallelMax).toBe(3);
+      });
+    });
+  });
+
   describe("JavaScript config files", () => {
     test("js config loads as expected", () => {
       expect(loadRootConfig(getProjectRoot("rootConfigJsFile"))).toEqual({

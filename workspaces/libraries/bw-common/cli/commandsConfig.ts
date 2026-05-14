@@ -174,7 +174,7 @@ export const CLI_COMMANDS_CONFIG = {
     isGlobal: true,
     aliases: [],
     description:
-      "Start the bun-workspaces MCP (Model Context Protocol) server over stdio",
+      "Start the bun-workspaces MCP (Model Context Protocol) server over stdio. Defaults to skipping executable config files (bw.root.{ts,js}, bw.workspace.{ts,js}) for agent security. Pass the global --no-disable-executable-configs flag to allow them.",
     options: {},
   },
   listAffected: {

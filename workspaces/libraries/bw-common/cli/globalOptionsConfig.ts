@@ -1,3 +1,4 @@
+import { getUserEnvVarName } from "../config";
 import { LOG_LEVELS, type LogLevelSetting } from "../logging";
 
 export interface CliGlobalOptions {
@@ -5,6 +6,7 @@ export interface CliGlobalOptions {
   cwd: string;
   includeRoot: boolean;
   workspaceRoot: boolean;
+  disableExecutableConfigs: boolean;
 }
 
 export interface CliGlobalOptionConfig {
@@ -46,6 +48,14 @@ const CLI_GLOBAL_OPTIONS_CONFIG = {
     shortOption: "-w",
     description:
       "Run from the project root above the current working directory",
+    defaultValue: "",
+    values: null,
+    param: "",
+  },
+  disableExecutableConfigs: {
+    mainOption: "--disable-executable-configs",
+    shortOption: "",
+    description: `Skip evaluating executable config files (bw.root.{ts,js}, bw.workspace.{ts,js}). Only jsonc/json/package.json configs are read, for untrusted contexts. Can also be set via env var ${getUserEnvVarName("disableExecutableConfigsDefault")}=true.`,
     defaultValue: "",
     values: null,
     param: "",

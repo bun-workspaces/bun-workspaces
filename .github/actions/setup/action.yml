@@ -56,7 +56,7 @@ runs:
         '
         # If we can avoid running dependency install scripts, we should do it for security
         bun install --ignore-scripts
-        bun prepare
+        bun init-repo
 
     - name: Install Dependencies
       id: install-deps
@@ -64,4 +64,4 @@ runs:
       run: |
         # If we can avoid running dependency install scripts, we should do it for security
         bun install --frozen-lockfile --ignore-scripts
-        bun prepare
+        bun init-repo

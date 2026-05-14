@@ -1,3 +1,4 @@
+import { getUserEnvVarName } from "../config";
 import { LOG_LEVELS, type LogLevelSetting } from "../logging";
 
 export interface CliGlobalOptions {
@@ -54,8 +55,7 @@ const CLI_GLOBAL_OPTIONS_CONFIG = {
   disableExecutableConfigs: {
     mainOption: "--disable-executable-configs",
     shortOption: "",
-    description:
-      "Skip evaluating executable config files (bw.root.{ts,js}, bw.workspace.{ts,js}); only jsonc/json/package.json configs are read. Defaults to off for most commands and on for mcp-server (use --no-disable-executable-configs to allow executable configs in mcp-server). Can also be set via the BW_DISABLE_EXECUTABLE_CONFIGS_DEFAULT env var (true|false).",
+    description: `Skip evaluating executable config files (bw.root.{ts,js}, bw.workspace.{ts,js}); only jsonc/json/package.json configs are read, for untrusted contexts. Can also be set via env var ${getUserEnvVarName("disableExecutableConfigsDefault")}=true.`,
     defaultValue: "",
     values: null,
     param: "",

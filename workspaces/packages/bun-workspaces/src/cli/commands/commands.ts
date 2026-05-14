@@ -26,8 +26,8 @@ export const defineProjectCommands = (context: ProjectCommandContext) => {
   scriptInfo(context);
   listTags(context);
   tagInfo(context);
-  mcpServer(context);
   runScript(context);
   listAffected(context);
   runAffected(context);
+  mcpServer(context);
 };

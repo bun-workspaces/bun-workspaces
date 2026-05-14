@@ -55,7 +55,7 @@ const CLI_GLOBAL_OPTIONS_CONFIG = {
   disableExecutableConfigs: {
     mainOption: "--disable-executable-configs",
     shortOption: "",
-    description: `Skip evaluating executable config files (bw.root.{ts,js}, bw.workspace.{ts,js}); only jsonc/json/package.json configs are read, for untrusted contexts. Can also be set via env var ${getUserEnvVarName("disableExecutableConfigsDefault")}=true.`,
+    description: `Skip evaluating executable config files (bw.root.{ts,js}, bw.workspace.{ts,js}). Only jsonc/json/package.json configs are read, for untrusted contexts. Can also be set via env var ${getUserEnvVarName("disableExecutableConfigsDefault")}=true.`,
     defaultValue: "",
     values: null,
     param: "",

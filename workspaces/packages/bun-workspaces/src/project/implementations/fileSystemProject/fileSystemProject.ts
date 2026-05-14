@@ -67,15 +67,13 @@ export type CreateFileSystemProjectOptions = {
   includeRootWorkspace?: boolean;
   /**
    * When true, skip discovery of `.ts`/`.js` config files (`bw.root.{ts,js}`,
-   * `bw.workspace.{ts,js}`) so no executable code is loaded from the project.
+   * `bw.workspace.{ts,js}`) so no executable code is loaded from the project,
+   * for untrusted contexts.
+   *
    * `.jsonc`/`.json` configs and the `package.json` `bw` key still resolve.
    *
    * When omitted, the `BW_DISABLE_EXECUTABLE_CONFIGS_DEFAULT` user env var is
    * consulted (`"true"` or `"false"`). If neither is set, defaults to false.
-   *
-   * Intended for callers that may load projects from untrusted directories
-   * — most notably the MCP server, which can be redirected to arbitrary
-   * directories at runtime via its `set_working_directory` tool.
    */
   disableExecutableConfigs?: boolean;
 };

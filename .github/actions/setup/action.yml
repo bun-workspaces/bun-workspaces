@@ -54,10 +54,14 @@ runs:
           ];
           await Bun.write(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
         '
-        bun install
+        # If we can avoid running dependency install scripts, we should do it for security
+        bun install --ignore-scripts
+        bun prepare
 
     - name: Install Dependencies
       id: install-deps
       shell: bash
       run: |
-        bun install --frozen-lockfile
+        # If we can avoid running dependency install scripts, we should do it for security
+        bun install --frozen-lockfile --ignore-scripts
+        bun prepare

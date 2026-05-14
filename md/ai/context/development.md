@@ -87,6 +87,20 @@ export const handleSomething = (options: MyFunctionOptions): MyFunctionResult =>
 const { success } = handleSomething({ value: "a", isSomething: true });
 ```
 
+### Security Considerations
+
+- External strings (e.g. from package.json, bw config files, cli/api input, etc.)
+  - If added to a shell command string such as via interpolation, use available shell-quote library to sanitize (note that bw often uses temp script files instead of plain argv to execute subprocesses)
+  - If used in CLI output, strip ANSI/control codes to prevent terminal display manipulation (minor exceptions for allowed ANSI in workspace script output etc.)
+  - If used in subprocess argv like how affected feature git commands are constructed, prevent injections like CLI flags (e.g. how the `--base` option is processed)
+- Temp files and similar: prevent TOCTOU vulnerabilities by using atomic file operations or proper locking mechanisms.
+- GitHub actions
+  - External actions versions must be SHA-pinned (dev should likely look up latest version)
+  - Install dependencies with `--frozen-lockfile` and `--ignore-scripts` if possible
+  - Publish/deploy workflows should use the `bun-workspaces--prod` environment
+  - Workflows should generally simply avoid instances where a fork's code is checked out in the base repo's security context, especially on trigger (e.g. `pull_request_target`)
+- Note that this is not an exhaustive list. Since this is a public package that has supply chain exposure, security considerations should be high priority.
+
 ### Testing practices
 
 Except when unreasonably complex to test, generally speaking, all feature additions and fixes should include tests. This means that all CLI commands and their options that can be passed should be verified.

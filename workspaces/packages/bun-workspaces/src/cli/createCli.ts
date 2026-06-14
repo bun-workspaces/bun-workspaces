@@ -2,6 +2,7 @@ import packageJson from "../../package.json";
 import { validateCurrentBunVersion } from "../internal/bun";
 import { createCommand } from "../internal/bundledDeps/commander";
 import { BunWorkspacesError } from "../internal/core";
+import { showDeprecationNotice } from "../internal/deprecationNotice";
 import { logger } from "../internal/logger";
 import { defineGlobalCommands, defineProjectCommands } from "./commands";
 import { commandOutputLogger } from "./commands/commandHandlerUtils";
@@ -42,6 +43,8 @@ export const createCli = ({
   defaultCwd = process.cwd(),
   defaultMiddleware,
 }: CreateCliOptions = {}): CLI => {
+  showDeprecationNotice();
+
   logger.debug(`Creating CLI with default cwd: ${defaultCwd}`);
 
   const run = async ({

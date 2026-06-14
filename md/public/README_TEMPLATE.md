@@ -1,16 +1,22 @@
-<a href="https://bunworkspaces.com">
-<img src="./workspaces/web/documentation-website/src/pages/public/images/png/bwunster-bg-rect-title-wide_3000x900.png" alt="bun-workspaces" width="100%" />
-</a>
+## ⚠️ Deprecated Package
 
-<br/>
+bun-workspaces has been **deprecated** and **is now developed as [`pacwich`](https://pacwich.dev)**, which supports Bun, npm, and pnpm workspaces, with a mostly backwards compatible CLI and API.
 
-Full Documentation: [https://bunworkspaces.com](https://bunworkspaces.com)
+Users can expect little to no disruption beyond the package name change and config file name changes.
+Config files rename to `pacwich.workspace.{ts,js,json,jsonc}` and `pacwich.project.{ts,js,json,jsonc}` (instead of `bw.root.{ts,js,json,jsonc}`).
 
-Changelog: [GitHub Releases](https://github.com/bun-workspaces/bun-workspaces/releases)
+A full migration guide covering all differences between the packages is available at [https://pacwich.dev/intro/bun-workspaces-migration](https://pacwich.dev/intro/bun-workspaces-migration).
 
-Example Projects: [Repository](https://github.com/bun-workspaces/bun-workspaces-examples)
+You can also instruct an LLM agent to read `https://pacwich.dev/intro/bun-workspaces-migration/index.md`
+to assist with migration.
+
+[Read the launch blog post](https://smorsic.io/blog/pacwich-launch) about the motivations and development strategy.
+
+`bun-workspaces` will not receive further releases save for critical security patches if necessary.
 
 # bun-workspaces
+
+[Full Documentation](https://bunworkspaces.com)
 
 A [monorepo](http://sonarsource.com/resources/library/monorepo/) tool that enhances native [Bun workspaces](https://bun.sh/docs/install/workspaces).
 

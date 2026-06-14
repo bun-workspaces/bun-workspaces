@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useLocation } from "rspress/runtime";
 import Theme, { Link } from "rspress/theme";
 import "@fontsource/unifontex";
+import { DeprecationNotice } from "@/lib/components/DeprecationNotice";
 import packageJson from "../../../../packages/bun-workspaces/package.json";
 import { Footer } from "../lib/components/Footer";
 import { BUILD_ID } from "../lib/util/env";
@@ -75,7 +76,7 @@ const Layout = () => {
   return (
     <>
       <OnPageChange />
-      <Theme.Layout navTitle={<HomeLink />} />
+      <Theme.Layout top={<DeprecationNotice />} navTitle={<HomeLink />} />
       <Footer />
     </>
   );

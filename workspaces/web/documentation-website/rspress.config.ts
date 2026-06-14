@@ -85,6 +85,26 @@ export default defineConfig({
     pluginClientRedirects({
       redirects: [
         {
+          from: "/blog",
+          to: "https://smorsic.io/blog",
+        },
+        {
+          from: "/blog/bun-workspaces-v1",
+          to: "https://smorsic.io/blog/bun-workspaces-v1",
+        },
+        {
+          from: "/blog/bun-workspaces-v1_9",
+          to: "https://smorsic.io/blog/bun-workspaces-v1_9",
+        },
+        {
+          from: "/blog/bun-workspaces-v1_5",
+          to: "https://smorsic.io/blog/bun-workspaces-v1_5",
+        },
+        {
+          from: "/blog/typewriters-to-tokens",
+          to: "https://smorsic.io/blog/typewriters-to-tokens",
+        },
+        {
           from: "/concepts/script-runtime-metadata",
           to: "/concepts/workspace-script-metadata",
         },
@@ -233,19 +253,6 @@ export default defineConfig({
   themeConfig: {
     enableScrollToTop: true,
     socialLinks: [
-      {
-        icon: {
-          svg: fs.readFileSync(
-            path.resolve(
-              __dirname,
-              "src/pages/public/images/external/gh-sponsors.svg",
-            ),
-            "utf8",
-          ),
-        },
-        mode: "link",
-        content: "https://github.com/sponsors/bun-workspaces",
-      },
       {
         icon: "github",
         mode: "link",

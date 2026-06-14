@@ -2,6 +2,7 @@ import path from "path";
 import { ROOT_WORKSPACE_SELECTOR } from "bw-common/project";
 import { validateCurrentBunVersion } from "../../internal/bun";
 import { validateJSTypes } from "../../internal/core";
+import { showDeprecationNotice } from "../../internal/deprecationNotice";
 import { logger } from "../../internal/logger";
 import { createWorkspaceScriptCommand } from "../../runScript";
 import { sortWorkspaces, type Workspace } from "../../workspaces";
@@ -35,6 +36,7 @@ export abstract class ProjectBase implements Project {
   public abstract readonly config: ProjectConfig;
 
   constructor(_ignoreBunVersion = false) {
+    showDeprecationNotice();
     const bunVersionError = validateCurrentBunVersion();
     if (bunVersionError && !_ignoreBunVersion) {
       logger.error(

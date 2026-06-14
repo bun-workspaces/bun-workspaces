@@ -202,7 +202,7 @@ export const TerminalInput = () => {
             Something went wrong! Try reloading or try again later. <br />
             Report recurring issues on{" "}
             <a
-              href="https://github.com/bun-workspaces/bun-workspaces"
+              href="https://github.com/smorsic/bun-workspaces_deprecated"
               target="_blank"
               rel="noopener noreferrer"
             >

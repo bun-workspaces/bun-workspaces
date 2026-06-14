@@ -5,8 +5,7 @@ import { TAG_ICONS } from "./tagIcons";
 export const DOMAIN = "https://bunworkspaces.com";
 export const NPM_PACKAGE_URL = "https://www.npmjs.com/package/bun-workspaces";
 export const GITHUB_REPO_URL = packageJson.repository.url.replace(".git", "");
-export const BW_BLOG_URL =
-  process.env.BW_BLOG_URL || "https://bunworkspaces.com/blog";
+export const BW_BLOG_URL = "https://smorsic.io/blog";
 export const CHANGELOG_URL = `${GITHUB_REPO_URL}/releases`;
 export const LICENSE_URL = GITHUB_REPO_URL + "/blob/main/LICENSE.md";
 
@@ -18,11 +17,6 @@ export const HEADER_NAV_LINKS: NavItem[] = [
     activeMatch: "/cli|web-cli",
     tag: TAG_ICONS.cli,
     items: [
-      {
-        text: "Web CLI (Demo)",
-        link: "/web-cli",
-        activeMatch: "/web-cli$",
-      },
       {
         text: "Quick Start",
         link: "/cli",
@@ -169,10 +163,6 @@ export const HEADER_NAV_LINKS: NavItem[] = [
       {
         text: "Blog",
         link: BW_BLOG_URL,
-      },
-      {
-        text: "Example Projects",
-        link: "https://github.com/bun-workspaces/bun-workspaces-examples",
       },
       {
         text: "Roadmap",

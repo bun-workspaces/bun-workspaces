@@ -1,5 +1,3 @@
-/* TODO: this file could benefit from splitting up and removing dead selectors */
-
 :root {
   --rp-font-family-base: "IBM Plex Sans", sans-serif;
   --rp-font-family-mono: "UnifontEx", monospace;
@@ -671,4 +669,47 @@ hr {
   gap: 0.15rem;
   color: var(--web-cli-yellow);
   transform: translateY(0.085rem);
+}
+
+.deprecation-notice {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  color: black;
+  background-color: #f4e987;
+}
+
+.deprecation-notice a {
+  color: inherit;
+  text-decoration: underline;
+  font-weight: bold !important;
+}
+
+.deprecation-notice button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.deprecation-notice__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.deprecation-notice__content {
+  margin-top: 0.5rem;
+  gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
 }

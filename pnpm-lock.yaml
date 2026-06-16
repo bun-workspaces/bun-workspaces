@@ -44,8 +44,8 @@ catalogs:
       specifier: 7.8.0
       version: 7.8.0
     shell-quote:
-      specifier: 1.8.3
-      version: 1.8.3
+      specifier: 1.8.4
+      version: 1.8.4
     sucrase:
       specifier: 3.35.1
       version: 3.35.1
@@ -188,7 +188,7 @@ importers:
         version: 7.8.0
       shell-quote:
         specifier: catalog:pacwich-prod
-        version: 1.8.3
+        version: 1.8.4
       sucrase:
         specifier: catalog:pacwich-prod
         version: 3.35.1
@@ -294,7 +294,7 @@ importers:
         version: 16.1.1(react@19.2.6)
       shell-quote:
         specifier: catalog:pacwich-prod
-        version: 1.8.3
+        version: 1.8.4
       zustand:
         specifier: catalog:web
         version: 5.0.14(@types/react@19.2.15)(react@19.2.6)(use-sync-external-store@1.6.0(react@19.2.6))
@@ -3968,6 +3968,10 @@ packages:
 
   shell-quote@1.8.3:
     resolution: {integrity: sha512-ObmnIF4hXNg1BqhnHmgbDETF8dLPCggZWBjkQfhZpbszZnYur5DUljTcCHii5LC3J5E0yeO/1LIMyH+UvHQgyw==}
+    engines: {node: '>= 0.4'}
+
+  shell-quote@1.8.4:
+    resolution: {integrity: sha512-VsC6n6vz1ihYYyZZwX7YZSF5l5x36ca17OC+a69h94YqB7X6XLwf+5MOgynYir2SLFUbl8gIYvBo8K8RoNQ6bQ==}
     engines: {node: '>= 0.4'}
 
   shelljs@0.8.5:
@@ -8837,6 +8841,8 @@ snapshots:
   shebang-regex@3.0.0: {}
 
   shell-quote@1.8.3: {}
+
+  shell-quote@1.8.4: {}
 
   shelljs@0.8.5:
     dependencies:

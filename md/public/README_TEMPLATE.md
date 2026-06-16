@@ -29,7 +29,12 @@ to a degree.
 
 ### Installation
 
-Note that the global install
+Use the global install and/or local install. The global install gives you a convenient
+`pacwich` binary, which will still delegate to a local install's CLI, if available,
+while the local install locks the version for your project.
+
+If you only use a local install, you can still invoke the `pacwich` command within `package.json` scripts, potentially using your root `package.json` scripts for common `pacwich` operations
+you need in your project.
 
 ```bash
 # Use the global install command of choice below
@@ -58,6 +63,7 @@ especially if you area `bun-workspaces` user that had a `bw` alias.
 
 ```bash
 # Use the global command if installed
+# This will use a local install's CLI, if available
 pacwich --help
 
 # Or use a one-off/local invocation

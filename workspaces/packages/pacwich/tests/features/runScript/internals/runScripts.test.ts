@@ -334,10 +334,14 @@ describe("Run Scripts", () => {
         metadata: { name: scriptName },
         scriptCommand: {
           command: IS_WINDOWS
-            ? `echo test-script ${scriptName} > ${getRunningFile(scriptName)}  && ` +
-              `dir /b ${outputDir} | find /c /v "" && ` +
+            ? // Quote paths to tolerate spaces; `del /q /f` + `2>nul`
+              // ensures the marker is removed even when the file is
+              // momentarily locked and never emits a stderr line that a
+              // strict pipeline could surface as part of the count.
+              `echo test-script ${scriptName} > "${getRunningFile(scriptName)}"  && ` +
+              `dir /b "${outputDir}" | find /c /v "" && ` +
               `ping 127.0.0.1 -n 2 -w ${Math.floor(getRandomSleepTime() * 1000)} >nul && ` +
-              `del ${getRunningFile(scriptName)}`
+              `del /q /f "${getRunningFile(scriptName)}" 2>nul`
             : `echo 'test-script ${scriptName}' > ${getRunningFile(
                 scriptName,
               )} && ls ${outputDir} | wc -l && sleep ${getRandomSleepTime()} && rm ${getRunningFile(

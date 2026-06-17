@@ -183,15 +183,22 @@ export const createGitFixture = async (
   const cleanup = () => {
     if (disposed) return;
     disposed = true;
-    // On Windows the git index may still be held open briefly when this
-    // disposes, producing EPERM on the first unlink attempt. maxRetries
-    // lets the OS release the handle before we retry.
-    fs.rmSync(repoPath, {
-      force: true,
-      recursive: true,
-      maxRetries: 5,
-      retryDelay: 50,
-    });
+    // On Windows the git index and AV scanners can hold handles to the
+    // freshly-spawned repo's files long enough that the first unlink
+    // attempts fail with EPERM. The fixture lives under the OS tmpdir
+    // which the OS reaps independently, so if rmSync still can't win
+    // after a generous retry window we swallow the error rather than
+    // failing an otherwise-passing test on a cleanup-only step.
+    try {
+      fs.rmSync(repoPath, {
+        force: true,
+        recursive: true,
+        maxRetries: 20,
+        retryDelay: 100,
+      });
+    } catch {
+      /* tmpdir cleanup is best-effort */
+    }
   };
 
   return {

@@ -225,6 +225,7 @@ export default defineConfig({
   themeConfig: {
     llmsUI: false,
     enableScrollToTop: true,
+    darkMode: true,
     socialLinks: [
       {
         icon: {

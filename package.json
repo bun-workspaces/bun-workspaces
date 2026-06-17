@@ -73,9 +73,8 @@
     "portless-start": "portless proxy start --no-tls",
     "portless-stop": "portless proxy stop",
     "init-pacwich-package": "PACWICH_PROJECT_PATH=$PWD bun --cwd=workspaces/packages/pacwich run create-modules && bun --cwd=workspaces/libraries/pacwich-common run build:dts",
-    "init-repo": "bun init-repo.sh",
-    "preinstall": "mv node_modules node_modules.ignore-me.backup && pnpm install --ignore-scripts && sleep 1 && mv node_modules.ignore-me.backup node_modules",
-    "prepare": "bun init-repo"
+    "preinstall": "bun preinstall.sh",
+    "prepare": "bun prepare.sh"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

@@ -20,6 +20,8 @@ are using pacwich themselves under the hood):
   - Build the documentation website: `bun docs build` (or `bun docs build:dev` for development build)
 - Try to lean on root-based scripts like above instead of cd'ing into workspaces (unless necessary) and use the pacwich CLI itself for this repo (can help test the CLI itself)
 
+Bun is the primary package manager and TS script runner for the project. The existence of `pnpm-lock.yaml` is due to Dependabot's lack of Bun support.
+
 ## Coding style
 
 TypeScript is written in a generally functional/procedural style. Patterns in general in this project should remain fairly consistent but are not dogmatic, as will be explained below.

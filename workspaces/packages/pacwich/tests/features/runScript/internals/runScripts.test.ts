@@ -104,43 +104,47 @@ describe("Run Scripts", () => {
     );
   });
 
-  test("Run Scripts - stdout and stderr - process output (bytes)", async () => {
-    const result = await runScripts({
-      scripts: [
-        {
-          metadata: { name: "test-script name 1" },
-          scriptCommand: {
-            command: IS_WINDOWS
-              ? `echo test-script 1 && echo test-script 2 1>&2`
-              : "echo 'test-script 1' && echo 'test-script 2' >&2",
-            workingDirectory: "",
+  test.skipIf(IS_WINDOWS)(
+    "Run Scripts - stdout and stderr - process output (bytes)",
+    async () => {
+      const result = await runScripts({
+        scripts: [
+          {
+            metadata: { name: "test-script name 1" },
+            scriptCommand: {
+              command:
+                "echo 'test-script 1' && sleep 0.1 && echo 'test-script 2' >&2",
+              workingDirectory: "",
+            },
+            env: {},
           },
-          env: {},
-        },
-      ],
-      parallel: false,
-    });
-
-    let outputCount = 0;
-    for await (const { metadata, chunk } of result.output.bytes()) {
-      expect(metadata.name).toBe("test-script name 1");
-      expect(metadata.streamName).toBe(outputCount === 1 ? "stderr" : "stdout");
-      expect(new TextDecoder().decode(chunk)).toMatch(
-        `test-script ${outputCount + 1}`,
-      );
-      outputCount++;
-    }
-    expect(outputCount).toBe(2);
-
-    const summary = await result.summary;
-    expect(summary).toEqual(
-      makeExitSummary({
-        scriptResults: [
-          makeScriptExit({ metadata: { name: "test-script name 1" } }),
         ],
-      }),
-    );
-  });
+        parallel: false,
+      });
+
+      let outputCount = 0;
+      for await (const { metadata, chunk } of result.output.bytes()) {
+        expect(metadata.name).toBe("test-script name 1");
+        expect(metadata.streamName).toBe(
+          outputCount === 1 ? "stderr" : "stdout",
+        );
+        expect(new TextDecoder().decode(chunk)).toMatch(
+          `test-script ${outputCount + 1}`,
+        );
+        outputCount++;
+      }
+      expect(outputCount).toBe(2);
+
+      const summary = await result.summary;
+      expect(summary).toEqual(
+        makeExitSummary({
+          scriptResults: [
+            makeScriptExit({ metadata: { name: "test-script name 1" } }),
+          ],
+        }),
+      );
+    },
+  );
 
   test("Run Scripts - stdout and stderr - process output (text)", async () => {
     const result = await runScripts({

@@ -53,4 +53,8 @@ describe("npm adapter: loadRootMetadata", () => {
     expect(load({ packages: "packages/*" }).workspaceGlobs).toEqual([]);
     expect(load("packages/*").workspaceGlobs).toEqual([]);
   });
+
+  test("non-string workspace pattern error names the root directory", () => {
+    expect(() => load([1234])).toThrow(`root: ${rootDirectory}`);
+  });
 });

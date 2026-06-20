@@ -44,9 +44,10 @@ const validateWorkspace = (workspace: Workspace, workspaces: Workspace[]) => {
     return false;
   }
 
-  if (workspaces.find((ws) => ws.name === workspace.name)) {
+  const existing = workspaces.find((ws) => ws.name === workspace.name);
+  if (existing) {
     throw new WORKSPACE_ERRORS.DuplicateWorkspaceName(
-      `Duplicate workspace name found: ${JSON.stringify(workspace.name)}`,
+      `Duplicate workspace name ${JSON.stringify(workspace.name)} at ${JSON.stringify(workspace.path)} and ${JSON.stringify(existing.path)}`,
     );
   }
 
@@ -190,7 +191,9 @@ export const assembleProject = ({
   }
 
   if (!rootWorkspace) {
-    throw new WORKSPACE_ERRORS.RootWorkspaceNotFound("No root workspace found");
+    throw new WORKSPACE_ERRORS.RootWorkspaceNotFound(
+      `No root workspace found at ${rootDirectory}`,
+    );
   }
 
   const lockfileWorkspaceLinks =

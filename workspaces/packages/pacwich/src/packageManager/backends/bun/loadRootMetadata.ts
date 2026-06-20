@@ -25,7 +25,7 @@ const validateWorkspacePattern = (
 ): workspacePattern is string => {
   if (typeof workspacePattern !== "string") {
     throw new WORKSPACE_ERRORS.InvalidWorkspacePattern(
-      `Expected workspace pattern to be a string, got ${typeof workspacePattern}`,
+      `Expected workspace pattern to be a string, got ${typeof workspacePattern} (root: ${rootDirectory})`,
     );
   }
 
@@ -90,7 +90,7 @@ const parseBunWorkspaces = (
 
   if (!Array.isArray(rawWorkspaces)) {
     throw new WORKSPACE_ERRORS.InvalidWorkspaces(
-      `Expected package.json "workspaces${source === "catalogObject" ? ".packages" : ""}" to be an array`,
+      `Expected package.json "workspaces${source === "catalogObject" ? ".packages" : ""}" to be an array (root: ${rootDirectory})`,
     );
   }
 

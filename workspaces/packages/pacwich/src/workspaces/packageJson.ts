@@ -26,10 +26,13 @@ export type ResolvedPackageJsonContent = {
   optionalDependencies: Record<string, string>;
 } & UnknownPackageJson;
 
-const validateJsonRoot = (json: unknown): UnknownPackageJson => {
+const validateJsonRoot = (
+  json: unknown,
+  packageJsonPath: string,
+): UnknownPackageJson => {
   if (!isJSONObject(json) || Array.isArray(json)) {
     throw new WORKSPACE_ERRORS.InvalidPackageJson(
-      `Expected package.json to be an object, got ${typeof json}`,
+      `Expected ${packageJsonPath} to be an object, got ${typeof json}`,
     );
   }
   return json as UnknownPackageJson;
@@ -54,13 +57,13 @@ export const readPackageJson = (
       }`,
     );
   }
-  return validateJsonRoot(json);
+  return validateJsonRoot(json, packageJsonPath);
 };
 
-const validateName = (json: UnknownPackageJson) => {
+const validateName = (json: UnknownPackageJson, packageJsonPath: string) => {
   if (typeof json.name !== "string") {
     throw new WORKSPACE_ERRORS.NoWorkspaceName(
-      `Expected package.json to have a string "name" field${
+      `Expected ${packageJsonPath} to have a string "name" field${
         json.name !== undefined ? ` (Received ${json.name})` : ""
       }`,
     );
@@ -68,26 +71,26 @@ const validateName = (json: UnknownPackageJson) => {
 
   if (!json.name.trim()) {
     throw new WORKSPACE_ERRORS.NoWorkspaceName(
-      `Expected package.json to have a non-empty "name" field`,
+      `Expected ${packageJsonPath} to have a non-empty "name" field`,
     );
   }
 
   if (json.name.includes("*")) {
     throw new WORKSPACE_ERRORS.InvalidWorkspaceName(
-      `Package name cannot contain the character '*' (workspace: "${json.name}")`,
+      `Package name cannot contain the character '*' (workspace: "${json.name}" at ${packageJsonPath})`,
     );
   }
 
   return json.name;
 };
 
-const validateScripts = (json: UnknownPackageJson) => {
+const validateScripts = (json: UnknownPackageJson, packageJsonPath: string) => {
   if (
     json.scripts &&
     (typeof json.scripts !== "object" || Array.isArray(json.scripts))
   ) {
     throw new WORKSPACE_ERRORS.InvalidScripts(
-      `Expected package.json to have an object "scripts" field`,
+      `Expected ${packageJsonPath} to have an object "scripts" field`,
     );
   }
 
@@ -97,7 +100,7 @@ const validateScripts = (json: UnknownPackageJson) => {
         throw new WORKSPACE_ERRORS.InvalidScripts(
           `Expected workspace "${json.name}" script "${JSON.stringify(
             json.scripts,
-          )}" to be a string, got ${typeof value}`,
+          )}" to be a string, got ${typeof value} (at ${packageJsonPath})`,
         );
       }
     }
@@ -124,11 +127,11 @@ export const resolvePackageJsonContent = (
     optionalDependencies:
       (json.optionalDependencies as Record<string, string>) ?? {},
     name: validations.includes("name")
-      ? validateName(json)
+      ? validateName(json, packageJsonPath)
       : ((json.name as string) ?? ""),
     version: typeof json.version === "string" ? json.version : undefined,
     scripts: validations.includes("scripts")
-      ? validateScripts(json)
+      ? validateScripts(json, packageJsonPath)
       : ((json.scripts ?? {}) as Record<string, string>),
   };
 };

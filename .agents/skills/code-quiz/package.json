@@ -1,0 +1,29 @@
+{
+  "name": "code-quiz-skill",
+  "version": "0.1.0",
+  "description": "Claude Code skill that pop-quizzes you on the purpose of code in your repo.",
+  "keywords": [
+    "claude",
+    "claude-code",
+    "skill",
+    "code-quiz"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/smorsic/code-quiz-skill.git"
+  },
+  "files": [
+    "SKILL.md",
+    "config.json",
+    "scripts/"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test _internal/pick-file-test.mjs",
+    "sync-version": "node _internal/sync-version.mjs",
+    "version": "npm run sync-version && git add README.md SKILL.md"
+  }
+}

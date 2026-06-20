@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "code-quiz": {
+      "source": "smorsic/code-quiz-skill",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "9586b8479789c8e868bc8fc73fcd18953f9efa1624977db68946fa740e8bd3b2"
+    }
+  }
+}

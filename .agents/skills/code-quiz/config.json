@@ -1,0 +1,27 @@
+{
+  "include": ["**/*"],
+  "exclude": [
+    ".git/**",
+    "**/*.{md,txt,log,csv,tsv,pdf,docx,xlsx,pptx,sqlite,db,snap,wasm,pyc,pyo,class,jar,war,exe,dll,so,dylib,o,a,zip,tar,gz,bz2,xz,rar,7z,tgz,zst,lz4,png,jpg,jpeg,gif,svg,ico,webp,avif,bmp,tiff,tif,heic,heif,mp4,webm,mov,mkv,m4v,ogg,mp3,wav,flac,m4a,opus,aac,woff,woff2,ttf,otf,eot,map}",
+    "**/*.min.{js,css}",
+    "**/{package-lock.json,yarn.lock,pnpm-lock.yaml,bun.lockb,bun.lock,Cargo.lock,Gemfile.lock,poetry.lock,composer.lock,pubspec.lock,go.sum,mix.lock}",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/out/**",
+    "**/coverage/**",
+    "**/.next/**",
+    "**/.nuxt/**",
+    "**/.cache/**",
+    "**/.agents/**",
+    "**/.claude/**",
+    "**/.cursor/**",
+    "**/.windsurf/**",
+    "**/.aider/**",
+    "**/.continue/**",
+    "**/.codeium/**",
+    "**/.cursorrules",
+    "**/.windsurfrules"
+  ],
+  "gitTrackedOnly": true
+}

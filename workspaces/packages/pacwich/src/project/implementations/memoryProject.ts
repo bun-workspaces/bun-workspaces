@@ -174,13 +174,12 @@ class _MemoryProject extends ProjectBase implements Project {
     validateWorkspace(this.rootWorkspace);
 
     for (const workspace of this.workspaces) {
-      if (
-        this.workspaces.find(
-          (ws) => ws !== workspace && ws.name === workspace.name,
-        )
-      ) {
+      const duplicate = this.workspaces.find(
+        (ws) => ws !== workspace && ws.name === workspace.name,
+      );
+      if (duplicate) {
         throw new WORKSPACE_ERRORS.DuplicateWorkspaceName(
-          `Duplicate workspace name found: ${JSON.stringify(workspace.name)}`,
+          `Duplicate workspace name ${JSON.stringify(workspace.name)} at ${JSON.stringify(workspace.path)} and ${JSON.stringify(duplicate.path)}`,
         );
       }
     }

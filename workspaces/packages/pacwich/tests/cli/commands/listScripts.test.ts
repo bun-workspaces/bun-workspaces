@@ -188,7 +188,7 @@ describe("List Scripts", () => {
       expect(result.exitCode).toBe(1);
       assertOutputMatches(
         result.stderr.sanitizedCompactLines,
-        "Expected package.json to be an object, got object",
+        /Expected .*package\.json to be an object, got object/i,
       );
     } finally {
       fs.rmSync(tmpDir, { force: true, recursive: true });

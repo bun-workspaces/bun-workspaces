@@ -266,6 +266,34 @@ describe("MemoryProject", () => {
     ).toThrow(WORKSPACE_ERRORS.DuplicateWorkspaceName);
   });
 
+  test("duplicate workspace name error names both conflicting paths", () => {
+    let error: Error | undefined;
+    try {
+      createMemoryProject({
+        packageManager: "bun",
+        workspaces: [
+          makeTestWorkspace({
+            name: "shared",
+            path: "packages/a",
+            matchPattern: "packages/*",
+            scripts: [],
+          }),
+          makeTestWorkspace({
+            name: "shared",
+            path: "packages/b",
+            matchPattern: "packages/*",
+            scripts: [],
+          }),
+        ],
+      });
+    } catch (e) {
+      error = e as Error;
+    }
+    expect(error).toBeInstanceOf(WORKSPACE_ERRORS.DuplicateWorkspaceName);
+    expect(error?.message).toContain("packages/a");
+    expect(error?.message).toContain("packages/b");
+  });
+
   test("throws for duplicate alias", () => {
     expect(() =>
       createMemoryProject({

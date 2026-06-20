@@ -1,3 +1,4 @@
+import path from "path";
 import { resolvePackageManagerAdapter } from "../../../src/packageManager/adapter";
 import { assembleProject } from "../../../src/project/implementations/fileSystemProject/assembleProject";
 import { WORKSPACE_ERRORS } from "../../../src/workspaces/errors";
@@ -322,6 +323,63 @@ describe("Test finding workspaces", () => {
           rootDirectory: getProjectRoot("invalidAliasConflict"),
         }),
       ).toThrow(WORKSPACE_ERRORS.AliasConflict);
+    });
+
+    describe("error messages include identifying paths", () => {
+      test("bad JSON: root package.json path", () => {
+        const root = getProjectRoot("invalidBadJson");
+        expect(() => assembleProject({ adapter, rootDirectory: root })).toThrow(
+          path.join(root, "package.json"),
+        );
+      });
+
+      test("missing name: offending workspace's package.json path", () => {
+        const root = loadFixture("invalidNoName");
+        expect(() => assembleProject({ adapter, rootDirectory: root })).toThrow(
+          path.join(root, "libraries/libraryB/package.json"),
+        );
+      });
+
+      test("duplicate name: both conflicting workspace paths", () => {
+        const root = loadFixture("invalidDuplicateName");
+        let error: Error | undefined;
+        try {
+          assembleProject({ adapter, rootDirectory: root });
+        } catch (e) {
+          error = e as Error;
+        }
+        expect(error).toBeInstanceOf(WORKSPACE_ERRORS.DuplicateWorkspaceName);
+        expect(error?.message).toContain("libraries/libraryA");
+        expect(error?.message).toContain("libraries/libraryB");
+      });
+
+      test("invalid workspace name: package.json path", () => {
+        const root = getProjectRoot("badWorkspaceInvalidName");
+        expect(() => assembleProject({ adapter, rootDirectory: root })).toThrow(
+          path.join(root, "applications/applicationA/package.json"),
+        );
+      });
+
+      test("bad workspaces field type: root directory", () => {
+        const root = getProjectRoot("invalidBadTypeWorkspaces");
+        expect(() => assembleProject({ adapter, rootDirectory: root })).toThrow(
+          `root: ${root}`,
+        );
+      });
+
+      test("invalid scripts type: offending workspace's package.json path", () => {
+        const root = getProjectRoot("invalidBadTypeScripts");
+        expect(() => assembleProject({ adapter, rootDirectory: root })).toThrow(
+          path.join(root, "applications/applicationA/package.json"),
+        );
+      });
+
+      test("non-string workspace glob: root directory", () => {
+        const root = getProjectRoot("invalidBadWorkspaceGlobType");
+        expect(() => assembleProject({ adapter, rootDirectory: root })).toThrow(
+          `root: ${root}`,
+        );
+      });
     });
   });
 

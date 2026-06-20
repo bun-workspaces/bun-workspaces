@@ -53,6 +53,9 @@ on:
         type: string
         default: ""
 
+permissions:
+  contents: read
+
 jobs:
   test_given_versions:
     name: Test Build - ${{ inputs.test_runtime }} (bun ${{ inputs.bun-version }}, node ${{ inputs.node-version }}, pnpm ${{ inputs.pnpm-version }}, ${{ inputs.os }})

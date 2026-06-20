@@ -258,7 +258,7 @@ export const runBuild = async () => {
       path.resolve(
         DIST_PATH,
         "src/internal/generated/ajv/",
-        path.basename(file).replace(".js", ".js"),
+        path.basename(file),
       ),
     );
   }

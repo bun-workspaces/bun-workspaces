@@ -15,55 +15,55 @@ import { INPUTS_FILES_EXAMPLE, INPUTS_WORKSPACE_PATTERNS_EXAMPLE, INPUTS_EXTERNA
 
 ## What is an Input? 
 
-**Inputs** are values considered to affect the state of a [workspace](/concepts/glossary#workspace) or the result of a [script](/concepts/glossary#script).
+**Inputs** are values considered to affect the state of a [**workspace**](/concepts/glossary#workspace) or the result of a [**script**](/concepts/glossary#script).
 
-A workspace's input can be one of the following:
- * A **file**, which must be git-trackable (not ignored and within your repo)
- * Another **workspace** (a dependency or may be explicitly configured as an input)
-   * Note: When a workspace is an input, what determines if it affects the current workspace is whether it is affected itself
- * The **version** of an external **dependency** (e.g. an npm package)
-
-
-These are set by [workspace config](/config/workspace) options, which can be set at
+These can be configured via [workspace config](/config/workspace) options, which can be set at
 the workspace level (`defaultInputs`) or at the script level (`scripts[name].inputs`).
 
-### Defaults
-
-The default inputs for a workspace are:
-* **Files**: all git-trackable files in a workspace's directory
-* **Workspace dependencies**: all explicit dependencies that are a workspace (via its `package.json`)
-* **External dependencies**: all dependencies in a workspace's `package.json`
-
-## Configuration
-
-A workspace's inputs are can be set via [workspace config](/config/workspace).
+A workspace's inputs can include its **files**, **other workspaces**, or **external dependencies**,
+defined in depth below:
 
 ### Files
 
-Files are specified as paths relative to the workspace's directory.
+A **file** can be an input, which **must be git-trackable** (not ignored and within your repo).
 
+**Default**: All git-trackable files in a workspace's directory
+
+> Note: Files that are staged, unstaged, or untracked (but not ignored) are inputs by default but can usually be selectively excluded in features.
+
+#### Configuring Files
+
+Files are specified as paths relative to the workspace's directory.
 Paths with a leading `/` are relative to the project root. Prefix with `!` to exclude.
 
-**Only git-trackable files can be considered inputs.**
-
 [Workspace configuration](/config/workspace) example:
-<SyntaxHighlighter language="json">
+<SyntaxHighlighter language="typescript">
   {
     INPUTS_FILES_EXAMPLE
   }
 </SyntaxHighlighter>
 
-### Workspace Patterns
+### Other Workspaces
 
-In cases such as determining [affected workspaces](/concepts/affected),
-any explicit [workspace dependencies](/concepts/workspace-dependencies) are considered
-inputs to a workspace by default.
+Another **workspace** may be an input.
+
+**Default**: All workspaces declared as dependencies in `package.json`
+
+A workspace input may be a dependency on another workspace declared in `package.json`,
+or a workspace explicitly configured to be an input (see below).
+
+A workspace is affected if one of its workspace inputs is affected. You can also think of this as a workspace inheriting the inputs of any workspaces it depends on.
+
+#### Configuring Workspace Inputs
+
+In features using inputs, you can generally ignore the automatic inclusion 
+of `package.json` dependencies if needed.
 
 When you need to treat other workspaces like dependencies, 
 you can also specify [workspace patterns](/concepts/workspace-patterns) to be considered inputs to a workspace via the inputs.
 
 [Workspace configuration](/config/workspace) example:
-<SyntaxHighlighter language="json">
+<SyntaxHighlighter language="typescript">
   {
     INPUTS_WORKSPACE_PATTERNS_EXAMPLE
   }
@@ -71,9 +71,15 @@ you can also specify [workspace patterns](/concepts/workspace-patterns) to be co
 
 ### External Dependencies
 
-By default, all other dependencies in a workspace's `package.json` are considered
-inputs to a workspace. The resolved version in `bun.lock` is used to determine if
-an external dependency has changed.
+The installed version of an **external dependency** (e.g. an npm package)
+is considered an input.
+
+**Default**: All external dependencies declared in `package.json`
+
+The resolved version in your package manager lockfile (e.g. `bun.lock`, `package-lock.json`, `yarn.lock`) 
+is used to determine if an external dependency has changed.
+
+#### Configuring External Dependencies
 
 You can configure a list of specific external package names to consider inputs.
 
@@ -81,7 +87,7 @@ When not provided, all external dependencies are considered inputs. When provide
 so an empty array means no external dependencies are considered inputs.
 
 [Workspace configuration](/config/workspace) example:
-<SyntaxHighlighter language="json">
+<SyntaxHighlighter language="typescript">
   {
     INPUTS_EXTERNAL_DEPENDENCIES_EXAMPLE
   }

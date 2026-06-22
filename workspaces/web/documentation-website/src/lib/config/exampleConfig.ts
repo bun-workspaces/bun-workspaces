@@ -171,14 +171,20 @@ export default defineProjectConfig({
 `.trim();
 
 export const INPUTS_FILES_EXAMPLE = `
-{
+// /path/to/your/project/workspace/pacwich.workspace.ts
+
+import { defineWorkspaceConfig } from "pacwich/config";
+
+export default defineWorkspaceConfig({
+  // workspace's defaults
   "defaultInputs": {
     "files": [
       "src/**/*.ts", 
-      "!src/**/*.test.ts",
+      "!src/**/*.test.ts", // ignore test files
       "/tsconfig.json" // relative to project root
     ],
   },
+  // per-script
   "scripts": {
     "test": {
       "inputs": {
@@ -188,14 +194,20 @@ export const INPUTS_FILES_EXAMPLE = `
       },
     },
   },
-}
+});
 `.trim();
 
 export const INPUTS_WORKSPACE_PATTERNS_EXAMPLE = `
-{
+// /path/to/your/project/workspace/pacwich.workspace.ts
+
+import { defineWorkspaceConfig } from "pacwich/config";
+
+export default defineWorkspaceConfig({
+  // workspace's defaults
   "defaultInputs": {
     "workspacePatterns": ["tag:my-tag"],
   },
+  // per-script
   "scripts": {
     "build": {
       "inputs": {
@@ -203,14 +215,20 @@ export const INPUTS_WORKSPACE_PATTERNS_EXAMPLE = `
       },
     },
   },
-}
+});
 `.trim();
 
 export const INPUTS_EXTERNAL_DEPENDENCIES_EXAMPLE = ` 
-{
+// /path/to/your/project/workspace/pacwich.workspace.ts
+
+import { defineWorkspaceConfig } from "pacwich/config";
+
+export default defineWorkspaceConfig({
+  // workspace's defaults
   "defaultInputs": {
     "externalDependencies": ["lodash"],
   },
+  // per-script
   "scripts": {
     "build": {
       "inputs": {
@@ -218,5 +236,5 @@ export const INPUTS_EXTERNAL_DEPENDENCIES_EXAMPLE = `
       },
     },
   },
-}
+});
 `.trim();

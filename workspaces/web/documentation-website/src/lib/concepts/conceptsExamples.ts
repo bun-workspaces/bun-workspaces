@@ -3,8 +3,10 @@ my-project/
 ├── package.json
 └── packages/
     ├── my-workspace-a/
-    │   └── package.json
+    |   ├── index.ts
+    |   └── package.json
     └── my-workspace-b/
+        ├── index.ts
         └── package.json
 `.trim();
 
@@ -20,6 +22,8 @@ export const GLOSSARY_ROOT_PACKAGE_JSON = `
 export const GLOSSARY_WORKSPACE_A_PACKAGE_JSON = `
 {
   "name": "my-workspace-a",
+  "type": "module",
+  "main": "index.ts",
   "scripts": {
     "my-script": "echo 'My script for workspace A'"
   }
@@ -29,6 +33,8 @@ export const GLOSSARY_WORKSPACE_A_PACKAGE_JSON = `
 export const GLOSSARY_WORKSPACE_B_PACKAGE_JSON = `
 {
   "name": "my-workspace-b",
+  "type": "module",
+  "main": "index.ts",
   "scripts": {
     "my-script": "echo 'My script for workspace B'"
   }

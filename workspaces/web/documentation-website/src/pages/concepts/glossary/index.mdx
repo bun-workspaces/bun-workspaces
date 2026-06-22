@@ -16,30 +16,35 @@ import { GLOSSARY_FILE_TREE, GLOSSARY_ROOT_PACKAGE_JSON, GLOSSARY_WORKSPACE_A_PA
 Learn some of the basic terms and primitives of `pacwich` here.
 
 ## Terms
+The definition of **workspace** and **project** differs between package managers and monorepo tooling.
 
-#### Project
 
-A **project** is typically the same as the root of your git repository for your monorepo. This is where your top-level `package.json` 
-file is located and where you've defined workspaces for your package manager, whether via the `"workspaces"` field in
-package.json (for Bun or npm) or `pnpm-workspace.yaml` (for pnpm).
+### Workspace
+
+In `pacwich`, the word **workspace** is closer to how it's used in **npm** and **Bun**, a **workspace** being a **nested package** in a monorepo. 
+
+Not necessarily all packages are workspaces, but all workspaces are packages.
+
+A workspace must have its own `package.json` file with a unique `"name"`. It is matched via globs you declare with your package manager's config (e.g. the `"workspaces"` field 
+in your root package.json for [Bun](https://bun.sh/docs/pm/workspaces) or [npm](https://docs.npmjs.com/cli/v11/using-npm/workspaces), or [pnpm-workspace.yaml](https://pnpm.io/workspaces)).
+
+### Project
+
+The **project** is synonymous with your root where workspaces are defined, often the root of your git repository.
+
+This is where your top-level `package.json` file is located and where you've defined workspaces for your package manager,
+whether via the `"workspaces"` field in package.json (for Bun or npm) or `pnpm-workspace.yaml` (for pnpm).
 
 `pacwich` recognizes a project by a root `package.json` living alongside a lockfile (`package-lock.json`, `bun.lock`, `pnpm-lock.yaml`), since the 
 lockfile is the best source of truth for workspace-related data, so a project and its workspace data aren't recognized or current until you run your install command.
 
-#### Workspace
-
-A **workspace** is simply a nested package within your project that has its own `package.json` file and is matched by the workspaces
-you declare at the root of your project with your package manager's config. 
-
-`pacwich` simply builds its features to enrich and work with plain workspaces.
-
-#### Script
+### Script
 
 In the context of `pacwich`, a **script** generally refers to an entry in the `"scripts"` field in a workspace's `package.json` file by default. 
 
 However, pacwich also supports running ["inline scripts"](/concepts/inline-scripts), one-off shell commands executed from a respective workspace's directory.
 
-#### Inputs
+### Inputs
 
 Inputs define what items are considered to affect the state of a workspace or the result of a script
 and are used in [determining affected workspaces](/concepts/affected) and the [`verify` feature](/cli/commands#verify).
@@ -48,7 +53,8 @@ Read more on the [Inputs](/concepts/inputs) page.
 
 ## Terms in Action
 
-This is a minimal example of a project structure for a `Bun` or `npm` monorepo.
+This is a minimal example of a project structure for a monorepo. As advertised, `pacwich` would
+be able to work in this project without additional setup.
 
 Placing workspaces in the `packages/` directory is a common convention but not required.
 
@@ -60,12 +66,12 @@ Placing workspaces in the `packages/` directory is a common convention but not r
 
 #### Top-level files
 
-The root `package.json`, using the `"workspaces"` field if using `Bun` or `npm`:
+The root `package.json`, using the `"workspaces"` field if using **Bun** or **npm**:
 <SyntaxHighlighter language="json">
 {GLOSSARY_ROOT_PACKAGE_JSON}
 </SyntaxHighlighter>
 
-If using `pnpm`, you would have a `pnpm-workspace.yaml` file instead of using the `"workspaces"` field in the root `package.json` above:
+If using **pnpm**, you would have a `pnpm-workspace.yaml` file instead of using the `"workspaces"` field in the root `package.json` above:
 
 <SyntaxHighlighter language="yaml">
 {PNPM_WORKSPACE_YAML}
@@ -73,13 +79,22 @@ If using `pnpm`, you would have a `pnpm-workspace.yaml` file instead of using th
 
 #### Workspaces
 
-The workspaces' package.json files:
+##### my-workspace-a
 <SyntaxHighlighter language="json">
 {GLOSSARY_WORKSPACE_A_PACKAGE_JSON}
 </SyntaxHighlighter>
 
+`my-workspace-a`'s default [**inputs**](/concepts/inputs) would be its `package.json`
+file, and its `index.ts` file. If it [depended on another workspace](/concepts/workspace-dependencies), 
+that workspace's inputs would be inherited, and if it had external dependencies (e.g. npm packages),
+those dependencies' installed versions would be inputs as well.
+
+#####  my-workspace-b
 <SyntaxHighlighter language="json">
 {GLOSSARY_WORKSPACE_B_PACKAGE_JSON}
 </SyntaxHighlighter>
 
-If you have the above in your project and have ran your install command, `pacwich` commands should work right away.
+`my-workspace-b`'s default [**inputs**](/concepts/inputs) would be its `package.json`
+file, and its `index.ts` file. If it [depended on another workspace](/concepts/workspace-dependencies), 
+that workspace's inputs would be inherited, and if it had external dependencies (e.g. npm packages),
+those dependencies' installed versions would be inputs as well.

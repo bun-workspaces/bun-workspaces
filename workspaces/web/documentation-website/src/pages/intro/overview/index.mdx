@@ -9,11 +9,22 @@ footer: false
 ---
 
 `pacwich` is an npm package that works with your package manager's workspace functionality.
-`pacwich` supports [Bun](https://bun.sh/docs/pm/workspaces), [npm](https://docs.npmjs.com/cli/v10/using-npm/workspaces), and [pnpm](https://pnpm.io/workspaces) workspaces.
+`pacwich` supports [Bun](https://bun.sh/docs/pm/workspaces), [npm](https://docs.npmjs.com/cli/v11/using-npm/workspaces), and [pnpm](https://pnpm.io/workspaces) workspaces.
 
 We take [package security](/security) seriously.
 
-Read below on reasons to use `pacwich`, or go straight to the [Getting Started](/intro/getting-started) page for more information.
+This page focuses on the overall motivations and design philosophy of `pacwich`. See
+the [getting started guide](/intro/getting-started) to jump straight in.
+
+## What does it do?
+
+`pacwich` gives you means of getting metadata about your monorepo in human-readable
+CLI output or JSON.
+
+You can orchestrate running scripts from workspaces' package.json files.
+
+The optional configuration enriches workspaces with additional metadata and can
+define [rules](/config/workspace) for enforcing code sharing restrictions between workspaces.
 
 ## Easy, Zero-Config
 
@@ -22,7 +33,7 @@ uses as much data from your package manager as it can, not requiring special con
 though accepting [optional config](/config) for more advanced usage.
 
 It works with your workspaces' `package.json` scripts directly instead of defining a new mental model for
-defining your processes.
+your processes.
 
 <hr/>
 

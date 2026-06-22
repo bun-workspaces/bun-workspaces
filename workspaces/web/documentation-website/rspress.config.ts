@@ -84,6 +84,10 @@ export default defineConfig({
     pluginClientRedirects({
       redirects: [
         {
+          from: ["/config/inputs", "/config/workspace-inputs"],
+          to: "/concepts/inputs",
+        },
+        {
           from: "/concepts/script-runtime-metadata",
           to: "/concepts/workspace-script-metadata",
         },

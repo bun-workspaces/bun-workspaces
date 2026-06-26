@@ -1,6 +1,6 @@
 :root {
   --color-primary: #018f6e;
-  --color-secondary: #fe9560;
+  --color-secondary: #f67b3d;
 
   --rp-font-family-base: "IBM Plex Sans", sans-serif;
   --rp-font-family-mono: "UnifontEx", monospace;
@@ -11,7 +11,7 @@
   --rp-c-code-block-bg: #f8f8f8;
   --rp-c-text-code: #202020;
   --rp-c-bg: #fdfdfd;
-  --rp-c-bg-soft: #f6f4f4;
+  --rp-c-bg-soft: #f8f6f6;
   --rp-c-link: var(--color-primary);
 
   --code-base-color: #0f0f0f;
@@ -291,9 +291,12 @@ aside .nav-title-container {
 }
 
 .rp-hover-group {
-  backdrop-filter: blur(25px);
-  background-color: var(--nav-color) !important;
+  background-color: var(--rp-c-bg) !important;
   margin-top: 1rem;
+}
+
+.dark .rp-hover-group {
+  background-color: color-mix(in srgb, var(--rp-c-bg) 20%, black) !important;
 }
 
 .rp-hover-group__item--active {

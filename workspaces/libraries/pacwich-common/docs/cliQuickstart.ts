@@ -97,6 +97,14 @@ pacwich run my-script --output-style=prefixed
 # Use the plain output style (no workspace prefixes)
 pacwich run my-script --output-style=plain
 
+# Run an interactive script with full stdio, for user input etc.
+# Requires a script and one workspace name or alias
+# A script only gets a TTY if the caller is a TTY (i.e. not piped or redirected)
+pacwich run-interactive my-interactive-script my-workspace-name-or-alias
+
+# ri is an alias for run-interactive
+pacwich ri my-interactive-script my-workspace-name-or-alias
+
 # Silence all output
 pacwich --log-level=silent run my-script --output-style=none
 
@@ -115,6 +123,8 @@ pacwich list-affected --explain --detailed
 
 # Run a script across the workspaces affected by a change
 pacwich run-affected my-script
+# ra is an alias for run-affected
+pacwich ra my-script --base=my-branch-a --head=my-branch-b
 `.trim();
 
 export const INLINE_SCRIPT_EXAMPLE = `

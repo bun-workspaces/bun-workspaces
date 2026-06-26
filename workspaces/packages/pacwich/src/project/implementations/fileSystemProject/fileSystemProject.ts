@@ -26,9 +26,11 @@ import {
   resolvePackageManagerValue,
   type PackageManagerName,
   type PackageManagerValue,
+  type ScriptCommand,
 } from "../../../packageManager/adapter";
 import {
   runScript,
+  runScriptInteractive,
   runScripts,
   createScriptRuntimeEnvVars,
   interpolateWorkspaceScriptMetadata,
@@ -128,6 +130,27 @@ export type RunWorkspaceScriptOptions = {
   args?: string | string[];
   /** Set to `true` to ignore all output from the script. This saves memory when you don't need script output. */
   ignoreOutput?: boolean;
+  /**
+   * Pass `true` to inherit the terminal's stdio instead of capturing output.
+   *
+   * See {@link RunWorkspaceScriptInteractiveOptions}
+   */
+  interactive?: false;
+};
+
+/**
+ * Arguments for the interactive overload of
+ * `FileSystemProject.runWorkspaceScript`. The child inherits the
+ * terminal's stdio directly (stdin/stdout/stderr), so the script can
+ * read user input and render to the terminal. Because nothing is
+ * captured, `ignoreOutput` is not applicable and is omitted.
+ */
+export type RunWorkspaceScriptInteractiveOptions = Omit<
+  RunWorkspaceScriptOptions,
+  "ignoreOutput" | "interactive"
+> & {
+  /** Run the script with the terminal's stdio inherited. */
+  interactive: true;
 };
 
 /** Metadata associated with a workspace script */
@@ -147,6 +170,16 @@ export type RunWorkspaceScriptProcessOutput = MultiProcessOutput<
 export type RunWorkspaceScriptResult = {
   /** Use to get the output of the script */
   output: RunWorkspaceScriptProcessOutput;
+  /** The exit result of the script */
+  exit: Promise<RunWorkspaceScriptExit>;
+};
+
+/**
+ * Result of the interactive overload of
+ * `FileSystemProject.runWorkspaceScript`. There is no `output` stream:
+ * the script's stdio is wired straight to the terminal.
+ */
+export type RunWorkspaceScriptInteractiveResult = {
   /** The exit result of the script */
   exit: Promise<RunWorkspaceScriptExit>;
 };
@@ -511,8 +544,61 @@ class _FileSystemProject extends ProjectBase implements Project {
    * const exitResult = await result.exit;
    */
   runWorkspaceScript(
+    options: RunWorkspaceScriptInteractiveOptions,
+  ): RunWorkspaceScriptInteractiveResult;
+  runWorkspaceScript(
     options: RunWorkspaceScriptOptions,
-  ): RunWorkspaceScriptResult {
+  ): RunWorkspaceScriptResult;
+  runWorkspaceScript(
+    options: RunWorkspaceScriptOptions | RunWorkspaceScriptInteractiveOptions,
+  ): RunWorkspaceScriptResult | RunWorkspaceScriptInteractiveResult {
+    if (!options.interactive) {
+      validateJSTypes(
+        {
+          "ignoreOutput option": {
+            value: options.ignoreOutput,
+            typeofName: "boolean",
+            optional: true,
+          },
+        },
+        { throw: true },
+      );
+    }
+
+    const { workspace, scriptCommand, env, shell } =
+      this.#prepareWorkspaceScriptRun(options);
+
+    if (options.interactive) {
+      const { exit } = runScriptInteractive({
+        scriptCommand,
+        metadata: { workspace },
+        env,
+        shell,
+      });
+      return { exit };
+    }
+
+    return runScript({
+      scriptCommand,
+      metadata: { workspace },
+      env,
+      shell,
+      ignoreOutput: options.ignoreOutput ?? false,
+    });
+  }
+
+  /**
+   * Resolve the metadata needed to run a workspace script
+   * from user options
+   */
+  #prepareWorkspaceScriptRun(
+    options: RunWorkspaceScriptOptions | RunWorkspaceScriptInteractiveOptions,
+  ): {
+    workspace: Workspace;
+    scriptCommand: ScriptCommand;
+    env: Record<string, string>;
+    shell: ScriptShellOption;
+  } {
     validateJSTypes(
       {
         "workspaceNameOrAlias option": {
@@ -523,11 +609,6 @@ class _FileSystemProject extends ProjectBase implements Project {
         "inline option": {
           value: options.inline,
           typeofName: ["boolean", "object"],
-          optional: true,
-        },
-        "ignoreOutput option": {
-          value: options.ignoreOutput,
-          typeofName: "boolean",
           optional: true,
         },
       },
@@ -644,20 +725,12 @@ class _FileSystemProject extends ProjectBase implements Project {
           rootDirectory: path.resolve(this.rootDirectory),
         });
 
-    const result = runScript({
-      scriptCommand,
-      metadata: {
-        workspace,
-      },
-      env: {
-        ...createScriptRuntimeEnvVars(workspaceScriptMetadata),
-        ...(options.inline ? {} : buildBunAsNodeScrubOverride(process.env)),
-      },
-      shell,
-      ignoreOutput: options.ignoreOutput ?? false,
-    });
+    const env = {
+      ...createScriptRuntimeEnvVars(workspaceScriptMetadata),
+      ...(options.inline ? {} : buildBunAsNodeScrubOverride(process.env)),
+    };
 
-    return result;
+    return { workspace, scriptCommand, env, shell };
   }
 
   /**

@@ -12,6 +12,7 @@ The user should write documentation unless explicitly requesting agent changes. 
 
 Below, each section comprises at least each main task, with optional subtasks depending on complexity of changes.
 Review the user's documentation changes after each task/subtask, focusing mainly on accuracy, grammar, and thoroughness.
+Don't block a task for very minor nitpicks. Just suggest those changes and move on.
 
 ## Quick Starts
 

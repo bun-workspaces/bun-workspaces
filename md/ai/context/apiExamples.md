@@ -42,17 +42,23 @@ project.listWorkspacesWithTag("shared"); // workspaces that have a given tag
 project.scriptMap; // Record<string, ScriptDetails> where ScriptDetails = { name, workspaces }
 project.tagMap; // Record<string, TagDetails> where TagDetails = Workspace[]
 
-project.runWorkspaceScript({
-  workspaceNameOrAlias: "my-workspace",
-  script: "lint",
+const { output, exit } = project.runWorkspaceScript({
+  script: "lint", // required
+  workspaceNameOrAlias: "my-workspace", // required
   // boolean enables inline-with-defaults; pass an object to customize
   // the inline script (script label, shell choice)
   inline: { scriptName: "my-script", shell: "system" },
   // args can be a string or an array of strings
   // if string, the argv will be parsed POSIX-style
   args: "--my-arg=value",
+  // ignore output from the script
+  ignoreOutput: false,
+  // run the script interactively to accept user input
+  // output is not captured (ignoreOutput not accepted and no output in return)
+  interactive: false,
 });
-project.runScriptAcrossWorkspaces({
+
+const { output, summary, workspaces } = project.runScriptAcrossWorkspaces({
   script: "lint",
   workspacePatterns: [
     "alias:my-alias-pattern-*",

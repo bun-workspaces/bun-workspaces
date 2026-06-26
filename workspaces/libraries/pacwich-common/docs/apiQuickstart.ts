@@ -8,9 +8,15 @@ const { output, exit } = project.runWorkspaceScript({
   // If string, the argv will be parsed POSIX-style
   args: ["--my", "--appended", "--args"],
 
-  // Optional. Whether to ignore all output from the script.
+  // Optional (default false). Whether to ignore all output from the script.
   // This saves memory when you don't need script output.
   ignoreOutput: false,
+
+  // Optional (default false). Run the script interactively to accept user input.
+  // When true, the script will have access to stdin, stdout, and stderr,
+  // and script output cannot be captured. Note that a script only gets a TTY
+  // if the caller is a TTY (i.e. not piped or redirected)
+  interactive: false,
 });
 
 // Get a stream of the script subprocess's output
@@ -47,10 +53,10 @@ const { output, summary } = project.runScriptAcrossWorkspaces({
   // Optional. Arguments to add to the command (same as for runWorkspaceScript)
   args: ["--my", "--appended", "--args"],
 
-  // Optional. Whether to run the scripts in parallel (default: true)
+  // Optional (default true). Whether to run the scripts in parallel
   parallel: true,
 
-  // Optional. When true, a workspace's script will wait
+  // Optional (default false). When true, a workspace's script will wait
   // until any workspaces it depends on have completed
   dependencyOrder: false,
 
@@ -58,7 +64,7 @@ const { output, summary } = project.runScriptAcrossWorkspaces({
   // continue running scripts even if a dependency fails
   ignoreDependencyFailure: false,
 
-  // Optional. Whether to ignore all output from the scripts.
+  // Optional (default false). Whether to ignore all output from the scripts.
   // This saves memory when you don't need script output.
   ignoreOutput: false,
 

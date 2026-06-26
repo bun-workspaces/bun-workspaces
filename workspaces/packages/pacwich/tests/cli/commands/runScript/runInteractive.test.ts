@@ -36,6 +36,13 @@ describe("run-interactive CLI", () => {
     expect(result.stdout.sanitized).toContain("script for a workspaces");
   });
 
+  test("accepts the workspace as a second positional argument", async () => {
+    const { run } = setupCliTest({ testProject: "default" });
+    const result = await run("run-interactive", "a-workspaces", "application-a");
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout.sanitized).toContain("script for a workspaces");
+  });
+
   test("propagates the script's exit code", async () => {
     const { run } = setupCliTest({ testProject: "default" });
     const result = await run(
@@ -100,20 +107,18 @@ describe("run-interactive CLI", () => {
   });
 
   describe("syntax errors", () => {
-    test("requires a workspace", async () => {
-      const { run } = setupCliTest({ testProject: "default" });
-      const result = await run("run-interactive", "-i", "echo hi");
-      expect(result.exitCode).toBe(1);
-      expect(result.stderr.sanitized).toContain(
-        "A workspace is required via --workspace|-W",
-      );
-    });
-
     test("requires a script", async () => {
       const { run } = setupCliTest({ testProject: "default" });
       const result = await run("run-interactive", "-W", "application-a");
       expect(result.exitCode).toBe(1);
       expect(result.stderr.sanitized).toContain("A script is required");
+    });
+
+    test("requires a workspace", async () => {
+      const { run } = setupCliTest({ testProject: "default" });
+      const result = await run("run-interactive", "-i", "echo hi");
+      expect(result.exitCode).toBe(1);
+      expect(result.stderr.sanitized).toContain("A workspace is required");
     });
 
     test("rejects both a positional script and --script", async () => {
@@ -129,6 +134,21 @@ describe("run-interactive CLI", () => {
       expect(result.exitCode).toBe(1);
       expect(result.stderr.sanitized).toContain(
         "Cannot use both inline script positional and --script|-S option",
+      );
+    });
+
+    test("rejects both a positional workspace and --workspace", async () => {
+      const { run } = setupCliTest({ testProject: "default" });
+      const result = await run(
+        "run-interactive",
+        "a-workspaces",
+        "application-a",
+        "-W",
+        "application-a",
+      );
+      expect(result.exitCode).toBe(1);
+      expect(result.stderr.sanitized).toContain(
+        "Cannot use both workspace positional and --workspace|-W option",
       );
     });
 

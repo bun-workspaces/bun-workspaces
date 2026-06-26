@@ -7,6 +7,7 @@ export const runInteractive = handleProjectCommand(
   async (
     { project, postTerminatorArgs },
     positionalScript: string | undefined,
+    positionalWorkspace: string | undefined,
     options: {
       workspace: string | undefined;
       script: string | undefined;
@@ -19,6 +20,7 @@ export const runInteractive = handleProjectCommand(
     options.args = options.args?.trim();
     options.inlineName = options.inlineName?.trim();
     options.workspace = options.workspace?.trim();
+    positionalWorkspace = positionalWorkspace?.trim();
 
     if (positionalScript && options.script) {
       logger.error(
@@ -38,9 +40,19 @@ export const runInteractive = handleProjectCommand(
       return;
     }
 
-    if (!options.workspace) {
+    if (positionalWorkspace && options.workspace) {
       logger.error(
-        "CLI syntax error: A workspace is required via --workspace|-W",
+        "CLI syntax error: Cannot use both workspace positional and --workspace|-W option",
+      );
+      process.exit(1);
+      return;
+    }
+
+    const workspace = options.workspace || positionalWorkspace;
+
+    if (!workspace) {
+      logger.error(
+        "CLI syntax error: A workspace is required (positional argument or --workspace|-W option)",
       );
       process.exit(1);
       return;
@@ -68,11 +80,11 @@ export const runInteractive = handleProjectCommand(
       : undefined;
 
     logger.debug(
-      `Command: Run ${options.inline ? "inline " : ""}script ${JSON.stringify(script)} interactively in workspace ${JSON.stringify(options.workspace)}`,
+      `Command: Run ${options.inline ? "inline " : ""}script ${JSON.stringify(script)} interactively in workspace ${JSON.stringify(workspace)}`,
     );
 
     const { exit } = project.runWorkspaceScript({
-      workspaceNameOrAlias: options.workspace,
+      workspaceNameOrAlias: workspace,
       script,
       interactive: true,
       inline,

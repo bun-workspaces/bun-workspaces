@@ -444,7 +444,7 @@ export const CLI_COMMANDS_CONFIG = {
     },
   },
   runInteractive: {
-    command: "run-interactive [script]",
+    command: "run-interactive [script] [workspace]",
     isGlobal: false,
     aliases: ["ri"],
     description:
@@ -453,7 +453,7 @@ export const CLI_COMMANDS_CONFIG = {
       workspace: {
         flags: ["-W", "--workspace <workspace>"],
         description:
-          "The workspace to run the script in, resolved by name or alias (required)",
+          "The workspace to run the script in, resolved by name or alias (required). (Alternative to second positional argument)",
       },
       script: {
         flags: ["-S", "--script <script>"],

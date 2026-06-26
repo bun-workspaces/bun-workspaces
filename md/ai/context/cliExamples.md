@@ -81,6 +81,16 @@ pacwich run my-script --output-style=plain
 # Write the full structured run result to a JSON file
 pacwich run my-script --json-outfile=./run-result.json
 
+# The script and workspace pattern positional args can be passed as flags instead
+pacwich run --script="my-script" --workspace-patterns="my-pattern-*"
+
+# Run a script interactively (with access to stdin, stdout, and stderr)
+# Only for one script and workspace. Output isn't captured, so output-related flags aren't available
+pacwich run-interactive my-interactive-script my-workspace-name-or-alias
+pacwich ri "sudo my-interactive-script" my-workspace-name-or-alias --inline -- my args
+# Flag options for positional script and workspace
+pacwich ri --script="my-interactive-script" --workspace="my-workspace-name-or-alias"
+
 # List affected workspaces (default: git diff HEAD vs the configured base ref, "main" by default)
 pacwich list-affected
 pacwich ls-affected # alias

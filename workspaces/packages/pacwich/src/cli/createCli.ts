@@ -8,6 +8,7 @@ import {
   defineProjectCommands,
 } from "./commands";
 import { commandOutputLogger } from "./commands/commandHandlerUtils";
+import { tryRunCompletionRequest } from "./commands/completion";
 import { fatalErrorLogger } from "./fatalErrorLogger";
 import { initializeWithGlobalOptions } from "./globalOptions";
 import {
@@ -128,6 +129,15 @@ export const createCli = ({
       let args = terminatorIndex !== -1 ? argv.slice(0, terminatorIndex) : argv;
       const postTerminatorArgs =
         terminatorIndex !== -1 ? argv.slice(terminatorIndex + 1) : [];
+
+      // Shell completion: handled before global options are parsed and the
+      // project is assembled, so tab completion is fast and never evaluates
+      // the project's executable config files.
+      if (
+        tryRunCompletionRequest(args, postTerminatorArgs, outputWriters.stdout)
+      ) {
+        return;
+      }
 
       middleware.processArgv({ ...defaultContext, args, postTerminatorArgs });
 
